@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-18 07:08:00
+    # Last edited : 2023-01-18 07:52:15
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -27,21 +27,34 @@
         VmAdminCredential([String]$Username)
         {
             $This.Username   = $Username
-            $Length          = $This.Random(8,16)
-            $Bytes           = [Byte[]]::New($Length)
-
-            ForEach ($X in 0..($Length-1))
-            {
-                $Bytes[$X]   = $This.Random(32,126)
-            }
-
-            $Pass            = [Char[]]$Bytes -join '' | ConvertTo-SecureString -AsPlainText -Force
-            $This.Credential = [PSCredential]::New($This.Username,$Pass)
+            $This.Credential = [PSCredential]::New($This.Username,$This.Generate())
         }
         VmAdminCredential([Object]$File)
         {
             $This.Username   = $File.Admin.Username
             $This.Credential = $File.Admin
+        }
+        [SecureString] Generate()
+        {
+            Do
+            {
+                $Length          = $This.Random(10,16)
+                $Bytes           = [Byte[]]::New($Length)
+
+                ForEach ($X in 0..($Length-1))
+                {
+                    $Bytes[$X]   = $This.Random(32,126)
+                }
+
+                $Pass            = [Char[]]$Bytes -join ''
+            }
+            Until ($Pass -match $This.Pattern())
+
+            Return $Pass | ConvertTo-SecureString -AsPlainText -Force
+        }
+        [String] Pattern()
+        {
+            Return "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}"
         }
         [UInt32] Random([UInt32]$Min,[UInt32]$Max)
         {
@@ -141,6 +154,8 @@
     Class VmNetworkHost
     {
         [String]          $Name
+        [String]        $Domain
+        [String]       $NetBios
         [String]     $IpAddress
         [UInt32]        $Prefix
         [String]       $Gateway
@@ -149,6 +164,8 @@
         VmNetworkHost([Object]$File)
         {
             $This.Name      = $File.Name
+            $This.Domain    = $File.Domain
+            $This.NetBios   = $File.NetBios
             $This.IpAddress = $File.IpAddress
             $This.Prefix    = $File.Prefix
             $This.Gateway   = $File.Gateway
@@ -620,9 +637,6 @@
             ForEach ($Node in $This.Network.Nodes)
             {
                 $FilePath = "{0}\{1}-{2}.txt" -f $This.Path, $Node.Index, $Node.Name
-
-                [Console]::WriteLine("Exporting [~] File: [$FilePath]")
-
                 $Value    = $This.NewVmObjectFile($Node) | ConvertTo-Json
 
                 [System.IO.File]::WriteAllLines($FilePath,$Value)
@@ -689,16 +703,16 @@
 
     Class VmScriptBlockLine
     {
-        [UInt32]   $Index
-        [String] $Content
-        VmScriptBlockLine([UInt32]$Index,[String]$Content)
+        [UInt32] $Index
+        [String]  $Line
+        VmScriptBlockLine([UInt32]$Index,[String]$Line)
         {
-            $This.Index   = $Index
-            $This.Content = $Content
+            $This.Index = $Index
+            $This.Line  = $Line
         }
         [String] ToString()
         {
-            Return $This.Content
+            Return $This.Line
         }
     }
 
@@ -713,6 +727,7 @@
         [String]        $Name
         [String] $DisplayName
         [Object]     $Content
+        [UInt32]    $Complete
         VmScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
         {
             $This.Index       = $Index
@@ -754,9 +769,10 @@
 
     Class VmScriptBlockController
     {
-        [String]   $Name
-        [UInt32]  $Count
-        [Object] $Output
+        [String]     $Name
+        [UInt32] $Selected
+        [UInt32]    $Count
+        [Object]   $Output
         VmScriptBlockController()
         {
             $This.Name = "ScriptBlock[Controller]"
@@ -775,6 +791,27 @@
         {
             $This.Output += $This.VmScriptBlockItem($This.Output.Count,$Phase,$Name,$DisplayName,$Content)
             $This.Count   = $This.Output.Count
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected] 
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Output | ? Name -eq $Name
+        }
+        [Object] Get([UInt32]$Index)
+        {
+            Return $This.Output | ? Index -eq $Index
         }
         [String] ToString()
         {
@@ -987,6 +1024,13 @@
                 2       { New-VM @Object -Verbose }
             }
 
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { Enable-VmResourceMetering -VmName $This.Name }
+                2       { Enable-VmResourceMetering -VmName $This.Name -Verbose }
+            }
+
             $Item                  = $This.Get()
             $This.Firmware         = $This.GetVmFirmware()
             $This.SetVMProcessor()
@@ -1140,6 +1184,15 @@
 
             $This.DumpConsole()
         }
+        [Object] Measure()
+        {
+            If (!$This.Exists)
+            {
+                Throw "Cannot measure a virtual machine when it does not exist"
+            }
+
+            Return Measure-Vm -Name $This.Name
+        }
         [Object] NewVmPropertyList()
         {
             Return [VmPropertyList]::New()
@@ -1217,7 +1270,7 @@
         }
         AddVmDvdDrive()
         {
-            $This.Update(0,"[+] Adding VmDvdDrive()")
+            $This.Update(0,"[+] Adding VmDvdDrive")
 
             # Verbosity level
             Switch ($This.Mode)
@@ -1327,16 +1380,18 @@
 
             $This.Update(1,"[+] Idle complete")
         }
-        Uptime([UInt32]$Seconds)
+        Uptime([UInt32]$Mode,[UInt32]$Seconds)
         {
-            $This.Update(0,"[~] Uptime : $($This.Name) [Uptime <= $Seconds second(s)]")
-            
+            $Mark = @("<=",">=")[$Mode]
+            $Flag = 0
+            $This.Update(0,"[~] Uptime : $($This.Name) [Uptime $Mark $Seconds second(s)]")
             Do
             {
                 Start-Sleep -Seconds 1
+                $Uptime        = $This.Get().Uptime.TotalSeconds
+                [UInt32] $Flag = Switch ($Mode) { 0 { $Uptime -le $Seconds } 1 { $Uptime -ge $Seconds } }
             }
-            Until ($This.Get().Uptime.TotalSeconds -le $Seconds)
-
+            Until ($Flag)
             $This.Update(1,"[+] Uptime complete")
         }
         Timer([UInt32]$Seconds)
@@ -1388,25 +1443,68 @@
             Start-Sleep -Milliseconds 125
             $This.TypeKey(13)
         }
-        [Object] GetNetworkHost([Object]$File)
+        LaunchPs()
         {
-            Return [VmNetworkHost]::New($File)
+            # Open Start Menu
+            $This.PressKey(91)
+            $This.Typekey(88)
+            $This.ReleaseKey(91)
+            $This.Timer(1)
+
+            # Open Command Prompt
+            $This.TypeKey(65)
+            $This.Timer(1)
+
+            # Open PowerShell
+            $This.TypeText("PowerShell")
+            $This.TypeKey(13)
+
+            # Wait for PowerShell engine to get ready for input
+            $This.Idle(5,5)
         }
-        [String] GetRegistryPath()
+        [Void] AddScript([UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
         {
-            Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+            $This.Script.Add($Phase,$Name,$DisplayName,$Content)
+            $This.Update(0,"[+] Added (Script) : $Name")
         }
-        [Void] ProcessScriptBlock([String]$Name)
+        [Object] GetScript([UInt32]$Index)
         {
-            $Object = $This.Script.Output | ? Name -eq $Name
-            $This.Update(0,"[~] Processing ScriptBlock : [$Name]")
-            ForEach ($Line in $Object.Content)
+            $Item = $This.Script.Get($Index)
+            If (!$Item)
+            {
+                $This.Error("[!] Invalid index")
+            }
+            
+            Return $Item
+        }
+        [Object] GetScript([String]$Name)
+        {
+            $Item = $This.Script.Get($Name)
+            If (!$Item)
+            {
+                $This.Error(-1,"[!] Invalid name")
+            }
+            
+            Return $Item
+        }
+        [Void] RunScript()
+        {
+            $Item = $This.Script.Current()
+
+            If ($Item.Complete -eq 1)
+            {
+                $This.Error(-1,"[!] Exception (Script) : [$($Item.Name)] already completed")
+            }
+
+            $This.Update(0,"[~] Running (Script) : [$($Item.Name)]")
+            ForEach ($Line in $Item.Content)
             {
                 Switch -Regex ($Line)
                 {
                     "^\<Pause\[\d+\]\>$"
                     {
-                        $This.Timer([Regex]::Matches($Line,"\d+").Value)
+                        $Line -match "\d+"
+                        $This.Timer($Matches[0])
                     }
                     "^$"
                     {
@@ -1419,6 +1517,19 @@
                     }
                 }
             }
+
+            $This.Update(1,"[+] Complete (Script) : [$($Item.Name)]")
+
+            $Item.Complete = 1
+            $This.Script.Selected ++
+        }
+        [Object] GetNetworkHost([Object]$File)
+        {
+            Return [VmNetworkHost]::New($File)
+        }
+        [String] GetRegistryPath()
+        {
+            Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
         }
         SetPersistentInfo()
         {
@@ -1439,7 +1550,7 @@
                     }
                     "\[\]"
                     {
-                        'Set-ItemProperty -Path $Path -Name {0} -Value "{1}"' -f $I.Name, ($I.Value -join "`", `"");
+                        'Set-ItemProperty -Path $Path -Name {0} -Value ([String[]]@("{1}"))' -f $I.Name, ($I.Value -join "`",`"");
                     }
                 }   
             }))
@@ -1513,13 +1624,14 @@
             'winrm quickconfig';
             '<Pause[2]>';
             'y';
-            '<Pause[2]>';
+            '<Pause[3]>';
             'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $TrustedHost';
-            '<Pause[2]>';
+            '<Pause[4]>';
+            'y';
             '$Cert       = New-SelfSignedCertificate -DnsName $IpAddress -CertStoreLocation Cert:\LocalMachine\My';
             '$Thumbprint = $Cert.Thumbprint';
             '$Hash       = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
-            "`$Str         = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'";
+            "`$Str         = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
             'Invoke-Expression ($Str -f $Hash)'))
         }
         SetWinRmFirewall()
@@ -1563,18 +1675,15 @@
         InstallBossMode()
         {
             # [Phase 12] Install BossMode (vscode color theme)
-            $This.Script.Add(12,"InstallBossMode","Install BossMode (vscode color theme",@("Install-BossMode"))
+            $This.Script.Add(12,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
         }
         InstallPsExtension()
         {
             # [Phase 13] Install Visual Studio Code (PowerShell Extension)
             $This.Script.Add(13,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
-            '$Splat           = @{';
-            ' ';
-            '    FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
-            '    ArgumentList = "--install-extension ms-vscode.PowerShell"';
-            '}';
-            'Start-Process @Splat -NoNewWindow | Wait-Process'))
+            '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
+            '$ArgumentList = "--install-extension ms-vscode.PowerShell"';
+            'Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process'))
         }
         RestartComputer()
         {
@@ -1668,7 +1777,7 @@
     # // ==================================================================================
 
     # // Generates the factory class
-    $Hive  = [VmNodeController]::New("C:\FileVm","securedigitsplus.com","secured")
+    $Hive  = [VmNodeController]::New("C:\Files","securedigitsplus.com","secured")
     $Hive.SetTemplate("C:\VDI",2048MB,64GB,2,2,"External","C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO")
 
     # // Populates the factory class with (3) nodes (0, 1, 2)
@@ -1685,7 +1794,12 @@
     #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
     # // Reinstantiates the file system information
-    $File        = [VmNodeInputObject]::New(0,"C:\FileVm")
+    $Token       = Switch ([Environment]::MachineName)
+    {
+        "l420-x64" { 0 } "lobby-comp1" { 1 } "lobby-comp2" { 2 }
+    }
+
+    $File        = [VmNodeInputObject]::New($Token,"\\lobby-comp2\Files")
     $Admin       = [VmAdminCredential]::New($File)
 
     # // Checks for existence of virtual machine by that name
@@ -1755,111 +1869,90 @@
     $Vm.Idle(5,5)
 
     # // Catch and release ISO upon reboot
-    $Vm.Uptime(5)
+    $Vm.Uptime(0,5)
     $Vm.UnloadIso()
 
     # // Wait for the login screen
-    $Vm.Idle(5,8)
+    $Vm.Idle(5,5)
 
     # // Establish administrator account
     $Vm.SetAdmin($Admin)
 
     # Wait for actual login
-    $Vm.Idle(5,5)
+    $Vm.Uptime(1,60)
+    $Vm.Idle(20,5)
 
     # Enter (CTRL + ALT + DEL) to sign into Windows
     $Vm.Login($Admin)
 
     # Wait for operating system to do [FirstRun/FirstLogin] stuff
-    $Vm.Idle(5,5)
+    $Vm.Idle(20,5)
 
     # Press enter for Network to allow pc to be discoverable
     $Vm.TypeKey(13)
 
-    # Open Start Menu
-    $Vm.PressKey(91)
-    $Vm.Typekey(88)
-    $Vm.ReleaseKey(91)
-    $Vm.Timer(1)
-
-    # Open Command Prompt
-    $Vm.TypeKey(65)
-    $Vm.Timer(1)
-
-    # Open PowerShell
-    $Vm.TypeText("PowerShell")
-    $Vm.TypeKey(13)
-
-    # Wait for PowerShell engine to get ready for input
-    $Vm.Idle(5,5)
+    # Launch PowerShell
+    $Vm.LaunchPs()
 
     # Loads all scripts
     $Vm.Load()
 
     # Set persistent info
-    $Vm.ProcessScriptBlock("SetPersistentInfo")
-    # Add a timer for 5 seconds
+    $Vm.RunScript()
+    $Vm.Timer(5)
 
     # Set time zone
-    $Vm.ProcessScriptBlock("SetTimeZone")
+    $Vm.RunScript()
+    $Vm.Timer(1)
 
     # Set computer info
-    $Vm.ProcessScriptBlock("SetComputerInfo")
+    $Vm.RunScript()
+    $Vm.Timer(3)
 
     # Set Icmp Firewall
-    $Vm.ProcessScriptBlock("SetIcmpFirewall")
-    # Add a timer for 5 seconds
+    $Vm.RunScript()
+    $Vm.Timer(5)
 
     # Set network interface to null
-    $Vm.ProcessScriptBlock("SetInterfaceNull")
-    # Add a timer for 5 seconds
+    $Vm.RunScript()
+    $Vm.Timer(5)
 
     # Set static IP
-    $Vm.ProcessScriptBlock("SetStaticIp")
-
-    # Wait until connection is successful
+    $Vm.RunScript()
     $Vm.Connection()
 
     # Set WinRm
-    $Vm.ProcessScriptBlock("SetWinRm")
+    $Vm.RunScript()
+    $Vm.Timer(5)
 
     # Set WinRmFirewall
-    $Vm.ProcessScriptBlock("SetWinRmFirewall")
+    $Vm.RunScript()
+    $Vm.Timer(5)
 
-    # Install FightingEntropy
-    $Vm.ProcessScriptBlock("InstallFeModule")
-
-    # Wait idle
+    # Install FightingEntropy | (Timer + Idle) Network Metering needed here...
+    $Vm.RunScript()
+    $Vm.Timer(30)
     $Vm.Idle(5,5)
 
     # Install Chocolatey
-    $Vm.ProcessScriptBlock("InstallChoco")
-
-    # Wait idle
+    $Vm.RunScript()
     $Vm.Idle(5,5)
 
-    # Install VsCode
-    $Vm.ProcessScriptBlock("InstallVsCode")
-    
-    # Wait idle
+    # Install VsCode | (Timer + Idle) Network Metering needed here...
+    $Vm.RunScript()
+    $Vm.Timer(30)
     $Vm.Idle(5,5)
 
     # Install BossMode
-    $Vm.ProcessScriptBlock("InstallBossMode")
-
-    # Wait idle
+    $Vm.RunScript()
     $Vm.Idle(5,5)
 
     # Install PsExtension
-    $Vm.ProcessScriptBlock("InstallPsExtension")
-
-    # Wait idle
+    $Vm.RunScript()
     $Vm.Idle(5,5)
 
     # Restart computer
-    $Vm.ProcessScriptBlock("RestartComputer")
-
-    # Wait idle
+    $Vm.RunScript()
     $Vm.Idle(5,5)
 
     # Login
@@ -1868,36 +1961,69 @@
     # Wait idle
     $Vm.Idle(5,5)
 
-    # Flip to desktop
-    $Vm.PressKey(91)
-    $Vm.TypeKey(68)
-    $Vm.ReleaseKey(91)
-
-    # Up to FightingEntropy icon
-    $Vm.TypeKey(40)
-    $Vm.Timer(1)
-    $Vm.TypeKey(13)
+#    ____    ____________________________________________________________________________________________________        
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#   \\__//¯¯¯ Option 1) -> Launch PowerShell and Get-FEDCPromo -Mode [~]                                     ___//¯¯\\   
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
     
+    # Launch PowerShell
+    $Vm.LaunchPs()
+
+    # Launch FEDCPromo
+    $Vm.TypeText("Get-FEDCPromo -Mode 1")
+    $Vm.TypeKey(13)
+
     # Wait idle
     $Vm.Idle(5,5)
 
-    # Exit console
-    $Vm.TypeText("exit")
-    $Vm.TypeKey(13)
-    $Vm.Timer(1)
-    $Vm.TypeKey(13)
-    $Vm.Timer(1)
+    # Command Tab
+    $Vm.TypeKey(9)
+    
+    # [Forest] Already selected
+    
+    # Cycle to tab control, tab over to Names, tab into Domain name
+    $Vm.TypeChain(@(9,9,9,39,39,39,9))
+    
+    # Type domain name
+    $Vm.TypeText($File.Object.Domain)
+    
+    # Tab into Netbios
+    $Vm.TypeKey(9)
+    
+    # Type NetBIOS name
+    $Vm.TypeText($File.Object.NetBios)
 
-    # Flip to desktop
-    $Vm.PressKey(91)
-    $Vm.TypeKey(68)
-    $Vm.ReleaseKey(91)
+    # Back up to tab control
+    $Vm.PressKey(16)
+    $Vm.TypeKey(9)
+    $Vm.TypeKey(9)
+    $Vm.ReleaseKey(16)
 
-    # Up to Visual Studio Code icon
-    $Vm.TypeKey(40)
+    # Cycle over to credential tab, tab into DSRM
+    $Vm.TypeKey(39)
+    $Vm.TypeKey(9)
+    
+    # Type Dsrm password
+    $Vm.TypePassword($Admin.Password())
+
+    # Tab into Confirm
+    $Vm.TypeKey(9)
+
+    # Type Confirm password
+    $Vm.TypePassword($Admin.Password())
+
+    # Tab into Start
     $Vm.TypeKey(13)
+    
+#    ____    ____________________________________________________________________________________________________        
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#   \\__//¯¯¯ Option 2) -> Launch VSCode and set initial settings [~]                                        ___//¯¯\\   
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
-    # Wait idle
+    <# Start menu
+    $Vm.TypeChain(@(91,40,40,93,40,39,40,40,13))
     $Vm.Idle(5,5)
 
     # Color Theme -> 
@@ -1906,8 +2032,6 @@
     $Vm.Timer(1)
     $Vm.TypeKey(84)
     $Vm.ReleaseKey(17)
-
-    # BossMode
     $Vm.TypeText("BossMode")
     $Vm.TypeKey(13)
     $Vm.Timer(1)
@@ -1916,14 +2040,5 @@
     $Vm.SpecialKey(70)
     $Vm.Timer(1)
 
-    ################# [Resume from here] #################
-    # Launch FEDCPromo
-    $Vm.TypeText("Get-FEDCPromo -Mode 1")
-    $Vm.TypeKey(13)
-
-    # Wait idle
-    $Vm.Idle(5,5)
-
-    # Login
-    $Vm.Login($Admin)
+    #########################>
     
