@@ -4,6 +4,8 @@
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **01/19/23** | 1h 45m 42s | **2023_01_19_10_48_07.mp3**    | [Social Engineering](https://drive.google.com/file/d/1bZn5bxIB8tGCz8ZUHtUUqo1NCZxdWQBD)
+| **01/10/23** | 1h 29m 25s | **2023_01_10_15_12_12.mp3**    | [Programming](https://drive.google.com/file/d/10lFBMrY2Qta6bh2_8ShU8u0RVO95WdEX)
 | **01/07/23** | 6h 14m 00s | **2023_01_07_09_42_29.mp3**    | [Tell em go to hell tomorrow](https://drive.google.com/file/d/13SSwXRtKpL9ExhCyFVblGIztpJFtV6gK)
 | **01/06/23** | 0h 28m 54s | **2023_01_06_00_45_53.mp3**    | [Sheep Dipped](https://drive.google.com/file/d/1K7Fz7JTZfj5mrrAcsfQuMUF1d3CxgvUo)
 | **01/01/23** | 0h 13m 56s | **2023_01_01_21_55_49.mp3**    | [Development](https://drive.google.com/file/d/1FR5uFAR1lcktkqKNpU209SqM8krAnJCK)
