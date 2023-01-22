@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-18 15:59:49
+    # Last edited : 2023-01-22 11:48:30
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -151,59 +151,46 @@
     # // | Information for the network adapter in the virtual machine guest operating system |
     # // =====================================================================================
 
-    Class VmNetworkHost
-    {
-        [String]          $Name
-        [String]        $Domain
-        [String]       $NetBios
-        [String]     $IpAddress
-        [UInt32]        $Prefix
-        [String]       $Gateway
-        [String[]]         $Dns
-        [String]       $Trusted
-        VmNetworkHost([Object]$File)
-        {
-            $This.Name      = $File.Name
-            $This.Domain    = $File.Domain
-            $This.NetBios   = $File.NetBios
-            $This.IpAddress = $File.IpAddress
-            $This.Prefix    = $File.Prefix
-            $This.Gateway   = $File.Gateway
-            $This.Dns       = $File.Dns
-            $This.Trusted   = $File.Trusted
-        }
-        [String] ToString()
-        {
-            Return "<FENetwork.VmNetwork[Host]>"
-        }
-    }
-
-    # // ===============================================
-    # // | Creates a network node for an individual VM |
-    # // ===============================================
-
     Class VmNetworkNode
     {
         [UInt32]     $Index
-        [String]    $Domain
-        [String]   $NetBios
         [String]      $Name
         [String] $IpAddress
+        [String]    $Domain
+        [String]   $NetBios
+        [String]   $Trusted
         [UInt32]    $Prefix
+        [String]   $Netmask
         [String]   $Gateway
         [String[]]     $Dns
-        [String]   $Trusted
+        [Object]      $Dhcp
         VmNetworkNode([UInt32]$Index,[String]$Name,[String]$IpAddress,[Object]$Hive)
         {
             $This.Index     = $Index
-            $This.Domain    = $Hive.Domain
-            $This.NetBios   = $Hive.NetBios
             $This.Name      = $Name
             $This.IpAddress = $IpAddress
+            $This.Domain    = $Hive.Domain
+            $This.NetBios   = $Hive.NetBios
+            $This.Trusted   = $Hive.Trusted
             $This.Prefix    = $Hive.Prefix
+            $This.Netmask   = $Hive.Netmask
             $This.Gateway   = $Hive.Gateway
             $This.Dns       = $Hive.Dns
-            $This.Trusted   = $Hive.Trusted
+            $This.Dhcp      = $Hive.Dhcp
+        }
+        VmNetworkNode([Object]$File)
+        {
+            $This.Index     = $File.Index
+            $This.Name      = $File.Name
+            $This.IpAddress = $File.IpAddress
+            $This.Domain    = $File.Domain
+            $This.NetBios   = $File.NetBios
+            $This.Trusted   = $File.Trusted
+            $This.Prefix    = $File.Prefix
+            $This.Netmask   = $File.Netmask
+            $This.Gateway   = $File.Gateway
+            $This.Dns       = $File.Dns
+            $This.Dhcp      = $File.Dhcp
         }
         [String] ToString()
         {
@@ -250,26 +237,61 @@
 
             $This.Output    = $HostRange[0..($HostRange.Count-1)]
         }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[List]>"
+        }
     }
-    
+
+    # // ===========================================================
+    # // | Casts entire range of Dhcp (hosts/addresses/exclusions) |
+    # // ===========================================================
+
+    Class VmNetworkDhcp
+    {
+        [String]          $Name
+        [String]    $SubnetMask
+        [String]       $Network
+        [String]    $StartRange
+        [String]      $EndRange
+        [String]     $Broadcast
+        [String[]]   $Exclusion
+        VmNetworkDhcp([Object]$Network)
+        {
+            $This.Name        = "{0}/{1}" -f ($Network.Hosts | ? Type -eq Network), $Network.Prefix
+            $This.SubnetMask  = $Network.Netmask
+            $This.Network     = $Network.Hosts | ? Type -eq Network
+            $Range            = $Network.Hosts | ? Type -eq Host
+            $This.StartRange  = $Range[0].IpAddress
+            $This.EndRange    = $Range[-1].IpAddress
+            $This.Broadcast   = $Network.Hosts | ? Type -eq Broadcast
+            $This.Exclusion   = $Range | ? Status | % IpAddress
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Dhcp]>"
+        }
+    }
+
     # // ========================================================================================
     # // | Creates a hive of possible VM network nodes based on prefix length + network address |
     # // ========================================================================================
 
     Class VmNetworkController
     {
-        Hidden [Object] $Config
-        [String]        $Domain
-        [String]       $NetBios
-        [String]       $Trusted
-        [UInt32]        $Prefix
-        [String]       $Netmask
-        [String]      $Wildcard
-        [String]       $Gateway
-        [String[]]         $Dns
-        [Object]      $Networks
-        [Object]         $Hosts
-        [Object]         $Nodes
+        Hidden [Object]   $Config
+        [String]          $Domain
+        [String]         $NetBios
+        [String]         $Trusted
+        [UInt32]          $Prefix
+        [String]         $Netmask
+        [String]        $Wildcard
+        [String]         $Gateway
+        [String[]]           $Dns
+        [Object]            $Dhcp
+        [Object]        $Networks
+        [Object]           $Hosts
+        [Object]           $Nodes
         VmNetworkController([Object]$Config,[String]$Domain,[String]$NetBios)
         {
             $This.Config    = $Config
@@ -288,6 +310,8 @@
             $This.Nodes     = @( )
 
             $This.GetNetworkLists()
+
+            $This.Dhcp      = $This.VmNetworkDhcp()
         }
         [Object] VmNetworkNode([UInt32]$Index,[String]$Name,[String]$IpAddress,[Object]$Hive)
         {
@@ -297,15 +321,20 @@
         {
             Return [VmNetworkList]::New($Index,$Netmask,$Count,$Notation)
         }
+        [Object] VmNetworkDhcp()
+        {
+            Return [VmNetworkDhcp]::New($This)
+        }
         AddNode([String]$Name)
         {
             $Item              = ($This.Hosts | ? Type -eq Host | ? Status -eq 0)[0]
-            $This.Nodes       += $This.VmNetworkNode($This.Node.Count,$Name,$Item.IpAddress,$This)
+            $This.Nodes       += $This.VmNetworkNode($This.Nodes.Count,$Name,$Item.IpAddress,$This)
             If ($Name -in $This.Nodes.Name)
             {
                 $Item          = $This.Hosts[$Item.Index]
                 $Item.Status   = 1
                 $Item.Hostname = $Name
+                [Console]::WriteLine("[+] Node [$Name] added")
             }
         }
         AddList([UInt32]$Count,[String]$Notation)
@@ -521,14 +550,16 @@
     Class VmNodeFile
     {
         [UInt32]     $Index
-        [String]    $Domain
-        [String]   $NetBios
         [String]      $Name
         [String] $IpAddress
+        [String]    $Domain
+        [String]   $NetBios
+        [String]   $Trusted
         [UInt32]    $Prefix
+        [String]   $Netmask
         [String]   $Gateway
         [String[]]     $Dns
-        [String]   $Trusted
+        [Object]      $Dhcp
         [String]      $Base
         [UInt64]    $Memory
         [UInt64]       $Hdd
@@ -539,14 +570,16 @@
         VmNodeFile([Object]$Node,[Object]$Template)
         {
             $This.Index     = $Node.Index
-            $This.Domain    = $Node.Domain
-            $This.NetBios   = $Node.NetBios
             $This.Name      = $Node.Name
             $This.IpAddress = $Node.IpAddress
+            $This.Domain    = $Node.Domain
+            $This.NetBios   = $Node.NetBios
+            $This.Trusted   = $Node.Trusted
             $This.Prefix    = $Node.Prefix
+            $This.Netmask   = $Node.Netmask
             $This.Gateway   = $Node.Gateway
             $This.Dns       = $Node.Dns
-            $This.Trusted   = $Node.Trusted
+            $This.Dhcp      = $Node.Dhcp
             $This.Base      = $Template.Base
             $This.Memory    = $Template.Memory
             $This.Hdd       = $Template.Hdd
@@ -627,7 +660,7 @@
         }
         AddNode([String]$Name)
         {
-            If ($Name -notin $This.Network.Output)
+            If ($Name -notin $This.Network.Nodes)
             {
                 $This.Network.AddNode($Name)
             }
@@ -636,7 +669,7 @@
         {
             ForEach ($Node in $This.Network.Nodes)
             {
-                $FilePath = "{0}\{1}-{2}.txt" -f $This.Path, $Node.Index, $Node.Name
+                $FilePath = "{0}\{1}.txt" -f $This.Path, $Node.Name
                 $Value    = $This.NewVmObjectFile($Node) | ConvertTo-Json
 
                 [System.IO.File]::WriteAllLines($FilePath,$Value)
@@ -667,7 +700,7 @@
         }
         [String] ToString()
         {
-            Return "<FEVirtualLab.VmController>"
+            Return "<FEVirtual.VmNode[Controller]>"
         }
     }
 
@@ -680,16 +713,46 @@
         [String]   $Path
         [Object] $Object
         [Object]  $Admin
-        VmNodeInputObject([UInt32]$Index,[String]$Path)
+        VmNodeInputObject([String]$Token,[String]$Path)
         {
             $This.Path   = $Path
-            $This.Object = Get-ChildItem $This.Path | ? Name -match "0$Index" | Get-Content | ConvertFrom-Json
+            $This.Object = $This.SetObject($Token)
             $This.Admin  = $This.SetAdmin()
+        }
+        [String] GetChildItem([String]$Name)
+        {
+            $File = Get-ChildItem $This.Path | ? Name -eq $Name
+
+            If (!$File)
+            {
+                Throw "Invalid entry"
+            }
+
+            Return $File.Fullname
+        }
+        [Object] SetObject([String]$Token)
+        {
+            $File        = $This.GetChildItem($Token)
+            If (!$File)
+            {
+                Throw "Invalid token"
+            }
+
+            Return [System.IO.File]::ReadAllLines($File) | ConvertFrom-Json
         }
         [PSCredential] SetAdmin()
         {
-            $Password    = Get-ChildItem $This.Path | ? Name -match admin.txt | Get-Content | ConvertTo-SecureString -AsPlainText -Force
-            Return [PSCredential]::New("Administrator",$Password)
+            $File        = $This.GetChildItem("admin.txt")
+            If (!$File)
+            {
+                Throw "No password detected"
+            }
+
+            Return [PSCredential]::New("Administrator",$This.GetPassword($File))
+        }
+        [SecureString] GetPassword([String]$File)
+        {
+            Return [System.IO.File]::ReadAllLines($File) | ConvertTo-SecureString -AsPlainText -Force
         }
         [String] ToString()
         {
@@ -719,7 +782,7 @@
     # // ================================
     # // | Virtual machine script block |
     # // ================================
-
+    
     Class VmScriptBlockItem
     {
         [UInt32]       $Index
@@ -760,6 +823,10 @@
         Add([String]$Line)
         {
             $This.Content += $This.VmScriptBlockLine($This.Content.Count,$Line)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmScriptBlock[Item]>"
         }
     }
     
@@ -868,7 +935,7 @@
         }
         [String] ToString()
         {
-            Return "({0}) <FEVirtual.VmPropertyList>" -f $This.Count
+            Return "({0}) <FEVirtual.VmProperty[List]>" -f $This.Count
         }
     }
 
@@ -938,7 +1005,7 @@
             $This.Generation = $File.Gen
             $This.Core       = $File.Core
             $This.Switch     = @($File.SwitchId)
-            $This.Network    = $This.GetNetworkHost($File)
+            $This.Network    = $This.GetNetworkNode($File)
             $This.Iso        = $File.Image
         }
         StartConsole()
@@ -1151,8 +1218,8 @@
             # Verbosity level
             Switch ($This.Mode)
             {
-                Default { $This.Get() | Remove-VM -Confirm:$False -Force  } 
-                2       { $This.Get() | Remove-VM -Confirm:$False -Force -Verbose } 
+                Default { $This.Get() | Remove-VM -Confirm:$False -Force -EA 0 } 
+                2       { $This.Get() | Remove-VM -Confirm:$False -Force -Verbose -EA 0 } 
             }
             
             $This.Firmware         = $Null
@@ -1163,8 +1230,8 @@
             # Verbosity level
             Switch ($This.Mode) 
             { 
-                Default { Remove-Item $This.Vhd -Confirm:$False -Force } 
-                2       { Remove-Item $This.Vhd -Confirm:$False -Force -Verbose } 
+                Default { Remove-Item $This.Vhd -Confirm:$False -Force -EA 0 } 
+                2       { Remove-Item $This.Vhd -Confirm:$False -Force -Verbose -EA 0 } 
             }
             
             $This.Update(0,"[~] Path : [$($This.Path)]")
@@ -1175,8 +1242,8 @@
                 # Verbosity level
                 Switch ($This.Mode)
                 { 
-                    Default { Remove-Item $Item.Fullname -Confirm:$False } 
-                    2       { Remove-Item $Item.Fullname -Confirm:$False -Verbose } 
+                    Default { Remove-Item $Item.Fullname -Confirm:$False -EA 0 } 
+                    2       { Remove-Item $Item.Fullname -Confirm:$False -Verbose -EA 0 } 
                 }
             }
 
@@ -1192,6 +1259,10 @@
             }
 
             Return Measure-Vm -Name $This.Name
+        }
+        [Object] Wmi([String]$Type)
+        {
+            Return Get-WmiObject $Type -NS Root\Virtualization\V2
         }
         [Object] NewVmPropertyList()
         {
@@ -1436,6 +1507,11 @@
         }
         Login([Object]$Admin)
         {
+            If ($Admin.GetType().Name -ne "VmAdminCredential")
+            {
+                $This.Error("[!] Invalid input object")
+            }
+
             $This.Update(0,"[~] Login : Administrator")
             $This.TypeCtrlAltDel()
             $This.Timer(5)
@@ -1447,7 +1523,7 @@
         {
             # Open Start Menu
             $This.PressKey(91)
-            $This.Typekey(88)
+            $This.TypeKey(88)
             $This.ReleaseKey(91)
             $This.Timer(1)
 
@@ -1455,9 +1531,16 @@
             $This.TypeKey(65)
             $This.Timer(1)
 
+            # Maximize window
+            $This.PressKey(91)
+            $This.TypeKey(38)
+            $This.ReleaseKey(91)
+            $This.Timer(1)
+
             # Open PowerShell
             $This.TypeText("PowerShell")
             $This.TypeKey(13)
+            $This.Timer(1)
 
             # Wait for PowerShell engine to get ready for input
             $This.Idle(5,5)
@@ -1523,9 +1606,9 @@
             $Item.Complete = 1
             $This.Script.Selected ++
         }
-        [Object] GetNetworkHost([Object]$File)
+        [Object] GetNetworkNode([Object]$File)
         {
-            Return [VmNetworkHost]::New($File)
+            Return [VmNetworkNode]::New($File)
         }
         [String] GetRegistryPath()
         {
@@ -1535,24 +1618,49 @@
         {
             # [Phase 1] Set persistent information
             $This.Script.Add(1,"SetPersistentInfo","Set persistent information",@(
-            '$Path      = "{0}"' -f $This.GetRegistryPath();
+            '$Root      = "{0}"' -f $This.GetRegistryPath();
             '$Name      = "{0}"' -f $This.Name;
+            '$Path      = "$Root\ComputerInfo"';
+            'Rename-Computer $Item.Name -Force';
+            'If (!(Test-Path $Root))';
+            '{';
+            '    New-Item -Path $Root -Verbose';
+            '}';
             'New-Item -Path $Path -Verbose';
-            'New-Item -Path $Path\$Name -Verbose';
-            'New-ItemProperty -Path $Path -Name ComputerName -Value $Name';
-            ForEach ($I in $This.Network.PSObject.Properties)
+            ForEach ($Prop in @($This.Network.PSObject.Properties))
             {
-                Switch -Regex ($I.TypeNameOfValue)
+                $Line = 'Set-ItemProperty -Path $Path -Name {0} -Value {1}'
+                Switch ($Prop.Name)
                 {
                     Default
                     {
-                        'Set-ItemProperty -Path $Path -Name {0} -Value {1}' -f $I.Name, $I.Value;
+                        $Line -f $Prop.Name, $Prop.Value;
                     }
-                    "\[\]"
+                    Dns
                     {
-                        'Set-ItemProperty -Path $Path -Name {0} -Value ([String[]]@("{1}"))' -f $I.Name, ($I.Value -join "`",`"");
+                        $Value = "([String[]]@(`"{0}`"))" -f ($Prop.Value -join "`",`"")
+                        $Line -f $Prop.Name, $Value
                     }
-                }   
+                    Dhcp
+                    {
+                        '$Dhcp = "$Path\Dhcp"'
+                        'New-Item $Dhcp'
+                        'Set-ItemProperty -Path $Path -Name Dhcp -Value $Dhcp'
+                        $Line = 'Set-ItemProperty -Path $Dhcp -Name {0} -Value {1}'
+                        ForEach ($Item in $Prop.Value.PSObject.Properties)
+                        {
+                            If ($Item.Value.Count -eq 1)
+                            {
+                                $Line -f $Item.Name, $Item.Value
+                            }
+                            Else
+                            {
+                                $Value = "([String[]]@(`"{0}`"))" -f ($Item.Value -join "`",`"")
+                                $Line -f $Item.Name, $Value
+                            }
+                        }
+                    }
+                }
             }))
         }
         SetTimeZone()
@@ -1564,27 +1672,12 @@
         {
             # [Phase 3] Set computer info
             $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
-            'Rename-Computer $Name -Force';
-            '$TrustedHost    = "{0}"' -f $This.Network.Trusted;
-            '$IPAddress      = "{0}"' -f $This.Network.IpAddress;
-            '$PrefixLength   = "{0}"' -f $This.Network.Prefix;
-            '$DefaultGateway = "{0}"' -f $This.Network.Gateway;
-            Switch ($This.Network.Dns.Count)
-            {
-                0
-                {
-
-                }
-                1
-                {
-                    '$DnsAddress     = "{0}"' -f $This.Network.Dns;
-                }
-                Default
-                {
-
-                    '$DnsAddress     = "{0}"' -f ($This.Network.Dns -join "`", `"");
-                }
-            }))
+            '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath() 
+            '$TrustedHost    = $Item.TrustedHost';
+            '$IPAddress      = $Item.IpAddress';
+            '$PrefixLength   = $Item.Prefix';
+            '$DefaultGateway = $Item.Gateway';
+            '$Dns            = $Item.Dns';
         }
         SetIcmpFirewall()
         {
@@ -1609,10 +1702,10 @@
             ' ';
             '    InterfaceIndex  = $Index';
             '    AddressFamily   = "IPv4"';
-            '    PrefixLength    = $PrefixLength';
+            '    PrefixLength    = $Item.Prefix';
             '    ValidLifetime   = [Timespan]::MaxValue';
-            '    IPAddress       = $IPAddress';
-            '    DefaultGateway  = $DefaultGateway';
+            '    IPAddress       = $Item.IPAddress';
+            '    DefaultGateway  = $Item.Gateway';
             '}';
             'New-NetIPAddress @Splat';
             'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $DnsAddress'))
@@ -1625,10 +1718,10 @@
             '<Pause[2]>';
             'y';
             '<Pause[3]>';
-            'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $TrustedHost';
+            'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.TrustedHost';
             '<Pause[4]>';
             'y';
-            '$Cert       = New-SelfSignedCertificate -DnsName $IpAddress -CertStoreLocation Cert:\LocalMachine\My';
+            '$Cert       = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
             '$Thumbprint = $Cert.Thumbprint';
             '$Hash       = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
             "`$Str         = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
@@ -1689,6 +1782,46 @@
         {
             # [Phase 14] Restart computer
             $This.Script.Add(14,'Restart','Restart computer',@('Restart-Computer'))
+        }
+        ConfigureDhcp()
+        {
+            # [Phase 15] Configure Dhcp
+            $This.Script.Add(15,'ConfigureDhcp','Configure Dhcp',@(
+            '$Root           = "{0}"' -f $This.GetRegistryPath()
+            '$Path           = "$Root\ComputerInfo"'
+            '$Item           = Get-ItemProperty $Path' 
+            '$Item.Dhcp      = Get-ItemProperty $Item.Dhcp';
+            ' ';
+            '$Splat = @{ ';
+            '   ';
+            '    StartRange = $Item.Dhcp.StartRange';
+            '    EndRange   = $Item.Dhcp.EndRange';
+            '    Name       = $Item.Dhcp.Name';
+            '    SubnetMask = $Item.Dhcp.SubnetMask';
+            '}';
+            '';
+            'Add-DhcpServerV4Scope @Splat -Verbose';
+            'Add-DhcpServerInDc -Verbose';
+            ' ';
+            'ForEach ($Value in $Item.Dhcp.Exclusion)';
+            '{';
+            '    $Splat         = @{ ';
+            ' ';
+            '        ScopeId    = $Item.Dhcp.Network';
+            '        StartRange = $Value';
+            '        EndRange   = $Value';
+            '    }';
+            ' ';
+            '    Add-DhcpServerV4ExclusionRange @Splat -Verbose';
+            ' ';
+            '(3,$Item.Gateway),';
+            '(6,$Item.Dns),';
+            '(15,$Item.Domain),';
+            '(28,$Item.Dhcp.Broadcast) | % {';
+            ' ';
+            '    Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
+            '}'
+            ))
         }
         Load()
         {
@@ -1765,6 +1898,103 @@
         }
     }
 
+    # // ===================================================
+    # // | Class meant to control all of the above classes |
+    # // ===================================================
+
+    Class VmController
+    {
+        [String]     $Path
+        [String]   $Domain
+        [String]  $NetBios
+        [Object]     $Node
+        [Object]    $Admin
+        [UInt32] $Selected
+        [Object[]]   $File
+        VmController([String]$Path,[String]$Domain,[String]$NetBios)
+        {
+            $This.Path    = $Path
+            $This.Domain  = $Domain
+            $This.NetBios = $NetBios
+            $This.File    = @( )
+        }
+        [Object] VmNodeController()
+        {
+            Return [VmNodeController]::New($This.Path,$This.Domain,$This.NetBios)
+        }
+        [Object] VmNodeInputObject([Object]$Token)
+        {
+            Return [VmNodeInputObject]::New($Token,$This.Path)
+        }
+        [Object] VmAdminCredential()
+        {
+            $Item = Get-ChildItem $This.Path | ? Name -eq admin.txt
+            If (!$Item)
+            {
+                Throw "Unable to locate admin password file"
+            }
+            
+            Return [VmAdminCredential]::New($Item)
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.File.Count)
+            {
+                Throw "Index is too large"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.File[$This.Selected]
+        }
+        [Object] VmObject()
+        {
+            Return [VmObject]::New($This.Current().Object)
+        }
+        [Object] VmObject([Switch]$Flags,[Object]$Item)
+        {
+            Return [VmObject]::New([Switch]$True,$Item)
+        }
+        GetNodeController()
+        {
+            $This.Node    = $This.VmNodeController()
+        }
+        GetNodeInputObject([String]$Token)
+        {
+            If ($Token -notin (Get-ChildItem $This.Path).Name)
+            {
+                Throw "Invalid file"
+            }
+
+            $This.File   += $This.VmNodeInputObject($Token)
+        }
+        GetNodeAdminCredential()
+        {
+            $This.Admin   = $This.VmAdminCredential()
+        }
+        Prime()
+        {
+            $Item         = Get-VM -Name $This.Current().Object.Name -EA 0
+            If ($Item)
+            {
+                $Vm       = $This.VmObject([Switch]$True,$Item)
+                $Vm.Update(1,"[_] Removing $($Vm.Name)")
+                ForEach ($Property in $Vm.PSObject.Properties)
+                {
+                    $Line = "[_] {0} : {1}" -f $Property.Name.PadRight(10," "), $Property.Value
+                    $Vm.Update(1,$Line)
+                }
+                $Vm.Remove()
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmController>"
+        }
+    }
+
     #    ____    ____________________________________________________________________________________________________        
     #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
     #   \\__//¯¯¯ Creation Area [~]                                                                              ___//¯¯\\   
@@ -1777,15 +2007,17 @@
     # // ==================================================================================
 
     # // Generates the factory class
-    $Hive  = [VmNodeController]::New("C:\Files","securedigitsplus.com","secured")
-    $Hive.SetTemplate("C:\VDI",2048MB,64GB,2,2,"External","C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO")
+    $Hive = [VmController]::New("C:\FileVm","securedigitsplus.com","SECURED")
+    $Hive.GetNodeController()
+
+    $Hive.Node.SetTemplate("C:\VDI",2048MB,64GB,2,2,"External","C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO")
 
     # // Populates the factory class with (3) nodes (0, 1, 2)
-    0..2 | % { $Hive.AddNode("server0$_") }
+    0..2 | % { $Hive.Node.AddNode("server0$_") }
 
     # // Exports the file system objects
-    $Hive.Export()
-    $Hive.WriteAdmin()
+    $Hive.Node.Export()
+    $Hive.Node.WriteAdmin()
 
     #    ____    ____________________________________________________________________________________________________        
     #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -1796,28 +2028,19 @@
     # // Reinstantiates the file system information
     $Token       = Switch ([Environment]::MachineName)
     {
-        "l420-x64" { 0 } "lobby-comp1" { 1 } "lobby-comp2" { 2 }
+        l420-x64    { "server00.txt" } 
+        lobby-comp1 { "server01.txt" } 
+        lobby-comp2 { "server02.txt" }
     }
 
-    $File        = [VmNodeInputObject]::New($Token,"\\lobby-comp2\Files")
-    $Admin       = [VmAdminCredential]::New($File)
+    $Hive.GetNodeAdminCredential()
+    $Hive.GetNodeInputObject($Token)
 
     # // Checks for existence of virtual machine by that name
-    $Item        = Get-VM -Name $File.Object.Name -EA 0
-    If ($Item)
-    {
-        $Vm      = [VmObject]::New([Switch]$True,$Item)
-        $Vm.Update(1,"[_] Removing $($Vm.Name)")
-        ForEach ($Property in $Vm.PSObject.Properties)
-        {
-            $Line = "[_] {0} : {1}" -f $Property.Name.PadRight(10," "), $Property.Value
-            $Vm.Update(1,$Line)
-        }
-        $Vm.Remove()
-    }
+    $Hive.Prime()
 
     # // Object instantiation
-    $Vm          = [VmObject]::New($File.Object)
+    $Vm          = $Hive.VmObject()
     $Vm.New()
     $Vm.AddVmDvdDrive()
     $Vm.LoadIso($Vm.Iso)
@@ -1826,8 +2049,8 @@
     
     # // Start Machine
     $Vm.Start()
-    $Vm.Control  = Get-WmiObject Msvm_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name
-    $Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm_Keyboard" -NS Root\Virtualization\V2
+    $Vm.Control  = $Vm.Wmi("Msvm_ComputerSystem") | ? ElementName -eq $Vm.Name
+    $Vm.Keyboard = $Vm.Wmi("Msvm_Keyboard") | ? Path -match $Vm.Control.Name
 
     # // Wait for "Press enter to boot from CD/DVD", then press enter
     $Vm.Timer(2)
@@ -1957,7 +2180,7 @@
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#   \\__//¯¯¯ Option 1) -> Launch PowerShell and Get-FEDCPromo -Mode [~]                                     ___//¯¯\\   
+#   \\__//¯¯¯ Launch PowerShell and Get-FEDCPromo -Mode [~]                                                  ___//¯¯\\   
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
@@ -1981,15 +2204,13 @@
     # Wait idle
     $Vm.Idle(5,5)
 
-    # 
+    # Switches to FEDCPromo GUI
     $Vm.PressKey(18)
     $Vm.TypeKey(9)
     $Vm.ReleaseKey(18)
 
-    # Command Tab
+    # Command Tab | [Forest] Already selected
     $Vm.TypeKey(9)
-    
-    # [Forest] Already selected
     
     # Cycle to tab control, tab over to Names, tab into Domain name
     $Vm.TypeChain(@(9,9,9,39,39,39,9))
@@ -2007,29 +2228,52 @@
     $Vm.PressKey(16)
     $Vm.TypeKey(9)
     $Vm.TypeKey(9)
-    $Vm.TypeKey(9)
     $Vm.ReleaseKey(16)
 
-    # Cycle over to connection/Dsrm tab, tab into DSRM
+    # Cycle over to (Connection/Dsrm) tab
     $Vm.TypeKey(39)
     $Vm.TypeKey(39)
+
+    # (Tab into/type) Dsrm password
     $Vm.TypeKey(9)
-    
-    # Type Dsrm password
     $Vm.TypePassword($Admin.Password())
 
-    # Tab into Confirm
+    # (Tab into/type) Confirm password
     $Vm.TypeKey(9)
-
-    # Type Confirm password
     $Vm.TypePassword($Admin.Password())
 
-    # Tab into Start
+    # (Tab into/press) Start
+    $Vm.TypeKey(9)
     $Vm.TypeKey(13)
     
+    # At this point, the server will install all of the necessary features and then reboot
+    
+    # Wait for reboot
+    $Vm.Uptime(0,5)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Login
+    $Vm.Login($Admin)
+
+    # Wait for reboot
+    $Vm.Uptime(0,5)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Login
+    $Vm.Login($Admin)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+    
+    # Configure Dhcp + Dns...
+
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#   \\__//¯¯¯ Option 2) -> Launch VSCode and set initial settings [~]                                        ___//¯¯\\   
+#   \\__//¯¯¯ Development [~] Launch VSCode and set initial settings                                         ___//¯¯\\   
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
@@ -2052,4 +2296,3 @@
     $Vm.Timer(1)
 
     #########################>
-    
