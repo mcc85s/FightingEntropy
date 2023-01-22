@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h1>Last updated: 01/19/23</h1>
+<h1>Last updated: 01/22/23</h1>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **01/21/23** | 0h 59m 54s | **2023_01_21_23_34_36.mp3**    | [Fallacies](https://drive.google.com/file/d/1-3mftdu704N0eDP34MYyn1ohWNns9TDF)
 | **01/19/23** | 1h 45m 42s | **2023_01_19_10_48_07.mp3**    | [Social Engineering](https://drive.google.com/file/d/1bZn5bxIB8tGCz8ZUHtUUqo1NCZxdWQBD)
 | **01/10/23** | 1h 29m 25s | **2023_01_10_15_12_12.mp3**    | [Programming](https://drive.google.com/file/d/10lFBMrY2Qta6bh2_8ShU8u0RVO95WdEX)
 | **01/07/23** | 6h 14m 00s | **2023_01_07_09_42_29.mp3**    | [Tell em go to hell tomorrow](https://drive.google.com/file/d/13SSwXRtKpL9ExhCyFVblGIztpJFtV6gK)
