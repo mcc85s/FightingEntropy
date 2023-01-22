@@ -1881,29 +1881,15 @@ Function Get-FEDCPromo
             $This.Main()
             $This.StageXaml()
         }
-        FEDCPromoController([UInt32]$Mode,[String]$InputPath)
+        FEDCPromoController([Switch]$Flags)
         {
+            # This is meant for testing and using the embedded (methods/classes)
             If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
             {
                 Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
             }
 
             Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
-
-            $This.Mode     = $Mode
-            If ($This.Mode -ge 2)
-            {
-                $This.Test = 1
-            }
-
-            $This.Main()
-            $This.StageXaml()
-
-            $This.SetInputObject($InputPath)
-        }
-        FEDCPromoController([Switch]$Flags)
-        {
-            # This is meant for testing and using the embedded (methods/classes)
         }
         [Void] StartConsole()
         {
@@ -3585,16 +3571,16 @@ Function Get-FEDCPromo
     {
         0 
         { 
-            $Ctrl = [FEDCPromoController]::New($Mode)
+            $Ctrl      = [FEDCPromoController]::New($Mode)
             $Ctrl.Xaml.Invoke()
             If ($Ctrl.Xaml.IO.DialogResult)
             {
-                $Alt = 1
+                $Alt   = 1
             }
         }
         1
         {
-            $Ctrl = [FEDCPromoController]::New([Switch]$True)
+            $Ctrl      = [FEDCPromoController]::New([Switch]$True)
             $Ctrl.Mode = $Mode
             $Ctrl.Main()
             $Ctrl.StageXaml()
@@ -3602,7 +3588,7 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.Show()
             Start-Sleep 3
             $Ctrl.Xaml.IO.Close()
-            $Alt = 1
+            $Alt       = 1
         }
     }
 
