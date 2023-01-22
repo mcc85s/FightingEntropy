@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-22 06:10:14                                                                  //
+\\  Date       : 2023-01-22 13:08:19                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -1887,6 +1887,7 @@ Function Get-FEDCPromo
             If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
             {
                 Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
+                Remove-Item "$Env:Public\Desktop\FEDCPromo.lnk"
             }
 
             Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
@@ -3035,7 +3036,7 @@ Function Get-FEDCPromo
 
                 If ($Item.SelectedPath)
                 {
-                    $IO            = $Ctrl.SetInputObject($Item.SelectedPath)
+                    $Ctrl.SetInputObject($Item.SelectedPath)
                 }
             })
 
@@ -3078,6 +3079,14 @@ Function Get-FEDCPromo
         [Object] ScheduledTaskAction()
         {
             $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEDCPromo -Mode 1 -InputPath '{0}'`"" -f $This.RestartScript()
+            $Com      = New-Object -ComObject WScript.Shell
+            $Object   = $Com.CreateShortcut("$Env:Public\Desktop\FEDCPromo.lnk")
+
+            $Object.TargetPath   = "PowerShell"
+            $Object.Arguments    = $Argument
+            $Object.Description  = $This.Description
+            $Object.IconLocation = $This.Module._Graphic("icon.ico").Fullname
+            $Object.Save()
 
             Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
         }
