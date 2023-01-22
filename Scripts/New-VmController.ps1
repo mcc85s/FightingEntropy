@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-22 11:55:32
+    # Last edited : 2023-01-22 13:12:27
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -1621,7 +1621,7 @@
             '$Root      = "{0}"' -f $This.GetRegistryPath();
             '$Name      = "{0}"' -f $This.Name;
             '$Path      = "$Root\ComputerInfo"';
-            'Rename-Computer $Item.Name -Force';
+            'Rename-Computer $Name -Force';
             'If (!(Test-Path $Root))';
             '{';
             '    New-Item -Path $Root -Verbose';
@@ -1814,14 +1814,14 @@
             ' ';
             '    Add-DhcpServerV4ExclusionRange @Splat -Verbose';
             ' ';
-            '(3,$Item.Gateway),';
-            '(6,$Item.Dns),';
-            '(15,$Item.Domain),';
-            '(28,$Item.Dhcp.Broadcast) | % {';
-            ' ';
-            '    Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
-            '}'
-            ))
+            '   (3,$Item.Gateway),';
+            '   (6,$Item.Dns),';
+            '   (15,$Item.Domain),';
+            '   (28,$Item.Dhcp.Broadcast) | % {';
+            '    ';
+            '       Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
+            '   }';
+            '}'))
         }
         Load()
         {
@@ -2253,7 +2253,7 @@
     $Vm.Uptime(0,5)
 
     # Wait idle
-    $Vm.Idle(5,5)
+    $Vm.Idle(5,10)
 
     # Login
     $Vm.Login($Admin)
@@ -2261,8 +2261,9 @@
     # Wait for reboot
     $Vm.Uptime(0,5)
 
-    # Wait idle
-    $Vm.Idle(5,5)
+    # Wait for Active Directory to finish installing
+    $Vm.Uptime(1,60)
+    $Vm.Idle(1,10)
 
     # Login
     $Vm.Login($Admin)
@@ -2270,7 +2271,20 @@
     # Wait idle
     $Vm.Idle(5,5)
 
-    # Configure Dhcp + Dns...
+    # Launch PowerShell, then configure Dhcp
+    $Vm.LaunchPs()
+    $Vm.Idle(5,5)
+
+    # Configure Dhcp
+    $Vm.RunScript()
+    $vm.Idle(5,5)
+
+    # Configure Dns (what's left)...
+    # Populate Active Directory with authorized nodes, users, and computers
+    # Install Microsoft Deployment Toolkit/PowerShell Deployment
+    # Configure Wds
+    # Obtain Iso
+    # Generate an environment key
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
