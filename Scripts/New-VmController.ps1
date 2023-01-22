@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-22 11:48:30
+    # Last edited : 2023-01-22 11:55:32
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -1677,7 +1677,7 @@
             '$IPAddress      = $Item.IpAddress';
             '$PrefixLength   = $Item.Prefix';
             '$DefaultGateway = $Item.Gateway';
-            '$Dns            = $Item.Dns';
+            '$Dns            = $Item.Dns'))
         }
         SetIcmpFirewall()
         {
@@ -1708,7 +1708,7 @@
             '    DefaultGateway  = $Item.Gateway';
             '}';
             'New-NetIPAddress @Splat';
-            'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $DnsAddress'))
+            'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $Item.Dns'))
         }
         SetWinRm()
         {
@@ -1839,6 +1839,7 @@
             $This.InstallBossMode()
             $This.InstallPsExtension()
             $This.RestartComputer()
+            $This.ConfigureDhcp()
         }
         [String] ProgramData()
         {
@@ -2268,7 +2269,7 @@
 
     # Wait idle
     $Vm.Idle(5,5)
-    
+
     # Configure Dhcp + Dns...
 
 #    ____    ____________________________________________________________________________________________________        
