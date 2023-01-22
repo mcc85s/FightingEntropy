@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-18 15:31:37                                                                  //
+\\  Date       : 2023-01-22 06:10:14                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-18
+    Modified   : 2023-01-22
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Implement the multiple functions (FEDCPromo/FEDCFound/FEADLogin)
@@ -3388,8 +3388,6 @@ Function Get-FEDCPromo
             $This.Update(0,"[~] Staging : InputObject")
             $IO                  = $This.InputObjectController($InputPath)
 
-            $This.ToggleStaging()
-
             # Slot
             $This.Update(0,"[~] Slot    : [$($IO.Slot)]")
             $This.SetProfile($IO.Slot)
@@ -3429,8 +3427,6 @@ Function Get-FEDCPromo
                 $Item.Text       = $IO.Credential.Username
             }
 
-            
-            $This.ToggleStaging()
             $This.CheckPassword()
             $This.Total()
         }
@@ -3584,12 +3580,17 @@ Function Get-FEDCPromo
         }
     }
     
+    $Alt = 0
     Switch ([UInt32]!!$InputPath)
     {
         0 
         { 
             $Ctrl = [FEDCPromoController]::New($Mode)
             $Ctrl.Xaml.Invoke()
+            If ($Ctrl.Xaml.IO.DialogResult)
+            {
+                $Alt = 1
+            }
         }
         1
         {
@@ -3598,11 +3599,14 @@ Function Get-FEDCPromo
             $Ctrl.Main()
             $Ctrl.StageXaml()
             $Ctrl.SetInputObject($InputPath)
-            $Ctrl.Xaml.Invoke()
+            $Ctrl.Xaml.IO.Show()
+            Start-Sleep 3
+            $Ctrl.Xaml.IO.Close()
+            $Alt = 1
         }
     }
 
-    Switch ([UInt32]$Ctrl.Xaml.IO.DialogResult)
+    Switch ($Alt)
     {
         0
         {
@@ -3610,7 +3614,7 @@ Function Get-FEDCPromo
         }
         1
         {
-            $Ctrl.Complete()
+            $Ctrl.Complete()    
             $Ctrl.Execute()
         }
     }
