@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-24 12:06:28
+    # Last edited : 2023-01-24 12:37:44
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -2182,14 +2182,14 @@
     $Vm.Idle(5,5)
 
     # // Establish administrator account
-    $Vm.SetAdmin($Hive.Admin.Password())
+    $Vm.SetAdmin($Hive.Admin)
 
     # Wait for actual login
     $Vm.Uptime(1,60)
     $Vm.Idle(20,5)
 
     # Enter (CTRL + ALT + DEL) to sign into Windows
-    $Vm.Login($Hive.Admin.Password())
+    $Vm.Login($Hive.Admin)
 
     # Wait for operating system to do [FirstRun/FirstLogin] stuff
     $Vm.Timer(20)
@@ -2267,7 +2267,7 @@
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
     # Login
-    $Vm.Login($Hive.Admin.Password())
+    $Vm.Login($Hive.Admin)
 
     # Wait idle
     $Vm.Idle(5,5)
