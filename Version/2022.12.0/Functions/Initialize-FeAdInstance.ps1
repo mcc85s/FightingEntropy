@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-24 11:31:01                                                                  //
+\\  Date       : 2023-01-24 12:33:21                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-FeAdInstance.ps1
@@ -26,7 +26,7 @@
 
 Function Initialize-FeAdInstance
 {
-    Import-Module ActiveDirectory 
+    Import-Module ActiveDirectory
 
     # // ==================================================================
     # // | Selected object types from Active Directory object list [Enum] |
@@ -164,13 +164,13 @@ Function Initialize-FeAdInstance
                 $This.Add($Item)
             } 
         }
-        [Object] FeAdObject([Object]$Object)
+        [Object] FeAdObjectItem([Object]$Object)
         {
-            Return [FeAdObject]::New($Object)
+            Return [FeAdObjectItem]::New($Object)
         }
         Add([Object]$Object)
         {
-            $This.Output += $This.FeAdObject($Object)
+            $This.Output += $This.FeAdObjectItem($Object)
             $This.Count   = $This.Output.Count
         }
         [String] ToString()
@@ -257,7 +257,7 @@ Function Initialize-FeAdInstance
             $This.Country           = $Location.Country
             $This.Check()
         }
-        FeAdOrganizationalUnit([Switch]$Flags,[Microsoft.ActiveDirectory.Management.ADOrganizationalUnit]$Ou)
+        FeAdOrganizationalUnit([Switch]$Flags,[Object]$Ou)
         {
             $This.Ou                = $Ou
             $This.Name              = $Ou.Name
@@ -353,7 +353,7 @@ Function Initialize-FeAdInstance
 
             $This.Check()
         }
-        FeAdGroup([Switch]$Flags,[Microsoft.ActiveDirectory.Management.AdGroup]$Group)
+        FeAdGroup([Switch]$Flags,[Object]$Group)
         {
             $This.Group         = $Group
             $This.Name          = $Group.Name
@@ -476,7 +476,7 @@ Function Initialize-FeAdInstance
 
             $This.Check()
         }
-        FeAdUser([Switch]$Flags,[Microsoft.ActiveDirectory.Management.AdUser]$User)
+        FeAdUser([Switch]$Flags,[Object]$User)
         {
             $This.User              = $User
             $This.Name              = $User.Name
