@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-22 13:12:27
+    # Last edited : 2023-01-24 12:06:28
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -27,14 +27,22 @@
         VmAdminCredential([String]$Username)
         {
             $This.Username   = $Username
-            $This.Credential = [PSCredential]::New($This.Username,$This.Generate())
+            $This.Credential = $This.SetCredential($This.Generate())
         }
         VmAdminCredential([Object]$File)
         {
-            $This.Username   = $File.Admin.Username
-            $This.Credential = $File.Admin
+            $This.Username   = "Administrator"
+            $This.Credential = $This.SetCredential($This.Content($File.Fullname))
         }
-        [SecureString] Generate()
+        [PSCredential] SetCredential([String]$String)
+        {
+            Return [PSCredential]::New($This.Username,$This.Secure($String))
+        }
+        [SecureString] Secure([String]$In)
+        {
+            Return $In | ConvertTo-SecureString -AsPlainText -Force
+        }
+        [String] Generate()
         {
             Do
             {
@@ -50,7 +58,11 @@
             }
             Until ($Pass -match $This.Pattern())
 
-            Return $Pass | ConvertTo-SecureString -AsPlainText -Force
+            Return $Pass
+        }
+        [String] Content([String]$Path)
+        {
+            Return [System.IO.File]::ReadAllLines($Path)
         }
         [String] Pattern()
         {
@@ -1673,7 +1685,7 @@
             # [Phase 3] Set computer info
             $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
             '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath() 
-            '$TrustedHost    = $Item.TrustedHost';
+            '$TrustedHost    = $Item.Trusted';
             '$IPAddress      = $Item.IpAddress';
             '$PrefixLength   = $Item.Prefix';
             '$DefaultGateway = $Item.Gateway';
@@ -1718,7 +1730,7 @@
             '<Pause[2]>';
             'y';
             '<Pause[3]>';
-            'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.TrustedHost';
+            'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
             '<Pause[4]>';
             'y';
             '$Cert       = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
@@ -1821,7 +1833,77 @@
             '    ';
             '       Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
             '   }';
-            '}'))
+            '}';
+            'netsh dhcp add securitygroups';
+            'Restart-Service dhcpserver';
+            ' ';
+            '$Splat    = @{ ';
+            ' ';
+            '    Path  = "HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12"';
+            '    Name  = "ConfigurationState"';
+            '    Value = 2';
+            '}';
+            ' ';
+            'Set-ItemProperty @Splat -Verbose'))
+        }
+        InitializeFeAd([String]$Pass)
+        {
+            $This.Script.Add(16,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
+            '$Password = Read-Host "Enter password" -AsSecureString';
+            '<Pause[2]>';
+            '{0}' -f $Pass;
+            '$Ctrl = Initialize-FeAdInstance';
+            ' ';
+            '# Set location';
+            '$Ctrl.SetLocation("1718 US-9","Clifton Park","NY",12065,"US")';
+            ' ';
+            '# Add Organizational Unit';
+            '$Ctrl.AddAdOrganizationalUnit("DevOps","Developer(s)/Operator(s)")';
+            ' ';
+            '# Get Organizational Unit';
+            '$Ou     = $Ctrl.GetAdOrganizationalUnit("DevOps")';
+            ' ';
+            '# Add Group';
+            '$Ctrl.AddAdGroup("Engineering","Security","Global","Secure Digits Plus LLC",$Ou.DistinguishedName)';
+            ' ';
+            '# Get Group';
+            '$Group  = $Ctrl.GetAdGroup("Engineering")';
+            ' ';
+            '# Add-AdPrincipalGroupMembership';
+            '$Ctrl.AddAdPrincipalGroupMembership($Group.Name,@("Administrators","Domain Admins"))';
+            ' ';
+            '# Add User';
+            '$Ctrl.AddAdUser("Michael","C","Cook","mcook85",$Ou.DistinguishedName)';
+            ' ';
+            '# Get User';
+            '$User   = $Ctrl.GetAdUser("Michael","C","Cook")';
+            ' ';
+            '# Set [User.General (Description, Office, Email, Homepage)]';
+            '$User.SetGeneral("Beginning the fight against ID theft and cybercrime",';
+            '                 "<Unspecified>",';
+            '                 "michael.c.cook.85@gmail.com",';
+            '                 "https://github.com/mcc85s/FightingEntropy")';
+            ' ';
+            '# Set [User.Address (StreetAddress, City, State, PostalCode, Country)] ';
+            '$User.SetLocation($Ctrl.Location)';
+            ' ';
+            '# Set [User.Profile (ProfilePath, ScriptPath, HomeDirectory, HomeDrive)]';
+            '$User.SetProfile("","","","")';
+            ' ';
+            '# Set [User.Telephone (HomePhone, OfficePhone, MobilePhone, Fax)]';
+            '$User.SetTelephone("","518-406-8569","518-406-8569","")';
+            ' ';
+            '# Set [User.Organization (Title, Department, Company)]';
+            '$User.SetOrganization("CEO/Security Engineer","Engineering","Secure Digits Plus LLC")';
+            ' ';
+            '# Set [User.AccountPassword]';
+            '$User.SetAccountPassword($Password)';
+            ' ';
+            '# Add user to group';
+            '$Ctrl.AddAdGroupMember($Group,$User)';
+            ' ';
+            '# Set user primary group';
+            '$User.SetPrimaryGroup($Group)'))
         }
         Load()
         {
@@ -1932,9 +2014,9 @@
             $Item = Get-ChildItem $This.Path | ? Name -eq admin.txt
             If (!$Item)
             {
-                Throw "Unable to locate admin password file"
+                Throw "Admin file not found"
             }
-            
+
             Return [VmAdminCredential]::New($Item)
         }
         Select([UInt32]$Index)
@@ -2100,17 +2182,17 @@
     $Vm.Idle(5,5)
 
     # // Establish administrator account
-    $Vm.SetAdmin($Admin)
+    $Vm.SetAdmin($Hive.Admin.Password())
 
     # Wait for actual login
     $Vm.Uptime(1,60)
     $Vm.Idle(20,5)
 
     # Enter (CTRL + ALT + DEL) to sign into Windows
-    $Vm.Login($Admin)
+    $Vm.Login($Hive.Admin.Password())
 
     # Wait for operating system to do [FirstRun/FirstLogin] stuff
-    $Vm.Idle(20,5)
+    $Vm.Timer(20)
 
     # Press enter for Network to allow pc to be discoverable
     $Vm.TypeKey(13)
@@ -2153,30 +2235,29 @@
     $Vm.RunScript()
     $Vm.Timer(5)
 
-    # Install FightingEntropy | (Timer + Idle) Network Metering needed here...
+    # Install FightingEntropy
     $Vm.RunScript()
-    $Vm.Timer(30)
-    $Vm.Idle(5,5)
+    $Vm.Idle(0,5)
 
     # Install Chocolatey
     $Vm.RunScript()
-    $Vm.Idle(5,5)
+    $Vm.Idle(0,5)
 
     # Install VsCode | (Timer + Idle) Network Metering needed here...
     $Vm.RunScript()
-    $Vm.Timer(30)
-    $Vm.Idle(5,5)
+    $Vm.Idle(0,5)
 
     # Install BossMode
     $Vm.RunScript()
-    $Vm.Idle(5,5)
+    $Vm.Idle(0,5)
 
     # Install PsExtension
     $Vm.RunScript()
-    $Vm.Idle(5,5)
+    $Vm.Idle(0,5)
 
     # Restart computer
     $Vm.RunScript()
+    $Vm.Uptime(0,5)
     $Vm.Idle(5,5)
 
 #    ____    ____________________________________________________________________________________________________        
@@ -2186,7 +2267,7 @@
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
     # Login
-    $Vm.Login($Admin)
+    $Vm.Login($Hive.Admin.Password())
 
     # Wait idle
     $Vm.Idle(5,5)
@@ -2215,48 +2296,57 @@
     
     # Cycle to tab control, tab over to Names, tab into Domain name
     $Vm.TypeChain(@(9,9,9,39,39,39,9))
+    $Vm.Timer(1)
     
     # Type domain name
-    $Vm.TypeText($File.Object.Domain)
+    $Vm.TypeText($Vm.Network.Domain)
+    $Vm.Timer(1)
     
     # Tab into Netbios
     $Vm.TypeKey(9)
     
     # Type NetBIOS name
-    $Vm.TypeText($File.Object.NetBios)
+    $Vm.TypeText($Vm.Network.NetBios)
+    $Vm.Timer(1)
 
     # Back up to tab control
     $Vm.PressKey(16)
     $Vm.TypeKey(9)
     $Vm.TypeKey(9)
     $Vm.ReleaseKey(16)
+    $Vm.Timer(1)
 
     # Cycle over to (Connection/Dsrm) tab
     $Vm.TypeKey(39)
     $Vm.TypeKey(39)
+    $Vm.Timer(1)
 
     # (Tab into/type) Dsrm password
     $Vm.TypeKey(9)
-    $Vm.TypePassword($Admin.Password())
+    $Vm.TypePassword($Hive.Admin.Password())
+    $Vm.Timer(1)
 
     # (Tab into/type) Confirm password
     $Vm.TypeKey(9)
-    $Vm.TypePassword($Admin.Password())
+    $Vm.TypePassword($Hive.Admin.Password())
+    $Vm.Timer(1)
 
     # (Tab into/press) Start
     $Vm.TypeKey(9)
     $Vm.TypeKey(13)
-    
-    # At this point, the server will install all of the necessary features and then reboot
-    
-    # Wait for reboot
-    $Vm.Uptime(0,5)
 
-    # Wait idle
+#    ____    ____________________________________________________________________________________________________        
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#   \\__//¯¯¯ Installing [~] [FightingEntropy()] Domain Controller                                           ___//¯¯\\   
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+
+    # Wait for (reboot/idle)
+    $Vm.Uptime(0,5)
     $Vm.Idle(5,10)
 
     # Login
-    $Vm.Login($Admin)
+    $Vm.Login($Hive.Admin.Password())
 
     # Wait for reboot
     $Vm.Uptime(0,5)
@@ -2266,23 +2356,28 @@
     $Vm.Idle(1,10)
 
     # Login
-    $Vm.Login($Admin)
+    $Vm.Login($Hive.Admin.Password())
 
     # Wait idle
     $Vm.Idle(5,5)
 
     # Launch PowerShell, then configure Dhcp
     $Vm.LaunchPs()
-    $Vm.Idle(5,5)
 
     # Configure Dhcp
     $Vm.RunScript()
-    $vm.Idle(5,5)
+    $Vm.Idle(5,5)
 
     # Configure Dns (what's left)...
-    # Populate Active Directory with authorized nodes, users, and computers
-    # Install Microsoft Deployment Toolkit/PowerShell Deployment
+    # - Sign the zones
+    
+    # Populate Active Directory with (Organizational Unit, Group, User)
+    $Vm.InitializeFeAd($Hive.Admin.Password())
+    $Vm.RunScript()
+    $Vm.Idle(0,5)
+
     # Configure Wds
+    # Install Microsoft Deployment Toolkit/PowerShell Deployment
     # Obtain Iso
     # Generate an environment key
 
