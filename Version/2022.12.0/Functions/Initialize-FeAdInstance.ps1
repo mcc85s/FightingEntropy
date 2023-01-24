@@ -26,6 +26,8 @@
 
 Function Initialize-FeAdInstance
 {
+    Import-Module ActiveDirectory 
+
     # // ==================================================================
     # // | Selected object types from Active Directory object list [Enum] |
     # // ==================================================================
@@ -255,6 +257,19 @@ Function Initialize-FeAdInstance
             $This.Country           = $Location.Country
             $This.Check()
         }
+        FeAdOrganizationalUnit([Microsoft.ActiveDirectory.Management.ADOrganizationalUnit]$Ou)
+        {
+            $This.Ou                = $Ou
+            $This.Name              = $Ou.Name
+            $This.DisplayName       = $Ou.DisplayName
+            $This.Description       = $Ou.Description
+            $This.StreetAddress     = $Ou.StreetAddress
+            $This.City              = $Ou.City
+            $This.State             = $Ou.State
+            $This.PostalCode        = $Ou.PostalCode
+            $This.Country           = $Ou.Country
+            $This.Check()
+        }
         Check()
         {
             $This.Get() | Out-Null
@@ -336,6 +351,20 @@ Function Initialize-FeAdInstance
 
             $This.DisplayName   = $This.ToDisplayName()
 
+            $This.Check()
+        }
+        FeAdGroup([Microsoft.ActiveDirectory.Management.AdGroup]$Group)
+        {
+            $This.Group         = $Group
+            $This.Name          = $Group.Name
+            $This.GroupCategory = $Group.GroupCategory
+            $This.GroupScope    = $Group.GroupScope
+            $This.Description   = $Group.Description
+            $Label              = "CN={0}," -f $This.Name
+            $This.Path          = $Group.DistinguishedName -Replace $Label, ""
+
+            $This.DisplayName   = $Group.DisplayName
+            
             $This.Check()
         }
         Check()
@@ -446,6 +475,43 @@ Function Initialize-FeAdInstance
 
             $This.Check()
         }
+        FeAdUser([Microsoft.ActiveDirectory.Management.AdUser]$User)
+        {
+            $This.User                = $User
+            $This.Name                = $User.Name
+            $This.DisplayName         = $User.DisplayName
+            $This.GivenName           = $User.GivenName
+            $This.Initials            = $User.Initials
+            $This.Surname             = $User.Surname
+            $This.Description         = $User.Description
+            $This.Office              = $User.Office
+            $This.EmailAddress        = $User.EmailAddress
+            $This.HomePage            = $User.HomePage
+            $This.StreetAddress       = $User.StreetAddress
+            $This.City                = $User.City
+            $This.State               = $User.State
+            $This.PostalCode          = $User.PostalCode
+            $This.Country             = $User.Country
+            $This.SamAccountName      = $User.SamAccountName
+            $This.UserPrincipalName   = $User.UserPrincipalName
+            $This.ProfilePath         = $User.ProfilePath
+            $This.ScriptPath          = $User.ScriptPath
+            $This.HomeDirectory       = $User.HomeDirectory
+            $This.HomeDrive           = $User.HomeDrive
+            $This.HomePhone           = $User.HomePhone
+            $This.OfficePhone         = $User.OfficePhone
+            $This.MobilePhone         = $User.MobilePhone
+            $This.Fax                 = $User.Fax
+            $This.Title               = $User.Title
+            $This.Department          = $User.Department
+            $This.Company             = $User.Company
+            $This.AccountPassword     = $Null
+
+            $Label                    = "CN={0}," -f $This.Name
+            $This.Path                = $User.DistinguishedName -Replace $Label, ""
+
+            $This.Check()
+        }
         Check()
         {
             $This.Get() | Out-Null
@@ -462,9 +528,8 @@ Function Initialize-FeAdInstance
             $This.Check()
             If ($This.Exists)
             {
-                Throw "Exception [!] Group already exists"
+                Throw "Exception [!] User already exists"
             }
-
 
             $Splat                = @{
 
@@ -508,7 +573,7 @@ Function Initialize-FeAdInstance
             $This.Check()
             If (!$This.Exists)
             {
-                Throw "Exception [!] Group does not exist"
+                Throw "Exception [!] User does not exist"
             }
 
             Set-ADObject    -Identity $This.DistinguishedName -ProtectedFromAccidentalDeletion 0 -EA 0
@@ -534,9 +599,9 @@ Function Initialize-FeAdInstance
             $This.PostalCode             = $Location.PostalCode
             $This.Country                = $Location.Country
         }
-        SetProfile([String]$xProfile,[String]$Script,[String]$Dir,[String]$Drive)
+        SetProfile([String]$Profile,[String]$Script,[String]$Dir,[String]$Drive)
         {
-            $This.ProfilePath            = $xProfile
+            $This.ProfilePath            = $Profile
             $This.ScriptPath             = $Script
             $This.HomeDirectory          = $Dir
             $This.HomeDrive              = $Drive
@@ -630,6 +695,14 @@ Function Initialize-FeAdInstance
         {
             Return [FeAdOrganizationalUnit]::New($Name,$Description,$This.Location)
         }
+        [Object] FeAdOrganizationalUnit([Object]$Object)
+        {
+            Return [FeAdOrganizationalUnit]::New($Object)
+        }
+        [Object] FeAdGroup()
+        {
+            
+        }
         [String] ErrorSupport()
         {
             Return "Exception [!] Only supporting: (0:OrganizationalUnit/1:Group/2:User)"
@@ -638,14 +711,10 @@ Function Initialize-FeAdInstance
         {
             $This.Location = $This.FeAdLocation($Address,$City,$State,$Zip,$Country)
         }
-        SetAccountPassword([SecureString]$Pass)
+        AddAdOrganizationalUnit([String]$Name,[String]$Description)
         {
-
-        }
-        AddOrganizationalUnit([String]$Name,[String]$Description)
-        {
-            $List = $This.Get(0)
-            If ($Name -in $List.Name)
+            $Item = $This.Get(0) | ? Name -eq $Name
+            If ($Item)
             {
                 Throw "Exception [!] Organizational unit already exists"
             }
@@ -653,38 +722,82 @@ Function Initialize-FeAdInstance
             $Item = $This.FeAdOrganizationalUnit($Name,$Description)
             $Item.Create()
         }
-        RemoveOrganizationalUnit([String]$Name)
+        [Object] GetAdOrganizationalUnit([String]$Name)
         {
-            $List = $This.Get(0)
-            If ($Name -notin $List.Name)
+            $Item = $This.Get(0) | ? Name -eq $Name
+            If (!$Item)
             {
                 Throw "Exception [!] Organizational unit does not exist"
             }
 
-            $Item = $This.FeAdOrganizationalUnit($Name,$Null)
-            $Item.Remove()
+            $Item = Get-AdOrganizationalUnit -Identity $Item.DistinguishedName -Properties *
+            Switch (!!$Item)
+            {
+                $False { Return $Null } $True { Return $This.FeAdOrganizationalUnit($Item) }
+            }
         }
-        AddGroup([String]$Name,[String]$Category,[String]$Scope,[String]$Description,[String]$Path)
+        RemoveAdOrganizationalUnit([String]$Name)
         {
-            $List = $This.Get(1)
-            If ($Name -in $List.Name)
+            $Item = $This.GetAdOrganizationalUnit($Name)
+            If ($Item)
+            {
+                $Item.Remove()
+            }
+        }
+        AddAdGroup([String]$Name,[String]$Category,[String]$Scope,[String]$Description,[String]$Path)
+        {
+            $Item = $This.Get(1) | ? Name -eq $Name
+            If ($Item)
             {
                 Throw "Exception [!] Group already exists"
             }
 
             $Item = $This.FeAdGroup($Name,$Category,$Scope,$Description,$Path)
-            $Item.Create()
+            If ($Item)
+            {
+                $Item.Create()
+            }
         }
-        RemoveGroup([String]$Name)
+        [Object] GetAdGroup([String]$Name)
         {
-            $List = $This.Get(0)
-            If ($Name -notin $List.Name)
+            $Item = $This.Get(1) | ? Name -eq $Name
+            If (!$Item)
             {
                 Throw "Exception [!] Group does not exist"
             }
 
-            $Item = $This.FeAdGroup($Name,$Null,$Null,$Null,$Null)
-            $Item.Remove()
+            $Item = Get-AdGroup -Identity $Item.DistinguishedName -Properties *
+            Switch (!!$Item)
+            {
+                $False { Return $Null } $True { Return $This.FeAdGroup($Item) }
+            }
+        }
+        RemoveAdGroup([String]$Name)
+        {
+            $Item = $This.GetFeAdGroup($Name)
+            If ($Item)
+            {
+                $Item.Remove()
+            }
+        }
+        [Object[]] GetAdPrincipalGroupMembership([String]$Name)
+        {
+            $Item = $This.GetFeAdGroup($Name)
+            
+            Return Get-AdPrincipalGroupMembership -Identity $Item.DistinguishedName
+        }
+        SetAdPrincipalGroupMembership([String]$GroupName,[String[]]$Names)
+        {
+            $Group = $This.Get(1) | ? Name -eq $GroupName
+            $List  = $This.GetAdPrincipalGroupMembership($GroupName)
+
+            ForEach ($Name in $Names)
+            {
+                If ($Name -notin $Item.Name)
+                {
+                    Add-AdPrincipalGroupMembership -Identity $Group.DistinguishedName -MemberOf $Name
+                }
+            }
         }
     }
 
