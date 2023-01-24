@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-24 12:37:44
+    # Last edited : 2023-01-24 13:15:49
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -2346,7 +2346,7 @@
     $Vm.Idle(5,10)
 
     # Login
-    $Vm.Login($Hive.Admin.Password())
+    $Vm.Login($Hive.Admin)
 
     # Wait for reboot
     $Vm.Uptime(0,5)
@@ -2356,7 +2356,7 @@
     $Vm.Idle(1,10)
 
     # Login
-    $Vm.Login($Hive.Admin.Password())
+    $Vm.Login($Hive.Admin)
 
     # Wait idle
     $Vm.Idle(5,5)
