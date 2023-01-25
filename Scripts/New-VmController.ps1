@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-24 13:15:49
+    # Last edited : 2023-01-24 19:19:01
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -1754,10 +1754,17 @@
             '}';
             'New-NetFirewallRule @Splat -Verbose'))
         }
+        SetRemoteDesktop()
+        {
+            # [Phase 9] Set Remote Desktop
+            $This.Script.Add(9,"SetRemoteDesktop",'Set Remote Desktop',@(
+            'Set-ItemProperty "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -Value 0';
+            'Enable-NetFirewallRule -DisplayGroup "Remote Desktop"'))
+        }
         InstallFeModule()
         {
-            # [Phase 9] Install [FightingEntropy()]
-            $This.Script.Add(9,"InstallFeModule","Install [FightingEntropy()]",@(
+            # [Phase 10] Install [FightingEntropy()]
+            $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
             '[Net.ServicePointManager]::SecurityProtocol = 3072'
             'Set-ExecutionPolicy Bypass -Scope Process -Force'
             '$Install = "https://github.com/mcc85s/FightingEntropy"'
@@ -1768,37 +1775,37 @@
         }
         InstallChoco()
         {
-            # [Phase 10] Install Chocolatey
-            $This.Script.Add(10,"InstallChoco","Install Chocolatey",@(
+            # [Phase 11] Install Chocolatey
+            $This.Script.Add(11,"InstallChoco","Install Chocolatey",@(
             "Invoke-RestMethod chocolatey.org/install.ps1 | Invoke-Expression"))
         }
         InstallVsCode()
         {
-            # [Phase 11] Install Visual Studio Code
-            $This.Script.Add(11,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
+            # [Phase 12] Install Visual Studio Code
+            $This.Script.Add(12,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
         }
         InstallBossMode()
         {
-            # [Phase 12] Install BossMode (vscode color theme)
-            $This.Script.Add(12,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
+            # [Phase 13] Install BossMode (vscode color theme)
+            $This.Script.Add(13,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
         }
         InstallPsExtension()
         {
-            # [Phase 13] Install Visual Studio Code (PowerShell Extension)
-            $This.Script.Add(13,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
+            # [Phase 14] Install Visual Studio Code (PowerShell Extension)
+            $This.Script.Add(14,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
             '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
             '$ArgumentList = "--install-extension ms-vscode.PowerShell"';
             'Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process'))
         }
         RestartComputer()
         {
-            # [Phase 14] Restart computer
-            $This.Script.Add(14,'Restart','Restart computer',@('Restart-Computer'))
+            # [Phase 15] Restart computer
+            $This.Script.Add(15,'Restart','Restart computer',@('Restart-Computer'))
         }
         ConfigureDhcp()
         {
-            # [Phase 15] Configure Dhcp
-            $This.Script.Add(15,'ConfigureDhcp','Configure Dhcp',@(
+            # [Phase 16] Configure Dhcp
+            $This.Script.Add(16,'ConfigureDhcp','Configure Dhcp',@(
             '$Root           = "{0}"' -f $This.GetRegistryPath()
             '$Path           = "$Root\ComputerInfo"'
             '$Item           = Get-ItemProperty $Path' 
@@ -1848,7 +1855,7 @@
         }
         InitializeFeAd([String]$Pass)
         {
-            $This.Script.Add(16,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
+            $This.Script.Add(17,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
             '$Password = Read-Host "Enter password" -AsSecureString';
             '<Pause[2]>';
             '{0}' -f $Pass;
@@ -1915,6 +1922,7 @@
             $This.SetStaticIp()
             $This.SetWinRm()
             $This.SetWinRmFirewall()
+            $This.SetRemoteDesktop()
             $This.InstallFeModule()
             $This.InstallChoco()
             $This.InstallVsCode()
@@ -2192,7 +2200,8 @@
     $Vm.Login($Hive.Admin)
 
     # Wait for operating system to do [FirstRun/FirstLogin] stuff
-    $Vm.Timer(20)
+    $Vm.Timer(30)
+    $Vm.Idle(5,5)
 
     # Press enter for Network to allow pc to be discoverable
     $Vm.TypeKey(13)
@@ -2235,6 +2244,10 @@
     $Vm.RunScript()
     $Vm.Timer(5)
 
+    # Set Remote Desktop
+    $Vm.RunScript()
+    $Vm.Timer(5)
+
     # Install FightingEntropy
     $Vm.RunScript()
     $Vm.Idle(0,5)
@@ -2258,6 +2271,7 @@
     # Restart computer
     $Vm.RunScript()
     $Vm.Uptime(0,5)
+    $Vm.Uptime(1,40)
     $Vm.Idle(5,5)
 
 #    ____    ____________________________________________________________________________________________________        
@@ -2290,9 +2304,11 @@
     $Vm.PressKey(18)
     $Vm.TypeKey(9)
     $Vm.ReleaseKey(18)
+    $Vm.Timer(1)
 
     # Command Tab | [Forest] Already selected
     $Vm.TypeKey(9)
+    $Vm.Timer(1)
     
     # Cycle to tab control, tab over to Names, tab into Domain name
     $Vm.TypeChain(@(9,9,9,39,39,39,9))
