@@ -4,6 +4,7 @@
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **01/29/23** | 0h 45m 40s | **2023_01_29_18_06_22.mp3**    | [Revelations](https://drive.google.com/file/d/117AFgGk_089FHs9y4YLlELN3rzAnefnz)
 | **01/29/23** | 1h 30m 21s | **2023_01_29_09_09_57.mp3**    | [Experience](https://drive.google.com/file/d/10RiikBY0UhFsXxZU6ldblNQa10NmQSFH)
 | **01/21/23** | 0h 59m 54s | **2023_01_21_23_34_36.mp3**    | [Fallacies](https://drive.google.com/file/d/1-3mftdu704N0eDP34MYyn1ohWNns9TDF)
 | **01/19/23** | 1h 45m 42s | **2023_01_19_10_48_07.mp3**    | [Social Engineering](https://drive.google.com/file/d/1bZn5bxIB8tGCz8ZUHtUUqo1NCZxdWQBD)
