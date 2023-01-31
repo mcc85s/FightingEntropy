@@ -1,20 +1,28 @@
+<#
+    Last edited   : 01/31/2023 12:02:56
+    Purpose       : Automatically installs + configures a Windows Server 2016 instance
+  
+    Objective     : Get (1) virtual server(s) to upgrade itself to an Active Directory Domain Controller
+                    to prepare for clustering with others via Install-AddsForest...
+                    ...by using [FightingEntropy(π)] Get-FEDCPromo.
+  
+                    Be really clever about it, too.
+                    Use a mixture of [virtualization], [graphic design], [networking], and [programming]...
+                    ...to show everybody and their mother...
+                    ...that you're an expert.
+  
+                    Even the guys at Microsoft will think this s*** is WICKED cool...
 
-    # Last edited : 2023-01-24 19:19:01
-    # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
+    Documentation : https://github.com/mcc85s/FightingEntropy/tree/main/Docs (Direct link to container)
+                    -----------------------------------------------------------------------------------
+                    File[1] | 2023_0103-(Get-FEDCPromo).pdf (<- Has since been updated)
+                    File[2] | 2023_0124-(Initialize-AdFeInstance).pdf
+                    File[3] | 2023_0125-(New-VmController).pdf
+                    File[4] | 2023_0126-(BillionDollarProgramPartII).pdf
 
-    # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
-    # cluster by using [FightingEntropy(π)] Get-FEDCPromo.
-
-    # Be really clever about it, too.
-    # Use a mixture of virtualization, graphic design, networking, and programming...
-    # ...to show everybody and their mother...
-    # ...that you're an expert.
-
-    # Even the guys at Microsoft will think this shit is WICKED cool...
-    # https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0103-(Get-FEDCPromo).pdf
-
-    # Gonna have to update this file up above ^
-    # Because I've replaced so many aspects of it within the last week.
+    Note          : By the time THIS particular function (New-VmController) is ready to include in the module...? 
+                    It will scale to multiple AD controllers.
+#>
 
     # // =====================================================
     # // | Generates a random password for security purposes |
@@ -81,7 +89,7 @@
             Return "<FEVirtual.VmAdminCredential>"
         }
     }
-    
+
     # // =======================================================================
     # // | Used to convert the byte size of a drive or partition into a string |
     # // =======================================================================
@@ -841,7 +849,7 @@
             Return "<FEVirtual.VmScriptBlock[Item]>"
         }
     }
-    
+
     # // ===========================================
     # // | Virtual machine script block controller |
     # // ===========================================
