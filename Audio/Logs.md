@@ -4,6 +4,7 @@
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **02/02/23** | 0h 37m 31s | **2023_02_02_09_00_10.mp3**    | [Tyranny](https://drive.google.com/file/d/12Tgv0aXer4ggJZ6-qv4X6frJbUaZjrt7)
 | **01/29/23** | 0h 45m 40s | **2023_01_29_18_06_22.mp3**    | [Revelations](https://drive.google.com/file/d/117AFgGk_089FHs9y4YLlELN3rzAnefnz)
 | **01/29/23** | 1h 30m 21s | **2023_01_29_09_09_57.mp3**    | [Experience](https://drive.google.com/file/d/10RiikBY0UhFsXxZU6ldblNQa10NmQSFH)
 | **01/21/23** | 0h 59m 54s | **2023_01_21_23_34_36.mp3**    | [Fallacies](https://drive.google.com/file/d/1-3mftdu704N0eDP34MYyn1ohWNns9TDF)
