@@ -9,13 +9,13 @@
     This page here is meant to show the (<b>multiple YouTube channels/video content</b>) that I produce.
 </p>
 
-<p align="center" width="100%">
-    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
-</p>
-
 | Logo    | Name                    | Company                    | Time           | Channels |
 |:--------|:------------------------|:---------------------------|:---------------|:---------|
 | ![logo] | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
+
+<p align="center" width="100%">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
+</p>
 
 <p>
     At some point in the future, I will provide a better way to navigate through all of this content.
