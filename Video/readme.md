@@ -104,7 +104,7 @@
 | 21    | `05-21-2020` | `00:29:25` | [Service Configuration Tool](https://youtu.be/hbBVNerI_Qk)                                                     |
 | 22    | `11-28-2019` | `00:43:48` | [Some Powershell scripting/programming methodologies](https://youtu.be/bZuSgBK36CE)                            |
 | 23    | `08-28-2019` | `01:47:16` | [Education/Exhibition of Programming/Design/Engineering with Powershell/C#/.Net](https://youtu.be/v6RrrzR5v2E) |
-| 24    | `05-28-2019` | `01:02:43` | [Hybrid | Desired State Controller | Process Exhibition (The long version)](https://youtu.be/C8NYaaqJAlI)      |
+| 24    | `05-28-2019` | `01:02:43` | [Hybrid - Desired State Controller | Process Exhibition (The long version)](https://youtu.be/C8NYaaqJAlI)      |
 | 25    | `03-24-2019` | `00:47:24` | [Hybrid(Server+Client)](https://youtu.be/qiZcHqkAzbs)                                                          |
 | 26    | `08-19-2018` | `00:02:00` | [News 10 - Smart TV report](https://youtu.be/bPdWt7kcd3M)                                                      |
 | 27    | `01-16-2018` | `00:23:55` | [Driving in Snow (feat. Audi A4 Quattro)](https://youtu.be/pi1DIQWuce8)                                        |
