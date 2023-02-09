@@ -1,3 +1,4 @@
+
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
 
 <h1>
@@ -120,7 +121,7 @@
 
 | Index | Name                       | Email                       | Id                                                                          | Time       | Total |
 |:------|:---------------------------|:----------------------------|:----------------------------------------------------------------------------|:-----------|:------|
-| 2     | Michael Cook               | mykalcook@gmail.com         | [mykalcook](https://www.youtube.com/@securedigitsplus2892)                  | 06:15:11   | 15    |
+| 2     | **Michael Cook**           | mykalcook@gmail.com         | [mykalcook](https://www.youtube.com/@securedigitsplus2892)                  | 06:15:11   | 15    |
 
 | Index | Date         | Time       | Name                                                                                                        |
 |:------|:-------------|:-----------|:------------------------------------------------------------------------------------------------------------|
@@ -142,7 +143,7 @@
 
 | Index | Name                       | Email                       | Id                                                                          | Time       | Total |
 |:------|:---------------------------|:----------------------------|:----------------------------------------------------------------------------|:-----------|:------|
-| 3     | Secure Digits Plus         | sdp12065@gmail.com          | [securedigitsplus2892](https://www.youtube.com/@securedigitsplus2892)       | 03:07:40   | 7     |
+| 3     | **Secure Digits Plus**     | sdp12065@gmail.com          | [securedigitsplus2892](https://www.youtube.com/@securedigitsplus2892)       | 03:07:40   | 7     |
 
 | Index | Date         | Time       | Name                                                                                         |
 |:------|:-------------|:-----------|:---------------------------------------------------------------------------------------------|
