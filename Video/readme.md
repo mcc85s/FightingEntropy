@@ -1,16 +1,28 @@
-<h1>Video/readme.md</h1>
-This page here is meant to show the (multiple channels/content) that I...
+<h1>
+  Video/readme.md
+</h1>
 
+<p>
+    This page here is meant to show the (multiple channels/content) that I...
+</p>
 
 | Name                    | Company                    | Time           | Channels |
 |:------------------------|:---------------------------|:---------------|:---------|
 | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
 
-...produce.
-At some point in the future, I will provide a better way to navigate through all of this content.
+<p>
+    ...produce.<br>
+    At some point in the future, I will provide a better way to navigate through all of this content.
+</p>
 
-This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a PROFESSOR.
-These videos cover:
+<p>
+    This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a PROFESSOR.
+</p>
+
+<p>
+  These videos cover:
+</p>
+
 <ul> 
   <li>Rhetoric</li>
   <li>Demonstration</li>
