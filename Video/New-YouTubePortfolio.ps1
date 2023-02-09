@@ -1,3 +1,4 @@
+
 Function New-YouTubePortfolio
 {
     [CmdLetBinding()]
@@ -6,13 +7,17 @@ Function New-YouTubePortfolio
         [Parameter(Mandatory,Position=1)][String]$Company
     )
 
+    # // =================================
+    # // | Single video with information |
+    # // =================================
+
     Class VideoItem
     {
-        [UInt32]    $Index
-        [String]     $Date
-        [TimeSpan]   $Time
-        [String]      $Url
-        [String]     $Name
+        [UInt32]  $Index
+        [String]   $Date
+        [TimeSpan] $Time
+        [String]    $Url
+        [String]   $Name
         VideoItem([UInt32]$Index,[String]$Date,[String]$Time,[String]$Hash,[String]$Name)
         {
             $This.Index = $Index
@@ -45,6 +50,10 @@ Function New-YouTubePortfolio
         }
     }
 
+    # // ============================================
+    # // | Enumeration type for individual accounts |
+    # // ============================================
+
     Enum ChannelType
     {
         securedigitsplusllc3084
@@ -53,15 +62,19 @@ Function New-YouTubePortfolio
         securedigitsplus2892
     }
 
+    # // =============================
+    # // | Single individual account |
+    # // =============================
+
     Class ChannelItem
     {
-        [UInt32]       $Index
-        [String]        $Name
-        [String]       $Email
-        [String]          $Id
-        [TimeSpan]      $Time
-        [UInt32]       $Total
-        [Object]       $Video
+        [UInt32]  $Index
+        [String]   $Name
+        [String]  $Email
+        [String]     $Id
+        [TimeSpan] $Time
+        [UInt32]  $Total
+        [Object]  $Video
         ChannelItem([String]$Name,[String]$Email,[String]$Id)
         {
             $This.Index  = [UInt32][ChannelType]::$Id
@@ -92,6 +105,10 @@ Function New-YouTubePortfolio
         }
     }
 
+    # // =====================================
+    # // | Container object for all channels |
+    # // =====================================
+
     Class Portfolio
     {
         [String]     $Name
@@ -109,7 +126,7 @@ Function New-YouTubePortfolio
         {
             $This.Channel = @( )
             $This.Total   = 0
-            $This.Time    = [TimeSpan]::FromSeconds(0)
+            $This.Time    = $This.Zero()
         }
         [Object] ChannelItem([String]$Name,[String]$Email,[String]$Id)
         {
