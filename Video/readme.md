@@ -2,38 +2,42 @@
   Video/readme.md
 </h1>
 
-This page here is meant to show the (**multiple channels/content**) that I produce.<br>
-**[I]** means...<br>
-<br>
+<p>
+    This page here is meant to show the (<b>multiple channels/content</b>) that I produce.
+</p>
 
 | Name                    | Company                    | Time           | Channels |
 |:------------------------|:---------------------------|:---------------|:---------|
 | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
 
-At some point in the future, I will provide a better way to [**navigate**] through all of this content.
+<p>
+    At some point in the future, I will provide a better way to navigate through all of this content.
+</p>
 
 <p>
     This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a:
 </p>
 
-| Role      | Required I.Q.                        |
-|:----------|:-------------------------------------|
-| Professor | High (120) -> Extremely high (160+)  |
+| Role           | RIQ/Required Intelligence Quotient          |
+|:---------------|:--------------------------------------------|
+| **Professor**  | (**120/High**) -> (**160+/Extremely high**) |
 
 <p>
   These videos cover:
 </p>
 
-`[+] Rhetoric 
-[+] Demonstration
-[+] Education
-[+] Design
-[+] Programming
-[+] Psychology
-[+] Design
-[+] Exhibition
-[+] Evidence
-[+] Cyberattacks`
+<ul>
+   <li>[+] Rhetoric</li>
+   <li>[+] Demonstration</li>
+   <li>[+] Education</li>
+   <li>[+] Design</li>
+   <li>[+] Programming</li>
+   <li>[+] Psychology</li>
+   <li>[+] Design</li>
+   <li>[+] Exhibition</li>
+   <li>[+] Evidence</li>
+   <li>[+] Cyberattacks</li>
+</ul>
 
 | Index | Name                       | Email                       | Id                                                                          | Time       | Total |
 |:------|:---------------------------|:----------------------------|:----------------------------------------------------------------------------|:-----------|:------|
@@ -103,7 +107,7 @@ At some point in the future, I will provide a better way to [**navigate**] throu
 | 21    | `05-21-2020` | `00:29:25` | [Service Configuration Tool](https://youtu.be/hbBVNerI_Qk)                                                     |
 | 22    | `11-28-2019` | `00:43:48` | [Some Powershell scripting/programming methodologies](https://youtu.be/bZuSgBK36CE)                            |
 | 23    | `08-28-2019` | `01:47:16` | [Education/Exhibition of Programming/Design/Engineering with Powershell/C#/.Net](https://youtu.be/v6RrrzR5v2E) |
-| 24    | `05-28-2019` | `01:02:43` | [Hybrid - Desired State Controller | Process Exhibition (The long version)](https://youtu.be/C8NYaaqJAlI)      |
+| 24    | `05-28-2019` | `01:02:43` | [Hybrid - Desired State Controller - Process Exhibition (The long version)](https://youtu.be/C8NYaaqJAlI)      |
 | 25    | `03-24-2019` | `00:47:24` | [Hybrid(Server+Client)](https://youtu.be/qiZcHqkAzbs)                                                          |
 | 26    | `08-19-2018` | `00:02:00` | [News 10 - Smart TV report](https://youtu.be/bPdWt7kcd3M)                                                      |
 | 27    | `01-16-2018` | `00:23:55` | [Driving in Snow (feat. Audi A4 Quattro)](https://youtu.be/pi1DIQWuce8)                                        |
@@ -126,7 +130,7 @@ At some point in the future, I will provide a better way to [**navigate**] throu
 | 9     | `10-20-2020` | `00:41:08` | [Configuring pfSense/Hardened BSD](https://youtu.be/eYEESvPOWh4)                                            |
 | 10    | `10-20-2020` | `00:01:38` | [Network Troubleshooting](https://youtu.be/0nEiGijjOEY)                                                     |
 | 11    | `10-20-2020` | `00:03:34` | [Spectrum Cable Modem Reset](https://youtu.be/LfZW-s0BMow)                                                  |
-| 12    | `05-16-2019` | `00:41:01` | [Secure Digits Plus LLC @ Hybrid | Desired State Controller ( Beta Preview )](https://youtu.be/jplOHy_b1bA) |
+| 12    | `05-16-2019` | `00:41:01` | [Secure Digits Plus LLC @ Hybrid - Desired State Controller ( Beta Preview )](https://youtu.be/jplOHy_b1bA) |
 | 13    | `03-02-2019` | `01:01:30` | [2019 03 01 23 35 05](https://youtu.be/RypW9xbClJo)                                                         |
 | 14    | `07-28-2018` | `00:09:55` | [Trickshot - Wicked](https://youtu.be/joioy6bIyPE)                                                          |
 
@@ -142,12 +146,12 @@ At some point in the future, I will provide a better way to [**navigate**] throu
 | 3     | `06-20-2021` | `00:10:03` | [Install-pfSense (Auto)](https://youtu.be/E_uFbzS0blQ)                                       |
 | 4     | `06-06-2021` | `00:03:58` | [[FightingEntropy(π)][(2021.6.0)] Installation + FEModule GUI](https://youtu.be/acYldTcKUAs) |
 | 5     | `06-04-2021` | `00:07:05` | [[FightingEntropy(π)][(2021.6.0)]](https://youtu.be/UYnCj5Hcq6o)                             |
-| 6     | `03-16-2021` | `01:38:47` | [FightingEntropy (π) v2021.3.1 | New-FEDeploymentShare GUI](https://youtu.be/4yFKeK9CzU0)    |
+| 6     | `03-16-2021` | `01:38:47` | [FightingEntropy (π) v2021.3.1 - New-FEDeploymentShare GUI](https://youtu.be/4yFKeK9CzU0)    |
 
 <p>
   You can't go around claiming to be a professor if you're a fuckin' moron.<br>
   You have to be willing to OFFEND people sometimes, especially when they (<b>say/do/think</b>) things that are really fuckin' stupid.<br>
   For instance, [<b>Shayam Sundar</b>] from the [<b>National Institute of Standards and Technology</b>].<br>
-  You can take your (<b>NIST 9/11/2001</b>) report, and shove it right up your ass.<br>
-  Some people in the [<b>United States of America</b>] planned for the attack by (<b>Osama Bin Laden</b>) on [<b>09/12/2001</b>].
+  You can take your [<b>NIST 9/11/2001</b>] report, and [<b>shove it right up your ass</b>].<br>
+  [<b>Some</b>] people in the [<b>United States of America</b>] planned for the attack by [<b>Osama Bin Laden</b>] on [<b>09/12/2001</b>].
 </p>
