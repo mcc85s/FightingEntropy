@@ -2,18 +2,15 @@
   Video/readme.md
 </h1>
 
-<p>
-    This page here is meant to show the (multiple channels/content) that I...
-</p>
+This page here is meant to show the (**multiple channels/content**) that I produce.<br>
+**[I]** means...<br>
+<br>
 
 | Name                    | Company                    | Time           | Channels |
 |:------------------------|:---------------------------|:---------------|:---------|
 | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
 
-<p>
-    ...produce.<br>
-    At some point in the future, I will provide a better way to navigate through all of this content.
-</p>
+At some point in the future, I will provide a better way to [**navigate**] through all of this content.
 
 <p>
     This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a:
@@ -27,18 +24,7 @@
   These videos cover:
 </p>
 
-<ul> 
-  <li>Rhetoric</li>
-  <li>Demonstration</li>
-  <li>Education</li>
-  <li>Design</li>
-  <li>Programming</li>
-  <li>Psychology</li>
-  <li>Design</li>
-  <li>Exhibition</li>
-  <li>Evidence</li>
-  <li>Cyberattacks</li>
-</ul>
+`Rhetoric | Demonstration | Education | Design | Programming | Psychology | Design | Exhibition | Evidence | Cyberattacks`
 
 | Index | Name                       | Email                       | Id                                                                          | Time       | Total |
 |:------|:---------------------------|:----------------------------|:----------------------------------------------------------------------------|:-----------|:------|
@@ -151,8 +137,8 @@
 
 <p>
   You can't go around claiming to be a professor if you're a fuckin' moron.<br>
-  You have to be willing to OFFEND people sometimes, especially when they (say/do/think) things that are really fuckin' stupid.<br>
-  For instance, **Shayam Sundar** from the **National Institute of Standards and Technology**.<br>
-  You can take your (**NIST 9/11/2001**) report, and shove it right up your ass.<br>
-  Some people in the United States of America planned for the attack by (**Osama Bin Laden**) on 09/12/2001.
+  You have to be willing to OFFEND people sometimes, especially when they (<b>say/do/think</b>) things that are really fuckin' stupid.<br>
+  For instance, [<b>Shayam Sundar</b>] from the [<b>National Institute of Standards and Technology</b>].<br>
+  You can take your (<b>NIST 9/11/2001</b>) report, and shove it right up your ass.<br>
+  Some people in the [<b>United States of America</b>] planned for the attack by (<b>Osama Bin Laden</b>) on [<b>09/12/2001</b>].
 </p>
