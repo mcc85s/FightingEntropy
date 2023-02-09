@@ -1,3 +1,5 @@
+[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
+
 <h1>
   Video/readme.md
 </h1>
@@ -6,9 +8,9 @@
     This page here is meant to show the (<b>multiple channels/content</b>) that I produce.
 </p>
 
-| Name                    | Company                    | Time           | Channels |
-|:------------------------|:---------------------------|:---------------|:---------|
-| **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
+| Logo    | Name                    | Company                    | Time           | Channels |
+|:--------|:------------------------|:---------------------------|:---------------|:---------|
+| ![logo] | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 2d 23h 02m 54s | 4        |
 
 <p>
     At some point in the future, I will provide a better way to navigate through all of this content.
