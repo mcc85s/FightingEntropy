@@ -9,7 +9,7 @@
 </h1>
 
 <p>
-    This page here is meant to show the (<b>multiple channels/content</b>) that I produce.
+    This page here is meant to show the (<b>multiple YouTube channels/video content</b>) that I produce.
 </p>
 
 | Logo    | Name                    | Company                    | Time           | Channels |
