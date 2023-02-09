@@ -16,8 +16,12 @@
 </p>
 
 <p>
-    This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a PROFESSOR.
+    This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a:
 </p>
+
+| Role      | Required I.Q.                        |
+|:----------|:-------------------------------------|
+| Professor | High (120) -> Extremely high (160+)  |
 
 <p>
   These videos cover:
@@ -144,3 +148,11 @@
 | 4     | `06-06-2021` | `00:03:58` | [[FightingEntropy(π)][(2021.6.0)] Installation + FEModule GUI](https://youtu.be/acYldTcKUAs) |
 | 5     | `06-04-2021` | `00:07:05` | [[FightingEntropy(π)][(2021.6.0)]](https://youtu.be/UYnCj5Hcq6o)                             |
 | 6     | `03-16-2021` | `01:38:47` | [FightingEntropy (π) v2021.3.1 | New-FEDeploymentShare GUI](https://youtu.be/4yFKeK9CzU0)    |
+
+<p>
+  You can't go around claiming to be a professor if you're a fuckin' moron.<br>
+  You have to be willing to OFFEND people sometimes, especially when they (say/do/think) things that are really fuckin' stupid.<br>
+  For instance, **Shayam Sundar** from the **National Institute of Standards and Technology**.<br>
+  You can take your (**NIST 9/11/2001**) report, and shove it right up your ass.<br>
+  Some people in the United States of America planned for the attack by (**Osama Bin Laden**) on 09/12/2001.
+</p>
