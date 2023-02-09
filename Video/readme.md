@@ -1,5 +1,9 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
 
+<p align="center" width="100%">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
+</p>
+
 <h1>
   Video/readme.md
 </h1>
