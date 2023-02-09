@@ -24,7 +24,16 @@ At some point in the future, I will provide a better way to [**navigate**] throu
   These videos cover:
 </p>
 
-`Rhetoric | Demonstration | Education | Design | Programming | Psychology | Design | Exhibition | Evidence | Cyberattacks`
+`[+] Rhetoric 
+[+] Demonstration
+[+] Education
+[+] Design
+[+] Programming
+[+] Psychology
+[+] Design
+[+] Exhibition
+[+] Evidence
+[+] Cyberattacks`
 
 | Index | Name                       | Email                       | Id                                                                          | Time       | Total |
 |:------|:---------------------------|:----------------------------|:----------------------------------------------------------------------------|:-----------|:------|
