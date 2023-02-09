@@ -10,27 +10,26 @@ Function New-YouTubePortfolio
     {
         [UInt32]    $Index
         [String]     $Date
-        [String]     $Name
-        [TimeSpan] $Length
+        [TimeSpan]   $Time
         [String]      $Url
-        VideoItem([UInt32]$Index,[String]$Date,[String]$Name,[String]$Length,[String]$Hash)
+        [String]     $Name
+        VideoItem([UInt32]$Index,[String]$Date,[String]$Time,[String]$Hash,[String]$Name)
         {
-            $This.Index   = $Index
-            $This.Date    = ([DateTime]$Date).ToString("MM-dd-yyyy")
-            $This.Name    = $Name
-            $This.Length  = Switch -Regex ($Length)
+            $This.Index = $Index
+            $This.Date  = ([DateTime]$Date).ToString("MM-dd-yyyy")
+            $This.Time  = Switch -Regex ($Time)
             {
                 ^\d+\:\d+$
                 {
-                    "00:$Length"
+                    "00:$Time"
                 }
                 Default
                 {
-                    $Length
+                    $Time
                 }
             }
 
-            $This.Url     = Switch -Regex ($Hash)
+            $This.Url   = Switch -Regex ($Hash)
             {
                 ^https\:\/\/youtu\.be\/.+
                 {
@@ -41,6 +40,8 @@ Function New-YouTubePortfolio
                     "https://youtu.be/{0}" -f $Hash
                 }
             }
+
+            $This.Name  = $Name
         }
     }
 
@@ -58,9 +59,9 @@ Function New-YouTubePortfolio
         [String]        $Name
         [String]       $Email
         [String]          $Id
-        [TimeSpan]    $Length
+        [TimeSpan]      $Time
+        [UInt32]       $Total
         [Object]       $Video
-        [UInt32]       $Count
         ChannelItem([String]$Name,[String]$Email,[String]$Id)
         {
             $This.Index  = [UInt32][ChannelType]::$Id
@@ -71,19 +72,19 @@ Function New-YouTubePortfolio
         }
         Clear()
         {
-            $This.Length = [TimeSpan]::FromSeconds(0)
+            $This.Time   = [TimeSpan]::FromSeconds(0)
             $This.Video  = @( )
-            $This.Count  = 0
+            $This.Total  = 0
         }
-        [Object] VideoItem([UInt32]$Index,[String]$Date,[String]$Name,[String]$Length,[String]$Hash)
+        [Object] VideoItem([UInt32]$Index,[String]$Date,[String]$Length,[String]$Hash,[String]$Name)
         {
-            Return [VideoItem]::New($Index,$Date,$Name,$Length,$Hash)
+            Return [VideoItem]::New($Index,$Date,$Length,$Hash,$Name)
         }
-        Add([String]$Date,[String]$Name,[String]$Length,[String]$Hash)
+        Add([String]$Date,[String]$Length,[String]$Hash,[String]$Name)
         {
-            $This.Video += $This.VideoItem($This.Count,$Date,$Name,$Length,$Hash)
-            $This.Count  = $This.Video.Count
-            $This.Length = $This.Length + $This.Video[-1].Length
+            $This.Video += $This.VideoItem($This.Total,$Date,$Length,$Hash,$Name)
+            $This.Total  = $This.Video.Count
+            $This.Time   = $This.Time + $This.Video[-1].Time
         }
         [String] ToString()
         {
@@ -93,10 +94,11 @@ Function New-YouTubePortfolio
 
     Class Portfolio
     {
-        [String]    $Name
-        [String] $Company
-        [UInt32]   $Count
-        [Object] $Channel
+        [String]     $Name
+        [String]  $Company
+        [TimeSpan]   $Time
+        [UInt32]    $Total
+        [Object]  $Channel
         Portfolio([String]$Name,[String]$Company)
         {
             $This.Name    = $Name
@@ -106,7 +108,8 @@ Function New-YouTubePortfolio
         Clear()
         {
             $This.Channel = @( )
-            $This.Count   = 0
+            $This.Total   = 0
+            $This.Time    = [TimeSpan]::FromSeconds(0)
         }
         [Object] ChannelItem([String]$Name,[String]$Email,[String]$Id)
         {
@@ -115,24 +118,25 @@ Function New-YouTubePortfolio
         Add([String]$Name,[String]$Email,[String]$Id)
         {
             $This.Channel += $This.ChannelItem($Name,$Email,$Id)
-            $This.Count    = $This.Channel.Count
+            $This.Total    = $This.Channel.Count
             Write-Host "Added [+] [$Name/$Email] : $Id"
         }
         [Object] Get([UInt32]$Index)
         {
-            If ($Index -gt $This.Count)
+            If ($Index -gt $This.Total)
             {
                 Throw "Invalid index"
             }
 
             Return $This.Channel[$Index]
         }
-        AddVideo([UInt32]$Index,[String]$Date,[String]$Name,[String]$Length,[String]$Hash)
+        AddVideo([UInt32]$Index,[String]$Date,[String]$Time,[String]$Hash,[String]$Name)
         {
-            $xChannel = $This.Get($Index)
-            $xChannel.Add($Date,$Name,$Length,$Hash)
-
-            Write-Host ("Added [+] [{0}] [{1}]" -f $xChannel.Video[-1].Length, $Name)
+            $xChannel    = $This.Get($Index)
+            $xChannel.Add($Date,$Time,$Hash,$Name)
+            $xTime       = $xChannel.Video[-1].Time
+            $This.Time   = $This.Time + $xTime
+            Write-Host ("Added [+] [{0}] [{1}]" -f $xTime, $Name)
         }
     }
 
