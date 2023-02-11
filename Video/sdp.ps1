@@ -1,3 +1,4 @@
+
 $Ctrl = New-YouTubePortfolio -Name "Michael C. Cook Sr." -Company "Secure Digits Plus LLC"
 
 ("Secure Digits Plus LLC","securedigitsplus@gmail.com","securedigitsplusllc3084"),
@@ -9,6 +10,10 @@ $Ctrl = New-YouTubePortfolio -Name "Michael C. Cook Sr." -Company "Secure Digits
 }
 
 # 0 / [Secure Digits Plus LLC (securedigitsplusllc3084)]
+("02-10-2023","00:06:24","Ua1r_7o5BpI","Weeping Angel"),
+("02-10-2023","00:06:40","4V6Wwzxlqzw","Track 20 (Original Music)"),
+("02-10-2023","00:06:31","23d9VPFr0u4","Futile Intent (Original Music)"),
+("02-09-2023","01:14:32","sqSMw4JzQoM","New-YouTubeProfile"),
 ("02-07-2023","00:17:25","zIDnV1BsiCA","rastructure"),
 ("02-07-2023","01:59:05","Dj9E-eNe4Tg","Golub Corp. - Empire State Plaza"),
 ("02-04-2023","00:27:53","aejBB77d_oA","Why William Moak is stupid"),
