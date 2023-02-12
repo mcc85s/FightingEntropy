@@ -18,7 +18,7 @@
 | 13.jpg | Silence and Wisdom (2/3)
 | 14.jpg | Silence and Wisdom (3/3)
 
-<h1>[hellra3map1 (clan | arena) + 20kdm1]</h1>
+<h1>[hellra3map1 (clan arena) + 20kdm1]</h1>
 
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
