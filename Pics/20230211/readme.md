@@ -1,7 +1,8 @@
 <h1>[hellra3map1]</h1>
+
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
-| 01.jpg | Tranquil Equilibrium (1/3)
+| 01.jpg | Tranquil Equilibrium (1/3)              |
 | 02.jpg | Tranquil Equilibrium (2/3)
 | 03.jpg | Tranquil Equilibrium (3/3)
 | 04.jpg | Blend of Hatred
@@ -18,6 +19,7 @@
 | 14.jpg | Silence and Wisdom (3/3)
 
 <h1>[hellra3map1 (clan | arena) + 20kdm1]</h1>
+
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
 | 15.jpg | Tempered Graveyard (01/14)
@@ -36,6 +38,7 @@
 | 28.jpg | Tempered Graveyard (14/14)
 
 <h1>[20kdm2]</h1>
+
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
 | 29.jpg | Return to Castle: Quake (1/9)
@@ -49,6 +52,7 @@
 | 37.jpg | Return to Castle: Quake (9/9)
 
 <h1>[20kctf1]</h1>
+
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
 | 38.jpg | Out Of My Head (01/12)
@@ -65,6 +69,7 @@
 | 49.jpg | Out Of My Head (12/12)
 
 <h1>[20kdm3]</h1>
+
 | File   | DisplayName                             |
 |:-------|:----------------------------------------|
 | 50.jpg | Insane Products (01/15)
