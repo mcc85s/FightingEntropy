@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h1>Last updated: 02/12/23</h1>
+<h1>Last updated: 02/14/23</h1>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **02/14/23** | 0h 43m 08s | **2023_02_14_09_25_09.mp3**    | [Valentines Day](https://drive.google.com/file/d/17vBR74fb3vCNYUz8Rr3TBcz4thnOSWT8)
 | **02/12/23** | 0h 44m 01s | **2023_02_12_16_09_41.mp3**    | [Hive Mentality](https://drive.google.com/file/d/17Dxltw1B3zWhop3BmvYWptFs5NqMynFM)
 | **02/10/23** | 0h 36m 46s | **2023_02_10_19_45_26.mp3**    | [NYSP Rufa](https://drive.google.com/file/d/16Iw8_PXeUibQk5SEicccgE5RveF_rAef)
 | **02/02/23** | 0h 37m 31s | **2023_02_02_09_00_10.mp3**    | [Tyranny](https://drive.google.com/file/d/12Tgv0aXer4ggJZ6-qv4X6frJbUaZjrt7)
