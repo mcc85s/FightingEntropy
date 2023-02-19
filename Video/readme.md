@@ -4,34 +4,24 @@
     <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
 </p>
 
-<h1>
-  Video/readme.md
-  Last Updated 02/19/23
-</h1>
-
-<p>
-    This page here is meant to show the (<b>multiple YouTube channels/video content</b>) that I produce.
-</p>
+<h1>Video/readme.md</h1>
+<h2>Last Updated 02/19/23</h2>
+    
+<p>This page here is meant to show the (<b>multiple YouTube channels/video content</b>) that I produce.</p>
 
 | Logo    | Name                    | Company                    | Time           | Channels |
 |:--------|:------------------------|:---------------------------|:---------------|:---------|
 | ![logo] | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 3d 10h 52m 54s | 4        |
 
-<p>
-    At some point in the future, I will provide a better way to navigate through all of this content.
-</p>
+<p>At some point in the future, I will provide a better way to navigate through all of this content.</p>
 
-<p>
-    This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a:
-</p>
+<p>This content includes various subjects, as I indicate in many of my documents, and audio logs, I have the mindset of a:</p>
 
 | Role           | RIQ/Required Intelligence Quotient          |
 |:---------------|:--------------------------------------------|
 | **Professor**  | (**120/High**) -> (**160+/Extremely high**) |
 
-<p>
-  These videos cover:
-</p>
+<p>These videos cover:</p>
 
 <ul>
    <li>[+] Rhetoric</li>
