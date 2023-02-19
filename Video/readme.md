@@ -4,7 +4,7 @@
     <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
 </p>
 
-<h1>Audio/Logs.md</h1>
+<h1>Video/readme.md</h1>
 <h2>Last updated: [02/19/23]</h2>
     
 <p>This page here is meant to show the (<b>multiple YouTube channels/video content</b>) that I produce.</p>
