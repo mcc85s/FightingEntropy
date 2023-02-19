@@ -1,5 +1,4 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
-[bulletlist]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/bulletlist.jpg
 
 <p align="center" width="100%">
     <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
@@ -12,7 +11,7 @@
 
 | Logo    | Name                    | Company                    | Time           | Channels |
 |:--------|:------------------------|:---------------------------|:---------------|:---------|
-| ![logo] | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 3d 10h 52m 54s | 4        |
+| ![logo] | **Michael C. Cook Sr.** | **Secure Digits Plus LLC** | 3d 12h 44m 19s | 4        |
 
 <p>At some point in the future, I will provide a better way to navigate through all of this content.</p>
 
@@ -23,56 +22,57 @@
 | **Professor**  | (**120/High**) -> (**160+/Extremely high**) |
 
 <p>These videos cover:</p>
-[bulletlist]
+![bulletlist](https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/bulletlist.jpg)
 
 | Index | Name                       | Email                        | Id                                                                            | Time       | Total |
 |:------|:---------------------------|:-----------------------------|:------------------------------------------------------------------------------|:-----------|:------|
-| 0     | **Secure Digits Plus LLC** | [securedigitsplus@gmail.com] | [[securedigitsplusllc3084](https://www.youtube.com/@securedigitsplusllc3084)] | 2.04:10:59 | 42    |
+| 0     | **Secure Digits Plus LLC** | [securedigitsplus@gmail.com] | [[securedigitsplusllc3084](https://www.youtube.com/@securedigitsplusllc3084)] | 2.06:02:24 | 43    |
 
 | Index | Date         | Time       | Name                                                                                              |
 |:------|:-------------|:-----------|:--------------------------------------------------------------------------------------------------|
-| 0     | `02-18-2023` | `01:28:24` | [[Wrongful Robert](https://youtu.be/CPJmWpzEDBE)]                                                 |
-| 1     | `02-17-2023` | `00:11:53` | [[Malta Tech Park](https://youtu.be/1s-qefkOjXQ)]                                                 |
-| 2     | `02-15-2023` | `04:41:01` | [[Halfmoon Historic](https://youtu.be/p4MPjtd2vpw)]                                               |
-| 3     | `02-14-2023` | `00:44:09` | [[Hive Mentality](https://youtu.be/Ev97ifWx-L8)]                                                  |
-| 4     | `02-13-2023` | `02:12:00` | [[Invoke-Cimdb](https://youtu.be/MI2imvb-4Vg)]                                                    |
-| 5     | `02-12-2023` | `00:38:09` | [[NYSP Mafiosos](https://youtu.be/ENpIkuIbqZU)]                                                   |
-| 6     | `02-11-2023` | `00:20:17` | [[Build-Discography](https://youtu.be/SGKypOeZuX4)]                                               |
-| 7     | `02-10-2023` | `00:06:24` | [[Weeping Angel](https://youtu.be/Ua1r_7o5BpI)]                                                   |
-| 8     | `02-10-2023` | `00:06:40` | [[Track 20 (Original Music)](https://youtu.be/4V6Wwzxlqzw)]                                       |
-| 9     | `02-10-2023` | `00:06:31` | [[Futile Intent (Original Music)](https://youtu.be/23d9VPFr0u4)]                                  |
-| 10    | `02-09-2023` | `01:14:32` | [[New-YouTubeProfile](https://youtu.be/sqSMw4JzQoM)]                                              |
-| 11    | `02-07-2023` | `00:17:25` | [[rastructure](https://youtu.be/zIDnV1BsiCA)]                                                     |
-| 12    | `02-07-2023` | `01:59:05` | [[Golub Corp. - Empire State Plaza](https://youtu.be/Dj9E-eNe4Tg)]                                |
-| 13    | `02-04-2023` | `00:27:53` | [[Why William Moak is stupid](https://youtu.be/aejBB77d_oA)]                                      |
-| 14    | `02-04-2023` | `03:04:48` | [[Write-Element (Demonstration)](https://youtu.be/j58BO1p_EJ8)]                                   |
-| 15    | `02-01-2023` | `02:01:57` | [[New-VmController [Flight Test v2.0] Part I](https://youtu.be/nqTOmNIilxw)]                      |
-| 16    | `01-12-2023` | `01:14:43` | [[PowerShell | Virtualization Lab + FEDCPromo](https://youtu.be/9v7uJHF-cGQ)]                     |
-| 17    | `11-22-2022` | `01:15:56` | [[Search-WirelessNetwork](https://youtu.be/Y7wEiuNJhN0)]                                          |
-| 18    | `10-28-2022` | `01:22:26` | [[[FightingEntropy()][2022.10.1]](https://youtu.be/S7k4lZdPE-I)]                                  |
-| 19    | `10-15-2022` | `00:13:33` | [[Intellectual Property Theft](https://youtu.be/-GScIS_PlOo)]                                     |
-| 20    | `10-14-2022` | `00:15:03` | [[Indicative Behaviors](https://youtu.be/ZiTVgtg68Jc)]                                            |
-| 21    | `10-04-2022` | `00:00:20` | [[God Mode Cursor](https://youtu.be/dU_5rdVkCD8)]                                                 |
-| 22    | `10-03-2022` | `00:31:32` | [[Behavioral Analysis](https://youtu.be/xhMQbOoDvOc)]                                             |
-| 23    | `09-29-2022` | `00:02:15` | [[Write Progress Extension](https://youtu.be/K738wZSKcjo)]                                        |
-| 24    | `09-26-2022` | `00:01:12` | [[God Mode Cursor](https://youtu.be/tW80Zj_H6Fw)]                                                 |
-| 25    | `09-27-2022` | `00:57:04` | [[Correlations](https://youtu.be/1ABQ6rfRg8Y)]                                                    |
-| 26    | `09-08-2022` | `02:11:03` | [[Developing a GUI with style](https://youtu.be/z6_GeVYbcC4)]                                     |
-| 27    | `08-11-2022` | `00:05:18` | [[PowerShell Resume](https://youtu.be/QSuge7p5_I8)]                                               |
-| 28    | `08-03-2022` | `00:08:43` | [[Scribbles locking ANY word editor](https://youtu.be/vY2fIhS9ruo)]                               |
-| 29    | `04-15-2022` | `09:52:39` | [[Event Logs Utility (Work in progress)](https://youtu.be/CCOTI6_Veoo)]                           |
-| 30    | `04-05-2022` | `00:05:18` | [[Wireless Network Scanner Utility (PowerShell/Xaml)](https://youtu.be/35EabWfh8dQ)]              |
-| 31    | `02-15-2022` | `00:20:27` | [[A Matter of National Security](https://youtu.be/e4VnZObiez8)]                                   |
-| 32    | `12-05-2021` | `01:49:57` | [[[FightingEntropy(π)] FEInfrastructure Preview/Demo](https://youtu.be/6yQr06_rA4I)]              |
-| 33    | `10-25-2021` | `01:56:00` | [[Ambitious Automation](https://youtu.be/1E-3POI29Jo)]                                            |
-| 34    | `10-14-2021` | `00:38:23` | [[DCPromo and Networking](https://youtu.be/4q3fWhTOuFk)]                                          |
-| 35    | `10-14-2021` | `00:09:32` | [[FEInfrastructure (Alpha/Beta)](https://youtu.be/AdAilZe1EJ4)]                                   |
-| 36    | `10-02-2021` | `02:43:44` | [[Cross Platform Development](https://youtu.be/vbAH4l6Bm7A)]                                      |
-| 37    | `09-23-2021` | `00:08:17` | [[[FightingEntropy(π)]://FEWizard PowerShell Deployment feat. DVR](https://youtu.be/lZX5fAgczz0)] |
-| 38    | `09-16-2021` | `04:05:38` | [[PowerShell Deployment Wizard (featuring DVR) [WIP]](https://youtu.be/m84TElKgAFg)]              |
-| 39    | `09-10-2021` | `00:12:25` | [[Resolve-LogAddressList](https://youtu.be/_i2bPQT1ZtU)]                                          |
-| 40    | `05-23-2020` | `01:35:44` | [[Virtual Tour](https://youtu.be/HT4p28bRhqc)]                                                    |
-| 41    | `01-25-2019` | `00:32:39` | [[Computer Answers - MDT](https://youtu.be/5Cyp3pqIMRs)]                                          |
+| 0     | `02-19-2023` | `01:51:25` | [[Russia - Crushing Defeat](https://youtu.be/u3y4NHD_svUz)]                                       |
+| 1     | `02-18-2023` | `01:28:24` | [[Wrongful Robert](https://youtu.be/CPJmWpzEDBE)]                                                 |
+| 2     | `02-17-2023` | `00:11:53` | [[Malta Tech Park](https://youtu.be/1s-qefkOjXQ)]                                                 |
+| 3     | `02-15-2023` | `04:41:01` | [[Halfmoon Historic](https://youtu.be/p4MPjtd2vpw)]                                               |
+| 4     | `02-14-2023` | `00:44:09` | [[Hive Mentality](https://youtu.be/Ev97ifWx-L8)]                                                  |
+| 5     | `02-13-2023` | `02:12:00` | [[Invoke-Cimdb](https://youtu.be/MI2imvb-4Vg)]                                                    |
+| 6     | `02-12-2023` | `00:38:09` | [[NYSP Mafiosos](https://youtu.be/ENpIkuIbqZU)]                                                   |
+| 7     | `02-11-2023` | `00:20:17` | [[Build-Discography](https://youtu.be/SGKypOeZuX4)]                                               |
+| 8     | `02-10-2023` | `00:06:24` | [[Weeping Angel](https://youtu.be/Ua1r_7o5BpI)]                                                   |
+| 9     | `02-10-2023` | `00:06:40` | [[Track 20 (Original Music)](https://youtu.be/4V6Wwzxlqzw)]                                       |
+| 10    | `02-10-2023` | `00:06:31` | [[Futile Intent (Original Music)](https://youtu.be/23d9VPFr0u4)]                                  |
+| 11    | `02-09-2023` | `01:14:32` | [[New-YouTubeProfile](https://youtu.be/sqSMw4JzQoM)]                                              |
+| 12    | `02-07-2023` | `00:17:25` | [[rastructure](https://youtu.be/zIDnV1BsiCA)]                                                     |
+| 13    | `02-07-2023` | `01:59:05` | [[Golub Corp. - Empire State Plaza](https://youtu.be/Dj9E-eNe4Tg)]                                |
+| 14    | `02-04-2023` | `00:27:53` | [[Why William Moak is stupid](https://youtu.be/aejBB77d_oA)]                                      |
+| 15    | `02-04-2023` | `03:04:48` | [[Write-Element (Demonstration)](https://youtu.be/j58BO1p_EJ8)]                                   |
+| 16    | `02-01-2023` | `02:01:57` | [[New-VmController [Flight Test v2.0] Part I](https://youtu.be/nqTOmNIilxw)]                      |
+| 17    | `01-12-2023` | `01:14:43` | [[PowerShell | Virtualization Lab + FEDCPromo](https://youtu.be/9v7uJHF-cGQ)]                     |
+| 18    | `11-22-2022` | `01:15:56` | [[Search-WirelessNetwork](https://youtu.be/Y7wEiuNJhN0)]                                          |
+| 19    | `10-28-2022` | `01:22:26` | [[[FightingEntropy()][2022.10.1]](https://youtu.be/S7k4lZdPE-I)]                                  |
+| 20    | `10-15-2022` | `00:13:33` | [[Intellectual Property Theft](https://youtu.be/-GScIS_PlOo)]                                     |
+| 21    | `10-14-2022` | `00:15:03` | [[Indicative Behaviors](https://youtu.be/ZiTVgtg68Jc)]                                            |
+| 22    | `10-04-2022` | `00:00:20` | [[God Mode Cursor](https://youtu.be/dU_5rdVkCD8)]                                                 |
+| 23    | `10-03-2022` | `00:31:32` | [[Behavioral Analysis](https://youtu.be/xhMQbOoDvOc)]                                             |
+| 24    | `09-29-2022` | `00:02:15` | [[Write Progress Extension](https://youtu.be/K738wZSKcjo)]                                        |
+| 25    | `09-26-2022` | `00:01:12` | [[God Mode Cursor](https://youtu.be/tW80Zj_H6Fw)]                                                 |
+| 26    | `09-27-2022` | `00:57:04` | [[Correlations](https://youtu.be/1ABQ6rfRg8Y)]                                                    |
+| 27    | `09-08-2022` | `02:11:03` | [[Developing a GUI with style](https://youtu.be/z6_GeVYbcC4)]                                     |
+| 28    | `08-11-2022` | `00:05:18` | [[PowerShell Resume](https://youtu.be/QSuge7p5_I8)]                                               |
+| 29    | `08-03-2022` | `00:08:43` | [[Scribbles locking ANY word editor](https://youtu.be/vY2fIhS9ruo)]                               |
+| 30    | `04-15-2022` | `09:52:39` | [[Event Logs Utility (Work in progress)](https://youtu.be/CCOTI6_Veoo)]                           |
+| 31    | `04-05-2022` | `00:05:18` | [[Wireless Network Scanner Utility (PowerShell/Xaml)](https://youtu.be/35EabWfh8dQ)]              |
+| 32    | `02-15-2022` | `00:20:27` | [[A Matter of National Security](https://youtu.be/e4VnZObiez8)]                                   |
+| 33    | `12-05-2021` | `01:49:57` | [[[FightingEntropy(π)] FEInfrastructure Preview/Demo](https://youtu.be/6yQr06_rA4I)]              |
+| 34    | `10-25-2021` | `01:56:00` | [[Ambitious Automation](https://youtu.be/1E-3POI29Jo)]                                            |
+| 35    | `10-14-2021` | `00:38:23` | [[DCPromo and Networking](https://youtu.be/4q3fWhTOuFk)]                                          |
+| 36    | `10-14-2021` | `00:09:32` | [[FEInfrastructure (Alpha/Beta)](https://youtu.be/AdAilZe1EJ4)]                                   |
+| 37    | `10-02-2021` | `02:43:44` | [[Cross Platform Development](https://youtu.be/vbAH4l6Bm7A)]                                      |
+| 38    | `09-23-2021` | `00:08:17` | [[[FightingEntropy(π)]://FEWizard PowerShell Deployment feat. DVR](https://youtu.be/lZX5fAgczz0)] |
+| 39    | `09-16-2021` | `04:05:38` | [[PowerShell Deployment Wizard (featuring DVR) [WIP]](https://youtu.be/m84TElKgAFg)]              |
+| 40    | `09-10-2021` | `00:12:25` | [[Resolve-LogAddressList](https://youtu.be/_i2bPQT1ZtU)]                                          |
+| 41    | `05-23-2020` | `01:35:44` | [[Virtual Tour](https://youtu.be/HT4p28bRhqc)]                                                    |
+| 42    | `01-25-2019` | `00:32:39` | [[Computer Answers - MDT](https://youtu.be/5Cyp3pqIMRs)]                                          |
 
 | Index | Name                       | Email                         | Id                                                                            | Time       | Total |
 |:------|:---------------------------|:------------------------------|:------------------------------------------------------------------------------|:-----------|:------|
