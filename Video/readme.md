@@ -1,4 +1,5 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
+[bulletlist]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/bulletlist.jpg
 
 <p align="center" width="100%">
     <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
@@ -22,19 +23,7 @@
 | **Professor**  | (**120/High**) -> (**160+/Extremely high**) |
 
 <p>These videos cover:</p>
-
-<ul>
-   <li>[+] Rhetoric</li>
-   <li>[+] Demonstration</li>
-   <li>[+] Education</li>
-   <li>[+] Design</li>
-   <li>[+] Programming</li>
-   <li>[+] Psychology</li>
-   <li>[+] Design</li>
-   <li>[+] Exhibition</li>
-   <li>[+] Evidence</li>
-   <li>[+] Cyberattacks</li>
-</ul>
+<p>![bulletlist]></p>
 
 | Index | Name                       | Email                        | Id                                                                            | Time       | Total |
 |:------|:---------------------------|:-----------------------------|:------------------------------------------------------------------------------|:-----------|:------|
@@ -155,11 +144,3 @@
 | 4     | `06-06-2021` | `00:03:58` | [[[FightingEntropy(π)][(2021.6.0)] Installation + FEModule GUI](https://youtu.be/acYldTcKUAs)] |
 | 5     | `06-04-2021` | `00:07:05` | [[[FightingEntropy(π)][(2021.6.0)]](https://youtu.be/UYnCj5Hcq6o)]                             |
 | 6     | `03-16-2021` | `01:38:47` | [[FightingEntropy (π) v2021.3.1 - New-FEDeploymentShare GUI](https://youtu.be/4yFKeK9CzU0)]    |
-
-<p>
-  You can't go around claiming to be a professor if you're a fuckin' moron.<br>
-  You have to be willing to OFFEND people sometimes, especially when they (<b>say/do/think</b>) things that are really fuckin' stupid.<br>
-  For instance, [<b>Shayam Sundar</b>] from the [<b>National Institute of Standards and Technology</b>].<br>
-  You can take your [<b>NIST 9/11/2001</b>] report, and [<b>shove it right up your ass</b>].<br>
-  [<b>Some</b>] people in the [<b>United States of America</b>] planned for the attack by [<b>Osama Bin Laden</b>] on [<b>09/12/2001</b>].
-</p>
