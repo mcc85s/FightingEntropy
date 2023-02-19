@@ -21,8 +21,10 @@
 |:---------------|:--------------------------------------------|
 | **Professor**  | (**120/High**) -> (**160+/Extremely high**) |
 
-<p>These videos cover:</p>
+<p>These videos cover:<br>
 ![bulletlist](https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/bulletlist.jpg)
+</p>
+
 
 | Index | Name                       | Email                        | Id                                                                            | Time       | Total |
 |:------|:---------------------------|:-----------------------------|:------------------------------------------------------------------------------|:-----------|:------|
