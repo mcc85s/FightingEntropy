@@ -1,4 +1,3 @@
-
 $Ctrl = [TranscriptionCollection]::New("02/24/2023","Impressions")
 $Ctrl.AddFile("Audio Log - Impressions","02/18/2023","17:56:25","01:23:06","https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu")
 $Ctrl.AddFile("SCSO Admin (Jeff Brown)","02/17/2023","09:34:04","00:10:59","https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3")
@@ -253,8 +252,11 @@ $File = $Ctrl.Get(1)
 
 $File.X(0,"00:03",@'
 :Today's [Friday, February 17th, 2023], [Michael Cook] speaking. 
+
 Currently at [6012 County Farm Road], I just asked the civil office to... 
-get somebody from the [administrative office] to talk to. We'll see how this goes.
+get somebody from the [administrative office] to talk to.
+
+We'll see how this goes.
 '@)
 
 $File.X(2,"00:54",@'
@@ -346,9 +348,13 @@ $File.X(1,"02:32",@'
 '@)
 
 $File.X(0,"02:32",@'
-:Well, uh I wanted to drop this document off, mainly because uh I have been havin' 
-an issue with, uh, getting in touch with [Mr. Zurlo] regarding a number of incidents.
+:Well, uh I wanted to drop this document off, mainly because uh I have been havin' an
+issue with, uh, getting in touch with [Mr. Zurlo] regarding a number of incidents.
 '@)
+
+<#
+    Document | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf
+#>
 
 $File.X(1,"02:42",@'
 :Ok...?
@@ -431,12 +437,20 @@ $File.X(0,"03:16",@'
 '@)
 
 $File.X(1,"03:25",@'
-:Ok, is that on here...? (*yes, actually*)
+:Ok, is that on here...?
 '@)
 
+<#
+    Yes, actually.
+#>
+
 $File.X(0,"03:26",@'
-:That is NOT on there (*it is, actually*)
+:That is NOT on there 
 '@)
+
+<#
+    It is, actually.
+#>
 
 $File.X(1,"03:28",@'
 :Ok.
@@ -467,8 +481,12 @@ $File.X(1,"03:47",@'
 '@)
 
 $File.X(0,"03:51",@'
-:Um, yeah you can write on that, that's fine... uh [06/28/2022] (*I was gonna give him a post-it*)
+:Um, yeah you can write on that, that's fine... uh [06/28/2022]
 '@)
+
+<#
+    I was gonna give him a post-it.
+#>
 
 $File.X(1,"04:00",@'
 :And [Michael], um, can I get a phone number for ya...?
@@ -509,8 +527,11 @@ $File.X(1,"04:21",@'
 
 $File.X(0,"04:22",@'
 :And I told the [State Police] about that, and that is when they arrested me. 
-(*It's in the body camera footage*)
 '@)
+
+<#
+    It's in the body camera footage.
+#>
 
 $File.X(1,"04:27",@'
 :...that wasn't very nice...
@@ -529,9 +550,13 @@ $File.X(0,"04:30",@'
 apparatus or whatever, basically my- the statement- I have a document that's on there,
 regarding a statement that I wanna put together, it includes backstory, and that's 
 why I made the document, uhm, I've been having communication issues with many people
-in your department, not ALL of them... 
-(*I spoke to [SCSO Samuel Speziale] on [06/23/2022] about [you], specifically*)
+in your department, not ALL of them...
 '@)
+
+<#
+    I spoke to [SCSO Samuel Speziale] on [06/23/2022] about [you], specifically.
+    06/23/22 | Speziale + Gardner | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6
+#>
 
 $File.X(1,"04:51",@'
 :Ok.
@@ -592,8 +617,12 @@ AND they tried to kill ME, on [May 26th, 2020/prior to SCSO-2020-028501].
 '@)
 
 $File.X(1,"06:21",@'
-:Ok. (*You gave me THAT incident number in the phone call I recorded on 02/02/21*)
+:Ok.
 '@)
+
+<#
+    You gave me THAT incident number in the phone call I recorded on 02/02/21
+#>
 
 $File.X(1,"06:22",@'
 :When you and your mom had your incident there, where you got arrested by the troopers...
@@ -629,12 +658,16 @@ $File.X(0,"06:44",@'
 '@)
 
 $File.X(1,"06:45",@'
-:What year...? (*...did you graduate*)
+:What year...?
 '@)
 
 $File.X(0,"06:46",@'
-:Uh, 2003. (*assumed you meant what year I graduated*)
+:Uh, 2003.
 '@)
+
+<#
+    Assumed you meant what year I graduated
+#>
 
 $File.X(1,"06:47",@'
 :Ok.
@@ -876,7 +909,6 @@ $File.X(0,"10:34",@'
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
-# Switch to third file
 $File = $Ctrl.Get(2)
 
 $File.X(0,"00:09",@'
@@ -906,41 +938,41 @@ department, and be able to find that interaction that may not have my name on it
 is a record of that interaction because [Sergeant Welch] told me that it exists. So...
 '@)
 
-$File.X(1,"00:01:00",@'
+$File.X(1,"01:00",@'
 :Well, did you write the number down, if you have the number I can look it up.
 '@)
 
-$File.X(0,"00:01:04",@'
+$File.X(0,"01:04",@'
 :What I'm telling you is that the number that he gave me, was for the [WRONG INCIDENT].
 So HE doesn't know what it is.
 '@)
 
-$File.X(1,"00:01:11",@'
+$File.X(1,"01:11",@'
 :I don't either...
 '@)
 
-$File.X(0,"00:01:13",@'
+$File.X(0,"01:13",@'
 :So like, is that how your records department operates...?
 Some things get logged, and some things don't...?
 So like, when someone calls- 
 '@)
 
-$File.X(1,"00:01:21",@'
+$File.X(1,"01:21",@'
 :Every interaction, no...
 Again we handle [a hundred thousand complaints a year]...
 '@)
 
-$File.X(0,"00:01:25",@'
+$File.X(0,"01:25",@'
 :There should be a call for service, that's what [Sergeant Welch] told me.
 '@)
 
-$File.X(1,"00:01:30",@'
+$File.X(1,"01:30",@'
 :There SHOULD be, yeah. But without your NAME associated with it, did the dispatcher get
 your name when you called...?
 '@)
 
 
-$File.X(0,"00:01:36",@'
+$File.X(0,"01:36",@'
 :What I find [perplexing] about this, is that I can tell you that this record should
 exist, and you're gonna tell me that the police officer went to that place to check
 the surveillance footage, but there's NO RECORD of that.
@@ -948,7 +980,7 @@ the surveillance footage, but there's NO RECORD of that.
 That's what you're telling me.
 '@)
 
-$File.X(1,"00:01:50",@'
+$File.X(1,"01:50",@'
 :No, the one that I read you, is from [5/24] (it was reported on [5/27], not [5/24]).
 Well, [5/24] was the funeral home, okay...? Let's see...
 
@@ -956,54 +988,130 @@ Uh, THAT was not the one, let me find the one where he checked the video.
 I gotta find the right one, again, I have (8) of them open.
 '@)
 
-$File.X(0,"00:02:04",@'
+$File.X(0,"02:04",@'
 :Right.
 '@)
 
-$File.X(1,"00:02:05",@'
+$File.X(1,"02:05",@'
 :This was on [5/27]... and, it happened at...? We got the call around... [12 o'clock],
 it happened at about [10 o'clock] it looks like, there...
 '@)
 
-$File.X(0,"00:02:22",@'
+<#
+    [Right. That's SUSPICIOUS, and it involves a TOWN COUNCIL MEMBER NAMED ERIC CATRICALA.]
+#>
+
+$File.X(0,"02:22",@'
 :You talkin' about [20-003173], is that what you're talkin' about...? (I meant 003177)
 '@)
 
-$File.X(1,"00:02:28",@'
+$File.X(1,"02:28",@'
 :That's the one I'm talkin' about.
 '@)
 
-$File.X(0,"00:02:29",@'
+$File.X(0,"02:29",@'
 :Yeah, that's not [Center for Security], totally different address, bud.
 '@)
 
-$File.X(1,"00:02:35",@'
+$File.X(1,"02:35",@'
 :Ok, well... again, it- it- it- it's kinda hard to... you seem to think there's some
 [wide-ranging conspiracy] involving [my department].
 '@)
 
-$File.X(0,"00:02:42",@'
+<#
+    ===========================
+    | Wide-Ranging Conspiracy |
+    ===========================
+
+    Yeah, because I was [arrested] over a [post-dated ticket] after my [iPhone 8+] was [disabled].
+    It was [disabled by the manufacturer, Apple Corporation] after I [showed a video] to [NYSP Shaemus Leavey] 
+    at [05/27/20 0900].
+
+    That video being the one I recorded outside of the [Catricala Funeral Home] from [05/25/20 2343] to [05/26/20 0004]
+    of [(2) dudes using a DANGEROUS ESPIONAGE TOOL DESIGNED TO SPECIFICALLY TARGET SMARTPHONES CALLED "PHANTOM"].
+
+    In that video, these [(2) dudes/queers] appeared to be right smack dab in the middle of [attempting to murder me].
+
+    Maybe there is no [wide-ranging conspiracy] at all, and it just LOOKS like [Eric Catricala had (2) different events
+    merged together into a single incident (3) days late, and had (0) evidence of me really doing a god damn thing].
+
+    Oh wait, [I have evidence that could corroborate HIS side of the story]...
+    It's just that [the evidence I have would contradict the reported time], as well as [insert the record]: 
+    [SCSO-2020-028501].
+    
+    [Nothing suspicious about any of this shit in the least (sarcasm).] 
+
+    Meanwhile, [I have like dozens of fucking pictures, as well as a few AUDIO RECORDINGS], and... 
+    [SOMEHOW I get arrested for cutting a fucking $5.00 kayak strap at 1769 Route 9, on a post-dated ticket]. 
+    
+    The [PHONE LINE] that [I SEVERED] because I was attempting to call 911 SOMEHOW, [NOT] being the reason for 
+    arresting me.
+
+    Why did I cut the phone line, is [not a question any investigator nor police officer has asked me].
+    I would've thought at the very least, some dude from SCSO would've approached me and been like...
+
+    [===========================================================================================================]
+
+    [Guy] : What the actual fuck, dude...?
+    [Me]  : What...?
+    [Guy] : So you fuckin' cut some dude's phone line, didn't ya...?
+    [Me]  : Well, yeh.
+    [Guy] : Yeah well, why the hell would you do something crazy like that...?
+            You done messed up [A-A-Ron]...
+    [Me]  : It's cause I was trying to call (911).
+    [Guy] : *rolls his eyes* Buddy, everybody tries to call (911).
+            *shakes head* I don't even wanna hear it, I gotta arrest you for that...
+
+    [^ what never happened.]  
+
+    [===========================================================================================================]
+
+    But I'll tell ya, cause I had attempted to call (911) (2) times during this (90) minute event where (2) dudes 
+    were chasing me, and trying to kill me with a car parked ahead of the (3) of us in the [Lowes] parking lot. 
+    [Nothing shady or suspicious going on or whatever. Not at all.]
+
+    Oh, by the way, [the (2) dudes who tried to hit me with their fucking car, nobody is going after them].
+
+    As far as I know [your deputy] [Scott Schelling] went to [Center for Security] immediately after being at the 
+    [SECONDARY LOCATION] in the TICKET that you gave me in this phone call, and I believe that either HE or someone
+    else [destroyed the evidence of me calling (911) in front of the security camera at 05/26/20 0010].
+
+    Nothing suspicious about all this shit at all. 
+    Nah. 
+    Everybody follows the law at all times. (sarcasm)
+
+    Oh and by the way, the argument that I had with my mother on [06/28/22] is about the [wide-ranging conspiracy]
+    I just rattled off.
+    Oh by the way, [Paul Pelagalli] took custody of my fuckin' children away over this whole ordeal too.
+    Oh by the way, people think I went insane, cause some people are just plain old fuckin' stupid and lazy.
+#>
+
+$File.X(0,"02:42",@'
 :Well, no, it's not a [wide-ranging conspiracy], I should be able to ask somebody at
 your records department or YOU, for the record that should exist for a call for
 service where (3) [Saratoga County Sheriff Officers] were in front of the [Zappone]
 dealership, on [May 26th]
 '@)
 
-$File.X(1,"00:02:56",@'
+$File.X(1,"02:56",@'
 :Right.
 '@)
 
-$File.X(0,"00:02:56",@'
+$File.X(0,"02:56",@'
 :...at approximately [1AM], and all I'm getting so far from you, is a heck of a lot
 of redirection, and uh- we have too much to do, and this that and the other thing,
 and making up excuses.
 '@)
 
-$File.X(1,"00:03:06",@'
+$File.X(1,"03:06",@'
 :Ha ha ha, birds.
 '@)
 
-$File.X(0,"00:03:09",@'
+<#
+    [Birds - https://youtu.be/zXkmxtYQ6wQ]
+#>
+
+$File.X(0,"03:09",@'
 :What YOU'RE telling me, the Sarato- that officer, [Scott Schelling], went to that
 place, after I told him, on [May 26th], that there should be surveillance footage
 of me initializing a call to (911) services. 
@@ -1014,11 +1122,11 @@ surveillance footage, and it didn't exist.
 But- you're telling me that it was the WRONG ADDRESS that they did that.
 '@)
 
-$File.X(1,"00:03:33",@'
+$File.X(1,"03:33",@'
 :Boy, you're in an awful lot of em.
 '@)
 
-$File.X(0,"00:03:34",@'
+$File.X(0,"03:34",@'
 :Well, yeah, no I'm in a lot of em because of this (1) incident that nobody can give
 me clear instructions or directions, or...
 
@@ -1026,32 +1134,36 @@ I'm asking you specific questions related to this ticket that should exist, and 
 not able to answer it. You're, you're... redirecting.
 '@)
 
-$File.X(1,"00:03:49",@'
+$File.X(1,"03:49",@'
 :I'm not redirecting, I can't find what you're looking for.
 Here- here- here's what I did.
 '@)
 
-$File.X(0,"00:03:53",@'
+$File.X(0,"03:53",@'
 :So like-
 '@)
 
-$File.X(1,"00:03:53",@'
+$File.X(1,"03:53",@'
 :Hold up, [May 26th]- hold on.
 '@)
 
-$File.X(0,"00:03:55",@'
+$File.X(0,"03:55",@'
 :Ok.
 '@)
 
-$File.X(1,"00:03:55",@'
+$File.X(1,"03:55",@'
 :[May 26th, 2020], you said about 1AM, right...?
 '@)
 
-$File.X(0,"00:04:00",@'
+<#
+   [This is what I'd been asking him to do, look for events based on the time]
+#>
+
+$File.X(0,"04:00",@'
 :Yes.
 '@)
 
-$File.X(1,"00:04:02",@'
+$File.X(1,"04:02",@'
 :Alright, I'm gonna put in [12:45AM] until [1:30].
 
 I've got 1... 2... 3... 4... 5... 6... complaints here, (6) calls that we received,
@@ -1059,44 +1171,47 @@ during that time, I'm gonna open up each and every one of em...
 
 '@)
 
-$File.X(0,"00:04:23",@'
+$File.X(0,"04:23",@'
 :Ok. *pauses* Now we're talking, here.
 '@)
 
-$File.X(1,"00:04:31",@'
+$File.X(1,"04:31",@'
 :Let me take a look at what they said.
 '@)
 
-$File.X(1,"00:04:42",@'
+$File.X(1,"04:42",@'
 :First one was a (911) call, cellular (911), open line, no voice contact.
 That's the extent of what I know about that one, lets close that one out.
 Second one...
-
 '@)
 
-$File.X(0,"00:04:56",@'
+<#
+   [^ This was at or about the time that I was in the Lowes Home Improvement store parking lot.]
+#>
+
+$File.X(0,"04:56",@'
 :What time did that call come in...?
 '@)
 
-$File.X(1,"00:04:58",@'
+$File.X(1,"04:58",@'
 :Uhm, let me go back.
 Closed that one out.
 I have to do this again.
 '@)
 
-$File.X(1,"00:05:17",@'
+$File.X(1,"05:17",@'
 :*sigh* Uh, lets see if I can get a location, let's see.
 '@)
 
-$File.X(1,"00:05:17",@'
+$File.X(1,"05:17",@'
 :Ah, it's in the... [Plant Road] area, which is not THAT far down the road...
 '@)
 
-$File.X(0,"00:05:35",@'
+$File.X(0,"05:35",@'
 :Yeah, I don't think that- that's related...
 '@)
 
-$File.X(1,"00:05:38",@'
+$File.X(1,"05:38",@'
 :It may not be...
 
 Uhm, no voice contact, and they did attempt to recall, no answer on recall.
@@ -1106,92 +1221,96 @@ Same area...?
 
 '@)
 
-$File.X(1,"00:05:58",@'
+$File.X(1,"05:58",@'
 :[Burglar alarm], code enforcement, water problem at a business.
 '@)
 
-$File.X(1,"00:06:08",@'
+$File.X(1,"06:08",@'
 :Ah, let's see.
 This is somebody reporting a... [verbal dispute], it does have a name associated
 with it, not your name, and this is not in that particular area, of the county...
 '@)
 
-$File.X(1,"00:06:27",@'
+$File.X(1,"06:27",@'
 :The next one is for power lines down.
 '@)
 
-$File.X(1,"00:06:34",@'
+$File.X(1,"06:34",@'
 :The next one is, let's see...
 '@)
 
-$File.X(0,"00:06:43",@'
+$File.X(0,"06:43",@'
 :Well, I can-
 '@)
 
-$File.X(1,"00:06:44",@'
+$File.X(1,"06:44",@'
 :Hold on, I'm goin' through every one of em...
 Uh, a power failure alarm, at a business, that's not it...
 '@)
 
-$File.X(0,"00:06:54",@'
+$File.X(0,"06:54",@'
 :Was that [Key Bank]...?
 '@)
 
-$File.X(1,"00:06:56",@'
+$File.X(1,"06:56",@'
 :Nope. Uh, let's see...
 '@)
 
-$File.X(0,"00:07:03",@'
+$File.X(0,"07:03",@'
 :Cause I remember on that night, that uh-
 '@)
 
-$File.X(1,"00:07:06",@'
+$File.X(1,"07:06",@'
 :Hang on for one sec, I got another call comin' in...
 '@)
 
-$File.X(0,"00:07:07",@'
+$File.X(0,"07:07",@'
 :Ok.
 '@)
 
-$File.X(1,"00:08:10",@'
+<#
+    [Timing seems to be *incredibly coincidental*, because this last ticket he rattles off is the correct one.]
+#>
+
+$File.X(1,"08:10",@'
 :Alright, I'm back. So, let me look at this last one, here.
 '@)
 
-$File.X(0,"00:08:14",@'
+$File.X(0,"08:14",@'
 :Ok.
 '@)
 
-$File.X(1,"00:08:16",@'
+$File.X(1,"08:16",@'
 :Uh~! This is a male out in front of [Zappones]~!
 '@)
 
-$File.X(0,"00:08:19",@'
+$File.X(0,"08:19",@'
 :That's it~!
 '@)
 
-$File.X(1,"00:08:19",@'
+$File.X(1,"08:19",@'
 :[White male], [blue flannel shirt], [brown hair], jumped in front of the callers vehicle as
 they passed the location... ...[they're alleging you jumped in front of their car].
 '@)
 
-$File.X(0,"00:08:31",@'
+$File.X(0,"08:31",@'
 :What is that ticket number...?
 '@)
 
-$File.X(1,"00:08:34",@'
+$File.X(1,"08:34",@'
 :It is, [2020-028501]. [1:28] in the morning, you were not the caller, it looks like THEY
 were the caller, because you jumped in front of their car.
 '@)
 
-$File.X(0,"00:08:53",@'
+$File.X(0,"08:53",@'
 :Right, so uh (sarcasm), for a period of about, you said that was at [1:28]...?
 '@)
 
-$File.X(1,"00:09:02",@'
+$File.X(1,"09:02",@'
 :It looks like they called this in, uh yeah, at [1:28] in the morning.
 '@)
 
-$File.X(0,"00:09:09",@'
+$File.X(0,"09:09",@'
 :Ok, so... From...
 
 I have a screenshot that says that I originally tried to call (911) at [12:05].
@@ -1199,23 +1318,35 @@ Now, I can prove that.
 
 '@)
 
-$File.X(1,"00:09:20",@'
+$File.X(1,"09:20",@'
 :I- I- I- didn't search back that far.
 I can search back that far...
 '@)
 
-$File.X(0,"00:09:23",@'
+$File.X(0,"09:23",@'
 :I'm just trying to give you a trajectory of what happened that night.
 That way, if you are able to help me, maybe with YOUR experience...
 ...you'll be able to identify how you can do that.
 
 '@)
 
-$File.X(1,"00:09:34",@'
+$File.X(1,"09:34",@'
 :Call (911), there's nothing I can do.
 '@)
 
-$File.X(0,"00:09:36",@'
+<#
+    ====================
+    | Nothin' I can do |
+    ====================
+
+    That's a problem. [I called 911]. [Twice]. [My phone was hacked]. [I recorded a video of (2) dudes stalking me].
+
+    But also, if I [suspect] that the [telecommunications companies] are committing [illegal activities], then THEY can 
+    disrupt [any 911 call] from [making it to your dispatch station], and therefore, they have [strict control] over 
+    the [law enforcement system].                               
+#>
+
+$File.X(0,"09:36",@'
 :Well, what I'm trying to say here, is that I'm giving you my recollection of that night.
 
 The- the attack BEGAN, on [May 25th], and went INTO [May 26th], because it occurred at
@@ -1249,69 +1380,164 @@ in a black dodge, at that gas station, that was leaving.
 
 '@)
 
-$File.X(1,"00:11:17",@'
+$File.X(1,"11:17",@'
 :That happened... (6) months ago, I don't know a single business that keeps their footage-
 '@)
 
-$File.X(0,"00:11:22",@'
+$File.X(0,"11:22",@'
 :I'm sure they don't, but- ya know, these are things that I had been attempting to inform
 SOMEBODY in your department...
 '@)
 
-$File.X(1,"00:11:28",@'
+$File.X(1,"11:28",@'
 :The only crime I'm seeing here, is [disorderly conduct] for [obstructing a public roadway].
 Committed by you.
 '@)
 
-$File.X(0,"00:11:36",@'
+<#
+    =======================
+    | Obstructing Justice |
+    =======================
+
+    What about [multiple fellow officers] [obstructing justice]...?
+    Or the [telephony DDOS attacks]...?
+    [Pretty sure those are crimes, too].
+
+    MAYBE, as long as THOSE [crimes] are [committed when nobody is looking]...?
+    Then they're not [reportable] nor [arrestable crimes].
+
+    [So, someone can →]
+
+    [+] [destroy evidence] of [911 calls/attempted murder/vehicular manslaughter]
+    [~] ...as long as...
+    [+] [any evidence of those crimes being committed] is [destroyed] AFTER it is shown to a [police officer],
+        like [NYSP Trooper Shaemus Leavey]
+    [~] ...which means, since nobody except [NYSP Trooper Shaemus Leavey], and [my kids] saw them happen...
+    [+] ...those aren't [crimes].
+
+    [And, with that logic →]
+
+    [It is LEGAL to]:
+    - [commit espionage] to [somebody] using [PHANTOM/PEGASUS]
+    - [attempt to murder someone] either [on FOOT] or [with a VEHICLE] multiple times
+    - perform a [telephony denial of service attack] AKA [circumventing 911 calls]
+    - commit [obstruction of justice] and/or [destroy evidence]
+
+    [It is NOT LEGAL to]:
+    - [call 911] on a [device] that is [infected] with [PHANTOM]
+    - [flag people down for help] to [call 911], since your [device] may be [infected] with [PHANTOM]
+    - [hand an iPhone 8+] that is [infected] with [PHANTOM] that has [evidence] on it, to an [officer of the law]
+      for instance [SCSO Scott Schelling]
+    - [survive] a [murder attempt] or a [vehicular manslaughter attempt]
+
+    So, those are the crimes that [a guy who calls himself an investigator] DIDN'T see, which means that they're 
+    actually perfectly legal and easy to do, as long as you [establish prerequisites] by [having friends] in the 
+    [police] and [telecom companies], and you [cover your tracks] and [destroy evidence] and stuff.
+#>
+
+$File.X(0,"11:36",@'
 :Because I called (911), and those calls weren't making it to the dispatch station.
 So I was trying to get help SOMEHOW. Which led to me like, cutting this phone line
 to this house that I suspect...
 '@)
 
-$File.X(1,"00:11:49",@'
+$File.X(1,"11:49",@'
 :If you're not gonna answer me, I'm gonna hang up the phone.
 '@)
 
-$File.X(0,"00:11:50",@'
+$File.X(0,"11:50",@'
 :Ok...?
 '@)
 
-$File.X(1,"00:11:52",@'
+$File.X(1,"11:52",@'
 :What would you like me to do, about a (911) call that never made it to my dispatchers...?
 '@)
 
-$File.X(0,"00:11:57",@'
+$File.X(0,"11:57",@'
 :Well, I'm not trying to have anything done about the (911) call, but what I AM trying
 to do...
 '@)
 
-$File.X(1,"00:12:03",@'
+$File.X(1,"12:03",@'
 :There's nothing I can do about that.
 '@)
 
-$File.X(0,"00:12:04",@'
+$File.X(0,"12:04",@'
 :But you're saying that-
 '@)
 
-$File.X(1,"00:12:06",@'
+$File.X(1,"12:06",@'
 :It happens all the time because of bad cell coverage.
 '@)
 
-$File.X(0,"00:12:08",@'
+$File.X(0,"12:08",@'
 :Right, I- I-
 '@)
 
-$File.X(1,"00:12:09",@'
+$File.X(1,"12:09",@'
 :You ever been in the northern part of the county here...?
 Cell coverage is terrible.
 '@)
 
-$File.X(0,"00:12:12",@'
+$File.X(0,"12:12",@'
 :It shouldn't happen, here in [Clifton Park], where there's (3) cell towers within a mile.
 '@)
 
-$File.X(1,"00:12:18",@'
+<#
+    ====================================
+    | Northern Part of Saratoga County |
+    ====================================
+
+    [Yeh, I've been in the northern part of the county, as I used to deliver →]
+    - the [Times Union] on [Q121/Clifton Park-Halfmoon], 
+                           [Q122/Mechanicville-Stillwater-Malta], and 
+                           [Q107/Ballston Spa], 
+    - pizzas for [Pizza Works/Ballston Spa]
+    - the [Metroland/Saratoga County], which went to [South Glens Falls] and even [Lake George].
+
+    [South Glens Falls] is the most northern part of [Saratoga County].
+    Way more north than [Ballston Spa].
+    But, na. Not me, man. I've never tried to make phone calls in the [middle part] of the county. 
+    Nor in [West Milton] when I dropped off the [Times Union]. 
+    Nor in [Ballston Spa] when I dropped off the [Times Union/Metroland/Pizzas for Pizza Works].
+    Nor [West Charleton] when I dropped off the [Times Union]. 
+    Nor [Galway]... when I dropped off the [Times Union]. 
+    Nor in [Moreau] when I dropped off the [Metroland]. 
+    Nor in [South Glens Falls]... when I dropped off the [Metroland] at [Rock Hill Bake Shop], and the
+    dude gave me a [fresh chocolate chip cookie] literally every week that I went there.
+
+    [===========================================================================================================]
+
+    [Dude]: Hey dude, want a cookie...?
+    [Me]  : Yep.
+    [Dude]: Here ya go.
+    [Me]  : Thanks dude.
+    [Dude]: No problem.
+    [Me]  : Have a good one~!
+    [Dude]: You too, dude.
+
+    [===========================================================================================================]
+
+    Dude made damn certain to give me a cookie every single time that he saw me, and I did that for (7) years.
+
+    But, nah. I've never once tried to make a phone call in [ANY] of those places that I went to every single week.
+    That would be unspeakable. Oh wait, I'm being sarcastic. Yeah. I've been in the northern part of the county.
+    The cell service DOES suck ass in [Ballston Spa] and [West Milton].
+    
+    [^ That's a fact, but so is the fact that (3) cell towers were within a mile of where I called]
+    
+    --------------------
+    | <insert picture> |
+    --------------------
+
+    [05/26/20 0004 Call  #1] | 42.852236, -73.756904
+    [05/26/20 0010 Call  #2] | 42.858849, -73.762229
+                  [Tower #1] | 42.854831, -73.772868
+                  [Tower #2] | 42.868798, -73.754071
+                  [Tower #3] | 42.869364, -73.750896
+#>
+
+$File.X(1,"12:18",@'
 :There are, but again, if there's a problem with- with- [Verizon], or [Sprint], or
 [AT&T]'s tower, what could I potentially even- even if you wanted to reach for the
 stars, what could I possibly do about that...?
@@ -1319,7 +1545,15 @@ stars, what could I possibly do about that...?
 What, climb up there, and make sure all the wires are plugged in...?
 '@)
 
-$File.X(0,"00:12:31",@'
+<#
+    [Couldn't stop laughing when I transcribed this part.]
+
+    [Brown]: WhAt, ClImB uP tHeRe, AnD mAkE sUrE aLl ThE wIrEs ArE pLuGgEd In...?!?
+    Cause what if I said “Yeh, obviously. I mean, [Walker, Texas Ranger] would be able to do that shit in his sleep...”
+    What would he have said then...?
+#>
+
+$File.X(0,"12:31",@'
 :No, um- what I'm suggesting is that, you're saying that someone checked the
 surveillance footage, right...? At the place that I, ya know, left the footage of
 me trying to dial (911)...?
@@ -1328,68 +1562,104 @@ You're sayin' that that exists, but you're getting reports mixed up.
 
 '@)
 
-$File.X(1,"00:12:48",@'
+$File.X(1,"12:48",@'
 :I'm saying, I'm saying he LOOKED at it, I didn't say he downloaded and uploaded it
 to our system, I'm saying he viewed it.
 '@)
 
-$File.X(0,"00:12:53",@'
+$File.X(0,"12:53",@'
 :Right. But he didn't look at the surveillance footage at [Center for Security].
 '@)
 
-$File.X(1,"00:12:58",@'
+$File.X(1,"12:58",@'
 :Not as far as I can tell...
 '@)
 
-$File.X(0,"00:13:00",@'
+<#
+    That's a [problem]. [You're supposed to investigate suspicious shit].
+    I reported that to [Scott Schelling] at the [secondary location] in [SCSO-2020-028501], and it [wasn't recorded].
+    [That's suspicious shit right there].
+#>
+
+$File.X(0,"13:00",@'
 :Right, but that's where the footage would be of me intializing a (911) call-
 '@)
 
-$File.X(1,"00:13:04",@'
+$File.X(1,"13:04",@'
 :I closed those (8) tabs, to open these (6) new ones, uhm, I thought that was the
 [Center]- *indiscernable* that he looked at-
 '@)
 
-$File.X(2,"00:13:12",@'
+$File.X(2,"13:12",@'
 :*Windows Toast Notification*
 '@)
 
-$File.X(1,"00:13:13",@'
+$File.X(1,"13:13",@'
 :-the one where you went into the business and were pestering the guy, trying to look
 at his surveillance footage. I think he changed it down the road, that's what it
 sounded like to me.
 '@)
 
-$File.X(0,"00:13:22",@'
+$File.X(0,"13:22",@'
 :That...
 '@)
 
-$File.X(1,"00:13:22",@'
+$File.X(1,"13:22",@'
 :That is the case that the deputy says he viewed the footage, saw you wandering
 around the business, looking at a garage with a flashlight, and holding SOMETHING
 in your hand, unable to tell from the quality of the video, whether it was even a
 cell phone, or not.
 '@)
 
-$File.X(0,"00:13:36",@'
+$File.X(0,"13:36",@'
 :Ok.
 '@)
 
-$File.X(1,"00:13:36",@'
+$File.X(1,"13:36",@'
 :Hold on, *indiscernable* situations like that, the quality of the video was not good
 enough to tell.
 '@)
 
-$File.X(0,"00:13:43",@'
+$File.X(0,"13:43",@'
 :So, something drew me to that area (noises behind the plaza), and they can see the
 surveillance footage of me walking around that night.
 '@)
 
-$File.X(1,"00:13:49",@'
+<#
+    =======================
+    | Supporting Evidence |
+    =======================
+
+    [Check this out. This stuff is called "supporting evidence"]
+
+    [===============|========================|===================================================================]
+    | [Date/Time]   | [Name]                 | [Url]                                                             |
+    [===============|========================|===================================================================]
+    | 05/25/20 2300 | Computer Answers       | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
+    | 05/25/20 2329 | IMG_0636               | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
+    | 05/25/20 2329 | IMG_0637               | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
+    | 05/25/20 2329 | IMG_0638               | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
+    | 05/25/20 2329 | IMG_0639               | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+    | 05/25/20 2335 | IMG_0640               | https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h |
+    | 05/25/20 2336 | IMG_0641               | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
+    | 05/25/20 2337 | IMG_0642               | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
+    | 05/25/20 2337 | IMG_0643               | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
+    | 05/25/20 2337 | IMG_0644               | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
+    | 05/25/20 2337 | IMG_0645               | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
+    | 05/25/20 2343 | IMG_0646               | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
+    | 05/25/20 2343 | IMG_0647               | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
+    | 05/26/20 0005 | IMG_0648               | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
+    | 05/26/20 0011 | IMG_0649               | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
+    | 05/26/20 0011 | IMG_0650               | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
+    | 05/26/20 0011 | IMG_0651               | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
+    [===============|========================|===================================================================]
+#>
+
+$File.X(1,"13:49",@'
 :Ok.
 '@)
 
-$File.X(0,"00:13:50",@'
+$File.X(0,"13:50",@'
 :But they can't see the surveillance footage is not from the 24th, that's the problem.
 Is that, I didn't walk around [Eric Catricala]'s business on the 24th, I walked around
 [Eric Catricala]'s business on the LATE 25th INTO the 26th, and it's being passed off
@@ -1397,11 +1667,11 @@ as security footage that was on the 24th.
 That's what's happening here.
 '@)
 
-$File.X(1,"00:14:08",@'
+$File.X(1,"14:08",@'
 :You go back there, you're gonna get locked up for trespassing.
 '@)
 
-$File.X(0,"00:14:12",@'
+$File.X(0,"14:12",@'
 :I'm not gonna go back there, but what I'm trying to say is that HEY, maybe I can just,
 you know, uh- SAY that recorded footage from (1) date, was on an entirely DIFFERENT
 date, and then have some charges filed against somebody.
@@ -1415,154 +1685,411 @@ And, I can tell ya till I'm blue in the face, but you're gonna say:
 'Look, guy checked the surveillance footage of the WRONG PLACE.'
 '@)
 
-$File.X(1,"00:14:45",@'
+$File.X(1,"14:45",@'
 :*indistinguishible* ...the well being of your mental health, [Michael].
 '@)
 
-$File.X(0,"00:14:48",@'
+$File.X(0,"14:48",@'
 :I'm sure that my mental health is being called into question here, but what I'm
 calling into question is, cops are ignoring evidence that I'm saying exists.
 '@)
 
-$File.X(0,"00:14:59",@'
+<#
+    ===================================================
+    | Mental Health versus Espionage and Cyberattacks |
+    ===================================================
+
+
+    [===============|========================|===================================================================]
+    | [Date/Time]   | [Name]                 | [Url]                                                             |
+    [===============|========================|===================================================================]
+    | 07/14/19      | GodMode Cursor1        | https://youtu.be/1OzgCoBUDzs                                      |
+    | 10/04/19      | HDMI Interference      | https://youtu.be/in7IrkoLOHo                                      |
+    | 12/09/19      | TWITTER BSOD           | https://youtu.be/12x8TrO9B5Q                                      |
+    | 10/04/19      | Buffer Overflow Attack | https://youtu.be/H4MlJnMh9Q0                                      |
+    | 05/21/20      | Item[0]-Origal         | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
+    | 05/21/20      | Item[0]-Treble         | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
+    | 05/22/20      | IMG_0390               | https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6 |
+    | 05/22/20      | Item[1]IMG_0391        | https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG |
+    | 05/22/20      | Item[1]-Treble         | https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah |
+    | 05/24/20      | 2020 05 24 1341        | https://youtu.be/i88AJb_5zY4 (*Espionage*)                        |
+    | 02/15/22      | A matter of nat'l sec. | https://youtu.be/e4VnZObiez8                                      |
+    | 02/25/22      | FACEBOOK CENSORSHIP    | https://youtu.be/Jmq4yBqGhTs                                      |
+    | 02/26/22      | FACEBOOK BSOD          | https://youtu.be/40sQXpVh_8Y                                      |
+    | 08/03/22      | Scribbles              | https://youtu.be/vY2fIhS9ruo                                      |
+    | 08/22/22      | Scribbles              | https://youtu.be/q0twJUzef9U                                      |
+    | 09/26/22      | God Mode Cursor        | https://youtu.be/tW80Zj_H6Fw                                      |
+    | 10/04/22      | God Mode Cursor        | https://youtu.be/dU_5rdVkCD8                                      |
+    | 02/20/23      | Time Travel            | https://youtu.be/xCo8Wu_0Lb4                                      |
+    [===============|========================|===================================================================]
+
+    Yeah, so, that video of SOMEONE COMMITTING ESPIONAGE TO MY PHONE...
+    ...was recorded BEFORE I LEFT MY HOUSE, the day that I spoke with [Eric Catricala]...
+    ...on my 35th birthday, [05/24/20].
+
+    Guess what 'they' were doing...?
+
+    [Preventing me from being able to transfer files off of my device.]
+    [These are things that a COMPETENT INVESTIGATOR would've collected already.]
+    But, apparently I need to get my fuckin' mental health in order.
+    Ok. 
+
+    MAYBE my [mental health] is [just fine], and I'm [highly skilled] at [knowing what the hell I'm talking about].
+    Versus a really long list of people who have ALL been rather [careless], [obtuse], and [mistake prone].
+#>
+
+$File.X(0,"14:59",@'
 :And because, that's what I'm saying, is that at [Center for Security], there should've
 been surveillance footage of me initializing a call to 911.
 And that's what I told [Scott Schelling].
 '@)
 
-$File.X(1,"00:15:08",@'
+$File.X(1,"15:08",@'
 :No crime was committed then~!
 '@)
 
-$File.X(1,"00:15:10",@'
+<#
+    Yeah there was. 
+
+    Check out the audio recording, I state "SOMEONE IS TRYING TO HIT ME WITH THEIR CAR~!"
+
+    As far as I know, [attempting to run someone over with their fucking vehicle] is a crime.
+
+    It's called [ATTEMPTED (VEHICULAR MANSLAUGHTER/MURDER)].
+#>
+
+$File.X(1,"15:10",@'
 :You tried to call 911, and you couldn't~!
 '@)
 
-$File.X(0,"00:15:14",@'
+$File.X(0,"15:14",@'
 :Right, but-
 '@)
 
-$File.X(1,"00:15:15",@'
+$File.X(1,"15:15",@'
 :You understand why I'm frustrated, having the same conversation over and over, and
 just running in circles. You tried to call 911 but the call didn't go through, what
 the hell would you like me to do about that?
 
 '@)
 
-$File.X(1,"00:15:27",@'
+$File.X(1,"15:27",@'
 :I'm a police officer, I deal with CRIMES.
 Nothing you're describing here is a crime, except those committed by you.
 Most of which you've been arrested for, a couple you've been lucky enough not to.
 '@)
 
-$File.X(0,"00:15:38",@'
+$File.X(0,"15:38",@'
 :Yeah, and you-
 '@)
 
-$File.X(1,"00:15:39",@'
+$File.X(1,"15:39",@'
 :Tired of having the same conversation, over and over again.
 I am out of patience.
 '@)
 
-$File.X(0,"00:15:43",@'
+<#
+    ================
+    | Troublemaker |
+    ================
+
+    (1) arrest out of (10) incidents...? Hm. [Most of which you've been arrested for...]
+    Someone is [bad at math]...
+
+    Here's how this dude's logic sounds.
+
+    =======================================================================================================
+    | [Date]   | [If I...]                                              | [Then they will] | [Because of] |
+    |----------|--------------------------------------------------------|------------------|--------------|
+    | 05/19/20 | am being stalked by a guy in a blue truck              | not arrest me    | luckiness    |
+    | 05/19/20 | ^assault my stepfather for laughing about that         | not arrest me    | luckiness    |
+    | 05/19/20 | see that blue truck stalking Agresta on Sitterly       | not arrest me    | luckiness    |
+    | 05/21/20 | record a strange sounding bird on my phone             | not arrest me    | luckiness    |
+    | 05/21/20 | record dude walking down 146 and strange bird again    | not arrest me    | luckiness    |
+    | 05/22/20 | walk to Stratton Air National Guard                    | not arrest me    | luckiness    |
+    | 05/23/20 | record strange sounding bird AGAIN (twice)             | not arrest me    | luckiness    |
+    | 05/23/20 | record video (1) of NYSP cruisers running idle         | not arrest me    | luckiness    |
+    | 05/23/20 | record serial killer on Orenda Exercise Trail          | not arrest me    | luckiness    |
+    | 05/23/20 | take multiple pictures of Verizon infractions          | not arrest me    | luckiness    |
+    | 05/24/20 | record video of party preventing evidence exfiltration | not arrest me    | luckiness    |
+    | 05/24/20 | talk to Catricala about Coonradt/Tanski/Amato/Wormuth  | not arrest me    | luckiness    |
+    | 05/24/20 | record video of Nyseg giving ATT cell tower free power | not arrest me    | luckiness    |
+    | 05/25/20 | record myself walking to aunt Terri's house (PRISM)    | not arrest me    | luckiness    |
+    | 05/25/20 | record video (2) of NYSP cruisers running idle         | not arrest me    | luckiness    |
+    | 05/25/20 | make add'l recordings of device interference           | not arrest me    | luckiness    |
+    | 05/25/20 | record (2) queers attempting to murder me              | not arrest me    | luckiness    |
+    | 05/26/20 | call 911 twice while being hunted                      | not arrest me    | luckiness    |
+    | 05/26/20 | avoid being run over by their car multiple times       | not arrest me    | luckiness    |
+    | 05/26/20 | cut phone line at Zackary Karels residence             | not arrest me    | luckiness    |
+    | 05/26/20 | cut kayak strap immediately after the phone line       | arrest me        | stupidity    |
+    | 05/26/20 | flag vehicles down for help since 911 wasn't working   | almost arrest me | luckiness    |
+    | 06/13/20 | call 911 on my neighbor for attempting to assault me   | not arrest me    | luckiness    |
+    =======================================================================================================
+
+    [I must be the luckiest son of a bitch on the fuckin' planet] to [avoid] being [arrested that many times].
+    [Look at my track record].
+    Damn.
+    [I'm a fucking troublemaker], aren't I...?
+
+    This is all a [DISTRACTION technique]. This is [PSYCHOLOGICAL MANIPULATION], because I'm [illuminating] a 
+    [really huge GAP] in the way the [Saratoga County Sheriffs Office] handled the [chain of incidents] where
+    mysteriously I have a [device] where [I can't call 911], but- oh my god. 
+    
+    [Zachary Karel] had his [kayak strap] AND his [phone line] cut at the [same exact time], and [pressed charges]
+    over the [$5.00 strap], not the [phone line].
+    
+    And, [Eric Catricala] can [swap in surveillance footage down the road], which [probably had footage] of the
+    [(2) guys who started chasing me, trying to kill me].
+    
+    Both of these guys can have [post-dated tickets] handled.
+    That's fuckin' weird...
+    It's as if there's a [cocksucker] or [multiple cocksuckers] over at SCSO.
+#>
+
+$File.X(0,"15:43",@'
 :Ok, look man.
 '@)
 
-$File.X(1,"00:15:46",@'
+$File.X(1,"15:46",@'
 :Would you like the number for the general consulate in [New York]...?
 '@)
 
-$File.X(0,"00:15:49",@'
+$File.X(0,"15:49",@'
 :No man, cause I understand why you're frustrated you're just-
 '@)
 
-$File.X(1,"00:15:52",@'
+$File.X(1,"15:52",@'
 :If you've got a paper and pen, I'll give it to ya. Give ya the fax number too.
 '@)
 
-$File.X(0,"00:15:54",@'
+$File.X(0,"15:54",@'
 :Look, I'm not frustrated with you...
 '@)
 
-$File.X(1,"00:15:58",@'
+$File.X(1,"15:58",@'
 :I'm frustrated with YOU.
 '@)
 
-$File.X(0,"00:16:00",@'
+$File.X(0,"16:00",@'
 :I'm sure you are, because you-
 '@)
 
-$File.X(1,"00:16:01",@'
+$File.X(1,"16:01",@'
 :You are having- you are having a mental health problem.
 '@)
 
-$File.X(0,"00:16:03",@'
+$File.X(0,"16:03",@'
 :No, I'm NOT having a mental health problem.
 '@)
 
-$File.X(1,"00:16:04",@'
+<#
+    That's just your opinion of what's going on.
+
+    Pretty sure that I'm having a police officer's hands going limp and ignoring the evidence I have, problem.
+    
+    Way different.
+#>
+
+$File.X(1,"16:04",@'
 :We've been talking on the phone for damn near an hour, and I have other very
 important things I have to work on, you have not described a single crime except
 those committed by yourself.
 '@)
 
-$File.X(0,"00:16:12",@'
+<#
+    - [attempted murder]
+    - [attempted vehicular manslaughter]
+    - [obstruction of justice]
+    - [destruction of evidence]
+    - [telephony DDOS]
+
+    None of those are crimes, apparently.
+#>
+
+$File.X(0,"16:12",@'
 :No, I DID describe a crime, of these kids, attempting to hit me with a car.
 License plate [DELTA VICTOR ALPHA, TWO FOUR FIVE ZERO].
 '@)
 
-$File.X(1,"00:16:21",@'
+$File.X(1,"16:21",@'
 :The other side of that story is you jumped in front of the car.
 '@)
 
-$File.X(0,"00:16:24",@'
+$File.X(0,"16:24",@'
 :No no, totally different car, dude.
 You wanna make assumptions about which car I'm talking about...?
 '@)
 
-$File.X(1,"00:16:31",@'
+$File.X(1,"16:31",@'
 :If you're not happy with the service you're getting from the [Sheriffs office],
 you have a CHOICE in law enforcement. The number for the [State Police] is [583-7000].
 '@)
 
-$File.X(0,"00:16:38",@'
+$File.X(0,"16:38",@'
 :They haven't been helpful, either.
 '@)
 
-$File.X(1,"00:16:40",@'
+$File.X(1,"16:40",@'
 :Well, I'm not of much help, either.
 Except you've wasted an hour plus... (exaggeration, it was 30 minutes maximum)
 '@)
 
-$File.X(0,"00:16:43",@'
+$File.X(0,"16:43",@'
 :Nah, man.
 You HAVE been helpful, [you gave me an interaction number that I didn't have BEFORE].
 '@)
 
-$File.X(1,"00:16:49",@'
+$File.X(1,"16:49",@'
 :The [CIA], the [FBI], and the [NSA].
 (2) of those agencies aren't even allowed to operate domestically.
 '@)
 
-$File.X(0,"00:16:56",@'
+$File.X(0,"16:56",@'
 :Mhmm.
 '@)
 
-$File.X(1,"00:16:57",@'
+$File.X(1,"16:57",@'
 :I'm sure they'll make an exception for YOU, because you're THAT important.
 '@)
 
-$File.X(0,"00:17:01",@'
+<#
+    ============
+    | Research |
+    ============
+
+    Oh weird, is that what you talked about when you had another call come in...?
+
+    [===========================================================================================================]
+
+    [Bulk Collection program similar to Thinthread/Trailblazer]
+    https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news 
+    CIA operating domestically
+
+    [Vault 7, WikiLeaks]
+    https://wikileaks.org/vault7/ 
+    CIA operating domestically
+
+    [Citizen Four, Edward Snowden]
+    https://en.wikipedia.org/wiki/Citizenfour 
+    NSA operating domestically
+
+    [Thinthread]
+    https://www.pbs.org/newshour/tag/thinthread 
+    NSA operating domestically
+
+    [OAKSTAR]
+    https://en.wikipedia.org/wiki/OAKSTAR 
+    Upstream data collection from TELECOMMUNICATIONS PROVIDERS, via fiber optics.
+
+    [STORMBREW]
+    https://en.wikipedia.org/wiki/STORMBREW 
+    [Verizon/Bell Atlantic] upstream data collection, from fiber optic cables.
+    Basically a MONOPOLY with MILITARY SECRETS being able to play GOD...
+
+    [TRAILBLAZER]
+    https://en.wikipedia.org/wiki/Trailblazer_Project 
+    A really costly project that went WAY over budget and cost billions to do the same thing as [ThinThread].
+
+    [TURBULANCE]
+    https://en.wikipedia.org/wiki/Turbulence_(NSA) 
+    Allows for [offensive cyberwarfare capabilities] like [injecting malware] into [remote systems].
+    
+    [GENOA II]
+    https://en.wikipedia.org/wiki/Project_Genoa_II 
+    Developed by [DARPA/Defense Advanced Research Projects Agency].
+    Part of [TOTAL INFORMATION AWARENESS], but it got scrapped, and had its various
+    components transferred to other projects, eventually became [TOPSAIL]...
+
+    [TOTAL INFORMATION AWARENESS]
+    https://en.wikipedia.org/wiki/Total_Information_Awareness 
+    Implemented [predictive policing], [data analytics] for proactively [detecting/preventing] terrorist attacks.
+
+    [PRESIDENT'S SURVEILLANCE PROGRAM]
+    https://en.wikipedia.org/wiki/President%27s_Surveillance_Program 
+    [Bushmeister 5000] established some top-secret intelligence comparments that probably continue to be used at
+    the [DEPARTMENT OF HOMELAND SECURITY], among others.
+
+    [TERRORIST SURVEILLANCE PROGRAM]
+    https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program 
+    Part of [Bushmeister 5000]'s plan to surveil for [potential terrorist activities] in the wake of [09/11/2001].
+
+    [PRISM]
+    https://en.wikipedia.org/wiki/PRISM_(surveillance_program) 
+    Essentially this allows technology companies to act as if they are a law mans deputy.
+    This program allows the government to basically have oversight over ALL internet communications within the 
+    domestic [United States], and to COPY/CLONE all of it as they   please. 
+
+    So, if they really want to do some real evil stuff...? They can.
+
+    I also talk about this particular program in the video I recorded earlier that day...
+
+    ================================================================================================
+    | 05/25/20 1028 | IMG_0625 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
+    | 05/25/20 1054 | IMG_0627 | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
+    ================================================================================================
+    
+    [XKEYSCORE]
+    https://en.wikipedia.org/wiki/XKeyscore 
+    Basically a [live redaction program], and it is [too powerful].
+
+    I talked about it in the audio recording that I uploaded on [05/19/20] leading to some dude stalking
+    me in a blue truck prior to the event [SCSO-2020-002998], as well as the second interaction with 
+    [Anthony Agresta] on [Sitterly Road] about a half hour after that event.
+
+    =======================================================================================================
+    | 05/19/20 1400 | Live Redaction  | https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw |
+    =======================================================================================================
+
+    [DROPMIRE]
+    https://en.wikipedia.org/wiki/Dropmire 
+    Used to surveil foreign embassies as far back as 2007.
+
+    [STATEROOM]
+    https://en.wikipedia.org/wiki/Stateroom_(surveillance_program) 
+    Code name of a highly secretive SIGINT collection program involving the interception of INT'L RADIO, 
+    TELECOM and INTERNET traffic.
+
+    [BULLRUN]
+    https://en.wikipedia.org/wiki/Bullrun_(decryption_program) 
+    A clandestine, HIGHLY CLASSIFIED PROGRAM to CRACK ENCRYPTION of ONLINE COMMUNICATIONS and DATA, which 
+    is RUN by the [United States National Security Agency (NSA)]. In other words, it skull fucks people left 
+    and right, no matter who you are.
+
+    [MYSTIC]
+    https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program) 
+    Collects (metadata/content) of phone calls from several countries.
+
+    [===========================================================================================================]
+
+    Those agencies operate domestically whether they're allowed to or not, and they use a combination of these
+    tools and programs. I didn't cover Vault 7.
+
+    Research is what all that shit is, right there.
+    Research is pretty cool, and that's what I do.
+
+    So -> if I do [Research] -> they may make an exception for me -> which means I AM that important...
+
+    Someone made an exception for me when they used a CYBERATTACK that included a RANSOMWARE ATTACK against
+    my business network at multiple locations, for instance [1602 Route 9, Clifton Park NY 12065].
+
+    Oh wait, that's basically where I uploaded some of the files and evidence I tried to give a copy of
+    to [Scott Schelling] in [SCSO-2020-028501]. Weird.
+
+    Wide ranging conspiracy...? 
+    Or... maybe there's a [bunch of fucking morons that keep (misjudging/mislabeling) me].
+#>
+
+$File.X(0,"17:01",@'
 :Well, heh. *sigh* Everybody makes assumptions, right...?
 Sounds like you're assuming that this is... all in my head.
 '@)
 
-$File.X(1,"00:17:10",@'
+$File.X(1,"17:10",@'
 :I'm not making assumptions, I'm making-
 I'm making an educated decision based on the facts as they are known.
 '@)
 
-$File.X(0,"00:17:17",@'
+$File.X(0,"17:17",@'
 :As they are known, yes, some of those facts being incorrect facts.
 Being known.
 Like, my [neighbor swinging a baseball bat at me], and [Mark Sheehan] not writing that
@@ -1570,11 +2097,24 @@ in his report. I called (911) that day, on [June 12th], or [June 13th] by the wa
 
 '@)
 
-$File.X(1,"00:17:32",@'
+$File.X(1,"17:32",@'
 :And they had a different story than YOU, and YOU were the one...
 '@)
 
-$File.X(0,"00:17:37",@'
+<#
+    [It doesn't matter how anyone looks at that record.]
+    If a guy is [scared] about [me] being on [his property] and has a [baseball bat in his hand] that he grabbed out
+    of [fear], why didn't [he] or [his family] call 911 on [me]... instead of [me] being the [guy that called 911]...?
+
+    OOOoohHhhhHhHh... well I'll tell you.
+    
+    [It's because → there's some fuckin' morons in your agency.]
+
+    I'm not even trying to be nice here, [you have some fuckin' stupid people who work there.]
+    [So do the NYSP.]
+#>
+
+$File.X(0,"17:37",@'
 :Yeah no, that's whats happening, is that a lot of these police officers are writing
 totally fabricated reports.
 
@@ -1584,54 +2124,84 @@ for this, that, and the other thing... but you're not listening to the key criti
 thing here, where I initialized a call-
 '@)
 
-$File.X(1,"00:17:55",@'
+$File.X(1,"17:55",@'
 :Your opinion of what happened.
 That's ALL I'm listening to.
 Okay...?
 That's all it is.
 '@)
 
-$File.X(0,"00:18:02",@'
+$File.X(0,"18:02",@'
 :[Scott Schelling] should've gone and [checked that surveillance footage], because he
 tried to arrest me that night. He tried to arrest me for jumping in front of a car,
 because I tried to call (911), and the call didn't go through. And then-
 '@)
 
-$File.X(1,"00:18:14",@'
+$File.X(1,"18:14",@'
 :If he did arrest you, this would be a lot easier, because I wouldn't be able to talk
 to you about it, because your right to counsel would apply.
 
 It would make my life a lot easier if he had arrested you for it.
 '@)
 
-$File.X(0,"00:18:21",@'
+$File.X(0,"18:21",@'
 :Well, WHY would he arrest me, what grounds would he have for arresting me...?
 '@)
 
-$File.X(1,"00:18:28",@'
+$File.X(1,"18:28",@'
 :We could find all sorts of stuff if the story was you jumped in front of a car...
 '@)
 
-$File.X(0,"00:18:31",@'
+$File.X(0,"18:31",@'
 :No, somebody stated that I jumped in front of a car, that doesn't mean that it's ACCURATE.
 '@)
 
-$File.X(1,"00:18:37",@'
+$File.X(1,"18:37",@'
 :*indiscernable* at 7.
 '@)
 
-$File.X(0,"00:18:40",@'
+$File.X(0,"18:40",@'
 :What's that...?
 '@)
 
-$File.X(1,"00:18:41",@'
+$File.X(1,"18:41",@'
 :K...?
 This conversation's over.
 Did you want the number for the [Russian consulate] in [New York]...?
 I'll gladly give it to you.
 '@)
 
-$File.X(0,"00:18:46",@'
+<#
+    ============
+    | Russians |
+    ============
+
+    [01/31/18 | Tanski, bank fraud (works with Russian Mafia)]
+    https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php 
+
+    [01/30/20 | Tanski, Amato]
+    https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php 
+
+    [01/23/23 | Former FBI agent charged with aiding Russian oligarch]
+    https://www.pbs.org/newshour/politics/former-fbi-agent-charged-with-aiding-russian-oligarch 
+
+    [Charles McGonigal], the special agent in charge of the [FBI’s counterintelligence division] in [New York] from 
+    (2016-2018), is [accused] in an [indictment], unsealed Monday of working with a former Soviet diplomat turned
+    Russian interpreter on behalf of [Oleg Deripaska], a [Russian billionaire] they purportedly referred to in code 
+    as [the big guy] and [the client].
+
+    [McGonigal], who had [supervised/participated] in [investigations] of [Russian oligarchs], including [Deripaska],
+    worked to have [Deripaska]’s sanctions lifted in (2019) and took money from him in (2021) to investigate a rival
+    oligarch, the [Justice Department] said.
+
+    The [indictment] is a [black eye] to the [FBI] at a time when the [bureau] has become [entangled] in [separate
+    politically charged investigations] involving the [handling of classified documents] by both [President Joe Biden]
+    and [former President Donald Trump], (and former senator/first lady/secretary of state [Hillary Rodham Clinton])
+    and as newly ascendant Republicans in Congress have pledged to investigate high-profile decisions by the bureau
+    and [Justice Department].
+#>
+
+$File.X(0,"18:46",@'
 :Look man, I'm not trying to give you a hard time, but you're not even looking at any
 of these pictures or any of my testimony, or any of the documents that I've put together.
 
@@ -1639,72 +2209,137 @@ You're telling me that no crime has been committed, but you haven't seen anythin
 make that determination.
 '@)
 
-$File.X(1,"00:19:00",@'
+$File.X(1,"19:00",@'
 :I've also never seen a drone disguised as a bird.
 '@)
 
-$File.X(0,"00:19:03",@'
+$File.X(0,"19:03",@'
 :Right, but you've also haven't seen the video or heard the audio recording that I have.
 '@)
 
-$File.X(1,"00:19:08",@'
+$File.X(1,"19:08",@'
 :Nor would I want to see the video or hear the audio recording of-
 '@)
 
-$File.X(0,"00:19:11",@'
+$File.X(0,"19:11",@'
 :But isn't that your job if you're supposed to be a cop...?
 '@)
 
-$File.X(1,"00:19:13",@'
+$File.X(1,"19:13",@'
 :A mockingbird.
 '@)
 
-$File.X(0,"00:19:15",@'
+<#
+    Oh so he has heard and seen it.
+
+    It's not a mockingbird, because I've heard plenty of fucking mockingbirds my entire life.
+
+    This is something else.
+#>
+
+$File.X(0,"19:15",@'
 :You should wanna check that out, right...?
 SOMEBODY should wanna check that out, who could I report that to...?
 '@)
 
-$File.X(1,"00:19:20",@'
+$File.X(1,"19:20",@'
 :There's nothing I wanna hear less.
 '@)
 
-$File.X(0,"00:19:23",@'
+$File.X(0,"19:23",@'
 :Ok, so what you're telling me is that [Deputy Whitacre]...
 '@)
 
-$File.X(1,"00:19:28",@'
+$File.X(1,"19:28",@'
 :The book 'To Kill a Mockingbird' again... after this conversation.
 '@)
 
-$File.X(0,"00:19:31",@'
+$File.X(0,"19:31",@'
 :Look buddy, I can tell you're gettin' frustrated here...?
 
 But, I've been AS FRUSTRATED, as you are, right now...?
 For the last several months.
 '@)
 
-$File.X(1,"00:19:40",@'
+<#
+    [Expand that out till now.]
+#>
+
+$File.X(1,"19:40",@'
 :You think I'm frustrated...? *chuckles*
 '@)
 
-$File.X(0,"00:19:43",@'
+$File.X(0,"19:43",@'
 :*chuckles*
 '@)
 
-$File.X(1,"00:19:44",@'
+$File.X(1,"19:44",@'
 :This has- this has been a... long waste of my time, I've done my best...
 I've been MORE than patient, ok...?
 
 You need to concentrate your efforts on your doctor and mental health.
 '@)
 
-$File.X(0,"00:19:52",@'
+$File.X(0,"19:52",@'
 :Ok, buddy.
 '@)
 
-$File.X(1,"00:19:55",@'
+$File.X(1,"19:55",@'
 :Goodbye.
 '@)
+
+<#
+    ==============
+    | Conclusion |
+    ==============
+
+    Look, in the end, who really knows what...? Ya know...?
+
+    The way I see it, is that if you are like [most people], you'll ALWAYS have the mentality of someone that is a
+    [part of a group of people], NOT an [individual who thinks for themselves].
+
+    [=================================================================================================]
+    | [When people trust...] | [Then what happens is...] | [And the result is...]                     |
+    |========================|===========================|============================================|
+    | the news               | climate change            | Before the Flood (2016)                    |
+    | America's Got Talent   | bad musicians are heard   | bad music spams the radio all the time     |
+    | the police             | most crimes are ignored   | innocent people get in trouble             |
+    | the government         | NIST 9/11 report written  | US invades middle east for oil and poppies |
+    | bright individuals     | things make sense         | people become a lot more intelligent       |
+    [========================|===========================|============================================]
+
+    You see what I'm getting at here...?
+    It probably [looks like] I'm [insulting everybody and everyone]... but that is not the case.
+    It probably even looks like I'm insulting all of those things in the box up above... but I'm not.
+
+    I'm just very impressed with how far certain people will go, to perpetuate stupid bullshit that makes no sense.
+    Whether it's a snippy investigator at SCSO that isn't collecting any evidence that I put into this document...?
+    Or, the guy who runs the [Saratoga County Sheriffs Office], or the [New York State Police]...?
+
+    I think it is safe to say that [stupid people exist in a lot of places], and [I constantly run into them].
+    They constantly fail to prove that they're smarter than I am, on a rather consistent basis.
+
+    Allow me to whip out an analogy...
+
+    When I was in [9th/10th] grade, I saw this girl at [Shenendehowa High School West (formerly Koda)], and 
+    she had a stain on the rear of her skirt. I'm not sure if it was a [poop stain], or a [period blood] stain...
+    ...but [I remember seeing a bunch of people pointing and snickering at it] when they saw it. 
+
+    And yet, nobody told this girl “Hey, you've got a stain where your butt is, on your skirt.”
+    I didn't tell the girl, but I was also much younger and wasn't sure if I should tell her or not.
+
+    Society perpetuates this idea of [teaching people to keep to themselves], because you'd be an [asshole] 
+    to [tell the girl] that she's got a [poop/period blood] stain on some girls skirt.
+    That's fuckin' stupid, and that's why I constantly say that [people are fuckin' stupid].
+
+    The same exact concept applies to this guy named [Captain Jeffrey Brown].
+    I'm attempting to tell the [Saratoga County Sheriffs Office] that they have the equivalent of a stain where 
+    their asshole is, on the skirt they're wearing. Rather than to admit it and say:
+
+    “Ok, thanks for letting me know, I appreciate it...”
+    ...what they're doing is fumbling a football about a dozen times and then avoiding coming to terms with the
+    cold, hard reality.
+#>
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
