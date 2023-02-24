@@ -165,12 +165,12 @@ Function New-TranscriptionCollection
 
     Class TranscriptionCollection
     {
-        [DateTime] $Date
-        [String]   $Name
-        [Object]   $File
+        [String] $Date
+        [String] $Name
+        [Object] $File
         TranscriptionCollection([String]$Date,[String]$Name)
         {
-            $This.Date   = $Date
+            $This.Date   = ([DateTime]$Date).ToString("MM/dd/yyyy")
             $This.Name   = $Name
             $This.File   = @( )
         }
