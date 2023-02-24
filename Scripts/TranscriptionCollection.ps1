@@ -1,3 +1,32 @@
+Class TranscriptionDateTime
+{
+    [DateTime] $DateTime
+    [String]       $Date
+    [String]       $Time
+    [TimeSpan] $Position
+    TranscriptionDateTime([String]$Date,[String]$Time)
+    {
+        $This.Position = [TimeSpan]"00:00"
+        $This.DateTime = [DateTime]"$Date $Time"
+        $This.SetDateTime()
+    }
+    TranscriptionDateTime([Switch]$Flags,[Object]$Start,[String]$Position)
+    {
+        $This.Position = [TimeSpan]$Position 
+        $Current       = $Start.DateTime + $This.Position
+        $This.DateTime = $Current
+        $This.SetDateTime()
+    }
+    SetDateTime()
+    {
+        $This.Date     = $This.DateTime.ToString("MM/dd/yyyy")
+        $This.Time     = $This.DateTime.ToString("HH:mm:ss")
+    }
+    [String] ToString()
+    {
+        Return $This.DateTime.ToString("MM/dd/yyyy HH:mm:ss")
+    }
+}
 
 Class TranscriptionParty
 {
@@ -16,44 +45,27 @@ Class TranscriptionParty
     }
 }
 
-Class TranscriptionTime
-{
-    [Object]     $Date
-    [Object]     $Time
-    [Object] $Position
-    TranscriptionTime([Object]$Start,[String]$Position)
-    {
-        $This.Position = [TimeSpan]$Position
-        $Real          = ($Start+$This.Position).ToString() -Split " "
-        $This.Date     = $Real[0]
-        $This.Time     = $Real[1]
-    }
-    [String] ToString()
-    {
-        Return $This.Time
-    }
-}
-
 Class TranscriptionEntry
 {
-    [UInt32] $Index
-    [Object] $Party
-    [Object] $Date
-    [Object] $Time
-    [Object] $Position
-    [String] $Type
-    [String] $Note
-    TranscriptionEntry([UInt32]$Index,[Object]$Person,[Object]$Time,[String]$Note)
+    [UInt32]    $Index
+    [Object]    $Party
+    [String]     $Date
+    [String]     $Time
+    [String] $Position
+    [String]     $Type
+    [String]     $Note
+    TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$Note)
     {
         $This.Index    = $Index
-        $This.Party    = $Person
-        $This.Date     = $Time.Date
-        $This.Time     = $Time.Time
-        $This.Position = $Time.Position
+        $This.Party    = $Party
+        $This.Date     = $Position.Date
+        $This.Time     = $Position.Time
+        $This.Position = $Position.Position
         $This.Type     = Switch -Regex ($Note)
         {
             "^\*{1}" { "Action"    }
             "^\:{1}" { "Statement" }
+            "^\#{1}" { "Context"   }
         }
         $This.Note     = $Note.Substring(1)
     }
@@ -65,21 +77,23 @@ Class TranscriptionEntry
 
 Class TranscriptionFile
 {
-    [UInt32]    $Index
-    [String]     $Name
-    [String]     $Date
-    [String]    $Start
-    [String]      $End
-    [String] $Duration
-    [String]      $Url
-    [Object]    $Party
-    [Object]   $Output
+    [UInt32]       $Index
+    [String]        $Name
+    Hidden [Object] $Time
+    [String]        $Date
+    [String]       $Start
+    [String]         $End
+    [String]    $Duration
+    [String]         $Url
+    [Object]       $Party
+    [Object]      $Output
     TranscriptionFile([UInt32]$Index,[String]$Name,[String]$Date,[String]$Start,[String]$Duration,[String]$Url)
     {
         $This.Index    = $Index
         $This.Name     = $Name
-        $This.Date     = $Date
-        $This.Start    = $Start
+        $This.Time     = $This.DateTime($Date,$Start)
+        $This.Date     = $This.Time.Date
+        $This.Start    = $This.Time.Time
         $This.Duration = $This.Position($Duration)
         $This.End      = ([DateTime]"$Date $Start" + [TimeSpan]$Duration).ToString("HH:mm:dd")
         $This.Url      = $Url
@@ -97,6 +111,23 @@ Class TranscriptionFile
 
         Return $Out
     }
+    [Object] DateTime([String]$Date,[String]$Start)
+    {
+        Return [TranscriptionDateTime]::New($Date,$Start)
+    }
+    [Object] GetPosition([String]$Position)
+    {
+        $Position = $This.Position($Position)
+        Return [TranscriptionDateTime]::New([Switch]$True,$This.Time,$Position)
+    }
+    [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+    {
+        Return [TranscriptionParty]::New($Index,$Name)
+    }
+    [Object] TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$Note)
+    {
+        Return [TranscriptionEntry]::New($Index,$Party,$Position,$Note)
+    }
     AddParty([String]$Name)
     {
         If ($Name -in $This.Party.Name)
@@ -104,7 +135,7 @@ Class TranscriptionFile
             Throw "Party [!] [$Name] already specified"
         }
 
-        $This.Party += [TranscriptionParty]::New($This.Party.Count,$Name)
+        $This.Party += $This.TranscriptionParty($This.Party.Count,$Name)
         Write-Host "Party [+] [$Name] added."
     }
     AddEntry([UInt32]$Index,[String]$Position,[String]$Note)
@@ -113,22 +144,16 @@ Class TranscriptionFile
         {
             Throw "Party [!] [$Index] is out of bounds"
         }
-        If ($Position -match "^\d{2}\:\d{2}$")
-        {
-            $Position = "00:$Position"
-        }
+
         $Person       = $This.Party[$Index]
-        $Time         = [TranscriptionTime]::New($This.Start,$Position)
-        $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$Time,$Note)
-        Write-Host "Entry [+] [$Position] added"
+        $xTime        = $This.GetPosition($Position)
+
+        $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$xTime,$Note)
+        Write-Host "Entry [+] [$($xTime.Position)] added"
     }
     X([UInt32]$Index,[String]$Position,[String]$Note)
     {
         $This.AddEntry($Index,$Position,$Note)
-    }
-    [Object] Tx([String]$Position)
-    {
-        Return [TranscriptionTime]::New($This.Start,$Position)
     }
 }
 
@@ -156,8 +181,18 @@ Class TranscriptionCollection
 
         Return $This.File[$Index]
     }
-    AddFile([String]$Name,[String]$Date,[String]$Start,[String]$Length,[String]$Url)
+    AddFile([String]$Name,[String]$Date,[String]$Start,[String]$Duration,[String]$Url)
     {
-        $This.File += $This.TranscriptionFile($This.File.Count,$Name,$Date,$Start,$Length,$Url)
+        $Item = $This.TranscriptionFile($This.File.Count,$Name,$Date,$Start,$Duration,$Url)
+
+        $Out  = @( ) 
+        $Out += "Added [+] File     : [{0}]" -f $Item.Name
+        $Out += "          Date     : [{0}]" -f $Item.Date
+        $Out += "          Duration : [{0}]" -f $Item.Duration
+        $Out += "          Url      : [{0}]" -f $Item.Url 
+        
+        $Out | % { [Console]::WriteLine($_) }
+
+        $This.File += $Item
     }
 }
