@@ -1,3 +1,4 @@
+
 Class TranscriptionParty
 {
     [UInt32]   $Index
@@ -157,6 +158,6 @@ Class TranscriptionCollection
     }
     AddFile([String]$Name,[String]$Date,[String]$Start,[String]$Length,[String]$Url)
     {
-        $This.File += $This.AudioFile($This.File.Count,$Name,$Date,$Start,$Length,$Url)
+        $This.File += $This.TranscriptionFile($This.File.Count,$Name,$Date,$Start,$Length,$Url)
     }
 }
