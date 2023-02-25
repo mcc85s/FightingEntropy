@@ -1,3 +1,347 @@
+Function New-TranscriptionCollection
+{
+    [CmdLetBinding()]Param(    
+    [Parameter(Mandatory)][String]$Name,
+    [Parameter()][String]$Date)
+    
+    Class TranscriptionDateTime
+    {
+        [DateTime] $DateTime
+        [String]       $Date
+        [String]       $Time
+        [TimeSpan] $Position
+        TranscriptionDateTime([String]$Date,[String]$Time)
+        {
+            $This.Position = [TimeSpan]"00:00"
+            $This.DateTime = [DateTime]"$Date $Time"
+            $This.SetDateTime()
+        }
+        TranscriptionDateTime([Switch]$Flags,[Object]$Start,[String]$Position)
+        {
+            $This.Position = [TimeSpan]$Position 
+            $Current       = $Start.DateTime + $This.Position
+            $This.DateTime = $Current
+            $This.SetDateTime()
+        }
+        SetDateTime()
+        {
+            $This.Date     = $This.DateTime.ToString("MM/dd/yyyy")
+            $This.Time     = $This.DateTime.ToString("HH:mm:ss")
+        }
+        [String] ToString()
+        {
+            Return $This.DateTime.ToString("MM/dd/yyyy HH:mm:ss")
+        }
+    }
+
+    Class TranscriptionParty
+    {
+        [UInt32]   $Index
+        [String]    $Name
+        [String] $Initial
+        TranscriptionParty([UInt32]$Index,[String]$Name)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Initial = ($Name -Split " " | % { $_[0] }) -join ''
+        }
+        [String] ToString()
+        {
+            Return $This.Initial
+        }
+    }
+
+    Class TranscriptionEntry
+    {
+        [UInt32]         $Index
+        [Object]         $Party
+        [String]          $Date
+        [String]          $Time
+        [String]      $Position
+        Hidden [String] $Length
+        [String]          $Type
+        [String]          $Note
+        TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
+        {
+            $This.Index    = $Index
+            $This.Party    = $Party
+            $This.Date     = $Position.Date
+            $This.Time     = $Position.Time
+            $This.Position = $Position.Position
+            $This.Length   = [TimeSpan]$End - $This.Position
+            $This.Type     = Switch -Regex ($Note)
+            {
+                "^\*{1}" { "Action"    }
+                "^\:{1}" { "Statement" }
+                "^\#{1}" { "Context"   }
+            }
+            $This.Note     = $Note.Substring(1)
+        }
+        [String] ToString()
+        {
+            Return "[{0}] <{1}> {2}" -f $This.Time,$This.Party.Initial, $This.Note
+        }
+    }
+
+    Class TranscriptionFile
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        Hidden [Object] $Time
+        [String]        $Date
+        [String]       $Start
+        [String]         $End
+        [String]    $Duration
+        [String]         $Url
+        [Object]       $Party
+        [Object]      $Output
+        TranscriptionFile([UInt32]$Index,[String]$Name,[String]$Date,[String]$Start,[String]$Duration,[String]$Url)
+        {
+            $This.Index    = $Index
+            $This.Name     = $Name
+            $This.Time     = $This.DateTime($Date,$Start)
+            $This.Date     = $This.Time.Date
+            $This.Start    = $This.Time.Time
+            $This.Duration = $This.Position($Duration)
+            $This.End      = ([DateTime]"$Date $Start" + [TimeSpan]$Duration).ToString("HH:mm:dd")
+            $This.Url      = $Url
+            $This.Party    = @( )
+            $This.Output   = @( )
+        }
+        [String] Position([String]$In)
+        {
+            $Out = Switch -Regex ($In)
+            {
+                "^\d{1}:\d{2}$" { "00:0$In"} 
+                "^\d{2}:\d{2}$" { "00:$In" } 
+                Default { $In }
+            }
+
+            Return $Out
+        }
+        [Object] DateTime([String]$Date,[String]$Start)
+        {
+            Return [TranscriptionDateTime]::New($Date,$Start)
+        }
+        [Object] GetPosition([String]$Position)
+        {
+            $Position = $This.Position($Position)
+            Return [TranscriptionDateTime]::New([Switch]$True,$This.Time,$Position)
+        }
+        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        {
+            Return [TranscriptionParty]::New($Index,$Name)
+        }
+        [Object] TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
+        {
+            $xEnd = $This.Position($End)
+            Return [TranscriptionEntry]::New($Index,$Party,$Position,$xEnd,$Note)
+        }
+        Write([String]$String)
+        {
+            [Console]::WriteLine($String)
+        }
+        AddParty([String]$Name)
+        {
+            If ($Name -in $This.Party.Name)
+            {
+                Throw "Party [!] [$Name] already specified"
+            }
+
+            $This.Party += $This.TranscriptionParty($This.Party.Count,$Name)
+
+            $This.Write("Party [+] [$Name] added.")
+        }
+        AddEntry([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
+        {   
+            If ($Index -gt $This.Party.Count)
+            {
+                Throw "Party [!] [$Index] is out of bounds"
+            }
+
+            $This.Output += $This.TranscriptionEntry($This.Output.Count,
+                                                     $This.Party[$Index],
+                                                     $This.GetPosition($Position),
+                                                     $End,
+                                                     $Note)
+
+            $This.Write("Entry [+] [$($This.Output[-1].Position)] added")
+        }
+        X([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
+        {
+            $This.AddEntry($Index,$Position,$End,$Note)
+        }
+        [String] ToString()
+        {
+            Return "({0}/{1})" -f $This.Date, $This.Name
+        }
+    }
+
+    Class TranscriptionHistoryItem
+    {
+        [UInt32]    $Index
+        [UInt32]     $File
+        [UInt32]     $Rank
+        [String]    $Party
+        [String] $Position
+        [TimeSpan] $Length
+        [String]     $Note
+        TranscriptionHistoryItem([UInt32]$Index,[UInt32]$File,[Object]$Item)
+        {
+            $This.Index    = $Index
+            $This.File     = $File
+            $This.Rank     = $Item.Index
+            $This.Party    = $Item.Party
+            $This.Position = $Item.Position
+            $This.Note     = $Item.Note
+        }
+    }
+
+    Class TranscriptionHistoryList
+    {
+        [Object] $Output
+        TranscriptionHistoryList()
+        {
+            $This.Output = @( )
+        }
+        [Object] TranscriptionHistoryItem([UInt32]$Index,[UInt32]$File,[Object]$Item)
+        {
+            Return [TranscriptionHistoryItem]::New($Index,$File,$Item)
+        }
+        Add([UInt32]$File,[Object]$Current)
+        {
+            $This.Output += $This.TranscriptionHistoryItem($This.Output.Count,$File,$Current.Output[-1])
+        }
+    }
+
+    Class TranscriptionCollection
+    {
+        [String]           $Name
+        [String]           $Date
+        [Object]           $File
+        [Object]        $History
+        Hidden [Int32] $Selected
+        TranscriptionCollection([String]$Name,[String]$Date)
+        {
+            $This.Name     = $Name
+            $This.Date     = ([DateTime]$Date).ToString("MM/dd/yyyy")
+            $This.File     = @( )
+            $This.History  = $This.TranscriptionHistoryList()
+            $This.Selected = -1
+        }
+        [Object] TranscriptionFile([UInt32]$Index,[String]$Name,[String]$Date,[String]$Start,[String]$Length,[String]$Url)
+        {
+            Return [TranscriptionFile]::New($Index,$Name,$Date,$Start,$Length,$Url)
+        }
+        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        {
+            Return [TranscriptionParty]::New($Index,$Name)
+        }
+        [Object] TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
+        {
+            Return [TranscriptionEntry]::New($Index,$Party,$Position,$End,$Note)
+        }
+        [Object] TranscriptionHistoryList()
+        {
+            Return [TranscriptionHistoryList]::New()
+        }
+        Write([String]$Line)
+        {
+            [Console]::WriteLine($Line)
+        }
+        Check([UInt32]$Index)
+        {
+            If ($Index -gt $This.File.Count)
+            {
+                Throw "Invalid file index"
+            }
+        }
+        [Object] Get([UInt32]$Index)
+        {
+            $This.Check($Index)
+
+            Return $This.File[$Index]
+        }
+        [Object] Current()
+        {
+            If ($This.Selected -eq -1)
+            {
+                Throw "File not selected"
+            }
+
+            Return $This.File[$This.Selected]
+        }
+        Select([UInt32]$Index)
+        {
+            $This.Check($Index)
+
+            $This.Selected = $Index
+        }
+        AddFile([String]$Name,[String]$Date,[String]$Start,[String]$Duration,[String]$Url)
+        {
+            $Item = $This.TranscriptionFile($This.File.Count,$Name,$Date,$Start,$Duration,$Url)
+
+            $Out  = @( ) 
+            $Out += "Added [+] File     : [{0}]" -f $Item.Name
+            $Out += "          Date     : [{0}]" -f $Item.Date
+            $Out += "          Duration : [{0}]" -f $Item.Duration
+            $Out += "          Url      : [{0}]" -f $Item.Url
+            $Out += " "
+            
+            $Out | % { $This.Write($_) }
+
+            $This.File += $Item
+        }
+        AddParty([String]$Name)
+        {
+            $Current = $This.Current()
+
+            If ($Name -in $Current.Party.Name)
+            {
+                Throw "Party [!] [$Name] already specified"
+            }
+
+            $Current.Party += $This.TranscriptionParty($Current.Party.Count,$Name)
+
+            $This.Write("Party [+] [$Name] added.")
+        }
+        AddEntry([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
+        {
+            $Current = $This.Current()
+
+            If ($Index -gt $Current.Party.Count)
+            {
+                Throw "Party [!] [$Index] is out of bounds"
+            }
+
+            $Current.Output += $This.TranscriptionEntry($Current.Output.Count,
+                                                        $Current.Party[$Index],
+                                                        $Current.GetPosition($Position),
+                                                        $Current.Position($End),
+                                                        $Note)
+
+            $This.History.Add($This.Selected,$Current)
+
+            $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
+        }
+        X([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
+        {
+            $This.AddEntry($Index,$Position,$End,$Note)
+        }
+        [String] ToString()
+        {
+            Return "({0}) <TranscriptionCollection>" -f $This.File.Count
+        }
+    }
+
+    If (!$Date)
+    {
+        $Date = [DateTime]::Now.ToString("MM/dd/yyyy")
+    }
+
+    [TranscriptionCollection]::New($Name,$Date)
+}
+
 $Ctrl = New-TranscriptionCollection -Name Impressions
 $Ctrl.AddFile("Audio Log - Impressions","02/18/2023","17:56:25","01:23:06","https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu")
 $Ctrl.AddFile("SCSO Admin (Jeff Brown)","02/17/2023","09:34:04","00:10:59","https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3")
@@ -26,114 +370,150 @@ $Ctrl.AddParty("E N V")
 
 $Ctrl.Select(0)
 $Ctrl.X(0,"00:00","00:20",@'
-:Saturday, February 18th, 2023, Michael Cook speaking. It's currently, 5:56pm...?
+:[Saturday, February 18th, 2023], [Michael Cook] speaking.
+It's currently, [5:56pm]...?
 
-I'm making this audio log to talk about terms that are rather offensive, which I sort of capitalized
-on earlier today, uhm- however, I'd like to expand upon that because...
+I'm making this [audio log] to talk about...
+...terms that are rather [offensive], which I sort of capitalized on [earlier today], uhm- 
+However, I'd like to [expand] upon that because...
 '@)
 
 $Ctrl.X(0,"00:20","00:41",@'
 :I know that uh- some of my language is uh- it OFFENDS certain people, right...?
+
 Or maybe my language will offend EVERYBODY, right...?
-And then, I have to rewind to like an audio recording that I made uh- a few months ago,
-sorta like uh, observing and analyzing some uh- of uh George Carlin's
+
+And then, I have to [rewind] to like an [audio recording] that I made uh- a few months ago,
+sorta like uh, [observing] and [analyzing] some uh- of uh [George Carlin]'s
 '@)
 
 $Ctrl.X(0,"00:41","00:57",@'
 :Uh- rhetoric, right...?
-Regard-, uh- especially regarding the, his skit from like the- sometime in the 70's,
+
+Regard-, uh- especially regarding the, his skit from like the late- sometime in the 70's,
 regarding the 7 words that you'll never hear on the fuckin' TV.
 '@)
 
 $Ctrl.X(0,"00:57","01:12",@'
 :Right so, already right there, I'm already whippin' out the F word.
-So I'm sorta like, bein' a trollmeister 5000 already. 
+
+So I'm sorta like, bein' a trollmeister 5000, already. 
+
 But I'm not being a REAL trollmeister... not at all.
 '@)
 
 $Ctrl.X(0,"01:12","01:32",@'
-:Nah, I think the problem is that, I'm being limited by people that are fuckin' 
-stupid, and they ha- the reason why they're doing it is because they're jealous
-of how fuckin' intelligent I am, and they will use every fucking trick or, uh- 
-trick in the book, to try to limit me...
+:Nah, I think the problem is that...
+
+[I'm being limited by people that are fuckin' stupid], and they ha- the reason why
+they're doing it is because [they're jealous of how fuckin' intelligent I am], and they
+will use [every fucking trick] or, uh- [trick in the book], to try to [limit] me...
 '@)
 
 $Ctrl.X(0,"01:32","01:50",@'
-:And then make, uh- OTHER people's perceptions of what I say or do...
-to seem so OFFENSIVE, that like, I should practically be in a prison or a jail 
-cell, for the amount of foul ass fuckin' things that I say.
+:And then make, uh- [OTHER people's perceptions] of what I say or do...
+to seem so [OFFENSIVE], that like, I should [practically] be in a [prison] or a 
+[jail cell], for the amount of [foul-ass fuckin' things that I say].
 '@)
 
 $Ctrl.X(0,"01:50","02:08",@'
-:Right...? So what I'm doing, is I'm exhibiting a sense of being more sophisticated
-than a lot of people, who like follow the rules, and got to where they we- where 
-they are in society, by doing what they were told, and being a good little boy or
-girl, that ya know, followed instructions...
+:Right...?
+
+So what I'm doing, is I'm [exhibiting] a [sense] of being [more sophisticated] than
+[a lot of people], who like [follow the rules], and got to where they we- where 
+they are in society, by [doing what they were told], and being a [good little boy] or
+[girl], that ya know, [followed instructions]...
 '@)
 
-$Ctrl.X(0,"02:08","02:31",@'
-:Right...? I can convey a sense of being just as sophisticated as uh- Rex Smith 
-over at the Times Union, or any of the uh the journalists that work at the Times 
-Union, or the Gazette, or the Saratogian, or like the New York Post, or WTEN or
-WRGB, or WNYT, right...?
+$Ctrl.X(0,"02:08","02:29",@'
+:Right...?
+
+I can convey a sense of me being [just as sophisticated] as uh- [Rex Smith] over at the
+[Times Union], or any of the uh the journalists that work at the [Times Union], or the
+[Gazette], or the [Saratogian], or like the [New York Post], or [WTEN] or [WRGB], or 
+[WNYT], right...?
 '@)
 
-$Ctrl.X(0,"02:31","03:01",@'
-:I exhibit a sense of uh- being extremely sophisticated when I talk, right...?
-And then when like, I capitalize on something offensive and it goes against the
-conventional mold of society, I think what happens is that somebody, that's been
-trying to contain me, wants to make it so that- I- I give up on myself, or uh- 
-other people, THEY give up on like, uh, reading or absorbing my content or 
-whatever I have to say or produce.
+$Ctrl.X(0,"02:29","03:00",@'
+:I [exhibit] a [sense] of uh- being [extremely sophisticated] when I talk, right...?
+
+And then when like, I capitalize on something [offensive] and it goes against the
+conventional mold of society...
+
+...I think what happens is that somebody, that's been trying to contain me, wants to
+make it so that- I- I give up on myself, or uh- other people, THEY give up on like, 
+uh, [reading] or [absorbing] my [content] or [whatever I have to say or produce].
 '@)
 
-$Ctrl.X(0,"03:01","03:20",@'
-:Right...? And this typically happens when I insult certain highly respected
-people, right...? And then like, I'll notice like, uhm, some of these signs
-that I have hit the nail right on the fuckin' head... when, some of the 
-numbers that I'm seeing...? They're being skewed, right...?
+$Ctrl.X(0,"03:00","03:20",@'
+:Right...?
+
+And, this typically happens when I insult [certain highly respected people], right...?
+
+And then like, I'll notice like, uhm, some of these signs that I have [hit the nail] 
+right on the fuckin' head... when, [some of the numbers that I'm seeing]...?
+
+They're being [skewed], right...?
 '@)
 
 $Ctrl.X(0,"03:20","03:39",@'
-:So like if I- lets- let me put it into perspective. 
-So if I send a text message to this- some girl, that like, always wants to
-have sex- have sex with me, right...? Right...?
+:So like if I- lets- let me put it into perspective.
 
-And uh- had sex with her for many many weeks, every single time we started
-messaging, she's like 'Hey, wanna have sex...?' ...right...?
+So, if I [send a text message] to this- [some girl], that like, [always] wants to
+[have sex]- have sex with me, right...?
+Right...?
+
+And uh- [had sex with her for many many weeks], every single time we started messaging, 
+she's like:
+[Girl]: Hey, wanna have sex...?
+
+...right...?
 '@)
 
 $Ctrl.X(0,"03:39","03:59",@'
-:So like if I establish that as a baseline, and I know that if I text some
-girl about havin' sex with her...? She's gonna text me back in a few minutes
-to like an hour, she might be bus- like, lets say on the worst occasion, 
-she might be so busy that she doesn't get back to me within like an hour
-or two... right...?
+:So like if I establish that as a [baseline], and I know that if I text some girl about
+havin' sex with her...? 
+
+She's gonna [text me back] in a [few minutes] to like an [hour], she might be bus- like, 
+let's say on the [worst occasion], she might be [so busy] that she doesn't get back to me
+within [like an hour or two]... right...?
 '@)
 
 $Ctrl.X(0,"03:59","04:35",@'
-:So, if I establish that as a baseline...?
-And then like, something fuckin' happens, or like, I say something that
-really upsets her, or whatever...? And then I like, try to use the same
-tactics...? Even more...? And like, she starts to come up with excuses 
-like "Oh, I uh- fell asleep..." or "Oh, um... I was- I was going like, 
-grocery shopping with my mom, and I left my phone at my other house...
-I just got back, is- I know it's been like 3 days, but you know, um..."
+:So, if I establish that as a [baseline]...?
+
+And then like, something fuckin' happens, or like, I say something that really upsets her, 
+or whatever...? And then I like, try to use the same tactics...? Even more...? And like,
+she starts to come up with excuses like:
+
+[Girl]: Oh, I uh- fell asleep... or 
+        Oh, um... I was- I was going like, grocery shopping with my mom, 
+        and I left my phone at my other house...
+        I just got back, is- I know it's been like (3) days, but you know, um...
 '@)
 
-$Ctrl.X(0,"04:35","04:51",@'
-:SO, what I'm doing right there, is I'm illuminating there's a reason WHY someone would be-
+$Ctrl.X(0,"04:35","04:50",@'
+:So, what I'm doing right there, is I'm illuminating there's a reason WHY someone would be-
 would say misleading things to me. Or, wouldn't be reporting the same sort of uh- events.
 
-Or, I might like- ok.
+Or, I might like- ok. So...
 '@)
 
-$Ctrl.X(0,"04:51","05:09",@'
-:So, allow me to apply this to a, everyone else. Right...? 
-Everybody else...? They think like on a, what-happens-today...and-that's-it basis...
+<#
+    What this process is called is establishing a CONTROL.
+    This is part of a really cool thing that a lot of stupid people like to ignore...
+    Scientific model : https://en.wikipedia.org/wiki/Scientific_modelling
+#>
 
-They dont' really think about like, things in their future, unless they're planning for
-something like they're goin' to school or whatever...?
+$Ctrl.X(0,"04:50","05:09",@'
+:Allow me to apply this to a, like uh- everyone else. 
+
+Right...? 
+Everybody else...? 
+They think like on a, what-happens-today...and-that's-it basis...
+
+They don't really think about like, things in their [future], unless they're planning 
+for something like they're [goin' to school] or whatever...?
 '@)
 
 $Ctrl.X(0,"05:09","05:20",@'
@@ -143,98 +523,150 @@ to school, or, or whatever...? Right...?
 '@)
 
 $Ctrl.X(0,"05:20","05:43",@'
-:So our society unwittingly trains people to throw out the idea of uh- remembering
-things, and uh- being sophisticated, and uh- society uses a range of tactics to try
-to like exude dominance or control or whatever, right...? So like um...
+:So, [our society unwittingly trains people to throw out the idea of] uh- [remembering
+things], and uh- [being sophisticated], and uh- [society uses a range of tactics] to try
+to like [exude dominance] or [control] or whatever, right...? So like um...
 '@)
 
 $Ctrl.X(0,"05:43","06:14",@'
 :I've been uh- consistently uploading videos over the last, you know, couple of weeks,
-every day, maybe (1) video or multiple...? Not all of the videos have gotten attention, 
-or like uh- whatever...? But um, I've seen a consistent effort from like somebody working
-at either Google, or somewhere in between, me and Google, like, seeing the content that
-I'm like, uploading...? And then responding to it, and like saying:
-"Yeh, that's cool. Your content's cool or whatever..."
+every day, maybe (1) video or multiple...?
+
+Not all of the videos have gotten attention, or like uh- whatever...?
+
+But um, I've seen a consistent effort from like somebody working at either [Google],
+or somewhere in between, me and [Google], like, seeing the content that I'm like, 
+uploading...? 
+
+And then responding to it, and like saying:
+[Somebody]: Yeh, that's cool. 
+            Your content's cool or whatever...
+
 Right...?
 '@)
 
 $Ctrl.X(0,"06:14","07:02",@'
-:So what this causes me, to believe, is that it's ALWAYS a factor.
+:So, what this causes me, to believe, is that it's ALWAYS a factor.
 
-And uh- if you start out doing something that upsets people at Google, then basically
-it's like uh- it's basically like uh- putting yourself in a box, and you're a plant, 
-and uh- ya know the maximum shape that you weill ever grow as that plant, is the 
-size of that box. You'll never be able to outgrow the box.
+And uh- if you start out doing something that upsets people at [Google], then 
+basically it's like uh- it's basically like uh- [putting yourself in a box], and
+you're a plant, and uh- ya know the [maximum shape] that you will ever grow as that
+plant, is the [size of that box].
+
+You'll never be able to outgrow the box.
 
 You'll always be confined within the box, because, you know, somebody made damn
-certain that like your maximum shape would be the size of that box, and therefore, 
+certain that like your [maximum shape] would be the size of that box, and therefore, 
 that allows you to only, like uh- to influence a certain number of people.
 '@)
 
+<#
+    Society forces people to believe that you'll never outgrow the box.
+    That's because people have a problem with determining whether their authority
+    is CREDIBLE.
+
+    So if someone who casually strokes their dick all day in a bathtub happens to be
+    in a position of IMPORTANCE or SIGNIFICANCE, then they can literally say things
+    that are blatantly false, and people will believe them.
+
+    "You'll never be able to outgrow the box."
+    ^ What stupid people will believe when someone important tells them that.
+
+    [Importance level], in many cases, can be 100% identical to [stupidity level].
+#>
+
 $Ctrl.X(0,"07:02","07:15",@'
-:And so like, if you try to tell people 
-"Yeah, I could be WAY cooler than this fuckin' box that I'm in... and I'll talk
-about how fuckin' cool I am...?" And then like uh- you try to like impress other
-people, or like, go outside of the box...?
+:And so like, if you try to tell people:
+[You]: Yeah, I could be WAY cooler than this fuckin' box that I'm in... 
+       ...and I'll talk about how fuckin' cool I am...? 
+       
+And then like uh- you try to like uh- [impress other people]...
+...or like, [go outside of the box]...?
 '@)
 
 $Ctrl.X(0,"07:15","07:36",@'
-:What happens is like people will be like
-"Well, why the fuck isn't this dude on like uh- like uhm, like HBO doing stand up
-specials or some shit...?" Cause what he's sayin' is genuinely funny, but like
-what'll happen is like some people will be like 
-"Well if he was that funny, then why aren't people reacting to some of the shit
-that he's saying..?" Right...?
+:What happens is like people will be like:
+[People]: Well, why the fuck isn't this dude on like uh- like uhm...
+          like HBO doing stand up specials or some shit...? 
+          Cause what he's sayin' is genuinely funny...
+
+But like what'll happen is like some people will be like:
+[People]: Well if he was that funny, then why aren't people reacting to some 
+          of the shit that he's saying..?
+          
+Right...?
 '@)
 
-$Ctrl.X(0,"07:36","07:56",@'
-:And then what I'll say is that I've been being censored on Facebook by the owner
-of Facebook, like at an aggressive rate, and it's so aggressive that like when I 
-mention him in some of the videos that I make..? Uh, what happens is like, there'll
-be like zero views, or somethin' like that.
+<#
+    I used to think that it came down to [not being funny], but now I know 
+    that [there is a group of people that work really hard] to [prevent people] 
+    from thinking some things are [funny], [comical], or otherwise.
+    
+    This is called "stupid people that try to control what's funny or cool"
+    
+    This causes many people to come across as looking [really fucking stupid] 
+    every time they say or do something that is [genuinely funny].
+
+    However, sometimes these morons [OVEREXTEND THAT ABILITY], and it [BACKFIRES],
+    whereby illuminating that someone really important is just really fucking moronic.
+#>
+
+$Ctrl.X(0,"07:36","07:55",@'
+:And then what I'll say is that I've been being censored on [Facebook] by the owner
+of [Facebook], like at an aggressive rate, and it's so aggressive that like when I 
+mention him in some of the videos that I make..?
+
+Uh, what happens is like, there'll be like (0) views, or somethin' like that.
 '@)
 
-$Ctrl.X(0,"07:56","08:12",@'
+$Ctrl.X(0,"07:55","08:12",@'
 :It'd basically be like "What the fuck...? A ghost town..."
+
 And like, ya know, this uh- its so fuckin' uhhhh, obvious that like, something
 I'm doing is pissin' off somebody with a lot of money, and it could be multiple
 people that I'm pissin' off, th- they all have a lot of money.
 '@)
 
-$Ctrl.X(0,"08:12","08:51",@'
+$Ctrl.X(0,"08:12","08:50",@'
 :And they don't like when I talk about them, because I think that some of them are
-fuckin' jealous as to how intelligent I am, and they didn't get to be where they
-are by like, allowing people like me, to have free reign, like, normal every-day
-citizens do, and what this causes is like uh- me to think of ways to like uh- 
-derive who would have those intentions, and then like, uh- what you come to find
-is like, uh- there might be an evil trollmeister that is tryin' to like, uh- 
-keep me as quiet as possible...
+fuckin' jealous as to how intelligent I am, and they didn't get to be where they are
+by like, allowing people like me, to have free reign... 
+
+Like, normal every-day citizens do, and what this causes is like uh- me to think of
+ways to like uh- derive [who] would have those [intentions], and then like, uh- what
+you come to find is like, uh- [there might be an evil trollmeister] that is tryin' to
+like, uh- [keep me as quiet as possible]...
 '@)
 
-$Ctrl.X(0,"08:51","09:07",@'
-:So that I cannot influence additional people, nor get myself out of the position
-that I'm in, because, the public opinion of me, has been consider- considerably
-reduced because of a number of fucking morons marring my character, and therefore...
+$Ctrl.X(0,"08:50","09:07",@'
+:...so that I cannot influence additional people, nor get myself out of the position
+that I'm in, because, the [public opinion] of me, has been consider- considerably
+reduced [because of a number of fucking morons marring my character], and therefore...
 '@)
 
-$Ctrl.X(0,"09:07","09:38",@'
-:What this ALSO causes, is like sometimes I will say something that's genuinely funny,
-and I'll reference something that's genuinely funny, and I'll post it on Facebook
-or like social media, and then someone will come along, and then remotely connect
-to my device, it'll cause the icons on my desktop to flash, so then I have to start
-talking about how I went to a bunch of places, yesterday, and then distributed a
-document, in the document I talk about like uh-
+$Ctrl.X(0,"09:07","09:37",@'
+:What this ALSO causes, is like sometimes I will say something that's [genuinely funny],
+or I'll reference something that's [genuinely funny], and then I'll post it on [Facebook],
+or on [social media], and then someone will come along, and then remotely connect to my
+device.
+
+It'll cause the icons on my desktop to flash, so then I have to start talking about how
+I went to a bunch of places, yesterday, and then distributed a document...
+
+You know, the document I talk about like uh-
 '@)
 
-$Ctrl.X(0,"09:38","09:55",@'
+$Ctrl.X(0,"09:37","09:55",@'
 :All of the work that I've been doing the last couple of months, I can guarantee
 that most people aren't gonna like, consume all of that content, but what I CAN say,
 is that I know for a god damn fact, that when I stopped at the Saratoga County
 Sheriffs Office Administrative Office...
 '@)
 
-$Ctrl.X(0,"09:55","10:03",@'
-:And then I said "Hey I'd like to speak to Michael Zurlo, the county Sheriff..."
+$Ctrl.X(0,"09:55","10:01",@'
+:And then I said:
+[Me]: Hey I'd like to speak to [Michael Zurlo], the county Sheriff...
+
 Then what happened was...
 '@)
 
@@ -356,7 +788,7 @@ $Ctrl.X(1,"02:42","02:42",@'
 :Ok...?
 '@)
 
-$Ctrl.X(0,"02:42",@'
+$Ctrl.X(0,"02:42","02:44",@'
 :...dating back to (2020).
 '@)
 
@@ -2344,15 +2776,15 @@ $Ctrl.X(1,"19:55","20:01",@'
 
 $Ctrl.Select(0)
 
-$Ctrl.X(0,"10:03","10:50",@'
+$Ctrl.X(0,"10:01","10:18",@'
 :...they sent out a couple of dudes, the- I don't know what the OTHER dude's name was,
 but the dude that came out and talked with me...? 
 
 He seemed to be a rather professional sounding dude...? 
-And, uh- he seemed to be impress with my ability to orate...?
+And, uh- ya know, he seemed to be impressed with my ability to orate...?
 '@)
 
-$Ctrl.X(0,"10:50","11:10",@'
+$Ctrl.X(0,"10:18","10:38",@'
 :He didn't know what the- the term was...?
 
 But then like, uhm... at some point AFTER I had this conversation with him...
@@ -2362,101 +2794,102 @@ I started to reflect on the conversation that I had with him...
 this guy, and I recorded it on an audio recording...
 '@)
 
-$Ctrl.X(0,"11:10","11:27",@'
+$Ctrl.X(0,"10:38","10:55",@'
 :And I don't know he's aware that I did that, and uh, I started to get this feeling
-as if there IS like a group of people, that like, go around, silencing certain people
-in order to like, reduce their exposure to the rest of the world...?
+as if like, there IS like a group of people, that like, go around, silencing certain
+people in order to like, reduce their exposure to the rest of the world...?
 '@)
 
-$Ctrl.X(0,"11:27","11:59",@'
+$Ctrl.X(0,"10:55","11:27",@'
 :Either because that person is extremely fucking intelligent, 
 and they wanna [contain] that person... 
 
 ...OR it could ALSO be because, like uh- somebody is [very jealous], and is [very worried]
 that uh- somebody like me, [might be onto the right track]... 
 
-...and then they have to [mislead me], and send out an [investigator] that has a TOTALLY
-different voice than the [Jeff Brown] that I spoke to back on, uh- Ma- uh- 
+...and then they have to m- [mislead me], and send out an [investigator] that has a TOTALLY
+different voice, than the [Jeff Brown] that I spoke to, back on, uh- Mar- uh- 
 
 [February 2nd, 2001- uh- 21]...
 '@)
 
-$Ctrl.X(0,"11:59","12:14",@'
+$Ctrl.X(0,"11:27","11:43",@'
 :And I know that the person I was speaking to, [was the person that I referenced], 
-because, the [voicemail prompt]. The [voicemail prompt], the [name] and the [voice]
-sounded TOTALLY different, and...?
+because, uh- the [voicemail prompt]. 
+
+The [voicemail prompt], the [name], and the [voice], sounded TOTALLY different, and...?
 '@)
 
 <#
      It was the [same guy], he just [sounded different in person].
 #>
 
-$Ctrl.X(0,"12:14","12:50",@'
+$Ctrl.X(0,"11:43","12:08",@'
 :Ya know, the guy that I spoke to...? 
 
-I think he was either the [FBI/Federal Bureau of Investigation] or the 
-[CIA/Central Intelligence Agency].
+I think he was either:
+- [FBI/Federal Bureau of Investigation] or the 
+- [CIA/Central Intelligence Agency].
 
 [I could be wrong about that], but- ya know, uh- [sometimes I get clues] from uh- 
 the [environment].
 
 And, uh- what I've noticed is that [I- have contacted these important agencies] more
 than the [average citizen] would, because of like- [the company]. That I started.
+'@)
 
+$Ctrl.X(0,"12:08","12:23",@'
 And uh... ya know...?
 
 When I tell people:
 [Me:] Hey, um, I'm an expert...? 
       And uh- ya know, I know when people are lying to my fucking face...?
+
+Ya know...? 
+They're gonna send guys like, uh- the guy I spoke to yesterday...
 '@)
 
-$Ctrl.X(0,"12:50","12:55",@'
-:Ya know...? They're gonna send guys like, uh- the guy I spoke to yesterday...
-'@)
+$Ctrl.X(0,"12:23","12:40",@'
+:Honestly, I'm not sure what to think, because... uh-
+While... *sigh* [there is the possibility] that [he was tellin' me the truth]...? 
 
-$Ctrl.X(0,"12:55","13:11",@'
-:Honestly, I'm not sure what to think, because... uh- while... [there is the possibility]
-that [he was telling me the truth]...? 
-
-Ya know, [my impression] was that [I believed him]. 
+Ya know, [my impression] was that, [I believed him]. 
 
 But- he could've very well [lied to me], and [I believed him].
 '@)
 
-$Ctrl.X(0,"13:11","13:28",@'
+$Ctrl.X(0,"12:40","12:56",@'
 :So, what that raises to m- [what question that raises to me], is this... right...?
 
 If someone is [avoiding to have a conversation with me], and [isn't calling me]...?
 
-And uh- I notice [subtle changes] to like how my [day-to-day operations] have been going...?
+And uh- I notice [subtle changes] to, like how my [day-to-day operations] have been going...?
 '@)
 
-$Ctrl.X(0,"13:28","13:43",@'
+$Ctrl.X(0,"12:56","13:11",@'
 :I have to conclude that something is f- something fucked up is goin' on, and, I have to
 be considerate that, ya know, no amount of time is gonna change the situation, because...
 uh-
 '@)
 
-$Ctrl.X(0,"13:43","14:03",@'
-:If I [notice] that I am being [squelched], to the degree where you know, [I'll notice the
-subtleties], right...? 
+$Ctrl.X(0,"13:11","13:30",@'
+:If I [notice] that I am being [squelched], to the degree where, you know, 
+[I'll notice the subtleties], right...? 
 
 [Much more than the average person would]. 
 What uh- [most people] might not understand, is this...
 '@)
 
-$Ctrl.X(0,"14:03","14:09",@'
+$Ctrl.X(0,"13:30","13:49",@'
 :I do believe that there may be [one agency] that [controls the entire world].
-'@)
 
-$Ctrl.X(0,"14:09","14:21",@'
-:And that like, [all of the countries around the world], they are [subordinates] to the 
-[main control mechanism].
+And that, like, [all of the countries around the world]...? 
+They are [subordinates], to the [main control mechanism].
 
 I say [main control mechanism] because- I don't really know what else to call it.
 '@)
 
-$Ctrl.X(0,"14:21","14:32",@'
+$Ctrl.X(0,"13:49","14:00",@'
 :Could be the [New World Order]. 
 Could be like um, some... [initiative].
 
@@ -2464,18 +2897,20 @@ Or, it could just be a- [a group of rich people].
 I'm really not certain.
 '@)
 
-$Ctrl.X(0,"14:32","14:43",@'
-:But what I have speculated, is that agencies like the [Saratoga County Sheriffs Office], 
+$Ctrl.X(0,"14:00","14:43",@'
+:But what I have speculated, is that, agencies like, the [Saratoga County Sheriffs Office], 
 they- they uh-
 '@)
 
-$Ctrl.X(0,"14:43","14:53",@'
+# 32
+
+$Ctrl.X(0,"14:13","14:21",@'
 :If the people that work there, [think that I'm an intelligent dude], they'll have a 
 [conversation with me like they did yesterday], and they'll ask me a [single question], 
 like:
 '@)
 
-$Ctrl.X(0,"14:53","15:05",@'
+$Ctrl.X(0,"14:21","14:33",@'
 :[Brown]: What year did you graduate high school...?
 
 Or uh- 
@@ -2487,14 +2922,14 @@ I'll be like:
 [Me]    : 2003.
 '@)
 
-$Ctrl.X(0,"15:05","15:18",@'
+$Ctrl.X(0,"14:33","14:46",@'
 :So, [what these questions are doing] is [establishing a baseline], for 
 [whether the investigator] can [trust the information that they're hearing] from me.
 
 Because they have to be able to [screen] whether [someone's bullshitting] them or not.
 '@)
 
-$Ctrl.X(0,"15:18","15:35",@'
+$Ctrl.X(0,"14:46","15:03",@'
 :Based on the conversation that I had yesterday with this guy who claims to be
 [Captain Jeff Brown], um... 
 
@@ -2506,8 +2941,8 @@ What I have uh- surmized is that...
     He was, actually.
 #>
 
-$Ctrl.X(0,"15:35","15:58",@'
-:And like, the [conversation that I recorded], and like, [I attempted to follow up]
+$Ctrl.X(0,"15:03","15:26",@'
+:And uh- like, the [conversation that I recorded], and like, [I attempted to follow up]
 with this dude at [some point] in the past...? 
 
 And, uh- I may have even [sent an email] that was [dedicated to the guy that I spoke to], 
@@ -2515,7 +2950,7 @@ uh- to the guy that- back in 2021, to the investigator that I spoke to yesterday
 was an investigator.
 '@)
 
-$Ctrl.X(0,"15:58","16:18",@'
+$Ctrl.X(0,"15:26","15:46",@'
 :Ya know, sometimes what'll happen is uh- [I'll detect subtleties] that [other people]
 will [gloss right over], even though [I haven't listened to the audio recording] I
 recorded of me speaking with him, uh- 
@@ -2527,14 +2962,14 @@ I thought about that conversation, like, ever since I left.
     Obviously I have since I originally recorded this, and made a transcription.
 #>
 
-$Ctrl.X(0,"16:18","16:40",@'
+$Ctrl.X(0,"15:46","16:08",@'
 :Because, one of his responses uh- indicated to me... that [the dude knew who I was],
 and, [he was trying to keep that on the down low]... but [I could be wrong about that].
 
 Because, [he was writing a bunch of stuff down]... uhm...
 '@)
 
-$Ctrl.X(0,"16:40","16:56",@'
+$Ctrl.X(0,"16:08","16:24",@'
 :These are the [speculations] that I make as a [programmer].
 
 I have to [assume] that like, uh- that [nobody knows nothin' about anything], whenever
@@ -2544,8 +2979,8 @@ And then, [when I repeat myself], and I [frame the entire narrative], or uh-
 the [details of the story]...?
 '@)
 
-$Ctrl.X(0,"16:56","17:20",@'
-:I have to like, consider, that like, when I talk to a new person that they have 
+$Ctrl.X(0,"16:24","16:48",@'
+:Uh- I have to like, consider, that like, when I talk to a new person that they have 
 absolutely [zero information] or [details] or [knowledge] about the [story] I'm 
 telling them, and what this causes, is for me to have to [exert more energy] with
 [every person that I speak to]. 
@@ -2554,18 +2989,18 @@ Because... some people uh- [I have to be considerate] of uh- [overloading people
 with [information] that [they won't be able to process].
 '@)
 
-$Ctrl.X(0,"17:20","17:36",@'
+$Ctrl.X(0,"16:48","17:04",@'
 :So, when I do this, what it causes is uh- situation where I have to look for
 [any form of body language] that would [suggest] that the [person I'm speaking to], 
 [they're listening to me], but they're not gonna be able to [retain the information].
 '@)
 
-$Ctrl.X(0,"17:36","17:46",@'
-:So, that's why I [printed up a document] and I went to the [Saratoga County Sheriffs
+$Ctrl.X(0,"17:04","17:46",@'
+:So, that's why I uh- [printed up a document] and I went to the [Saratoga County Sheriffs
 Office] yesterday, and, some of those audio recordings ARE gonna be alarming.
 '@)
 
-$Ctrl.X(0,"17:46","18:00",@'
+$Ctrl.X(0,"17:14","17:28",@'
 :Mainly because, like, I've noticed that [there are some lazy fucks] that work at
 the [Saratoga County Sheriffs Office].
 
@@ -2573,8 +3008,8 @@ And I've talked about it numerous times in many of my documents,
 I've talked about it in many of my audio logs, and videos...
 '@)
 
-$Ctrl.X(0,"18:00","18:10",@'
-:And if I go around and I walk up to people, and I say:
+$Ctrl.X(0,"17:28","17:38",@'
+:And, if I go around and I walk up to people, and I say:
 [Me]   : Yeah there are some lazy fucks at the [New York State Police] 
          AND the [Saratoga County Sheriffs Office]...
 
@@ -2582,7 +3017,7 @@ They're gonna be like:
 [Them] : I don't think that at all...
 '@)
 
-$Ctrl.X(0,"18:10","18:28",@'
+$Ctrl.X(0,"17:38","17:57",@'
 :Yeah. 
 Most people AREN'T gonna think that, because ya know, [most people follow the rules]. 
 
@@ -2590,7 +3025,7 @@ And, uh most people, they're shaped and molded by uh- the- the [societal expecta
 or normal uh- [normal every day conversations] that people have with each other.
 '@)
 
-$Ctrl.X(0,"18:28","18:45",@'
+$Ctrl.X(0,"17:57","18:13",@'
 :So [if you are a really intelligent son of a bitch], like I am...?
 
 And you are [able to detect people], [lying right to your face]...?
@@ -2599,7 +3034,7 @@ What'll happen is that people will, like, try to [play this game] where,
 they don't, [care] if- you- if you [know], that they're [lying to you].
 '@)
 
-$Ctrl.X(0,"18:45","18:58",@'
+$Ctrl.X(0,"18:13","18:26",@'
 :Ya know, like I encounter this, a lot.
 And [it's why I encounter so much resistance], because, [people take a look at me], 
 and [they assume] that I'm not [smart enough] to know when they're [bullshitting me].
@@ -2607,14 +3042,14 @@ and [they assume] that I'm not [smart enough] to know when they're [bullshitting
 And, I- [I am- a LOT smarter than I look].
 '@)
 
-$Ctrl.X(0,"18:58","19:10",@'
+$Ctrl.X(0,"18:26","18:38",@'
 :And people, like [constantly underestimate me].
 
 But- I didn't get that feeling at all when I went to the [Saratoga County Sheriffs Office]
 yesterday, the [Administrative Office], and I spoke with this guy named [Captain Jeff Brown].
 '@)
 
-$Ctrl.X(0,"19:10","19:30",@'
+$Ctrl.X(0,"18:38","18:58",@'
 :There was another guy that came out WITH him, but- I didn't speak with, HIM... I spoke with, 
 uh the guy that was in a white shirt, who claims to be [Jeff Brown].
 
@@ -2623,7 +3058,7 @@ Now, uh- consider this.
 Right...?
 '@)
 
-$Ctrl.X(0,"19:30","19:47",@'
+$Ctrl.X(0,"18:58","19:15",@'
 :I have to be [considerate] of uh- ya know, [being in a public place], so like [certain details]
 I can say out loud...?
 
@@ -2631,7 +3066,7 @@ But- I'm not gonna do that all the time...?
 Uh... *sigh*.
 '@)
 
-$Ctrl.X(0,"19:47","20:07",@'
+$Ctrl.X(0,"19:15","19:35",@'
 :Tryin' to figure out how to migrate this uh- audio log.
 
 I spoke about a character named [Wrongful Robert] earlier this morning, and uh- the reason why
@@ -2639,14 +3074,14 @@ I spoke about [Wrongful Robert], is because there's [a lot of people in society]
 lot like [Wrongful Robert].
 '@)
 
-$Ctrl.X(0,"20:07","20:22",@'
+$Ctrl.X(0,"19:35","19:50",@'
 :[Wrongful Robert] is basically, uh- [everything you know is wrong].
 And so like, when I try to tell people,
 [Me] : Oh yeh, if you're a [really smart person], 
        then you might be being [censored] like I get...
 '@)
 
-$Ctrl.X(0,"20:22","20:39",@'
+$Ctrl.X(0,"19:50","20:06",@'
 :And most people...?
 [They're not censored], so they won't ever suspect that they're being censored for anything,
 because people follow this [hive mentality]. 
@@ -2655,7 +3090,7 @@ So, what I mean is this, a lot of people, they'll [watch the news], and [they'll
 everything they see on the news], because of the [way] that it is [shaped].
 '@)
 
-$Ctrl.X(0,"20:39","21:04",@'
+$Ctrl.X(0,"20:06","20:32",@'
 :But- [the news can be very misleading], and can [lie about certain details].
 Or, they can [omit certain details] that are [very critical].
 
@@ -2664,34 +3099,34 @@ tha the [overall structure], so, typically what happens is that people will have
 [perceptions changed immeasurably], and they'll believe that basically, uhm...
 '@)
 
-$Ctrl.X(0,"21:04","21:28",@'
-:If an [agency] decides to tell a [portion] of a story, they wanna tell the story, but they 
+$Ctrl.X(0,"20:32","20:56",@'
+:If uh, an [agency] decides to tell a [portion] of a story, they wanna tell the story, but they 
 only want to tell where like uh- [certain elements] of the story illuminate that they're like
 [responsible individuals] that [never lie to people], and- or [mislead them].
 
 They wanna [demonize] basically [any enemies of theirs], and so- and so what'll happen is this...
 '@)
 
-$Ctrl.X(0,"21:28","21:46",@'
+$Ctrl.X(0,"20:56","21:14",@'
 :Uh- suppose that a [police officer] whips out their gun, and [they shoot an innocent uh- person]
 for [no fuckin' reason]...
 
 I saw this video, um, where a guy was like outside of his house, or something...?
 '@)
 
-$Ctrl.X(0,"21:46","21:54",@'
-:And like, uh- a [police officer] THOUGHT that he had a GUN in his hand...?
+$Ctrl.X(0,"21:14","21:22",@'
+:And then, like, uh- a [police officer] THOUGHT that he had a GUN in his hand...?
 Like sh- may or may not be true...?
 '@)
 
-$Ctrl.X(0,"21:54","22:05",@'
+$Ctrl.X(0,"21:22","21:30",@'
 :But the police officer thought that the guy had a gun in his hand, but he didn't have a gun
 in his hand at all...?
 
-And that [police officer shot that man] and [killed him].
+And then that [police officer shot that man], and [killed him].
 '@)
 
-$Ctrl.X(0,"22:05","22:42",@'
+$Ctrl.X(0,"21:30","22:10",@'
 :So, uh... the [reason] why it would be [DANGEROUS] for a [police officer] to [continue being a 
 police officer], is if that person [lied], in order to like, save their ass.
 
@@ -2704,8 +3139,8 @@ Well, what THAT says, is uh- there's a [small window], of uh [possibilities]
 that [the cop just felt like shooting the fuckin' uh- person], and then [lying about it].
 '@)
 
-$Ctrl.X(0,"22:42","23:15",@'
-:And then like uh they'll be [grilled] by like, their [superior], and then the [superior] will
+$Ctrl.X(0,"22:10","22:42",@'
+:And then like, uh, they'll be [grilled] by like, their [superior], and then the [superior] will
 be like:
 [Superior]: Did you like, just shoot him cause you felt like it...?
             Or, was it an accident...?
@@ -2718,7 +3153,7 @@ And then like, my son would be like
 [Jr.]: Well, SHE started it...
 '@)
 
-$Ctrl.X(0,"23:15","23:29",@'
+$Ctrl.X(0,"22:42","22:57",@'
 :[Me]: Oh, DID she start it...?
        Or did you just feel like [hitting your sister] for [no reason]...?
 
@@ -2726,7 +3161,7 @@ Well, heh.
 Believe it or not, it's [basically the same situation] but the- [the stakes are a lot higher].
 '@)
 
-$Ctrl.X(0,"23:29","23:53",@'
+$Ctrl.X(0,"22:57","23:21",@'
 :And so, uh- as an [unintended side effect of all that], I do realize that the [police officers]
 that are out there...?
 
@@ -2735,7 +3170,7 @@ Their [sense of humor] is desensiti- is like, bascially, uh- over time, they bec
 So...
 '@)
 
-$Ctrl.X(0,"23:53","24:15",@'
+$Ctrl.X(0,"23:21","23:43",@'
 :When I come along, and I [capitalize] on [my sense of humor], it causes [other people] to be, uh-
 like, [repulsed] to some extent in [some circumstances].
 
@@ -2743,7 +3178,7 @@ Or like, they'll be [offended] by the [language] that I use, rather than like, t
 of the things that I'm [attempting] to [explain to people].
 '@)
 
-$Ctrl.X(0,"24:15","24:37",@'
+$Ctrl.X(0,"23:43","24:05",@'
 :Right...? 
 
 So like, if I say that [Trooper Rufa] from the [New York State Police], he sucks guys
@@ -2754,7 +3189,7 @@ He'll suck BOTH of their dicks.
 One right after another.
 '@)
 
-$Ctrl.X(0,"24:37","24:56",@'
+$Ctrl.X(0,"24:05","24:24",@'
 :And, uh- ya know, whether it's [true] or [false], [does anyone really give a shit]...?
 
 [No], I don't think that [anyone] really gives a shit, [including him].
@@ -2769,7 +3204,7 @@ Wanna know [WHY] he'll get a [chuckle] out of it...?
 Because, like...
 '@)
 
-$Ctrl.X(0,"24:56","25:30",@'
+$Ctrl.X(0,"24:24","24:58",@'
 :Even HE would never like come up with something that [audacious] or that [clever],
 you know, he he might get a [chuckle] out of it because...
 
@@ -2788,46 +3223,46 @@ video multiple times, and he's like:
     02/12/23 | NYSP Mafiosos | https://youtu.be/ENpIkuIbqZU
 #>
 
-$Ctrl.X(0,"25:30","25:52",@'
-:And then before you know it...? 
+$Ctrl.X(0,"24:58","25:20",@'
+:And then, before you know it...? 
 
-[Ya know, he's... actually walking around with a sense of pride]. 
+[Ya know, he's... he's actually walkin' around with a sense of pride]. 
 Like:
 
 [Rufa]: Wow, this fuckin' dude took like (38) minutes out of his day to fuckin' talk shit
-        about me, that's fu- that's fuckin' like [impressive] right there, dude...
+        about me, that's fu- like, that's fuckin' [impressive] right there, dude...
         Ya know...? 
         Holy fuck.
 '@)
 
-$Ctrl.X(0,"25:52","26:23",@'
+$Ctrl.X(0,"25:20","25:51",@'
 :So anyway, do I really think he's gonna fuckin' be [ENAMORED] by uh- the things I said in
 that audio recording...? 
 
 No... 
-But, do I think he's gonna give a shit...? 
+But, do I think that he's gonna give a shit...? 
 No...
 
 Wanna know WHY he's not gonna give a shit...?
 
 Because he's [desensitized] by the amount of fuckin' uh- [dead people] that he's had to scrape
-out of fuckin, like uh, [car wrecks] or like uh- ya know [arrest and prosecute] because somebody
-[murdered] somebody else, or like [assaulted] them or [shot them], or whatever.
+out of fuckin, like uh, [car wrecks] or like uh- ya know [arrest and like uh, prosecute] because 
+somebody [murdered] somebody else, or like [assaulted] them or [shot them], or whatever.
 '@)
 
-$Ctrl.X(0,"26:23","26:53",@'
+$Ctrl.X(0,"25:51","26:21",@'
 :Right, I'm not like oblivious to the fact that [the police have a pretty difficult job]...
 [I've said that numerous times before].
 
 However, uh- the JOB that they do...?
 
 It sometime- uh, [sometimes it is substandard], and [not satisfactory], and they have been 
-SO [desensitized], that you really have to use [every bit of evidence that you can] against them, 
+SO [desensitized] that- you really have to use [every bit of evidence that you can] against them, 
 and that like if you notice that after having a conversation with an investigator like [Jeff Brown],
 like I did yesterday...?
 '@)
 
-$Ctrl.X(0,"26:53","27:23",@'
+$Ctrl.X(0,"26:21","26:51",@'
 :I went all the way to- I went to, a bunch of places last night, or the other night, not last night.
 I went to the [Clifton Park-Half-], uh, the [Clifton Park Pubic Safety Building], left a notice there...
 I went to the [Clifton Park-Halfmoon Public Library], left a notice there...
@@ -2835,7 +3270,7 @@ I went to [Carol Yates'] house, I left a notice there...
 I went to [Sysco], on [One Liebach Lane], left a notice there...
 '@)
 
-$Ctrl.X(0,"27:23","28:03",@'
+$Ctrl.X(0,"26:51","27:31",@'
 :[Sysco] is a place that I used to work about (20) years ago, in uh- 2000... 4, I believe... 2003 or
 2004, I'm not sure uh... 
 
@@ -2849,7 +3284,7 @@ And uh- ya know- oh, it smelled like ice cream in there.
 And like, ya know, I worked really hard, and I fuckin', like...
 '@)
 
-$Ctrl.X(0,"28:03","28:41",@'
+$Ctrl.X(0,"27:31","28:09",@'
 :I got caught- I got caught in a situation, where like, the people that worked there a lot longer than me...?
 They like- tricked me. And they started puttin' fuckin' shit in the wrong fuckin' places.
 
@@ -2862,7 +3297,7 @@ the investigators, the police, and all of them...? They fuckin' use all of these
 The news and the media, they use all of these fuckin' tricks...?
 '@)
 
-$Ctrl.X(0,"28:41","29:04",@'
+$Ctrl.X(0,"28:09","28:32",@'
 :Uh, like uh- people in society...? They use all these tricks...?
 
 And really, like in ALL of these uh, components in society that I'm talking about...?
@@ -2872,7 +3307,7 @@ They really DO run on the notion that there's NO WAY that someone like [Michael 
 [money], or uh- [reputation] or [trust], from uh- [people all around society]...
 '@)
 
-$Ctrl.X(0,"29:04","29:47",@'
+$Ctrl.X(0,"28:32","29:15",@'
 :And, its- the reason why like, [humans are fuckin' stupid].
 
 Right...? Hu- human ha- [humans have a serious problem]. [They're fuckin' stupid], and they will use
@@ -2891,7 +3326,7 @@ But- [to what extent]...?
 And that's why I do what I do.
 '@)
 
-$Ctrl.X(0,"29:47","30:01",@'
+$Ctrl.X(0,"29:15","29:29",@'
 :So, after I went to [Sysco], I went all the way to.. uh, lets see.
 Where the hell did I go next...?
 
@@ -2905,7 +3340,7 @@ the video.
     02/17/23 | GlobalFoundries | https://youtu.be/1s-qefkOjXQ
 #>
 
-$Ctrl.X(0,"30:01","31:31",@'
+$Ctrl.X(0,"29:29","30:59",@'
 :And then I went to [TEC-SMART], and then I left a notice there, uh- on both sides of the building,
 and then uh- recorded an audio recording, right...?
 
@@ -2934,7 +3369,7 @@ Fuckin' I could [detect], like, that [the dude didn't really give a shit about w
 Right...?
 '@)
 
-$Ctrl.X(0,"31:31","32:03",@'
+$Ctrl.X(0,"30:59","31:31",@'
 :[Eric] : Oh hey~!
          How ya doin...?
 [Me]   : Oh, I'm doin' great!
@@ -2957,7 +3392,7 @@ And like, he seemed so fuckin' [calm] and [level-headed] about that, that like, 
     02/17/23 | Mocking Saratoga Hospital MHU  | https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL
 #>
 
-$Ctrl.X(0,"32:03","32:40",@'
+$Ctrl.X(0,"31:31","32:08",@'
 :You know why...? 
 Because I know that the notice that I handed him...?
 [He probably threw it in the fuckin' trash.]
@@ -2980,14 +3415,14 @@ other day or whatever...?
     02/20/23 | Time Travel (Facebook altering my account data) | https://youtu.be/xCo8Wu_0Lb4
 #>
 
-$Ctrl.X(0,"32:40","32:49",@'
+$Ctrl.X(0,"32:08","32:17",@'
 :Did I say something [offensive], and like uh- [piss off somebody] that's been [liking my content]...?
 
 Well, theres- there's a [possibility of that], right...?
 But- the [OTHER possibility], is this...
 '@)
 
-$Ctrl.X(0,"32:49","33:30",@'
+$Ctrl.X(0,"32:17","32:58",@'
 :After I recorded the vi- the audio recor- after I went to the [Saratoga County Mental Health] 
 (meant Hospital MHU), with uh- [Eric], the [social service worker], I uh- had a [flat tire]...? 
 
@@ -3017,7 +3452,7 @@ They'll be able to say:
     Then... another [Stewarts] in [West Milton].
 #>
 
-$Ctrl.X(0,"33:30","34:16",@'
+$Ctrl.X(0,"32:58","33:44",@'
 :And so, like... I continued all the way through [Ballston Spa], until I got to where the 
 [Chocolate Factory] is, where [Anthony Russo] had his company uh- uh, what was it, uh- 
 [Adirondack Technologies], and I think he eventually started like [Tech Valley Talent], or 
@@ -3036,7 +3471,7 @@ I just continued on to where- toward the uh- the [Saratoga County Sheriffs Offic
 [Administrative Office].
 '@)
 
-$Ctrl.X(0,"34:16","34:36",@'
+$Ctrl.X(0,"33:44","34:04",@'
 :And, on my way there, I saw a couple- a few vehicles that were being driven by the- the Sheriffs
 that work at the fuckin' building. And I could tell that they WERE the [Sheriffs] because, like- 
 
@@ -3046,7 +3481,7 @@ I dunno, the way that they drive their vehicles sometimes, like an aura of like:
        But I might NOT be, how could you tell...?
 '@)
 
-$Ctrl.X(0,"34:36","35:07",@'
+$Ctrl.X(0,"34:04","34:35",@'
 :Well, uh- [sometimes you can tell when a cop is drivin' around], but like, it's sort of like the
 same idea as like, uh- [texting some girl], and [getting a baseline] of like [how they respond] to
 [text messages], and then all of a sudden, [you say something that pisses them off] and then they 
@@ -3060,7 +3495,7 @@ same idea as like, uh- [texting some girl], and [getting a baseline] of like [ho
         Fine, [let's do it], how about like, [next Thursday]?
 '@)
 
-$Ctrl.X(0,"35:07","35:21",@'
+$Ctrl.X(0,"34:35","34:49",@'
 :It's like:
 [Me]: Well, you used to like, answer your phone within like, (10) minutes and wanna like do- 
       like, meet up within an hour, so...
@@ -3070,7 +3505,7 @@ $Ctrl.X(0,"35:07","35:21",@'
       Yeh, nah, something is different right now...
 '@)
 
-$Ctrl.X(0,"35:21","35:38",@'
+$Ctrl.X(0,"34:49","35:06",@'
 :And then so like, [most people in society], they're [stupid], and they [won't notice] those fuckin' 
 [subtle differences].
 
@@ -3080,7 +3515,7 @@ They like to use this fuckin' tactic where like:
 [People]: Oh, [Michael Cook] thinks he's smarter than he really is, so maybe he's a fuckin' megalomaniac...
 '@)
 
-$Ctrl.X(0,"35:38","36:12",@'
+$Ctrl.X(0,"35:06","35:40",@'
 :No, I don't think so.
 
 I think what happens, is that [I encounter people that fuckin' underestimate me], and then they start 
@@ -3104,7 +3539,7 @@ Because they'll try to say stuff like:
     02/20/23 | Time Travel | https://youtu.be/xCo8Wu_0Lb4
 #>
 
-$Ctrl.X(0,"36:12","37:24",@'
+$Ctrl.X(0,"35:40","36:52",@'
 :And that IS what people fuckin attempt to like, convey to me, right...?
 And then, like, ya know I accurately uh- observe and predict people's behaviors and then what'll
 happen is that people'll be like:
@@ -3131,7 +3566,7 @@ she was like...
         There's no way that he'll ever know that.
 '@)
 
-$Ctrl.X(0,"37:24","38:57",@'
+$Ctrl.X(0,"36:52","38:25",@'
 :And [THAT'S why I say most people are fuckin' stupid].
 Because, [people really do like to play that stupid].
 
@@ -3168,7 +3603,7 @@ And then she'll be like:
        If you don't believe me, then [fuck you], [I don't care].
 '@)
 
-$Ctrl.X(0,"38:57","39:14",@'
+$Ctrl.X(0,"38:25","38:42",@'
 :And then, like, you get to the point in the conversation where like:
 [Guy]: You know, some of the shit that you're sayin' sounds really fuckin' stupid...
 
@@ -3182,7 +3617,7 @@ And then she'll be like:
        So what...?
 '@)
 
-$Ctrl.X(0,"39:14","39:37",@'
+$Ctrl.X(0,"38:42","39:05",@'
 :[Her]: So what if I was hangin' out with, fuckin'- the wolves or, some other dude.
        *pauses*
        OR I MEAN, like, uh, you know, who cares if I fell down the side of a mountain or
@@ -3194,7 +3629,7 @@ $Ctrl.X(0,"39:14","39:37",@'
        telling you the truth.
 '@)
 
-$Ctrl.X(0,"39:37","40:22",@'
+$Ctrl.X(0,"39:05","39:50",@'
 :Yeah, that's why I tell people that they're fuckin' stupid. 
 It's because, people will blatantly fuckin' lie to people, and like, they know that like, 
 it doesn't matter if like, they're believed or not... Because, like...
@@ -3210,7 +3645,7 @@ it doesn't matter if like, they're believed or not... Because, like...
        Even if like-
 '@)
 
-$Ctrl.X(0,"40:22","41:05",@'
+$Ctrl.X(0,"39:50","40:33",@'
 :Yeah, no, it's like, [some people are fuckin' stupid].
 And uh- to some degree, I can ration-
 
@@ -3227,7 +3662,7 @@ Versus, like, whipping- going, [buying a gun], and like, [not saying anything], 
 Both of em are dead. Or like stabbin' em to death, or whatever.
 '@)
 
-$Ctrl.X(0,"41:05","41:59",@'
+$Ctrl.X(0,"40:33","41:27",@'
 :Right...?
 And so like, uh- now I have to [walk back all of the comments that I made so far], right...?
 
@@ -3247,7 +3682,7 @@ when I say that [people are fuckin' stupid], typically what I mean is that peopl
       Not at all.
 '@)
 
-$Ctrl.X(0,"41:59","42:25",@'
+$Ctrl.X(0,"41:27","41:53",@'
 :No, so, sometimes I will have a conversation like I did with the investigator yesterday, at
 SCSO. Which is, where I went, after, I saw all the cops, driving down the street. 
 
@@ -3256,7 +3691,7 @@ And I also saw like the bla- same style [black Dodge Charger] that I saw on [May
 And you know, I think that [there is a very real possibility] that, uh-
 '@)
 
-$Ctrl.X(0,"42:25","43:05",@'
+$Ctrl.X(0,"41:53","42:33",@'
 :[The police attempted to fuckin' kill me that night].
 
 Ya know, now I'm seein' a fuckin' Sheriff over across the way, [Saratoga County Sheriff]...
@@ -3271,7 +3706,7 @@ You know, not unlike the one that I did with uh- like, uh [Clayton Brownell] and
 dude... you know, [Clayton Brownell] uh- is the night- is- uh- December 22nd, 2022...
 '@)
 
-$Ctrl.X(0,"43:05","43:16",@'
+$Ctrl.X(0,"42:33","42:44",@'
 :Uh, [Clayton Brownell] and some other cop were talkin to some dude, and then you know, Michael
 Whiteacre- uh- Michael Sharadin came out, and he was like, talkin' with em and stuff...?
 '@)
@@ -3280,17 +3715,17 @@ Whiteacre- uh- Michael Sharadin came out, and he was like, talkin' with em and s
     12/22/22 | Integrity | https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS
 #>
 
-$Ctrl.X(0,"43:16","43:26",@'
+$Ctrl.X(0,"42:44","42:54",@'
 :I think this might actually be like, [Daniel Nelson]...
 Maybe not.
 '@)
 
-$Ctrl.X(0,"43:26","43:35",@'
+$Ctrl.X(0,"42:54","43:03",@'
 :Yeah, I could tell like- some of the cops, they wear this fuckin' cowboy hat.
 Like [Daniel Nelson] does.
 '@)
 
-$Ctrl.X(0,"43:35","43:57",@'
+$Ctrl.X(0,"43:03","43:25",@'
 :I don't think that's [Daniel Nelson]... nah, it's not.
 Not entirely sure which one that is.
 
@@ -3301,7 +3736,7 @@ It's 4168.
 And uh- he's talking with (3) adults...
 '@)
 
-$Ctrl.X(0,"43:57","44:20",@'
+$Ctrl.X(0,"43:25","43:48",@'
 :He just [turned his flashlight on], he's... fuckin'... checkin' on the radio, he's like:
 
 [Cop]: You know what, dude...?
@@ -3317,7 +3752,7 @@ I wanna get in a vantage point where like the cop like realizes that I'm like na
 doing...?
 '@)
 
-$Ctrl.X(0,"44:20","44:56",@'
+$Ctrl.X(0,"43:48","44:24",@'
 :Right...? 
 Because [this is what an investigator is SUPPOSED to do], [what I'm doing right now].
 
@@ -3337,7 +3772,7 @@ And he's bein' cool, he's not bein' an asshole, or nothin'.
 He's just runnin' someone's fuckin' license like a good cop.
 '@)
 
-$Ctrl.X(0,"44:56","45:52",@'
+$Ctrl.X(0,"44:24","45:20",@'
 :I think he's by himself. 
 Because... I don't think another cop is in that vehicle. 
 
@@ -3371,7 +3806,7 @@ And the other cop is like:
          That's what happened, last night.
 '@)
 
-$Ctrl.X(0,"45:52","46:51",@'
+$Ctrl.X(0,"45:20","46:19",@'
 :And these are the sorts of conversations that they'll have, in their cruiser, drivin' around.
 Havin' a conversation with one another, and, you know...? 
 
@@ -3404,7 +3839,7 @@ stab somebody else, or shoot somebody else, and... they know that what they're d
 Could be fuckin' like, their last call.
 '@)
 
-$Ctrl.X(0,"46:51","47:41",@'
+$Ctrl.X(0,"46:19","47:09",@'
 :And so... they- they- they fuckin' pour all their effort into like, driving down every road...?
 Like, with the lights on, and making damn certain that no vehicle is in the road...?
 
@@ -3428,7 +3863,7 @@ dude in the song [Cake - uh- Goin' the Distance]... they're goin' for-
         All alone in a time of need...?
 '@)
 
-$Ctrl.X(0,"47:41","48:27",@'
+$Ctrl.X(0,"47:09","47:55",@'
 :*group of people chattering*
 [Me]  : Sorry, am I in your way...?
 [Lady]: Nah.
@@ -3449,7 +3884,7 @@ smilin', she's laughin', she's like:
         Fuckin' told a joke, and uh- you know, it was funny.
 '@)
 
-$Ctrl.X(0,"48:27","49:29",@'
+$Ctrl.X(0,"47:55","48:57",@'
 :And then, the guy, in his sweatshirt, he's like:
 [Dude]: Yeh yeh yeh, I've told jokes that were funny, too.
         Ya know...? 
@@ -3481,7 +3916,7 @@ He's like:
         Ya know...?
 '@)
 
-$Ctrl.X(0,"49:29","49:50",@'
+$Ctrl.X(0,"48:57","49:18",@'
 :Sheriff, [Saratoga County], serving... serving since (1791).
 I think that's what it says. Since (1791).
 
@@ -3490,7 +3925,7 @@ Serving since (1791), because that is when... uh- [Half Moon], uh,
 split into like (4) different towns, right?
 '@)
 
-$Ctrl.X(0,"49:50","50:15",@'
+$Ctrl.X(0,"49:18","49:43",@'
 :There was [Balls Town]... so [Ballston]. [Balls Town].
 And then like [Half Moon]. Two words.
 And then, uh- [Saraghtoga] with like the G-H.
@@ -3500,7 +3935,7 @@ Uh... damnit.
 Maybe it might've been [Gal Way], or somethin'. (Still Water)
 '@)
 
-$Ctrl.X(0,"50:15","50:35",@'
+$Ctrl.X(0,"49:43","50:03",@'
 :You know...?
 Gal Way. But anyway, uh yeah.
 
@@ -3510,7 +3945,7 @@ because there is really [nothing exciting about what he's doin'].
 And, not- same goes with the (3) people.
 '@)
 
-$Ctrl.X(0,"50:35","51:05",@'
+$Ctrl.X(0,"50:03","50:33",@'
 :Right...? 
 And so like, uh- the thing that I just did, is that I narrated, like, what was goin' on'. 
 Right...? 
@@ -3524,7 +3959,7 @@ I know like, [what behaviors to expect from people], and uh- you know, I think o
 realize that [I'm a smart bastard], and I'm [basically like a fuckin' parrot]...?
 '@)
 
-$Ctrl.X(0,"51:05","52:23",@'
+$Ctrl.X(0,"50:33","51:51",@'
 :Then, they're like:
 [People]: Oh, so you're like, [smart parrot-like dudes], 
           that remembers a whole bunch of shit, huh?
@@ -3551,7 +3986,7 @@ And then I'll be like:
           Somethin' other than [Batman]...
 '@)
 
-$Ctrl.X(0,"52:23","52:53",@'
+$Ctrl.X(0,"51:51","52:21",@'
 :I'm not tryin' to make the fuckin' Batman voice.
 I'm tryin' to make the fuckin', the voice for uh- I dunno.
 
@@ -3563,7 +3998,7 @@ she could collect like, stuff like [evidence], and stuff.
 Like she DIDN'T do, back, in [June of 2020].
 '@)
 
-$Ctrl.X(0,"52:53","53:12",@'
+$Ctrl.X(0,"52:21","52:40",@'
 :Right, and so like, what caused me to start like, [collecting clues and stuff], is 
 because [people are... morons]. They are [careless fuckin' morons].
 
@@ -3574,7 +4009,7 @@ Like, [here's the conclusion] that I'm about to make.
 Right...?
 '@)
 
-$Ctrl.X(0,"53:12","54:18",@'
+$Ctrl.X(0,"52:40","53:46",@'
 :The investigator that I spoke to yesterday, [I don't wanna outright call him a lazy bastard], 
 because the chances are that like, he's had to take on, like uh- the responsibility of uh- 
 you know, [solving murders and shit].
@@ -3593,7 +4028,7 @@ all that cool with [having a conversation with me], then he's gonna use a [STALL
 rather than to like [fuckin' call me], and [have a conversation with me], about-
 '@)
 
-$Ctrl.X(0,"54:18","54:47",@'
+$Ctrl.X(0,"53:46","54:15",@'
 :[May 26th, 2020]... and a number of incidents SINCE then, because if anything...?
 
 I've noticed that [SOME of the exhibits] that were submitted to [Family Court], with 
@@ -3602,7 +4037,7 @@ playin' fuckin' games with me, and they got really pissed about how I was like m
 some of the things that they were saying, ya know, like...
 '@)
 
-$Ctrl.X(0,"54:47","58:43",@'
+$Ctrl.X(0,"54:15","58:11",@'
 :Like this...
 Ya know, [Michael Zurlo], had a conversation with [Captain Jeff Brown] yesterday...
 
@@ -3688,7 +4123,7 @@ And then [Michael Zurlo] will be like:
          Of us having a conversation and stuff...
 '@)
 
-$Ctrl.X(0,"58:43",@'
+$Ctrl.X(0,"58:11","58:30",@'
 :And [Michael Zurlo]... did he actually have a conversation with [Jeff Brown] like that...?
 That went like that...?
 
@@ -3699,7 +4134,7 @@ Like, the reason why I'm like, fictionalizing all of that...?
 Is because, like, worst case scenario, they DID have a conversation like that.
 '@)
 
-$Ctrl.X(0,"59:02",@'
+$Ctrl.X(0,"58:30","58:56",@'
 :Do I think it's realistic that they DID have that conversation...?
 No... but at the same time, I am STILL able to consider, that it is SOMEWHAT PLAUSIBLE.
 
@@ -3709,7 +4144,7 @@ they would [never, ever, ever], think that was even a [remote possibility at all
 Because...
 '@)
 
-$Ctrl.X(0,"59:28",@'
+$Ctrl.X(0,"58:56","59:11",@'
 :Uh- if these guys, [if they lie to most people]... they're gonna be [believed].
 [It doesn't matter what the hell, if they lie or not, as long as people believe what
 they say].
@@ -3717,7 +4152,7 @@ they say].
 [That is what matters].
 '@)
 
-$Ctrl.X(0,"59:43",@'
+$Ctrl.X(0,"59:11","59:39",@'
 :And [that] is what causes me to think that like, [people are fuckin' stupid].
 
 You know...?
@@ -3733,7 +4168,7 @@ Fuckin' [OJ Simpson]... [kills his fuckin' wife and Ron Goldman], and like, he's
 ...and people BELIEVE him...?
 '@)
 
-$Ctrl.X(0,"01:00:11",@'
+$Ctrl.X(0,"59:39","59:57",@'
 :Well, it means that [certain people]...
 ...they'll [always be able to fuckin' lie to people... and be trusted].
 
@@ -3744,7 +4179,7 @@ That...
 I have to like, [fictionalize stories] like the one I just rattled off.
 '@)
 
-$Ctrl.X(0,"01:00:29",@'
+$Ctrl.X(0,"59:57","01:00:12",@'
 :Not because I'm trying to demonize [Michael Zurlo], ya know...
 [I think I've done that a number of times], but like, how does he know what my 
 [state of mind] was, [any single time] that I wrote any of the fuckin' documents that
@@ -3753,7 +4188,7 @@ I wrote, [specifically] naming him...?
 Or, citing him [specifically]...?
 '@)
 
-$Ctrl.X(0,"01:00:44",@'
+$Ctrl.X(0,"01:00:12","01:00:26",@'
 :Ya know, [there's no way that he could ever come to that conclusion].
 
 However, uh- the interactions that I've had with many of the officers have been recorded, 
@@ -3763,7 +4198,7 @@ However, uh- the interactions that I've had with many of the officers have been 
 all those- all that body camera footage, permanently.
 '@)
 
-$Ctrl.X(0,"01:00:58",@'
+$Ctrl.X(0,"01:00:26","01:00:57",@'
 :If anything...? They probably save it for a while...? For each case where
 they make an arrest or whatever, they save those.
 
@@ -3781,7 +4216,7 @@ all of it...
     That is the purpose of the https://en.wikipedia.org/wiki/Utah_Data_Center
 #>
 
-$Ctrl.X(0,"01:01:29",@'
+$Ctrl.X(0,"01:00:57","01:01:15",@'
 :But on the other hand, maybe they DO have enough- maybe they have enough
 resources to be able to save all of that, or maybe it's fuckin' saved in 
 [Salt Lake City], maybe there's a hard drive SOMEWHERE that's saving ALL of the 
@@ -3814,7 +4249,7 @@ information, and it's not a portion of the government, it's a [corporation].
     Sorta looks like the local law enforcement was found with a really huge dick in their mouth.
 #>
 
-$Ctrl.X(0,"01:01:47",@'
+$Ctrl.X(0,"01:01:15","01:01:30",@'
 :Ya know, [all of these things are TOTALLY realistic], to think that they're NOT realistic is 
 pretty fuckin' naive. 
 
@@ -3825,7 +4260,7 @@ You know...?
 Um...
 '@)
 
-$Ctrl.X(0,"01:02:02",@'
+$Ctrl.X(0,"01:01:30","01:01:49",@'
 :That's why [I keep reaching back to this notion] that perhaps there's [one agency]
 that [oversees every single fuckin' place and everything], and like- you know, 
 [all of the cops all around the world], they all [work together] and like, fuckin-
@@ -3834,7 +4269,7 @@ No.
 [That's fuckin' stupid], because- uh...
 '@)
 
-$Ctrl.X(0,"01:02:21",@'
+$Ctrl.X(0,"01:01:49","01:02:07",@'
 :[Ukraine] and uh- [Russia] are [legitimately killing each other], [it is being seen], 
 you are seeing like, [dead bodies] on the sides of fuckin' streets, and you are seeing
 [tanks] being [exploded] in [real-time]... that WERE moving, and then [after it exploded]
@@ -3843,7 +4278,7 @@ it's NOT moving anymore...?
 There HAD to have been somebody in that fuckin' tank...
 '@)
 
-$Ctrl.X(0,"01:02:39",@'
+$Ctrl.X(0,"01:02:07","01:02:28",@'
 :Ya know, [there might've been radio or remote controlled], but...
 [I highly fuckin' doubt it], ya know...? 
 
@@ -3852,7 +4287,7 @@ It is totally fuckin', uh- [outside of the realm of, believable] that like, ther
 [one agency] that controls every fuckin' country in the world.
 '@)
 
-$Ctrl.X(0,"01:03:00",@'
+$Ctrl.X(0,"01:02:28","01:02:44",@'
 :[However], what I DO believe is [plausible], is that- there is a- 
 there is a [group of people] that [have a lot of money], and THEY fuckin' [control people], 
 like, whether they do it like uh- uh, like uh... 
@@ -3863,7 +4298,7 @@ like, whether they do it like uh- uh, like uh...
     01/19/23 | Davos | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf
 #>
 
-$Ctrl.X(0,"01:03:16",@'
+$Ctrl.X(0,"01:02:44","01:03:26",@'
 :[Consciously]...? 
 Or, [subconsciously]...? 
 That's... hard to say.
@@ -3883,7 +4318,7 @@ And then fuckin' [lie to every fuckin' constituent], or [citizen], or whatever..
 [Litigant]...?
 '@)
 
-$Ctrl.X(0,"01:03:58",@'
+$Ctrl.X(0,"01:03:26","01:03:39",@'
 :Right...?
 And then like, [they have to play stupid]...
 ...whenever somebody indicates that they're [doin' somethin' fuckin' stupid]... 
@@ -3893,13 +4328,13 @@ Ya know...?
 [They're gonna work fuckin' overtime], to like, [silence people like me].
 '@)
 
-$Ctrl.X(0,"01:04:11",@'
+$Ctrl.X(0,"01:03:39","01:03:54",@'
 :And, rather than to [silence me], [they could put my skills to use] and make me a
 [valuable asset somewhere], or [make an investment into my company]- but I've noticed that, 
 like, [some people are very hesitant to do that] because of [how fuckin' intelligent I am].
 '@)
 
-$Ctrl.X(0,"01:04:26",@'
+$Ctrl.X(0,"01:03:54","01:04:20",@'
 :I might be wrong about that...?
 
 But I don't think I am, because I notice a lot of resistance.
@@ -3912,7 +4347,7 @@ we have a conversation and I believe what he says...
 ...then [my documents will require an update].
 '@)
 
-$Ctrl.X(0,"01:04:52",@'
+$Ctrl.X(0,"01:04:20","01:04:44",@'
 :And then like, uh- as soon as I said that...?
 
 This guy [Jeff Brown] was like 'Well, that'd be nice.'
@@ -3924,7 +4359,7 @@ they- they get [desensitized] by what happens in the real world, but they ALSO g
 uh- things goin' on in their mind...
 '@)
 
-$Ctrl.X(0,"01:05:16",@'
+$Ctrl.X(0,"01:04:44","01:05:07",@'
 :So like, they don't really wanna take the time out of their day, to fuckin' like
 decide- to, to figure out or determine whether or not, like I'm IN my mind, inside
 my mind, and just fuckin' playin' games with them...?
@@ -3936,7 +4371,7 @@ a number of times, and so are the people in the fuckin' like, uh- the county age
 that I've had to deal with ...
 '@)
 
-$Ctrl.X(0,"01:05:39",@'
+$Ctrl.X(0,"01:05:07","01:05:26",@'
 :And uh- I think that that perplexes them.
 
 And so, like, [they're not gonna investigate something like, overnight].
@@ -3946,195 +4381,236 @@ moment that this du- if this dude had a [genuine conversation with me yesterday]
 which I believe IS the case...
 '@)
 
-$Ctrl.X(0,"01:05:58",@'
+$Ctrl.X(0,"01:05:26","01:05:41",@'
 :Uh- it's gonna be him, [applying some effort] during moments where there's a very
 low number of things for him to do, which- it could be awhile.
 
 But, at the same time...? Uh...
 '@)
 
-$Ctrl.X(0,"01:06:13",@'
+$Ctrl.X(0,"01:05:41","01:06:11",@'
 :This case is over 3 ye-, it's about (3) years old, right...?
 
 And uh- I've already caught a number of uh- a number- a level of resistance from a 
 prior investigator that called me back. (same investigator)
 
-I called the Saratoga County Sheriffs Office on February 1st, 2021...
-and then, this guy that I believe was Captain Jeff Brown, maybe it was Tim Brown, 
-like uh- Jeff Brown said (it wasn't), yeah they're cousins or somethin'...
+I called the [Saratoga County Sheriffs Office] on [February 1st, 2021]...
+and then, this guy that I believe was [Captain Jeff Brown], maybe it was [Tim Brown], 
+like uh- [Jeff Brown] said (it wasn't), yeah they're [cousins] or somethin'...
 '@)
 
-$Ctrl.X(0,"01:06:43",@'
+$Ctrl.X(0,"01:06:11","01:06:29",@'
 :Ya know that should speak volumes right there, I remember many of the things that
-this dude said, and I haven't even listened to the recording. Haven't even
-listened to the recording that I recorded of me speaking with him, and I remember
-some of the things he said just fine, and his like- uh, reactions.
+this dude said, and I haven't even listened to the recording.
+
+Haven't even listened to the recording that I recorded of me speaking with him, and I
+remember some of the things he said just fine, and his like- uh, reactions.
 '@)
 
-$Ctrl.X(0,"01:07:01",@'
+$Ctrl.X(0,"01:06:29","01:07:05",@'
 :I also remember, like, the other guy was like:
-'Here, Captain, here ya go. Here's like a pen and a piece of paper, or whatever.'
-Right...? And he started writin' down, he's like askin' me:
-'When did this incident occur...?'
-I say, uh- 'June 28th, 2022', and I say- and I told them that I had a- audio 
-recording, I make audio recordings much like I'm talkin' right now, and uh- ya know
+[Guy]: Here, Captain, here ya go.
+       Here's like a pen and a piece of paper, or whatever.
+
+Right...?
+And he started writin' down, he's like askin' me:
+[Brown]: When did this incident occur...?
+I say, uh-
+[Me]   : [June 28th, 2022]
+
+And I say- and I told them that I had a- audio recording...
+
+I make audio recordings much like I'm talkin' right now, and uh- ya know, 
 I didn't realize that the thing was still recording the environment from the 
 following 16 hours, and I told uh- I uploaded it to the- the- my Google Drive
 account before uh- my mother called 911 or whatever, and then uh-
 '@)
 
-$Ctrl.X(0,"01:07:37",@'
-:And then uh- I told them about having uploaded this audio recording, and they 
+$Ctrl.X(0,"01:07:05","01:07:27",@'
+:And then uh- I told them about having [uploaded] this [audio recording], and they 
 STILL arrested me, and he's like:
-"Well, that's not very nice..."
-And I was like "Nah, nah..."
-And uh, I think that's a key feature of what I keep experiencing.
+[Brown]: Well, that's not very nice...
+
+And I was like:
+[Me]   : Nah, nah...
+
+And uh, I think that's a [key feature] of what I keep [experiencing].
 '@)
 
-$Ctrl.X(0,"01:07:59",@'
-:If people want me to act nice and professional, then they should act-
-they should take some notes from the guy that I spoke to yesterday.
+$Ctrl.X(0,"01:07:27","01:07:42",@'
+:If people want me to act [nice] and [professional], then they should act-
+they should take some notes from the guy that I spoke to [yesterday].
 
-But at the same time, I don't wanna drop my guard.
-Because I know that when people are nice, that... 
-...it is a potential attack vector.
+But at the same time, [I don't wanna drop my guard].
+
+Because I know that [when people are nice], that... 
+...it is a potential [attack vector].
 '@)
 
-$Ctrl.X(0,"01:08:14",@'
+$Ctrl.X(0,"01:07:42","01:07:56",@'
 :And that is something that I sensed, to a very minor degree when I talked
 with him, but not while I was there, it was only AFTERWARD, after I left. 
 
 And I started to reflect on the conversation that I had with him.
 '@)
 
-$Ctrl.X(0,"01:08:28",@'
+$Ctrl.X(0,"01:07:56","01:08:19",@'
 :So...
-With all of those things having been said, I don't know if this guy is an
-actual investigator for SCSO...? Or if he's like, FBI, or State Police, or
-CIA...? Or whatever...?
 
-But what I am damn certain of, is that uh- the people at the NSA, the FBI and
-the uh... the FBI, NSA, CIA, all of these agencies have heard of me.
+With all of those things having been said, I don't know if this guy is an
+actual investigator for [SCSO]...?
+
+Or if he's like, [FBI], or [State Police], or [CIA]...?
+Or whatever...?
+
+But what I am damn certain of, is that uh- the people at the [NSA], the [FBI]
+and the uh... the [FBI], [NSA], [CIA], all of these agencies have heard of me.
 '@)
 
-$Ctrl.X(0,"01:08:51",@'
+$Ctrl.X(0,"01:08:19","01:08:44",@'
 :And I am very certain that they have been- some of them, probably are rallying
 for me, to fuckin' do something cool or awesome, in my lifetime...?
 
-And, there might be somebody like, Michael B.T.D.T. Pompeo.
-And I'll tell you what Michael B.T.D.T. Pompeo, stands for.
+And, there might be somebody like, [Michael B.T.D.T. Pompeo].
+And I'll tell you what [Michael B.T.D.T. Pompeo], stands for.
 '@)
 
-$Ctrl.X(0,"01:09:16",@'
-:Michael "Bathtub dick-time" Pompeo.
+$Ctrl.X(0,"01:08:44","01:09:07",@'
+:[Michael "Bathtub dick-time" Pompeo].
 That's right...
-Michael "Bathtub dick-time" Pompeo, that's what they call him around the CIA
-and Langley, "Bathtub dick-time" Pompeo
+
+[Michael "Bathtub dick-time" Pompeo], that's what they call him around the [CIA]
+and [Langley], ["Bathtub dick-time" Pompeo]
 '@)
 
-$Ctrl.X(0,"01:09:39",@'
-:Why do they call him "Bathtub dick-time" Pompeo...?
+$Ctrl.X(0,"01:09:07","01:09:22",@'
+:Why do they call him ["Bathtub dick-time" Pompeo]...?
 Is because, the man plays with his dick in a bathtub...? A lot.
 He calls that "hard work".
 '@)
 
-$Ctrl.X(0,"01:09:54",@'
+$Ctrl.X(0,"01:09:22","01:09:47",@'
 :Because, playing with your dick, in a bathtub, if it IS hard...?
-Then you can tell people that is "hard work", even though, that is not hard
+
+Then, you can tell people that is "hard work", even though, that is not hard
 work at all...? That's just some dude, in a bathtub, playing with his dick.
+
 And just- havin' a lot of fun doin' it.
 '@)
 
-$Ctrl.X(0,"01:10:19",@'
+$Ctrl.X(0,"01:09:47","01:10:01",@'
 :You know, who cares how long he's in there...?
-That's how he got the nickname, B.T.D.T. Pompeo
-"Bathtub dick-time" Pompeo
+
+That's how he got the nickname, [B.T.D.T. Pompeo]
+["Bathtub dick-time" Pompeo]
 '@)
 
-$Ctrl.X(0,"01:10:33",@'
+$Ctrl.X(0,"01:10:01","01:10:27",@'
 :How does he do it...?
+
 Does he use shampoo...?
 Does he use, Vaseline...?
 Does he just play with it raw...?
-These are the questions that I ask myself, when I think about Julien Assange
-sitting in a fuckin' prison, for like exposing Vault 7, among various other
+
+These are the questions that I ask myself, when I think about [Julien Assange]
+sitting in a fuckin' prison, for like exposing [Vault 7], among various other
 things. And... 
 '@)
 
-$Ctrl.X(0,"01:10:59",@'
-:You know, I'm not gonna say anything BAD about Barack Obama at all...?
-But, ya know, some of the dudes that worked with Barack Obama...?
+$Ctrl.X(0,"01:10:27","01:10:44",@'
+:You know, I'm not gonna say anything BAD about [Barack Obama] at all...?
+But, ya know, some of the dudes that worked with [Barack Obama]...?
+
 They were fuckin' stupid...
-And, Michael Pompeo, is one of em.
+And, [Michael Pompeo], is one of em.
 And, uh...
 '@)
 
-$Ctrl.X(0,"01:11:16",@'
-:Actually, I don't think that uh- Pompeo was the director of the CIA when uh-
-Barack Obama left the- left the office. Or, maybe he was, I can't remember.
+$Ctrl.X(0,"01:10:44","01:11:05",@'
+:Actually, I don't think that uh- [Pompeo] was the [director of the CIA] when uh-
+[Barack Obama] left the- left the office. Or, maybe he was, I can't remember.
 I think- I think he was, and uh- yeh, I dunno.
 
-I know that Julien Assange was raided and arrested in uh- 2019. 
-April 2019, I think...?
+I know that [Julien Assange] was raided and arrested in uh- 2019. 
+[April 2019], I think...?
 '@)
 
-$Ctrl.X(0,"01:11:37",@'
-:That was when uh- the black- the first picture of the black hole came out.
-And Derek Muller was like:
+$Ctrl.X(0,"01:11:05","01:12:19",@'
+:That was when uh- the black- the [first picture of the black hole] came out.
+And [Derek Muller] was like:
 [Derek]: Hey, here's a video, of like uh- me talking about like what, like, 
          what will happen when they release the video- the- the picture of
-         the first black hole...? Tomorrow...? And then tomorrow, I'm gonna
-         make a NEW video, and I'm gonna talk about how, like, what I predict
-         and then, uh- we- thanks for watchin'.
+         the first black hole...? 
+         Tomorrow...? 
+         And then TOMORROW, I'm gonna make a NEW video, and I'm gonna talk about how, 
+         like, what I predict and then, uh- we- thanks for watchin'.
 
 And then, uh- the next day came...?
-And then, uh- Derek Muller's like:
-[Derek]: Alright, folks so I've looked at the, the first picture of the black hole...?
-         And, you're never gonna believe this, but- the light is the shadow, and the
-         shadow is the light, and that's fuckin' cool as fuck, isn't it...?
+And then, uh- [Derek Muller]'s like:
+[Derek]: Alright, folks so I've looked at the, the [first picture of the black hole]...?
+         And, you're never gonna believe this, but...
+         ...the [light] is the [shadow], and the [shadow] is the [light]...
+         ...and that's fuckin' [cool as fuck], isn't it...?
+
 And I was like:
 [Me]   : Yeh, that is pretty cool.
+
 He's like:
-[Derek]: Yup. Fuckin' MAD cool.
+[Derek]: Yup. 
+         Fuckin' MAD cool.
          No way that anyone would ever be able to like, say that it's stupid, dude.
          Cause this shit's awesome.
          First picture of a black hole that anyone's ever seen.
+
 And I was like: 
 [Me]   : Well, that is cool...
 '@)
 
-$Ctrl.X(0,"01:12:51",@'
-:I don't think Derek Muller knew that, like, I was sorta like, ya know, absorbing these
-details... You know...? Derek Muller is a guy that I'm sure that like, he has heard
-plenty of people, like, swearing left and right...? And he's gotta pretend like it's
-somebody farting. Ya know...? He's not gonna...
+$Ctrl.X(0,"01:12:19","01:12:39",@'
+:I don't think [Derek Muller] knew that, like, I was sorta like, ya know, absorbing
+these details... 
+
+You know...? 
+[Derek Muller] is a guy that I'm sure that like, he has heard plenty of people, like, 
+swearing left and right...?
+
+And he's gotta pretend like it's somebody farting. 
+Ya know...? 
+He's not gonna...
 '@)
 
-$Ctrl.X(0,"01:13:11",@'
+$Ctrl.X(0,"01:12:39","01:13:06",@'
 :He's not gonna respond to somebody that farts, out loud.
 Ya know, maybe like a close friend of his, he'll be like:
 [Derek]: That was... that was, really gross, dude.
+
 And then his buddy'll be like:
 [Buddy]: Heh, thanks dude.
-Ya know...? No- And then- he- he'll be like:
+
+Ya know...? 
+No- And then- he- he'll be like:
 [Derek]: No problem, dude.
          You really shouldn't be like, ya know, fartin' as much as you do.
+
 Ya know, like uh-
 '@)
 
-$Ctrl.X(0,"01:13:38",@'
+$Ctrl.X(0,"01:13:06","01:13:30",@'
 :You have to consider, like...
 SOME of the things I'm saying are gonna make ANYBODY laugh their asses off, right?
 
-And, uh- if I am failing to cause like, somebody like Michael Zurlo to laugh...?
+And, uh- if I am failing to cause like, somebody like [Michael Zurlo] to laugh...?
 It's probably because he has done a lot of heinous shit. And like...
 '@)
 
-$Ctrl.X(0,"01:14:02",@'
-:Ya know, I would venture a guess as to like, even Eric Catricala and Bruce Tanski
+$Ctrl.X(0,"01:13:30","01:14:50",@'
+:Ya know, I would venture a guess as to like, even [Eric Catricala] and [Bruce Tanski]
 will have, laughed their asses off at some of the shit that I've been uploading
-or recording, or whatever. BUT- if I record something, and I make fun of 
-Bruce 'jiggletits' Tanski, and like, he doesn't fuckin' say anything to me...?
+or recording, or whatever.
+
+BUT- if I record something, and I make fun of [Bruce "Jiggletits" Tanski], and like,
+he doesn't fuckin' say anything to me...?
+
 And he's like:
 [Tanski]: Stop makin'- stop sayin' negative shit about me, dude.
           What the fuck...?
@@ -4142,19 +4618,20 @@ And he's like:
           button on like, all of your videos over the last X amount of time.
           Ya know...?
           MAYBE I did think it was funny, that you like said that me, and uh- 
-          John Hoffman like, were fuckin', ya know, puttin it in each other's
+          [John Hoffman] like, were fuckin', ya know, puttin it in each other's
           poop chutes or somethin'.
-          Ya know...? Maybe I will think that shit was MAD funny, because
-          there's NO WAY that I would EVER fuck that dude.
-          And there is no way, that I would ever pull my dick out of John
-          Hoffman's asshole, and not even wash it...?
+          Ya know...?
+          Maybe I will think that shit was MAD funny, because there's NO WAY 
+          that I would EVER fuck that dude.
+          And there is no way, that I would ever pull my dick out of 
+          [John Hoffman]'s asshole, and not even wash it...?
           And then have my wife suck on it... and then, ya know, when I see,
-          the look, on my wifes face, like, tasting John's asshole...?
+          the look, on my wifes face, like, tasting [John]'s asshole...?
           On my dick...?
           I would, fuckin'-
 '@)
 
-$Ctrl.X(0,"01:15:22",@'
+$Ctrl.X(0,"01:14:50","01:15:28",@'
 :*laughing profusely*
 You know...? Uh-
 *laughing profusely*
@@ -4163,211 +4640,280 @@ THAT is genuinely how I laugh when I listen to the shit that I record.
 And I KNOW that other people, they laugh a lot like that, too.
 
 They might not laugh like that at FIRST, like:
-"What the fuck, is this dude, like out of his fuckin' melon or somethin'...?"
+[People]: What the fuck, is this dude, like out of his fuckin' melon or somethin'...?
 
-But- I have been practicing this.
+But- [I have been practicing this].
 '@)
 
-$Ctrl.X(0,"01:16:00",@'
-:Ya know...? I'm not like fuckin' like, uh- livin' on planet fuckin' Neptune...
-When I say something, it's strictly meant to get a reaction out of people.
-So, if I notice that people aren't reacting or whatever...?
-It's because, they ARE reacting, and they're like, they're either repulsed by
-it, or it caused them to laugh so fucking profusely, that they don't wanna make
-any indication whatsoever, that they found what I said, to be outright fucking
-hilarious.
+$Ctrl.X(0,"01:15:28","01:15:58",@'
+:Ya know...?
+
+I'm not like fuckin' like, uh- livin' on planet fuckin' [Neptune]...
+
+When I say something, it's [strictly] meant to [get a reaction] out of people.
+
+So, if I notice that people [aren't reacting] or whatever...?
+
+It's because, [they ARE reacting], and they're like, they're either [repulsed] by
+it, or [it caused them to laugh so fucking profusely], that they don't wanna make
+[any indication whatsoever], that they found what I said...
+
+...to be [outright fucking hilarious].
 '@)
 
-$Ctrl.X(0,"01:16:30",@'
-:Because, then it would like encourage the type of behavior that like, ya know,
-it's like, WORTH SOMETHING TO SOCIETY IN SOME WAY. So like, if... Bru- if I
-come up like a- fuckin' made-up skit where like Bruce Tanski, like, has a
-conversation with uh- John Hoffman, he's like-
+$Ctrl.X(0,"01:15:58","01:16:22",@'
+:Because, then it would like [encourage] the type of behavior that like, 
+ya know, it's like, [WORTH SOMETHING TO SOCIETY IN SOME WAY]. 
+
+So like, if... Bru- if I come up like a- fuckin' made-up skit where like 
+[Bruce Tanski], like, has a conversation with uh- [John Hoffman], he's like-
 '@)
 
-$Ctrl.X(0,"01:16:54",@'
+$Ctrl.X(0,"01:16:22","01:16:51",@'
 :[Tanski] : I could pull MY dick out of YOUR asshole, not even wash it, and
            then make my wife suck it, and then like, she'll make the face
            where I KNOW she tastes it...? 
            But- she will fuckin' pretend like she doesn't taste it at all.
-And then John Hoffman will respond:
+And then [John Hoffman] will respond:
 [Hoffman]: Wow, dude. 
            That's fuckin'...
            That's-
            I'm impressed.
-And then Bruce Tanski'll be like:
+And then [Bruce Tanski]'ll be like:
 [Tanski] : Yeah, I'm fuckin' impressed with myself too, dude.
            Ya know...?
            Holy shit.
 '@)
 
-$Ctrl.X(0,"01:17:23",@'
+$Ctrl.X(0,"01:16:51","01:17:19",@'
 :Do I actually think that they would do that...?
 No...?
 But- it's fuckin' funny.
-They got a lotta money, and if they have a sense of fuckin' humor...?
-They're gonna find that shit funny too. And they're gonna try to like 
-come up with ways of, like, ya know, being involved in the joke...?
 
-But at the same time they wanna be taken seriously by other people...?
+They got a lotta money, and if they have a sense of fuckin' humor...?
+
+They're gonna find that shit funny too.
+And they're gonna try to like come up with ways of, like, ya know, being
+involved in the joke...?
+
+But at the same time, they wanna be taken seriously by other people...?
+
 And then like, you know, I would venture a guess as to say that like,
-Chad Gregory, would even get a kick out of that.
+[Chad Gregory], would even get a kick out of that.
 '@)
 
-$Ctrl.X(0,"01:17:51",@'
-:Because, you know, I spoke about Chad a number of times in the audio
-recordings that I've made, as well as Dan Pickett, and like, all of
+$Ctrl.X(0,"01:17:19","01:17:33",@'
+:Because, you know, I spoke about [Chad] a number of times in the audio
+recordings that I've made, as well as [Dan Pickett], and like, all of
 these important people that uh- I've known growing up and shit...?
+
 Like...
 '@)
 
-$Ctrl.X(0,"01:18:05",@'
-:Talking about them in either my documents, or in my audio recordings, 
+$Ctrl.X(0,"01:17:33","01:17:52",@'
+:Talking about them in either my [documents], or in my [audio recordings], 
 it's meant to get a rise out of them SOMEHOW... but they're used to like 
-uh- everybody else sorta like, going along with what societal expectations
+uh- everybody else sorta like, going along with what [societal expectations]
 are, and they don't wanna let me know, that like, they're payin' attention...
 '@)
 
-$Ctrl.X(0,"01:18:24",@'
+$Ctrl.X(0,"01:17:52","01:18:02",@'
 :And they think that I have somethin' goin' on.
+
 Because, they have somethin' goin' on.
 And they don't wanna fuckin' let the cat out of the bag.
+
 Not at all.
 '@)
 
-$Ctrl.X(0,"01:18:34",@'
-:Because, like uh- if I was a rich bastard, and I was successful, and I could
-walk up to anybody and lie to them, and they would believe me...?
+$Ctrl.X(0,"01:18:02","01:18:24",@'
+:Because, like uh- if I was a [rich bastard], and I was [successful], and I
+could [walk up to anybody] and [lie to them], and [they would believe me]...?
 
-Then, you bet your ass that like, if I- if I saw some kid poking fun at me, 
-and coming up with genuinely hilarious fuckin' skits and shit...? I would have
-to keep that shit to myself, because if I-
+Then, you bet your ass that like, if I- [if I saw some kid poking fun at me], 
+and coming up with [genuinely hilarious fuckin' skits] and shit...?
+
+I would have to keep that shit to myself, because if I-
 '@)
 
-$Ctrl.X(0,"01:18:56",@'
+$Ctrl.X(0,"01:18:24","01:18:43",@'
 :If I know that some kid is gonna be fuckin' recording a conversation with me,
-and like I start laughing or make it known to him...? That like, when he's 
-making fun of me I'm also laughing along with the joke...?
+and like I start laughing or make it known to him...?
+
+That like, when he's making fun of me I'm also laughing along with the joke...?
 Then... then, basically a lot of people, they're gonna be like:
 [People]: Well, you think that what he's sayin' is fuckin' funny...?
 '@)
 
-$Ctrl.X(0,"01:19:15",@'
+$Ctrl.X(0,"01:18:43","01:18:56",@'
 :And then uh- they'll have to admit it, and be like:
 [People]: Yeh, this fuckin', this kids' fuckin'... this dude is funny.
-And then the people that like thought that I was just delusional or sick in
+
+And then the people that like thought that I was just [delusional] or sick in
 the fuckin' head, they're gonna be like:
 '@)
 
-$Ctrl.X(0,"01:19:28",@'
+$Ctrl.X(0,"01:18:56","01:19:21",@'
 :[People]: Well, if the dude that he's makin' fun of is like- finds that shit
           funny, then maybe it IS funny after all.
 
 And THEN what happens is, uh- people'll be like:
-[People]: Well, this dude is- I thought that he was like this big fearsome 
-          fuckin' dude, or whatever... NOW I realize that he's been involved
+[People]: Well, this dude is- I thought that he was like this big [fearsome] 
+          fuckin' dude, or whatever... NOW I realize that he's been [involved]
           in the joke that whole fuckin' time...?
-          What the fuck is goin' on here...?
+          [What the fuck is goin' on here]...?
 
 Ya know...?
 '@)
 
-$Ctrl.X(0,"01:19:53",@'
+$Ctrl.X(0,"01:19:21","01:19:39",@'
 :And that is basically the situation. Right...?
 
-Do I think that Eric Catricala's goin' around, like giving bodies a touch-up?
-After like, serial killers go and like, slice people's throats open while
-they're sleepin'...? After Center for Security like breaks into somebody's
+Do I think that [Eric Catricala]'s goin' around, like giving bodies a touch-up...?
+
+After like, [serial killers] go and like, [slice people's throats open] while
+they're sleepin'...? After [Center for Security] like breaks into somebody's
 fuckin' like, house, or their lock or whatever...?
 '@)
 
-$Ctrl.X(0,"01:20:11",@'
-:Well, I mean it's a theory, I don't know what it's plausibility is, but I would
-say that it's relatively low... but- given the circumstances of what I have 
-observed, I think the- as low as it is,  it's still far above 0 percent, right...?
+$Ctrl.X(0,"01:19:39","01:19:57",@'
+:Well, I mean [it's a theory], I don't know what it's [plausibility] is, but I
+would say that it's [relatively low]... but- given the circumstances of what I have 
+observed, I think the- 
+
+As low as it is, [it's still far above 0 percent], right...?
 '@)
 
-$Ctrl.X(0,"01:20:29",@'
-:I do think that certain people are being killed by these fuckin' spies or these 
-fuckin' assholes. Do I think it's gonna be the average, every-day citizen that
-works at fuckin' Dunkin' Donuts, or like, uh- Stewarts, or like, uh- fuckin, or
-like uh- I dunno, Burger King, or whatever...?
+$Ctrl.X(0,"01:19:57","01:20:13",@'
+:I do think that [certain people] are being killed by these fuckin' [spies] or 
+these fuckin' [assholes].
+
+Do I think it's gonna be the average, every-day citizen that works at fuckin'
+[Dunkin' Donuts], or like, uh- [Stewarts], or like, uh- fuckin, or like uh- I
+dunno, [Burger King], or whatever...?
 '@)
 
-$Ctrl.X(0,"01:20:45",@'
-:No~! It's NOT gonna be any of those people. And so, THOSE people are going to find
-like, my comedy, my sense of comedy and my sense of humor, and my intellect to be
-like fuckin' stupid, because it doesn't apply to them.
+$Ctrl.X(0,"01:20:13","01:20:25",@'
+:No~! 
+It's NOT gonna be [any of those people].
+
+And so, THOSE people are going to find like, [my comedy], [my sense of comedy] 
+and [my sense of humor], and [my intellect] to be like fuckin' stupid, because 
+[it doesn't apply to them].
 '@)
 
-$Ctrl.X(0,"01:20:57",@'
-:You know, they're very low on the totem pole. And they think that they're above me,
-because they have a job, they're getting paid, they're payin' their bills n shit.
+<#
+    Here's how I can accurately outline my importance level.
+    1) I have a very long and rich history of (using/repairing) (computers/devices)
+    2) Computers are used to spy on people and even commit intellectual property 
+       theft, identity theft, and cybercriminal activities (fraud/racketeering/etc.)
+    3) I've detected a lot of people in my community who are too stupid to know
+       stuff like that, particularly the people at the town hall.
+    4) Internet technology companies would be the perfect way to commit these
+       crimes, and so would being a member of the local government, or communication
+       companies like Verizon/Spectrum, etc.
+    5) News agencies like ABC, NBC, and CBS have a very easy to see agenda, when
+       you start to go through things that they broadcast, versus the things that
+       they don't broadcast... For instance...
+       - why did Gabby Petito get a lot of mainstream news coverage, and the 
+         many other people who had been missing for longer or whatever, never made
+         it to national broadcast television...?
+       - the answer is because someone IMPORTANT made a decision to EXPEDITE her
+         story, which means that someone has the ability to pick and choose what
+         is important, versus what isn't important, and this process illuminates
+         BIAS.
+    6) When you're intelligent like Noam Chomsky or myself, you'll become a TARGET
+    7) People seem to think that if you have a lot of money, then it is because 
+       someone earned all of that money, rightfully, and didn't commit any heinous
+       crimes or anything like that in order to obtain it...
+    8) The truth is, a lot of rich people and the police commit more crimes than the
+       citizens do. It's just that they're never going to BROADCAST those details,
+       nor will they hold themselves accountable for those things.
+
+    ^ Why my importance level is exponentially higher than the average citizen.
+#>
+
+$Ctrl.X(0,"01:20:25","01:20:41",@'
+:You know, they're very low on the totem pole.
+
+And they think that they're above me, because they have a job, they're getting paid,
+they're payin' their bills n shit.
+
 And then when they see me walkin' around, lookin' like a homeless fuckin' vagrant,
 they don't realize that I'm using my appearance...
 '@)
 
-$Ctrl.X(0,"01:21:13",@'
-:I am intentionally like, I am like playing into this appearances can be deceiving.
+$Ctrl.X(0,"01:20:41","01:20:48",@'
+:I am intentionally like, I am like playing into this [appearances can be deceiving].
 '@)
 
-$Ctrl.X(0,"01:21:20",@'
-:Seeing is believing, but appearances may be deceiving.
+$Ctrl.X(0,"01:20:48","01:21:01",@'
+:[Seeing is believing, but appearances may be deceiving].
 And that's just it.
 
-Somebody that has a lot of money is gonna appear to be very successful, and like, 
-they're gonna appear to be very trustworthy as well, and credible.
+Somebody that has a lot of money is gonna appear to be [very successful], and like, 
+they're gonna appear to be [very trustworthy] as well, and [credible].
 '@)
 
-$Ctrl.X(0,"01:21:33",@'
-:But the fact of the matter is that people that ARE considered trustworthy and credible,
-they lie too. They lie just as much as the next person. They don't wanna fuckin' say
-it out loud, they don't wanna like admit like who- that they're a real person out loud,
-where other people can get a sense of how human they are.
+$Ctrl.X(0,"01:21:01","01:21:21",@'
+:But the fact of the matter is that people that ARE considered [trustworthy] and
+[credible], they lie too. 
+
+They lie just as much as the next person.
+They don't wanna fuckin' say it out loud, they don't wanna like admit like who- 
+that they're a real person out loud, where other people can get a sense of how human
+they are.
 '@)
 
-$Ctrl.X(0,"01:21:53",@'
+$Ctrl.X(0,"01:21:21","01:21:44",@'
 :No, what they want is like for people to believe what they're seein' on the fuckin'
-television. So when I fuckin' like blast like, people at WTEN for like sayin' uh-
-Town officials said that the Chic-fil-a across the street from the Starbucks that
-I was at, like when I wrote up a response to the fuckin' article, that like, holy
-shit, the Chic-fil-a is gonna bring 100 jobs to the area...?
+television.
+
+So, when I fuckin' like blast like, people at [WTEN] for like sayin' uh- [Town officials] 
+said that the [Chic-fil-a] across the street from the [Starbucks] that I was at, like
+when I wrote up a response to the fuckin' article, that like, holy shit, the [Chic-fil-a]
+is gonna bring (100) jobs to the area...?
 '@)
 
-$Ctrl.X(0,"01:22:16",@'
-:You- ya- you're out of your fuckin' mind if you think that Chic-fil-a is gonna
-bring 100 jobs to the area... Like even if they're construction jobs, uh- I doubt
-it. The reason being, like uh- heh. There hasn't been 100 construction workers
-building that Chic-fil-a.
+$Ctrl.X(0,"01:21:44","01:22:02",@'
+:You- ya- [you're out of your fuckin' mind] if you think that [Chic-fil-a] is gonna
+bring (100) jobs to the area...
+
+Like [even if they're construction jobs], uh- [I doubt it].
+
+The reason being, like uh- heh.
+There hasn't been (100) construction workers building that [Chic-fil-a].
 '@)
 
-$Ctrl.X(0,"01:22:34",@'
+$Ctrl.X(0,"01:22:02","01:22:29",@'
 :And like, how could (1) restaurant bring in like, additional fuckin' places...?
-But also, there's a bunch of fuckin' vacant spaces around here.
-There's vacant property, there's vacant buildings, there's vacant lots, and 
+
+But also, [there's a bunch of fuckin' vacant spaces around here].
+
+There's [vacant property], there's [vacant buildings], there's [vacant lots], and 
 property...? Like, there's businesses that are fuckin' closed... that are like, 
-empty... and they say "For Sale", but- somehow, like someone Phil Barrett is
-like:
+empty... and they say "For Sale", but- somehow, like someone [Phil Barrett] is like:
 '@)
 
-$Ctrl.X(0,"01:23:01",@'
-:[Barrett]: The fuckin' Chic-fil-a construction is gonna bring (100) jobs to the
+$Ctrl.X(0,"01:22:29","01:22:39",@'
+:[Barrett]: The fuckin' [Chic-fil-a] construction is gonna bring (100) jobs to the
            area, dude...
-           You better fuckin' put this in- on Facebook or you're fucked.
+           You better fuckin' put this in- on [Facebook], or you're fucked...
 '@)
 
-$Ctrl.X(0,"01:23:11",@'
-:And it's like, ho- that's fuckin' stupid.
+$Ctrl.X(0,"01:22:39","01:22:51",@'
+:And it's like, ho- [that's fuckin' stupid].
 Right...?
-And so, when I make these audio recordings where I talk at length about all of
-these different subjects, and I tape it together into a single, cohesive package...
+
+And so, when I make these [audio recordings] where I talk at length about all of
+these [different subjects], and I [tape it together] into a [single, cohesive package]...
 '@)
 
-$Ctrl.X(0,"01:23:23",@'
+$Ctrl.X(0,"01:22:51","01:23:02",@'
 :I realize that some people are gonna continue to pretend like they're NOT listenin', 
 even when they are.
 '@)
 
-$Ctrl.X(0,"01:23:34",@'
+$Ctrl.X(0,"01:23:02","01:23:06",@'
 :End recording.
 '@)
