@@ -58,7 +58,7 @@ Function New-TranscriptionCollection
         [String]          $Date
         [String]          $Time
         [String]      $Position
-        Hidden [String] $Length
+        [String]      $Duration
         [String]          $Type
         [String]          $Note
         TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
@@ -68,7 +68,7 @@ Function New-TranscriptionCollection
             $This.Date     = $Position.Date
             $This.Time     = $Position.Time
             $This.Position = $Position.Position
-            $This.Length   = [TimeSpan]$End - $This.Position
+            $This.Duration = [TimeSpan]$End - $This.Position
             $This.Type     = Switch -Regex ($Note)
             {
                 "^\*{1}" { "Action"    }
@@ -179,13 +179,13 @@ Function New-TranscriptionCollection
 
     Class TranscriptionHistoryItem
     {
-        [UInt32]    $Index
-        [UInt32]     $File
-        [UInt32]     $Rank
-        [String]    $Party
-        [String] $Position
-        [TimeSpan] $Length
-        [String]     $Note
+        [UInt32]      $Index
+        [UInt32]       $File
+        [UInt32]       $Rank
+        [String]      $Party
+        [String]   $Position
+        [TimeSpan] $Duration
+        [String]       $Note
         TranscriptionHistoryItem([UInt32]$Index,[UInt32]$File,[Object]$Item)
         {
             $This.Index    = $Index
@@ -193,6 +193,7 @@ Function New-TranscriptionCollection
             $This.Rank     = $Item.Index
             $This.Party    = $Item.Party
             $This.Position = $Item.Position
+            $This.Duration = $Item.Duration
             $This.Note     = $Item.Note
         }
     }
@@ -2839,7 +2840,7 @@ than the [average citizen] would, because of like- [the company]. That I started
 '@)
 
 $Ctrl.X(0,"12:08","12:23",@'
-And uh... ya know...?
+:And uh... ya know...?
 
 When I tell people:
 [Me:] Hey, um, I'm an expert...? 
