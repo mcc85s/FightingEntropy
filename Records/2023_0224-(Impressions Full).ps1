@@ -36,10 +36,10 @@ Function New-TranscriptionCollection
 
     Class TranscriptionParty
     {
-        [UInt32]   $Index
+        [Int32]    $Index
         [String]    $Name
         [String] $Initial
-        TranscriptionParty([UInt32]$Index,[String]$Name)
+        TranscriptionParty([Int32]$Index,[String]$Name)
         {
             $This.Index   = $Index
             $This.Name    = $Name
@@ -128,7 +128,7 @@ Function New-TranscriptionCollection
             $Position = $This.Position($Position)
             Return [TranscriptionDateTime]::New([Switch]$True,$This.Time,$Position)
         }
-        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        [Object] TranscriptionParty([Int32]$Index,[String]$Name)
         {
             Return [TranscriptionParty]::New($Index,$Name)
         }
@@ -196,6 +196,10 @@ Function New-TranscriptionCollection
             $This.Duration = $Item.Duration
             $This.Note     = $Item.Note
         }
+        [String] ToString()
+        {
+            Return "{0}/{1}/{2}" -f $This.Index, $This.File, $This.Party
+        }
     }
 
     Class TranscriptionHistoryList
@@ -213,6 +217,33 @@ Function New-TranscriptionCollection
         {
             $This.Output += $This.TranscriptionHistoryItem($This.Output.Count,$File,$Current.Output[-1])
         }
+        Finalize()
+        {
+            $Time = [TimeSpan]::FromSeconds(0)
+
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Position = $Time.ToString()
+                $Time          = $Time + [TimeSpan]$Item.Duration 
+            }
+        }
+        [String] ToString()
+        {
+            Return "<TranscriptionHistory>"
+        }
+    }
+
+    Class TranscriptionSection
+    {
+        [UInt32] $Index
+        [String] $Name
+        [String[]] $Content
+        TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Content = $Content
+        }
     }
 
     Class TranscriptionCollection
@@ -222,6 +253,7 @@ Function New-TranscriptionCollection
         [Object]           $File
         [Object]        $History
         Hidden [Int32] $Selected
+        [Object]        $Section
         TranscriptionCollection([String]$Name,[String]$Date)
         {
             $This.Name     = $Name
@@ -229,12 +261,13 @@ Function New-TranscriptionCollection
             $This.File     = @( )
             $This.History  = $This.TranscriptionHistoryList()
             $This.Selected = -1
+            $This.Section  = @( )
         }
         [Object] TranscriptionFile([UInt32]$Index,[String]$Name,[String]$Date,[String]$Start,[String]$Length,[String]$Url)
         {
             Return [TranscriptionFile]::New($Index,$Name,$Date,$Start,$Length,$Url)
         }
-        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        [Object] TranscriptionParty([Int32]$Index,[String]$Name)
         {
             Return [TranscriptionParty]::New($Index,$Name)
         }
@@ -245,6 +278,10 @@ Function New-TranscriptionCollection
         [Object] TranscriptionHistoryList()
         {
             Return [TranscriptionHistoryList]::New()
+        }
+        [Object] TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            Return [TranscriptionSection]::New($Index,$Name,$Content)
         }
         Write([String]$Line)
         {
@@ -325,9 +362,218 @@ Function New-TranscriptionCollection
 
             $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
         }
+        AddContext([String]$Note)
+        {
+            $Current  = $This.Current()
+            $Position = $Current.Output[-1].Position
+
+            $Current.Output += $This.TranscriptionEntry($Current.Output.Count,
+                                                        $This.TranscriptionParty(-1,"T X T"),
+                                                        $Current.GetPosition($Position),
+                                                        $Position,
+                                                        $Note)
+
+            $This.History.Add($This.Selected,$Current)
+
+            $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
+        }
+        Finalize()
+        {
+            $This.History.Finalize()
+        }
         X([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
         {
             $This.AddEntry($Index,$Position,$End,$Note)
+        }
+        C([String]$Note)
+        {
+            $This.AddContext($Note)
+        }
+        [String] Pad([String]$String,[UInt32]$Mode,[UInt32]$Length)
+        {
+            $Item = Switch ($Mode)
+            {
+                0 { $String.PadRight( $Length , " " ) }
+                1 { $String.PadLeft(  $Length , " " ) }
+            }
+
+            Return $Item
+        }
+        [String] GetTitle()
+        {
+            Return "{0} [~] {1}" -f $This.Name, $This.Date
+        }
+        [String[]] GetSection()
+        {
+            $Out  = @( )
+            $List = $This.History.Output | ? Party -eq Txt | ? Note -match "^\="
+
+            ForEach ($Item in $List)
+            {
+                $Content = $Item.Note -Split "`n"
+                $Out    += $Content[1].Substring(2,($Content[1].Length-4))
+            }
+
+            Return $Out
+        }
+        [String[]] GetFile()
+        {
+            $Out         = @{ }
+            $Count       = $This.File.Count
+            $Depth       = @{ 
+
+                Index    = ([String]$Count).Length
+                Name     = ($This.File.Name | Sort-Object Length)[-1].Length
+            }
+
+            If ($Depth.Index -lt 5)
+            {
+                $Depth.Index = 5
+            }
+
+            If ($Depth.Name -lt 4)
+            {
+                $Depth.Name = 4
+            }
+
+            ForEach ($Item in $This.File)
+            {
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad("Index",0,$Depth.Index),
+                                                     $This.Pad("Name",0,$Depth.Name),
+                                                     $This.Pad("Date",0,10),
+                                                     $This.Pad("Start",0,8),
+                                                     $This.Pad("End",0,8),
+                                                     $This.Pad("Duration",0,8)
+                $Out.Add($Out.Count,$Line)
+
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad("-----",0,$Depth.Index),
+                                                     $This.Pad("----",0,$Depth.Name),
+                                                     $This.Pad("----",0,10),
+                                                     $This.Pad("-----",0,8),
+                                                     $This.Pad("---",0,8),
+                                                     $This.Pad("--------",0,8)
+
+                $Out.Add($Out.Count,$Line)
+
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad($Item.Index,1,$Depth.Index),
+                                                     $This.Pad($Item.Name,1,$Depth.Name),
+                                                     $This.Pad($Item.Date,1,10),
+                                                     $This.Pad($Item.Start,1,8),
+                                                     $This.Pad($Item.End,1,8),
+                                                     $This.Pad($Item.Duration,1,8)
+
+                $Out.Add($Out.Count,$Line)
+                $Out.Add($Out.Count," ".PadLeft(116," "))
+                $Line = "[Url]: {0}" -f $Item.Url
+
+                $Out.Add($Out.Count,$Line)
+                $Out.Add($Out.Count," ".PadLeft(116," "))
+            }
+
+            Return $Out[0..($Out.Count-1)]
+        }
+        [String[]] GetOutput()
+        {
+            $Out      = @{ }
+            $Count    = $This.History.Output.Count
+            $Depth    = @{ 
+
+                Index  = ([String]$Count).Length
+                Party  = ($This.History.Output.Party | Sort-Object Length | Select-Object -Unique -Last 1).Length
+                Buffer = 0
+            }
+
+            If ($Depth.Index -lt 5)
+            {
+                $Depth.Index = 5
+            }
+
+            If ($Depth.Party -lt 5)
+            {
+                $Depth.Party = 5
+            }
+
+            $Depth.Buffer = $Depth.Index + $Depth.Party + 10
+
+            # Header
+            $Line = "{0} {1} {2} {3}" -f $This.Pad("Index",0,$Depth.Index),
+                                         $This.Pad("Party",0,$Depth.Party),
+                                        "Position",
+                                        "Note"
+            $Out.Add(0,$Line)
+
+            $Line = "{0} {1} {2} {3}" -f $This.Pad("-----",0,$Depth.Index),
+                                         $This.Pad("-----",0,$Depth.Index),
+                                        "--------",
+                                        "----"
+
+            $Out.Add(1,$Line)
+
+            # Content
+            ForEach ($X in 0..($This.History.Output.Count-1))
+            {
+                $Item    = $This.History.Output[$X]
+                $Content = $Item.Note -Split "`n"
+
+                If ($Item.Party -eq "TXT")
+                {
+                    $Line = "{0} {1} {2} " -f $This.Pad($Item.Index,0,$Depth.Index),
+                                              $This.Pad($Item.Party,0,$Depth.Party),
+                                              $Item.Position
+
+                    $Line = $Line.PadRight(116,"=")
+
+                    $Out.Add($Out.Count,$Line)
+                    $Out.Add($Out.Count," ".PadRight(116," "))
+
+                    ForEach ($Slice in $Content)
+                    {
+                        $Out.Add($Out.Count,"    $Slice")
+                    }
+
+                    $Out.Add($Out.Count," ".PadRight(116," "))
+                    $Out.Add($Out.Count,"=".PadRight(116,"="))
+                }
+
+                Else
+                {
+                    If ($Content.Count -eq 1)
+                    {
+                        $Line = "{0} {1} {2} $content" -f $This.Pad($Item.Index,0,$Depth.Index),
+                                                          $This.Pad($Item.Party,0,$Depth.Party),
+                                                          $Item.Position
+                                                    
+
+                        $Out.Add($Out.Count,$Line)
+                    }
+                    If ($Content.Count -gt 1)
+                    {
+                        $C = 0
+                        ForEach ($Slice in $Content)
+                        {
+                            If ($C -eq 0)
+                            {
+                                $Line = "{0} {1} {2} {3}" -f $This.Pad($Item.Index,0,$Depth.Index),
+                                                             $This.Pad($Item.Party,0,$Depth.Party),
+                                                             $Item.Position,
+                                                             $Slice
+                            }
+                            Else
+                            {
+                                $Line = "{0} {1}" -f " ".PadRight($Depth.Buffer," "),
+                                                    $Slice
+                            }
+
+                            $C ++
+                            $Out.Add($Out.Count,$Line)
+                        }
+                    }
+                }
+
+                $Out.Add($Out.Count," ".PadRight(116," "))
+            }
+
+            Return $Out[0..($Out.Count-1)]
         }
         [String] ToString()
         {
@@ -344,9 +590,9 @@ Function New-TranscriptionCollection
 }
 
 $Ctrl = New-TranscriptionCollection -Name Impressions
-$Ctrl.AddFile("Audio Log - Impressions","02/18/2023","17:56:25","01:23:06","https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu")
-$Ctrl.AddFile("SCSO Admin (Jeff Brown)","02/17/2023","09:34:04","00:10:59","https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3")
-$Ctrl.AddFile("SCSO Admin (Jeff Brown)","02/02/2021","11:34:59","00:20:01","https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8")
+$Ctrl.AddFile("20230218.mp3","02/18/2023","17:56:25","01:23:06","https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu")
+$Ctrl.AddFile("20230217.mp3","02/17/2023","09:34:04","00:10:59","https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3")
+$Ctrl.AddFile("20210202.mp3","02/02/2021","11:34:59","00:20:01","https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8")
 
 # Parties
 $Ctrl.Select(0)
@@ -500,11 +746,21 @@ would say misleading things to me. Or, wouldn't be reporting the same sort of uh
 Or, I might like- ok. So...
 '@)
 
-<#
-    What this process is called is establishing a CONTROL.
-    This is part of a really cool thing that a lot of stupid people like to ignore...
-    Scientific model : https://en.wikipedia.org/wiki/Scientific_modelling
-#>
+##########
+$Ctrl.C(@'
+#====================
+| Scientific Model |
+====================
+What this process is called is establishing a CONTROL.
+
+This is part of a really cool thing that many morons like to ignore...
+
+It's formally known as the:
+_____________________________________________________________________
+Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+###
 
 $Ctrl.X(0,"04:50","05:09",@'
 :Allow me to apply this to a, like uh- everyone else. 
@@ -561,20 +817,24 @@ certain that like your [maximum shape] would be the size of that box, and theref
 that allows you to only, like uh- to influence a certain number of people.
 '@)
 
-<#
-    Society forces people to believe that you'll never outgrow the box.
-    That's because people have a problem with determining whether their authority
-    is CREDIBLE.
+##########
+$Ctrl.C(@'
+#=========================
+| Societal Expectations |
+=========================
 
-    So if someone who casually strokes their dick all day in a bathtub happens to be
-    in a position of IMPORTANCE or SIGNIFICANCE, then they can literally say things
-    that are blatantly false, and people will believe them.
+Society forces people to believe that you'll never outgrow the box.
+That's because people have a problem with determining whether their authority is CREDIBLE.
 
-    "You'll never be able to outgrow the box."
-    ^ What stupid people will believe when someone important tells them that.
+So if someone who [casually strokes their dick all day in a bathtub] happens to be in a position of IMPORTANCE
+or SIGNIFICANCE, then they can literally say things that are [blatantly false], and [people will believe them].
 
-    [Importance level], in many cases, can be 100% identical to [stupidity level].
-#>
+"You'll never be able to outgrow the box."
+^ What stupid people will believe when someone important tells them that.
+
+[Importance level], in many cases, can be 100% identical to [stupidity level].
+'@)
+###
 
 $Ctrl.X(0,"07:02","07:15",@'
 :And so like, if you try to tell people:
@@ -598,19 +858,25 @@ But like what'll happen is like some people will be like:
 Right...?
 '@)
 
-<#
-    I used to think that it came down to [not being funny], but now I know 
-    that [there is a group of people that work really hard] to [prevent people] 
-    from thinking some things are [funny], [comical], or otherwise.
-    
-    This is called "stupid people that try to control what's funny or cool"
-    
-    This causes many people to come across as looking [really fucking stupid] 
-    every time they say or do something that is [genuinely funny].
+##########
+$Ctrl.C(@'
+#===================
+| Genuinely Funny |
+===================
 
-    However, sometimes these morons [OVEREXTEND THAT ABILITY], and it [BACKFIRES],
-    whereby illuminating that someone really important is just really fucking moronic.
-#>
+I used to think that it came down to [not being funny], but now I know 
+that [there is a group of people that work really hard] to [prevent people] 
+from thinking some things are [funny], [comical], or otherwise.
+    
+This is called "stupid people that try to control what's funny or cool"
+    
+This causes many people to come across as looking [really fucking stupid] 
+every time they say or do something that is [genuinely funny].
+
+However, sometimes these morons [OVEREXTEND THAT ABILITY], and it [BACKFIRES],
+whereby illuminating that someone really important is just really fucking moronic.
+'@)
+###
 
 $Ctrl.X(0,"07:36","07:55",@'
 :And then what I'll say is that I've been being censored on [Facebook] by the owner
@@ -660,8 +926,8 @@ You know, the document I talk about like uh-
 $Ctrl.X(0,"09:37","09:55",@'
 :All of the work that I've been doing the last couple of months, I can guarantee
 that most people aren't gonna like, consume all of that content, but what I CAN say,
-is that I know for a god damn fact, that when I stopped at the Saratoga County
-Sheriffs Office Administrative Office...
+is that I know for a god damn fact, that when I stopped at the [Saratoga County
+Sheriffs Office Administrative Office]...
 '@)
 
 $Ctrl.X(0,"09:55","10:01",@'
@@ -781,9 +1047,15 @@ $Ctrl.X(0,"02:32","02:42",@'
 issue with, uh, getting in touch with [Mr. Zurlo] regarding a number of incidents.
 '@)
 
-<#
-    Document | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf
-#>
+##########
+$Ctrl.C(@'
+#=============
+| 2023 Work |
+=============
+
+02/16/23 | 2023 Work | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf
+'@)
+###
 
 $Ctrl.X(1,"02:42","02:42",@'
 :Ok...?
@@ -793,7 +1065,16 @@ $Ctrl.X(0,"02:42","02:44",@'
 :...dating back to (2020).
 '@)
 
-<#
+##########
+$Ctrl.C(@'
+#===============
+| Records List |
+================
+
+These records may be found with expanded details at:
+
+10/04/23 | Records List | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf
+
 ===============================
 | Date     | Incident Number  |
 |==========|==================|
@@ -809,7 +1090,8 @@ $Ctrl.X(0,"02:42","02:44",@'
 | 08/16/20 | SCSO-2020-049517 |
 | 08/31/20 | SCSO-2020-053053 |
 ===============================
-#>
+'@)
+###
 
 $Ctrl.X(1,"02:44","02:47",@'
 :Who- who would you like me to deliver this to...?
@@ -845,9 +1127,11 @@ $Ctrl.X(0,"03:05","03:13",@'
 multiple deputies, uh, over the last couple of years.
 '@)
 
-<#
-    More than that
-#>
+##########
+$Ctrl.C(@'
+#[More than that].
+'@)
+###
 
 $Ctrl.X(1,"03:13","03:14",@'
 :Sure.
@@ -869,17 +1153,21 @@ $Ctrl.X(1,"03:25","03:26",@'
 :Ok, is that on here...?
 '@)
 
-<#
-    Yes, actually.
-#>
+##########
+$Ctrl.C(@'
+#[Yes, actually].
+'@)
+###
 
 $Ctrl.X(0,"03:26","03:28",@'
 :That is NOT on there 
 '@)
 
-<#
-    It is, actually.
-#>
+##########
+$Ctrl.C(@'
+#[It is, actually].
+'@)
+###
 
 $Ctrl.X(1,"03:28","03:28",@'
 :Ok.
@@ -913,9 +1201,11 @@ $Ctrl.X(0,"03:51","04:00",@'
 :Um, yeah you can write on that, that's fine... uh [06/28/2022]
 '@)
 
-<#
-    I was gonna give him a post-it.
-#>
+##########
+$Ctrl.C(@'
+#[I was gonna give him a post-it].
+'@)
+###
 
 $Ctrl.X(1,"04:00","04:02",@'
 :And [Michael], um, can I get a phone number for ya...?
@@ -958,9 +1248,11 @@ $Ctrl.X(0,"04:22","04:27",@'
 :And I told the [State Police] about that, and that is when they arrested me. 
 '@)
 
-<#
-    It's in the body camera footage.
-#>
+##########
+$Ctrl.C(@'
+#[It's in the body camera footage].
+'@)
+###
 
 $Ctrl.X(1,"04:27","04:28",@'
 :...that wasn't very nice...
@@ -982,10 +1274,17 @@ why I made the document, uhm, I've been having communication issues with many pe
 in your department, not ALL of them...
 '@)
 
-<#
-    I spoke to [SCSO Samuel Speziale] on [06/23/2022] about [you], specifically.
-    06/23/22 | Speziale + Gardner | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6
-#>
+##########
+$Ctrl.C(@'
+#======================
+| Prior Interactions |
+======================
+
+I spoke to [SCSO Samuel Speziale] on [06/23/2022] about [you], specifically.
+
+06/23/22 | Speziale + Gardner | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6
+'@)
+###
 
 $Ctrl.X(1,"04:51","04:52",@'
 :Ok.
@@ -1049,9 +1348,11 @@ $Ctrl.X(1,"06:21","06:22",@'
 :Ok.
 '@)
 
-<#
-    You gave me THAT incident number in the phone call I recorded on 02/02/21
-#>
+##########
+$Ctrl.C(@'
+#[You gave me THAT incident number in the phone call I recorded on 02/02/21].
+'@)
+###
 
 $Ctrl.X(1,"06:22","06:29",@'
 :When you and your mom had your incident there, where you got arrested by the troopers...
@@ -1094,9 +1395,11 @@ $Ctrl.X(0,"06:46","06:47",@'
 :Uh, 2003.
 '@)
 
-<#
-    Assumed you meant what year I graduated
-#>
+##########
+$Ctrl.C(@'
+#[Assumed you meant what year I graduated].
+'@)
+###
 
 $Ctrl.X(1,"06:47","06:52",@'
 :Ok.
@@ -1149,7 +1452,7 @@ And as soon as I told them that I had an [AUDIO RECORDING that I UPLOADED, PRIOR
 making the 911 call]... 
 
 Uh, it- I went through and I transcribed the audio recording, I tried to give it to my
-public defender (former JC Davis, current Michael Depresso), and like... the COURT is
+public defender (former [JC Davis], current [Michael Depresso]), and like... the COURT is
 doing a really fine, swell job of kinda like, pretending that doesn't exist. 
 
 And that like, I'm... guilty.
@@ -1198,7 +1501,7 @@ $Ctrl.X(1,"08:34","08:36",@'
 '@)
 
 $Ctrl.X(0,"08:36","08:47",@'
-:O-R-A-T, basically it's on the front 'ORATOR'. *pauses* Oration. Expert at oration.
+:O-R-A-T, basically it's on the front 'ORATOR'. *pauses* Oration. [Expert at oration].
 '@)
 
 $Ctrl.X(1,"08:47","08:48",@'
@@ -1206,9 +1509,9 @@ $Ctrl.X(1,"08:47","08:48",@'
 '@)
 
 $Ctrl.X(0,"08:48","08:55",@'
-:So, orator is basically someone who's a professor. 
-Or maybe not necessarily a professor, but somebody that speaks out loud, or like
-practices public speaking.
+:So, orator is basically someone who's a [professor]. 
+Or maybe not necessarily a [professor], but somebody that [speaks out loud], or like
+[practices public speaking].
 '@)
 
 $Ctrl.X(1,"08:55","08:55",@'
@@ -1216,11 +1519,11 @@ $Ctrl.X(1,"08:55","08:55",@'
 '@)
 
 $Ctrl.X(0,"08:55","08:59",@'
-:So, I don't know if I'm coming across as sounding professional or whatever, but-
+:So, I don't know if I'm coming across as [sounding professional] or whatever, but-
 '@)
 
 $Ctrl.X(1,"08:59","09:00",@'
-:You do. Yeh.
+:[You do]. Yeh.
 '@)
 
 $Ctrl.X(0,"09:00","09:01",@'
@@ -1232,11 +1535,11 @@ $Ctrl.X(1,"09:01","09:01",@'
 '@)
 
 $Ctrl.X(0,"09:01","09:21",@'
-:So, I practice this, I listen to myself speak, I listen to my recordings.
+:So, [I practice this], [I listen to myself speak], [I listen to my recordings].
 
-I try to talk about things that are bothering me, things in the past. 
-I make I make a very uh, big effort to like, be considerate to not cross the red lines, 
-or red flag area, but- yeh. [Basically, I talk about everything that I think of].
+I try to talk about [things that are bothering me], [things in the past]. 
+I make I make a very uh, big effort to like, be considerate to not cross the [red lines], 
+or [red flag area], but- yeh. [Basically, I talk about everything that I think of].
 '@)
 
 $Ctrl.X(1,"09:21","09:22",@'
@@ -1261,11 +1564,14 @@ $Ctrl.X(1,"09:32","09:34",@'
 '@)
 
 $Ctrl.X(0,"09:34","10:05",@'
-:Uhm, it'd be NICE, heh. To be perfectly clear, I think that he has been payin' 
-attention to me on either [Facebook], or [through the community], and he had his son
-[Paul Zurlo] come to my house multiple times 
-(one of those times was with the guy who tased me on 06/28/22)... 
-and rather than for me to make that [speculation] or [assumption], I wrote a bunch
+:Uhm, it'd be NICE, heh. 
+
+To be perfectly clear, I think that he has been payin' attention to me on either [Facebook],
+or [through the community], and he had his son [Paul Zurlo] come to my house multiple times...
+
+(one of those times was with the guy who tased me on 06/28/22)
+
+...and rather than for me to make that [speculation] or [assumption], I wrote a bunch
 of documents...? I haven't had a conversation with him yet.
 
 If I have a conversation with him and I like what I hear, and I believe him...
@@ -1273,7 +1579,7 @@ Then those documents, they're gonna need- they're gonna be rewritten.
 '@)
 
 $Ctrl.X(1,"10:05","10:08",@'
-:Ok, *turns page* fair enough.
+:Ok, *turns page* Fair enough.
 '@)
 
 $Ctrl.X(0,"10:08","10:10",@'
@@ -1296,7 +1602,7 @@ $Ctrl.X(1,"10:19","10:20",@'
 $Ctrl.X(0,"10:20","10:26",@'
 :He gave me the record that I needed... 
 *pauses* 
-You know what, I'll wait till you digest some of this information.
+You know what, I'll wait till you [digest] some of this [information].
 '@)
 
 $Ctrl.X(1,"10:26","10:26",@'
@@ -1304,7 +1610,7 @@ $Ctrl.X(1,"10:26","10:26",@'
 '@)
 
 $Ctrl.X(0,"10:26","10:29",@'
-:And if you have like, follow up questions, feel free to call me.
+:And if you have like, follow-up questions, feel free to call me.
 '@)
 
 $Ctrl.X(1,"10:29","10:31",@'
@@ -1350,7 +1656,7 @@ $Ctrl.X(1,"00:14","00:17",@'
 '@)
 
 $Ctrl.X(0,"00:17","01:00",@'
-:But no, [Sergeant Welch] told me that there was a call for service, so there SHOULD
+:But no, [Sergeant Welch] told me that there was a [call for service], so there SHOULD
 be a record of that.
 
 And, the record that [Sergeant Welch] gave me, is for a totally different date. And
@@ -1392,7 +1698,7 @@ Again we handle [a hundred thousand complaints a year]...
 '@)
 
 $Ctrl.X(0,"01:25","01:30",@'
-:There should be a call for service, that's what [Sergeant Welch] told me.
+:There should be a [call for service], that's what [Sergeant Welch] told me.
 '@)
 
 $Ctrl.X(1,"01:30","01:36",@'
@@ -1426,9 +1732,19 @@ $Ctrl.X(1,"02:05","02:22",@'
 it happened at about [10 o'clock] it looks like, there...
 '@)
 
-<#
-    [Right. That's SUSPICIOUS, and it involves a TOWN COUNCIL MEMBER NAMED ERIC CATRICALA.]
-#>
+##########
+$Ctrl.C(@'
+#[Right], that's [suspicious].
+
+Things that are considered [suspicious], are otherwise known as [clues], and the [clue] 
+involves a [HALFMOON TOWN COUNCIL MEMBER NAMED ERIC CATRICALA].
+
+They're [supposed] to teach [police officers] at the [academy] about things like [clues] and [suspicions].
+
+Apparently they don't really need to do that anymore...?
+Which is why I constantly have to tell people that the police are often times, [pretty fuckin' stupid].
+'@)
+###
 
 $Ctrl.X(0,"02:22","02:28",@'
 :You talkin' about [20-003173], is that what you're talkin' about...? (I meant 003177)
@@ -1447,73 +1763,75 @@ $Ctrl.X(1,"02:35","02:42",@'
 [wide-ranging conspiracy] involving [my department].
 '@)
 
-<#
-    ===========================
-    | Wide-Ranging Conspiracy |
-    ===========================
+##########
+$Ctrl.C(@'
+#===========================
+| Wide-Ranging Conspiracy |
+===========================
+    
+Yeah, because I was [arrested] over a [post-dated ticket] after my [iPhone 8+] was [disabled].
+It was [disabled by the manufacturer, Apple Corporation] after I [showed a video] to [NYSP Shaemus Leavey] 
+at [05/27/20 0900].
 
-    Yeah, because I was [arrested] over a [post-dated ticket] after my [iPhone 8+] was [disabled].
-    It was [disabled by the manufacturer, Apple Corporation] after I [showed a video] to [NYSP Shaemus Leavey] 
-    at [05/27/20 0900].
+That video being the one I recorded outside of the [Catricala Funeral Home] from [05/25/20 2343] to [05/26/20 0004]
+of [(2) dudes using a DANGEROUS ESPIONAGE TOOL DESIGNED TO SPECIFICALLY TARGET SMARTPHONES CALLED "PHANTOM"].
 
-    That video being the one I recorded outside of the [Catricala Funeral Home] from [05/25/20 2343] to [05/26/20 0004]
-    of [(2) dudes using a DANGEROUS ESPIONAGE TOOL DESIGNED TO SPECIFICALLY TARGET SMARTPHONES CALLED "PHANTOM"].
+In that video, these [(2) dudes/queers] appeared to be right smack dab in the middle of [attempting to murder me].
 
-    In that video, these [(2) dudes/queers] appeared to be right smack dab in the middle of [attempting to murder me].
+Maybe there is no [wide-ranging conspiracy] at all, and it just LOOKS like [Eric Catricala had (2) different events
+merged together into a single incident (3) days late, and had (0) evidence of me really doing a god damn thing].
 
-    Maybe there is no [wide-ranging conspiracy] at all, and it just LOOKS like [Eric Catricala had (2) different events
-    merged together into a single incident (3) days late, and had (0) evidence of me really doing a god damn thing].
+Oh wait, [I have evidence that could corroborate HIS side of the story]...
+It's just that [the evidence I have would contradict the reported time], as well as [insert the record]: 
+[SCSO-2020-028501].
 
-    Oh wait, [I have evidence that could corroborate HIS side of the story]...
-    It's just that [the evidence I have would contradict the reported time], as well as [insert the record]: 
-    [SCSO-2020-028501].
-    
-    [Nothing suspicious about any of this shit in the least (sarcasm).] 
+[Nothing suspicious about any of this shit in the least (sarcasm).] 
 
-    Meanwhile, [I have like dozens of fucking pictures, as well as a few AUDIO RECORDINGS], and... 
-    [SOMEHOW I get arrested for cutting a fucking $5.00 kayak strap at 1769 Route 9, on a post-dated ticket]. 
-    
-    The [PHONE LINE] that [I SEVERED] because I was attempting to call 911 SOMEHOW, [NOT] being the reason for 
-    arresting me.
+Meanwhile, [I have like dozens of fucking pictures, as well as a few AUDIO RECORDINGS], and... 
+[SOMEHOW I get arrested for cutting a fucking $5.00 kayak strap at 1769 Route 9, on a post-dated ticket]. 
 
-    Why did I cut the phone line, is [not a question any investigator nor police officer has asked me].
-    I would've thought at the very least, some dude from SCSO would've approached me and been like...
+The [PHONE LINE] that [I SEVERED] because I was attempting to call 911 SOMEHOW, [NOT] being the reason for 
+arresting me.
 
-    [===========================================================================================================]
+Why did I cut the phone line, is [not a question any investigator nor police officer has asked me].
+I would've thought at the very least, some dude from SCSO would've approached me and been like...
 
-    [Guy] : What the actual fuck, dude...?
-    [Me]  : What...?
-    [Guy] : So you fuckin' cut some dude's phone line, didn't ya...?
-    [Me]  : Well, yeh.
-    [Guy] : Yeah well, why the hell would you do something crazy like that...?
-            You done messed up [A-A-Ron]...
-    [Me]  : It's cause I was trying to call (911).
-    [Guy] : *rolls his eyes* Buddy, everybody tries to call (911).
-            *shakes head* I don't even wanna hear it, I gotta arrest you for that...
+[===========================================================================================================]
 
-    [^ what never happened.]  
+[Guy] : What the actual fuck, dude...?
+[Me]  : What...?
+[Guy] : So you fuckin' cut some dude's phone line, didn't ya...?
+[Me]  : Well, yeh.
+[Guy] : Yeah well, why the hell would you do something crazy like that...?
+        You done messed up [A-A-Ron]...
+[Me]  : It's cause I was trying to call (911).
+[Guy] : *rolls his eyes* Buddy, everybody tries to call (911).
+        *shakes head* I don't even wanna hear it, I gotta arrest you for that...
 
-    [===========================================================================================================]
+[^ what never happened.]  
 
-    But I'll tell ya, cause I had attempted to call (911) (2) times during this (90) minute event where (2) dudes 
-    were chasing me, and trying to kill me with a car parked ahead of the (3) of us in the [Lowes] parking lot. 
-    [Nothing shady or suspicious going on or whatever. Not at all.]
+[===========================================================================================================]
 
-    Oh, by the way, [the (2) dudes who tried to hit me with their fucking car, nobody is going after them].
+But I'll tell ya, cause I had attempted to call (911) (2) times during this (90) minute event where (2) dudes 
+were chasing me, and trying to kill me with a car parked ahead of the (3) of us in the [Lowes] parking lot. 
+[Nothing shady or suspicious going on or whatever. Not at all.]
 
-    As far as I know [your deputy] [Scott Schelling] went to [Center for Security] immediately after being at the 
-    [SECONDARY LOCATION] in the TICKET that you gave me in this phone call, and I believe that either HE or someone
-    else [destroyed the evidence of me calling (911) in front of the security camera at 05/26/20 0010].
+Oh, by the way, [the (2) dudes who tried to hit me with their fucking car, nobody is going after them].
 
-    Nothing suspicious about all this shit at all. 
-    Nah. 
-    Everybody follows the law at all times. (sarcasm)
+As far as I know [your deputy] [Scott Schelling] went to [Center for Security] immediately after being at the 
+[SECONDARY LOCATION] in the TICKET that you gave me in this phone call, and I believe that either HE or someone
+else [destroyed the evidence of me calling (911) in front of the security camera at 05/26/20 0010].
 
-    Oh and by the way, the argument that I had with my mother on [06/28/22] is about the [wide-ranging conspiracy]
-    I just rattled off.
-    Oh by the way, [Paul Pelagalli] took custody of my fuckin' children away over this whole ordeal too.
-    Oh by the way, people think I went insane, cause some people are just plain old fuckin' stupid and lazy.
-#>
+Nothing suspicious about all this shit at all. 
+Nah. 
+Everybody follows the law at all times. (sarcasm)
+
+Oh and by the way, the argument that I had with my mother on [06/28/22] is about the [wide-ranging conspiracy]
+I just rattled off.
+Oh by the way, [Paul Pelagalli] took custody of my fuckin' children away over this whole ordeal too.
+Oh by the way, people think I went insane, cause some people are just plain old fuckin' stupid and lazy.
+'@)
+###
 
 $Ctrl.X(0,"02:42","02:56",@'
 :Well, no, it's not a [wide-ranging conspiracy], I should be able to ask somebody at
@@ -1536,9 +1854,11 @@ $Ctrl.X(1,"03:06","03:09",@'
 :Ha ha ha, birds.
 '@)
 
-<#
-    [Birds - https://youtu.be/zXkmxtYQ6wQ]
-#>
+##########
+$Ctrl.C(@'
+#[Birds - https://youtu.be/zXkmxtYQ6wQ]
+'@)
+###
 
 $Ctrl.X(0,"03:09","03:33",@'
 :What YOU'RE telling me, the Sarato- that officer, [Scott Schelling], went to that
@@ -1584,9 +1904,11 @@ $Ctrl.X(1,"03:55","04:00",@'
 :[May 26th, 2020], you said about 1AM, right...?
 '@)
 
-<#
-   [This is what I'd been asking him to do, look for events based on the time]
-#>
+##########
+$Ctrl.C(@'
+#[This is what I'd been asking him to do, look for events based on the time].
+'@)
+###
 
 $Ctrl.X(0,"04:00","04:02",@'
 :Yes.
@@ -1597,7 +1919,6 @@ $Ctrl.X(1,"04:02","04:23",@'
 
 I've got 1... 2... 3... 4... 5... 6... complaints here, (6) calls that we received,
 during that time, I'm gonna open up each and every one of em...
-
 '@)
 
 $Ctrl.X(0,"04:23","04:31",@'
@@ -1614,9 +1935,11 @@ That's the extent of what I know about that one, lets close that one out.
 Second one...
 '@)
 
-<#
-   [^ This was at or about the time that I was in the Lowes Home Improvement store parking lot.]
-#>
+##########
+$Ctrl.C(@'
+#[^ This was at or about the time that I was in the Lowes Home Improvement store parking lot].
+'@)
+###
 
 $Ctrl.X(0,"04:56","04:58",@'
 :What time did that call come in...?
@@ -1647,7 +1970,6 @@ Uhm, no voice contact, and they did attempt to recall, no answer on recall.
 Let's see this next one.
 
 Same area...?
-
 '@)
 
 $Ctrl.X(1,"05:58","06:08",@'
@@ -1697,9 +2019,11 @@ $Ctrl.X(0,"07:07","08:10",@'
 :Ok.
 '@)
 
-<#
-    [Timing seems to be *incredibly coincidental*, because this last ticket he rattles off is the correct one.]
-#>
+##########
+$Ctrl.C(@'
+#[Timing seems to be *incredibly coincidental*, because this last ticket he rattles off is the correct one].
+'@)
+###
 
 $Ctrl.X(1,"08:10","08:14",@'
 :Alright, I'm back. So, let me look at this last one, here.
@@ -1744,7 +2068,6 @@ $Ctrl.X(0,"09:09","09:20",@'
 
 I have a screenshot that says that I originally tried to call (911) at [12:05].
 Now, I can prove that.
-
 '@)
 
 $Ctrl.X(1,"09:20","09:23",@'
@@ -1756,24 +2079,25 @@ $Ctrl.X(0,"09:23","09:34",@'
 :I'm just trying to give you a trajectory of what happened that night.
 That way, if you are able to help me, maybe with YOUR experience...
 ...you'll be able to identify how you can do that.
-
 '@)
 
 $Ctrl.X(1,"09:34","09:36",@'
 :Call (911), there's nothing I can do.
 '@)
 
-<#
-    ====================
-    | Nothin' I can do |
-    ====================
+##########
+$Ctrl.C(@'
+#====================
+| Nothin' I can do |
+====================
 
-    That's a problem. [I called 911]. [Twice]. [My phone was hacked]. [I recorded a video of (2) dudes stalking me].
+That's a problem. [I called 911]. [Twice]. [My phone was hacked]. [I recorded a video of (2) dudes stalking me].
 
-    But also, if I [suspect] that the [telecommunications companies] are committing [illegal activities], then THEY can 
-    disrupt [any 911 call] from [making it to your dispatch station], and therefore, they have [strict control] over 
-    the [law enforcement system].                               
-#>
+But also, if I [suspect] that the [telecommunications companies] are committing [illegal activities], then THEY can 
+disrupt [any 911 call] from [making it to your dispatch station], and therefore, they have [strict control] over 
+the [law enforcement system].   
+'@)
+###                            
 
 $Ctrl.X(0,"09:36","11:17",@'
 :Well, what I'm trying to say here, is that I'm giving you my recollection of that night.
@@ -1806,7 +2130,6 @@ tracks, and it looked like he saw bad news. That's what MY impression was.
 At any rate, a couple other things happened, uh- there was a kid at the laundromat
 that night, pretty sure that place had surveillance footage but uh- there was a kid
 in a black dodge, at that gas station, that was leaving.
-
 '@)
 
 $Ctrl.X(1,"11:17","11:22",@'
@@ -1823,46 +2146,48 @@ $Ctrl.X(1,"11:28","11:36",@'
 Committed by you.
 '@)
 
-<#
-    =======================
-    | Obstructing Justice |
-    =======================
+##########
+$Ctrl.C(@'
+#=======================
+| Obstructing Justice |
+=======================
 
-    What about [multiple fellow officers] [obstructing justice]...?
-    Or the [telephony DDOS attacks]...?
-    [Pretty sure those are crimes, too].
+What about [multiple fellow officers] [obstructing justice]...?
+Or the [telephony DDOS attacks]...?
+[Pretty sure those are crimes, too].
 
-    MAYBE, as long as THOSE [crimes] are [committed when nobody is looking]...?
-    Then they're not [reportable] nor [arrestable crimes].
+MAYBE, as long as THOSE [crimes] are [committed when nobody is looking]...?
+Then they're not [reportable] nor [arrestable crimes].
 
-    [So, someone can →]
+[So, someone can →]
 
-    [+] [destroy evidence] of [911 calls/attempted murder/vehicular manslaughter]
-    [~] ...as long as...
-    [+] [any evidence of those crimes being committed] is [destroyed] AFTER it is shown to a [police officer],
-        like [NYSP Trooper Shaemus Leavey]
-    [~] ...which means, since nobody except [NYSP Trooper Shaemus Leavey], and [my kids] saw them happen...
-    [+] ...those aren't [crimes].
+[+] [destroy evidence] of [911 calls/attempted murder/vehicular manslaughter]
+[~] ...as long as...
+[+] [any evidence of those crimes being committed] is [destroyed] AFTER it is shown to a [police officer],
+    like [NYSP Trooper Shaemus Leavey]
+[~] ...which means, since nobody except [NYSP Trooper Shaemus Leavey], and [my kids] saw them happen...
+[+] ...those aren't [crimes].
 
-    [And, with that logic →]
+[And, with that logic →]
 
-    [It is LEGAL to]:
-    - [commit espionage] to [somebody] using [PHANTOM/PEGASUS]
-    - [attempt to murder someone] either [on FOOT] or [with a VEHICLE] multiple times
-    - perform a [telephony denial of service attack] AKA [circumventing 911 calls]
-    - commit [obstruction of justice] and/or [destroy evidence]
+[It is LEGAL to]:
+- [commit espionage] to [somebody] using [PHANTOM/PEGASUS]
+- [attempt to murder someone] either [on FOOT] or [with a VEHICLE] multiple times
+- perform a [telephony denial of service attack] AKA [circumventing 911 calls]
+- commit [obstruction of justice] and/or [destroy evidence]
 
-    [It is NOT LEGAL to]:
-    - [call 911] on a [device] that is [infected] with [PHANTOM]
-    - [flag people down for help] to [call 911], since your [device] may be [infected] with [PHANTOM]
-    - [hand an iPhone 8+] that is [infected] with [PHANTOM] that has [evidence] on it, to an [officer of the law]
-      for instance [SCSO Scott Schelling]
-    - [survive] a [murder attempt] or a [vehicular manslaughter attempt]
+[It is NOT LEGAL to]:
+- [call 911] on a [device] that is [infected] with [PHANTOM]
+- [flag people down for help] to [call 911], since your [device] may be [infected] with [PHANTOM]
+- [hand an iPhone 8+] that is [infected] with [PHANTOM] that has [evidence] on it, to an [officer of the law]
+  for instance [SCSO Scott Schelling]
+- [survive] a [murder attempt] or a [vehicular manslaughter attempt]
 
-    So, those are the crimes that [a guy who calls himself an investigator] DIDN'T see, which means that they're 
-    actually perfectly legal and easy to do, as long as you [establish prerequisites] by [having friends] in the 
-    [police] and [telecom companies], and you [cover your tracks] and [destroy evidence] and stuff.
-#>
+So, those are the crimes that [a guy who calls himself an investigator] DIDN'T see, which means that they're 
+actually perfectly legal and easy to do, as long as you [establish prerequisites] by [having friends] in the 
+[police] and [telecom companies], and you [cover your tracks] and [destroy evidence] and stuff.
+'@)
+###
 
 $Ctrl.X(0,"11:36","11:49",@'
 :Because I called (911), and those calls weren't making it to the dispatch station.
@@ -1912,59 +2237,61 @@ $Ctrl.X(0,"12:12","12:18",@'
 :It shouldn't happen, here in [Clifton Park], where there's (3) cell towers within a mile.
 '@)
 
-<#
-    ====================================
-    | Northern Part of Saratoga County |
-    ====================================
+##########
+$Ctrl.C(@'
+#====================================
+| Northern Part of Saratoga County |
+====================================
 
-    [Yeh, I've been in the northern part of the county, as I used to deliver →]
-    - the [Times Union] on [Q121/Clifton Park-Halfmoon], 
-                           [Q122/Mechanicville-Stillwater-Malta], and 
-                           [Q107/Ballston Spa], 
-    - pizzas for [Pizza Works/Ballston Spa]
-    - the [Metroland/Saratoga County], which went to [South Glens Falls] and even [Lake George].
+[Yeh, I've been in the northern part of the county, as I used to deliver →]
+- the [Times Union] on [Q121/Clifton Park-Halfmoon], 
+                       [Q122/Mechanicville-Stillwater-Malta], and 
+                       [Q107/Ballston Spa], 
+- pizzas for [Pizza Works/Ballston Spa]
+- the [Metroland/Saratoga County], which went to [South Glens Falls] and even [Lake George].
 
-    [South Glens Falls] is the most northern part of [Saratoga County].
-    Way more north than [Ballston Spa].
-    But, na. Not me, man. I've never tried to make phone calls in the [middle part] of the county. 
-    Nor in [West Milton] when I dropped off the [Times Union]. 
-    Nor in [Ballston Spa] when I dropped off the [Times Union/Metroland/Pizzas for Pizza Works].
-    Nor [West Charleton] when I dropped off the [Times Union]. 
-    Nor [Galway]... when I dropped off the [Times Union]. 
-    Nor in [Moreau] when I dropped off the [Metroland]. 
-    Nor in [South Glens Falls]... when I dropped off the [Metroland] at [Rock Hill Bake Shop], and the
-    dude gave me a [fresh chocolate chip cookie] literally every week that I went there.
+[South Glens Falls] is the most northern part of [Saratoga County].
+Way more north than [Ballston Spa].
+But, na. Not me, man. I've never tried to make phone calls in the [middle part] of the county. 
+Nor in [West Milton] when I dropped off the [Times Union]. 
+Nor in [Ballston Spa] when I dropped off the [Times Union/Metroland/Pizzas for Pizza Works].
+Nor [West Charleton] when I dropped off the [Times Union]. 
+Nor [Galway]... when I dropped off the [Times Union]. 
+Nor in [Moreau] when I dropped off the [Metroland]. 
+Nor in [South Glens Falls]... when I dropped off the [Metroland] at [Rock Hill Bake Shop], and the
+dude gave me a [fresh chocolate chip cookie] literally every week that I went there.
 
-    [===========================================================================================================]
+[===========================================================================================================]
 
-    [Dude]: Hey dude, want a cookie...?
-    [Me]  : Yep.
-    [Dude]: Here ya go.
-    [Me]  : Thanks dude.
-    [Dude]: No problem.
-    [Me]  : Have a good one~!
-    [Dude]: You too, dude.
+[Dude]: Hey dude, want a cookie...?
+[Me]  : Yep.
+[Dude]: Here ya go.
+[Me]  : Thanks dude.
+[Dude]: No problem.
+[Me]  : Have a good one~!
+[Dude]: You too, dude.
 
-    [===========================================================================================================]
+[===========================================================================================================]
 
-    Dude made damn certain to give me a cookie every single time that he saw me, and I did that for (7) years.
+Dude made damn certain to give me a cookie every single time that he saw me, and I did that for (7) years.
 
-    But, nah. I've never once tried to make a phone call in [ANY] of those places that I went to every single week.
-    That would be unspeakable. Oh wait, I'm being sarcastic. Yeah. I've been in the northern part of the county.
-    The cell service DOES suck ass in [Ballston Spa] and [West Milton].
-    
-    [^ That's a fact, but so is the fact that (3) cell towers were within a mile of where I called]
-    
-    --------------------
-    | <insert picture> |
-    --------------------
+But, nah. I've never once tried to make a phone call in [ANY] of those places that I went to every single week.
+That would be unspeakable. Oh wait, I'm being sarcastic. Yeah. I've been in the northern part of the county.
+The cell service DOES suck ass in [Ballston Spa] and [West Milton].
 
-    [05/26/20 0004 Call  #1] | 42.852236, -73.756904
-    [05/26/20 0010 Call  #2] | 42.858849, -73.762229
-                  [Tower #1] | 42.854831, -73.772868
-                  [Tower #2] | 42.868798, -73.754071
-                  [Tower #3] | 42.869364, -73.750896
-#>
+--------------------
+| <insert picture> |
+--------------------
+
+[05/26/20 0004 Call  #1] | 42.852236, -73.756904
+[05/26/20 0010 Call  #2] | 42.858849, -73.762229
+              [Tower #1] | 42.854831, -73.772868
+              [Tower #2] | 42.868798, -73.754071
+              [Tower #3] | 42.869364, -73.750896
+
+[^ That's a fact, but so is the fact that (3) cell towers were within a mile of where I called]
+'@)
+###
 
 $Ctrl.X(1,"12:18","12:31",@'
 :There are, but again, if there's a problem with- with- [Verizon], or [Sprint], or
@@ -1974,13 +2301,20 @@ stars, what could I possibly do about that...?
 What, climb up there, and make sure all the wires are plugged in...?
 '@)
 
-<#
-    [Couldn't stop laughing when I transcribed this part.]
+##########
+$Ctrl.C(@'
+#[Couldn't stop laughing when I transcribed this part.]
 
-    [Brown]: WhAt, ClImB uP tHeRe, AnD mAkE sUrE aLl ThE wIrEs ArE pLuGgEd In...?!?
-    Cause what if I said “Yeh, obviously. I mean, [Walker, Texas Ranger] would be able to do that shit in his sleep...”
-    What would he have said then...?
-#>
+[Brown]: WhAt, ClImB uP tHeRe, AnD mAkE sUrE aLl ThE wIrEs ArE pLuGgEd In...?!?
+
+Cause what if I said:
+[Me]   : Yeh, obviously. 
+         I mean, [Walker, Texas Ranger] would be able to do that shit in his sleep...
+         I thought you were like a senior level captain investigator or whatever...?
+
+What would he have said then...?
+'@)
+###
 
 $Ctrl.X(0,"12:31","12:48",@'
 :No, um- what I'm suggesting is that, you're saying that someone checked the
@@ -1988,7 +2322,6 @@ surveillance footage, right...? At the place that I, ya know, left the footage o
 me trying to dial (911)...?
 
 You're sayin' that that exists, but you're getting reports mixed up.
-
 '@)
 
 $Ctrl.X(1,"12:48","12:53",@'
@@ -2004,11 +2337,16 @@ $Ctrl.X(1,"12:58","13:00",@'
 :Not as far as I can tell...
 '@)
 
-<#
-    That's a [problem]. [You're supposed to investigate suspicious shit].
-    I reported that to [Scott Schelling] at the [secondary location] in [SCSO-2020-028501], and it [wasn't recorded].
-    [That's suspicious shit right there].
-#>
+##########
+$Ctrl.C(@'
+#That's a [problem]. [You're supposed to investigate suspicious shit].
+
+I reported that to [Scott Schelling] at the [secondary location] in [SCSO-2020-028501], 
+and it [wasn't recorded].
+
+[That's suspicious shit right there].
+'@)
+###
 
 $Ctrl.X(0,"13:00","13:04",@'
 :Right, but that's where the footage would be of me intializing a (911) call-
@@ -2054,35 +2392,37 @@ $Ctrl.X(0,"13:43","13:49",@'
 surveillance footage of me walking around that night.
 '@)
 
-<#
-    =======================
-    | Supporting Evidence |
-    =======================
+##########
+$Ctrl.C(@'
+#=======================
+| Supporting Evidence |
+=======================
 
-    [Check this out. This stuff is called "supporting evidence"]
+[Check this out. This stuff is called "supporting evidence"]
 
-    [===============|========================|===================================================================]
-    | [Date/Time]   | [Name]                 | [Url]                                                             |
-    [===============|========================|===================================================================]
-    | 05/25/20 2300 | Computer Answers       | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
-    | 05/25/20 2329 | IMG_0636               | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
-    | 05/25/20 2329 | IMG_0637               | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
-    | 05/25/20 2329 | IMG_0638               | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
-    | 05/25/20 2329 | IMG_0639               | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-    | 05/25/20 2335 | IMG_0640               | https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h |
-    | 05/25/20 2336 | IMG_0641               | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
-    | 05/25/20 2337 | IMG_0642               | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
-    | 05/25/20 2337 | IMG_0643               | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
-    | 05/25/20 2337 | IMG_0644               | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
-    | 05/25/20 2337 | IMG_0645               | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
-    | 05/25/20 2343 | IMG_0646               | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
-    | 05/25/20 2343 | IMG_0647               | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
-    | 05/26/20 0005 | IMG_0648               | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
-    | 05/26/20 0011 | IMG_0649               | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
-    | 05/26/20 0011 | IMG_0650               | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
-    | 05/26/20 0011 | IMG_0651               | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
-    [===============|========================|===================================================================]
-#>
+[===============|========================|===================================================================]
+| [Date/Time]   | [Name]                 | [Url]                                                             |
+[===============|========================|===================================================================]
+| 05/25/20 2300 | Computer Answers       | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
+| 05/25/20 2329 | IMG_0636               | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
+| 05/25/20 2329 | IMG_0637               | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
+| 05/25/20 2329 | IMG_0638               | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
+| 05/25/20 2329 | IMG_0639               | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2335 | IMG_0640               | https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h |
+| 05/25/20 2336 | IMG_0641               | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
+| 05/25/20 2337 | IMG_0642               | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
+| 05/25/20 2337 | IMG_0643               | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
+| 05/25/20 2337 | IMG_0644               | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
+| 05/25/20 2337 | IMG_0645               | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
+| 05/25/20 2343 | IMG_0646               | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
+| 05/25/20 2343 | IMG_0647               | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
+| 05/26/20 0005 | IMG_0648               | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
+| 05/26/20 0011 | IMG_0649               | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
+| 05/26/20 0011 | IMG_0650               | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
+| 05/26/20 0011 | IMG_0651               | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
+[===============|========================|===================================================================]
+'@)
+###
 
 $Ctrl.X(1,"13:49","13:50",@'
 :Ok.
@@ -2093,6 +2433,7 @@ $Ctrl.X(0,"13:50","14:08",@'
 Is that, I didn't walk around [Eric Catricala]'s business on the 24th, I walked around
 [Eric Catricala]'s business on the LATE 25th INTO the 26th, and it's being passed off
 as security footage that was on the 24th.
+
 That's what's happening here.
 '@)
 
@@ -2123,48 +2464,51 @@ $Ctrl.X(0,"14:48","14:59",@'
 calling into question is, cops are ignoring evidence that I'm saying exists.
 '@)
 
-<#
-    ===================================================
-    | Mental Health versus Espionage and Cyberattacks |
-    ===================================================
+##########
+$Ctrl.C(@'
+#===================================================
+| Mental Health versus Espionage and Cyberattacks |
+===================================================
 
-    [===============|========================|===================================================================]
-    | [Date/Time]   | [Name]                 | [Url]                                                             |
-    [===============|========================|===================================================================]
-    | 07/14/19      | GodMode Cursor1        | https://youtu.be/1OzgCoBUDzs                                      |
-    | 10/04/19      | HDMI Interference      | https://youtu.be/in7IrkoLOHo                                      |
-    | 12/09/19      | TWITTER BSOD           | https://youtu.be/12x8TrO9B5Q                                      |
-    | 10/04/19      | Buffer Overflow Attack | https://youtu.be/H4MlJnMh9Q0                                      |
-    | 05/21/20      | Item[0]-Origal         | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
-    | 05/21/20      | Item[0]-Treble         | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
-    | 05/22/20      | IMG_0390               | https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6 |
-    | 05/22/20      | Item[1]IMG_0391        | https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG |
-    | 05/22/20      | Item[1]-Treble         | https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah |
-    | 05/24/20      | 2020 05 24 1341        | https://youtu.be/i88AJb_5zY4 (*Espionage*)                        |
-    | 02/15/22      | A matter of nat'l sec. | https://youtu.be/e4VnZObiez8                                      |
-    | 02/25/22      | FACEBOOK CENSORSHIP    | https://youtu.be/Jmq4yBqGhTs                                      |
-    | 02/26/22      | FACEBOOK BSOD          | https://youtu.be/40sQXpVh_8Y                                      |
-    | 08/03/22      | Scribbles              | https://youtu.be/vY2fIhS9ruo                                      |
-    | 08/22/22      | Scribbles              | https://youtu.be/q0twJUzef9U                                      |
-    | 09/26/22      | God Mode Cursor        | https://youtu.be/tW80Zj_H6Fw                                      |
-    | 10/04/22      | God Mode Cursor        | https://youtu.be/dU_5rdVkCD8                                      |
-    | 02/20/23      | Time Travel            | https://youtu.be/xCo8Wu_0Lb4                                      |
-    [===============|========================|===================================================================]
+[===============|========================|===================================================================]
+| [Date/Time]   | [Name]                 | [Url]                                                             |
+[===============|========================|===================================================================]
+| 07/14/19      | GodMode Cursor1        | https://youtu.be/1OzgCoBUDzs                                      |
+| 10/04/19      | HDMI Interference      | https://youtu.be/in7IrkoLOHo                                      |
+| 12/09/19      | TWITTER BSOD           | https://youtu.be/12x8TrO9B5Q                                      |
+| 10/04/19      | Buffer Overflow Attack | https://youtu.be/H4MlJnMh9Q0                                      |
+| 05/21/20      | Item[0]-Origal         | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
+| 05/21/20      | Item[0]-Treble         | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
+| 05/22/20      | IMG_0390               | https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6 |
+| 05/22/20      | Item[1]IMG_0391        | https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG |
+| 05/22/20      | Item[1]-Treble         | https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah |
+| 05/24/20      | 2020 05 24 1341        | https://youtu.be/i88AJb_5zY4 (*Espionage*)                        |
+| 02/15/22      | A matter of nat'l sec. | https://youtu.be/e4VnZObiez8                                      |
+| 02/25/22      | FACEBOOK CENSORSHIP    | https://youtu.be/Jmq4yBqGhTs                                      |
+| 02/26/22      | FACEBOOK BSOD          | https://youtu.be/40sQXpVh_8Y                                      |
+| 08/03/22      | Scribbles              | https://youtu.be/vY2fIhS9ruo                                      |
+| 08/22/22      | Scribbles              | https://youtu.be/q0twJUzef9U                                      |
+| 09/26/22      | God Mode Cursor        | https://youtu.be/tW80Zj_H6Fw                                      |
+| 10/04/22      | God Mode Cursor        | https://youtu.be/dU_5rdVkCD8                                      |
+| 02/20/23      | Time Travel            | https://youtu.be/xCo8Wu_0Lb4                                      |
+[===============|========================|===================================================================]
 
-    Yeah, so, that video of SOMEONE COMMITTING ESPIONAGE TO MY PHONE...
-    ...was recorded BEFORE I LEFT MY HOUSE, the day that I spoke with [Eric Catricala]...
-    ...on my 35th birthday, [05/24/20].
+Yeah, so, that video of SOMEONE COMMITTING ESPIONAGE TO MY PHONE...
+...was recorded BEFORE I LEFT MY HOUSE, the day that I spoke with [Eric Catricala]...
+...on my 35th birthday, [05/24/20].
 
-    Guess what 'they' were doing...?
+Guess what 'they' were doing...?
 
-    [Preventing me from being able to transfer files off of my device.]
-    [These are things that a COMPETENT INVESTIGATOR would've collected already.]
-    But, apparently I need to get my fuckin' mental health in order.
-    Ok. 
+[Preventing me from being able to transfer files off of my device].
+[These are things that a COMPETENT INVESTIGATOR would've collected already].
 
-    MAYBE my [mental health] is [just fine], and I'm [highly skilled] at [knowing what the hell I'm talking about].
-    Versus a really long list of people who have ALL been rather [careless], [obtuse], and [mistake prone].
-#>
+But, apparently I need to get my fuckin' mental health in order.
+Ok. 
+
+MAYBE my [mental health] is [just fine], and I'm [highly skilled] at [knowing what the hell I'm talking about].
+Versus a really long list of people who have ALL been rather [careless], [obtuse], and [mistake prone].
+'@)
+###
 
 $Ctrl.X(0,"14:59","15:08",@'
 :And because, that's what I'm saying, is that at [Center for Security], there should've
@@ -2176,15 +2520,17 @@ $Ctrl.X(1,"15:08","15:10",@'
 :No crime was committed then~!
 '@)
 
-<#
-    Yeah there was. 
+##########
+$Ctrl.C(@'
+#Yeah there was. 
 
-    Check out the audio recording, I state "SOMEONE IS TRYING TO HIT ME WITH THEIR CAR~!"
+Check out the audio recording, I state "SOMEONE IS TRYING TO HIT ME WITH THEIR CAR~!"
 
-    As far as I know, [attempting to run someone over with their fucking vehicle] is a crime.
+As far as I know, [attempting to run someone over with their fucking vehicle] is a "crime".
 
-    It's called [ATTEMPTED (VEHICULAR MANSLAUGHTER/MURDER)].
-#>
+It's called [ATTEMPTED (VEHICULAR MANSLAUGHTER/MURDER)].
+'@)
+###
 
 $Ctrl.X(1,"15:10","15:14",@'
 :You tried to call 911, and you couldn't~!
@@ -2198,7 +2544,6 @@ $Ctrl.X(1,"15:15","15:27",@'
 :You understand why I'm frustrated, having the same conversation over and over, and
 just running in circles. You tried to call 911 but the call didn't go through, what
 the hell would you like me to do about that?
-
 '@)
 
 $Ctrl.X(1,"15:27","15:38",@'
@@ -2216,63 +2561,65 @@ $Ctrl.X(1,"15:39","15:43",@'
 I am out of patience.
 '@)
 
-<#
-    ================
-    | Troublemaker |
-    ================
+##########
+$Ctrl.C(@'
+#================
+| Troublemaker |
+================
 
-    (1) arrest out of (10) incidents...? Hm. [Most of which you've been arrested for...]
-    Someone is [bad at math]...
+(1) arrest out of (10) incidents...? Hm. [Most of which you've been arrested for...]
+Someone is [bad at math]...
 
-    Here's how this dude's logic sounds.
+Here's how this dude's logic sounds.
 
-    =======================================================================================================
-    | [Date]   | [If I...]                                              | [Then they will] | [Because of] |
-    |----------|--------------------------------------------------------|------------------|--------------|
-    | 05/19/20 | am being stalked by a guy in a blue truck              | not arrest me    | luckiness    |
-    | 05/19/20 | ^assault my stepfather for laughing about that         | not arrest me    | luckiness    |
-    | 05/19/20 | see that blue truck stalking Agresta on Sitterly       | not arrest me    | luckiness    |
-    | 05/21/20 | record a strange sounding bird on my phone             | not arrest me    | luckiness    |
-    | 05/21/20 | record dude walking down 146 and strange bird again    | not arrest me    | luckiness    |
-    | 05/22/20 | walk to Stratton Air National Guard                    | not arrest me    | luckiness    |
-    | 05/23/20 | record strange sounding bird AGAIN (twice)             | not arrest me    | luckiness    |
-    | 05/23/20 | record video (1) of NYSP cruisers running idle         | not arrest me    | luckiness    |
-    | 05/23/20 | record serial killer on Orenda Exercise Trail          | not arrest me    | luckiness    |
-    | 05/23/20 | take multiple pictures of Verizon infractions          | not arrest me    | luckiness    |
-    | 05/24/20 | record video of party preventing evidence exfiltration | not arrest me    | luckiness    |
-    | 05/24/20 | talk to Catricala about Coonradt/Tanski/Amato/Wormuth  | not arrest me    | luckiness    |
-    | 05/24/20 | record video of Nyseg giving ATT cell tower free power | not arrest me    | luckiness    |
-    | 05/25/20 | record myself walking to aunt Terri's house (PRISM)    | not arrest me    | luckiness    |
-    | 05/25/20 | record video (2) of NYSP cruisers running idle         | not arrest me    | luckiness    |
-    | 05/25/20 | make add'l recordings of device interference           | not arrest me    | luckiness    |
-    | 05/25/20 | record (2) queers attempting to murder me              | not arrest me    | luckiness    |
-    | 05/26/20 | call 911 twice while being hunted                      | not arrest me    | luckiness    |
-    | 05/26/20 | avoid being run over by their car multiple times       | not arrest me    | luckiness    |
-    | 05/26/20 | cut phone line at Zackary Karels residence             | not arrest me    | luckiness    |
-    | 05/26/20 | cut kayak strap immediately after the phone line       | arrest me        | stupidity    |
-    | 05/26/20 | flag vehicles down for help since 911 wasn't working   | almost arrest me | luckiness    |
-    | 06/13/20 | call 911 on my neighbor for attempting to assault me   | not arrest me    | luckiness    |
-    =======================================================================================================
+=======================================================================================================
+| [Date]   | [If I...]                                              | [Then they will] | [Because of] |
+|----------|--------------------------------------------------------|------------------|--------------|
+| 05/19/20 | am being stalked by a guy in a blue truck              | not arrest me    | luckiness    |
+| 05/19/20 | ^assault my stepfather for laughing about that         | not arrest me    | luckiness    |
+| 05/19/20 | see that blue truck stalking Agresta on Sitterly       | not arrest me    | luckiness    |
+| 05/21/20 | record a strange sounding bird on my phone             | not arrest me    | luckiness    |
+| 05/21/20 | record dude walking down 146 and strange bird again    | not arrest me    | luckiness    |
+| 05/22/20 | walk to Stratton Air National Guard                    | not arrest me    | luckiness    |
+| 05/23/20 | record strange sounding bird AGAIN (twice)             | not arrest me    | luckiness    |
+| 05/23/20 | record video (1) of NYSP cruisers running idle         | not arrest me    | luckiness    |
+| 05/23/20 | record serial killer on Orenda Exercise Trail          | not arrest me    | luckiness    |
+| 05/23/20 | take multiple pictures of Verizon infractions          | not arrest me    | luckiness    |
+| 05/24/20 | record video of party preventing evidence exfiltration | not arrest me    | luckiness    |
+| 05/24/20 | talk to Catricala about Coonradt/Tanski/Amato/Wormuth  | not arrest me    | luckiness    |
+| 05/24/20 | record video of Nyseg giving ATT cell tower free power | not arrest me    | luckiness    |
+| 05/25/20 | record myself walking to aunt Terri's house (PRISM)    | not arrest me    | luckiness    |
+| 05/25/20 | record video (2) of NYSP cruisers running idle         | not arrest me    | luckiness    |
+| 05/25/20 | make add'l recordings of device interference           | not arrest me    | luckiness    |
+| 05/25/20 | record (2) queers attempting to murder me              | not arrest me    | luckiness    |
+| 05/26/20 | call 911 twice while being hunted                      | not arrest me    | luckiness    |
+| 05/26/20 | avoid being run over by their car multiple times       | not arrest me    | luckiness    |
+| 05/26/20 | cut phone line at Zackary Karels residence             | not arrest me    | luckiness    |
+| 05/26/20 | cut kayak strap immediately after the phone line       | arrest me        | stupidity    |
+| 05/26/20 | flag vehicles down for help since 911 wasn't working   | almost arrest me | luckiness    |
+| 06/13/20 | call 911 on my neighbor for attempting to assault me   | not arrest me    | luckiness    |
+=======================================================================================================
 
-    [I must be the luckiest son of a bitch on the fuckin' planet] to [avoid] being [arrested that many times].
-    [Look at my track record].
-    Damn.
-    [I'm a fucking troublemaker], aren't I...?
+[I must be the luckiest son of a bitch on the fuckin' planet] to [avoid] being [arrested that many times].
+[Look at my track record].
+Damn.
+[I'm a fucking troublemaker], aren't I...?
 
-    This is all a [DISTRACTION technique]. This is [PSYCHOLOGICAL MANIPULATION], because I'm [illuminating] a 
-    [really huge GAP] in the way the [Saratoga County Sheriffs Office] handled the [chain of incidents] where
-    mysteriously I have a [device] where [I can't call 911], but- oh my god. 
+This is all a [DISTRACTION technique]. This is [PSYCHOLOGICAL MANIPULATION], because I'm [illuminating] a 
+[really huge GAP] in the way the [Saratoga County Sheriffs Office] handled the [chain of incidents] where
+mysteriously I have a [device] where [I can't call 911], but- oh my god. 
     
-    [Zachary Karel] had his [kayak strap] AND his [phone line] cut at the [same exact time], and [pressed charges]
-    over the [$5.00 strap], not the [phone line].
+[Zachary Karel] had his [kayak strap] AND his [phone line] cut at the [same exact time], and [pressed charges]
+over the [$5.00 strap], not the [phone line].
     
-    And, [Eric Catricala] can [swap in surveillance footage down the road], which [probably had footage] of the
-    [(2) guys who started chasing me, trying to kill me].
+And, [Eric Catricala] can [swap in surveillance footage down the road], which [probably had footage] of the
+[(2) guys who started chasing me, trying to kill me].
     
-    Both of these guys can have [post-dated tickets] handled.
-    That's fuckin' weird...
-    It's as if there's a [cocksucker] or [multiple cocksuckers] over at SCSO.
-#>
+Both of these guys can have [post-dated tickets] handled.
+That's fuckin' weird...
+It's as if there's a [cocksucker] or [multiple cocksuckers] over at SCSO.
+'@)
+###
 
 $Ctrl.X(0,"15:43","15:46",@'
 :Ok, look man.
@@ -2310,13 +2657,15 @@ $Ctrl.X(0,"16:03","16:04",@'
 :No, I'm NOT having a mental health problem.
 '@)
 
-<#
-    That's just your opinion of what's going on.
+##########
+$Ctrl.C(@'
+#[That's just your opinion of what's going on].
 
-    Pretty sure that I'm having a police officer's hands going limp and ignoring the evidence I have, problem.
+Pretty sure that I'm having a police officer's hands going limp and ignoring the evidence I have, problem.
     
-    Way different.
-#>
+Way different.
+'@)
+###
 
 $Ctrl.X(1,"16:04","16:12",@'
 :We've been talking on the phone for damn near an hour, and I have other very
@@ -2324,15 +2673,17 @@ important things I have to work on, you have not described a single crime except
 those committed by yourself.
 '@)
 
-<#
-    - [attempted murder]
-    - [attempted vehicular manslaughter]
-    - [obstruction of justice]
-    - [destruction of evidence]
-    - [telephony DDOS]
+##########
+$Ctrl.C(@'
+#- [attempted murder]
+- [attempted vehicular manslaughter]
+- [obstruction of justice]
+- [destruction of evidence]
+- [telephony DDOS]
 
-    None of those are crimes, apparently.
-#>
+None of those are crimes, apparently.
+'@)
+###
 
 $Ctrl.X(0,"16:12","16:21",@'
 :No, I DID describe a crime, of these kids, attempting to hit me with a car.
@@ -2368,8 +2719,8 @@ You HAVE been helpful, [you gave me an interaction number that I didn't have BEF
 '@)
 
 $Ctrl.X(1,"16:49","16:56",@'
-:The [CIA], the [FBI], and the [NSA].
-(2) of those agencies aren't even allowed to operate domestically.
+:The [CIA/Central Intelligence Agency], the [FBI/Federal Bureau of Investigation], and the 
+[NSA/National Security Agency]. (2) of those agencies aren't even allowed to operate domestically.
 '@)
 
 $Ctrl.X(0,"16:56","16:57",@'
@@ -2380,132 +2731,134 @@ $Ctrl.X(1,"16:57","17:01",@'
 :I'm sure they'll make an exception for YOU, because you're THAT important.
 '@)
 
-<#
-    ============
-    | Research |
-    ============
+##########
+$Ctrl.C(@'
+#============
+| Research |
+============
 
-    Oh weird, is that what you talked about when you had another call come in...?
+Oh weird, is that what you talked about when you had another call come in...?
 
-    [===========================================================================================================]
+[===========================================================================================================]
 
-    [Bulk Collection program similar to Thinthread/Trailblazer]
-    https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news 
-    CIA operating domestically
+[Bulk Collection program similar to Thinthread/Trailblazer]
+https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news 
+CIA operating domestically
 
-    [Vault 7, WikiLeaks]
-    https://wikileaks.org/vault7/ 
-    CIA operating domestically
+[Vault 7, WikiLeaks]
+https://wikileaks.org/vault7/ 
+CIA operating domestically
 
-    [Citizen Four, Edward Snowden]
-    https://en.wikipedia.org/wiki/Citizenfour 
-    NSA operating domestically
+[Citizen Four, Edward Snowden]
+https://en.wikipedia.org/wiki/Citizenfour 
+NSA operating domestically
 
-    [Thinthread]
-    https://www.pbs.org/newshour/tag/thinthread 
-    NSA operating domestically
+[Thinthread]
+https://www.pbs.org/newshour/tag/thinthread 
+NSA operating domestically
 
-    [OAKSTAR]
-    https://en.wikipedia.org/wiki/OAKSTAR 
-    Upstream data collection from TELECOMMUNICATIONS PROVIDERS, via fiber optics.
+[OAKSTAR]
+https://en.wikipedia.org/wiki/OAKSTAR 
+Upstream data collection from TELECOMMUNICATIONS PROVIDERS, via fiber optics.
 
-    [STORMBREW]
-    https://en.wikipedia.org/wiki/STORMBREW 
-    [Verizon/Bell Atlantic] upstream data collection, from fiber optic cables.
-    Basically a MONOPOLY with MILITARY SECRETS being able to play GOD...
+[STORMBREW]
+https://en.wikipedia.org/wiki/STORMBREW 
+[Verizon/Bell Atlantic] upstream data collection, from fiber optic cables.
+Basically a MONOPOLY with MILITARY SECRETS being able to play GOD...
 
-    [TRAILBLAZER]
-    https://en.wikipedia.org/wiki/Trailblazer_Project 
-    A really costly project that went WAY over budget and cost billions to do the same thing as [ThinThread].
+[TRAILBLAZER]
+https://en.wikipedia.org/wiki/Trailblazer_Project 
+A really costly project that went WAY over budget and cost billions to do the same thing as [ThinThread].
 
-    [TURBULANCE]
-    https://en.wikipedia.org/wiki/Turbulence_(NSA) 
-    Allows for [offensive cyberwarfare capabilities] like [injecting malware] into [remote systems].
-    
-    [GENOA II]
-    https://en.wikipedia.org/wiki/Project_Genoa_II 
-    Developed by [DARPA/Defense Advanced Research Projects Agency].
-    Part of [TOTAL INFORMATION AWARENESS], but it got scrapped, and had its various
-    components transferred to other projects, eventually became [TOPSAIL]...
+[TURBULANCE]
+https://en.wikipedia.org/wiki/Turbulence_(NSA) 
+Allows for [offensive cyberwarfare capabilities] like [injecting malware] into [remote systems].
 
-    [TOTAL INFORMATION AWARENESS]
-    https://en.wikipedia.org/wiki/Total_Information_Awareness 
-    Implemented [predictive policing], [data analytics] for proactively [detecting/preventing] terrorist attacks.
+[GENOA II]
+https://en.wikipedia.org/wiki/Project_Genoa_II 
+Developed by [DARPA/Defense Advanced Research Projects Agency].
+Part of [TOTAL INFORMATION AWARENESS], but it got scrapped, and had its various
+components transferred to other projects, eventually became [TOPSAIL]...
 
-    [PRESIDENT'S SURVEILLANCE PROGRAM]
-    https://en.wikipedia.org/wiki/President%27s_Surveillance_Program 
-    [Bushmeister 5000] established some top-secret intelligence comparments that probably continue to be used at
-    the [DEPARTMENT OF HOMELAND SECURITY], among others.
+[TOTAL INFORMATION AWARENESS]
+https://en.wikipedia.org/wiki/Total_Information_Awareness 
+Implemented [predictive policing], [data analytics] for proactively [detecting/preventing] terrorist attacks.
 
-    [TERRORIST SURVEILLANCE PROGRAM]
-    https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program 
-    Part of [Bushmeister 5000]'s plan to surveil for [potential terrorist activities] in the wake of [09/11/2001].
+[PRESIDENT'S SURVEILLANCE PROGRAM]
+https://en.wikipedia.org/wiki/President%27s_Surveillance_Program 
+[Bushmeister 5000] established some top-secret intelligence comparments that probably continue to be used at
+the [DEPARTMENT OF HOMELAND SECURITY], among others.
 
-    [PRISM]
-    https://en.wikipedia.org/wiki/PRISM_(surveillance_program) 
-    Essentially this allows technology companies to act as if they are a law mans deputy.
-    This program allows the government to basically have oversight over ALL internet communications within the 
-    domestic [United States], and to COPY/CLONE all of it as they   please. 
+[TERRORIST SURVEILLANCE PROGRAM]
+https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program 
+Part of [Bushmeister 5000]'s plan to surveil for [potential terrorist activities] in the wake of [09/11/2001].
 
-    So, if they really want to do some real evil stuff...? They can.
+[PRISM]
+https://en.wikipedia.org/wiki/PRISM_(surveillance_program) 
+Essentially this allows technology companies to act as if they are a law mans deputy.
+This program allows the government to basically have oversight over ALL internet communications within the 
+domestic [United States], and to COPY/CLONE all of it as they   please. 
 
-    I also talk about this particular program in the video I recorded earlier that day...
+So, if they really want to do some real evil stuff...? They can.
 
-    ================================================================================================
-    | 05/25/20 1028 | IMG_0625 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
-    | 05/25/20 1054 | IMG_0627 | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
-    ================================================================================================
-    
-    [XKEYSCORE]
-    https://en.wikipedia.org/wiki/XKeyscore 
-    Basically a [live redaction program], and it is [too powerful].
+I also talk about this particular program in the video I recorded earlier that day...
 
-    I talked about it in the audio recording that I uploaded on [05/19/20] leading to some dude stalking
-    me in a blue truck prior to the event [SCSO-2020-002998], as well as the second interaction with 
-    [Anthony Agresta] on [Sitterly Road] about a half hour after that event.
+================================================================================================
+| 05/25/20 1028 | IMG_0625 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
+| 05/25/20 1054 | IMG_0627 | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
+================================================================================================
 
-    =======================================================================================================
-    | 05/19/20 1400 | Live Redaction  | https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw |
-    =======================================================================================================
+[XKEYSCORE]
+https://en.wikipedia.org/wiki/XKeyscore 
+Basically a [live redaction program], and it is [too powerful].
 
-    [DROPMIRE]
-    https://en.wikipedia.org/wiki/Dropmire 
-    Used to surveil foreign embassies as far back as 2007.
+I talked about it in the audio recording that I uploaded on [05/19/20] leading to some dude stalking
+me in a blue truck prior to the event [SCSO-2020-002998], as well as the second interaction with 
+[Anthony Agresta] on [Sitterly Road] about a half hour after that event.
 
-    [STATEROOM]
-    https://en.wikipedia.org/wiki/Stateroom_(surveillance_program) 
-    Code name of a highly secretive SIGINT collection program involving the interception of INT'L RADIO, 
-    TELECOM and INTERNET traffic.
+=======================================================================================================
+| 05/19/20 1400 | Live Redaction  | https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw |
+=======================================================================================================
 
-    [BULLRUN]
-    https://en.wikipedia.org/wiki/Bullrun_(decryption_program) 
-    A clandestine, HIGHLY CLASSIFIED PROGRAM to CRACK ENCRYPTION of ONLINE COMMUNICATIONS and DATA, which 
-    is RUN by the [United States National Security Agency (NSA)]. In other words, it skull fucks people left 
-    and right, no matter who you are.
+[DROPMIRE]
+https://en.wikipedia.org/wiki/Dropmire 
+Used to surveil foreign embassies as far back as 2007.
 
-    [MYSTIC]
-    https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program) 
-    Collects (metadata/content) of phone calls from several countries.
+[STATEROOM]
+https://en.wikipedia.org/wiki/Stateroom_(surveillance_program) 
+Code name of a highly secretive SIGINT collection program involving the interception of INT'L RADIO, 
+TELECOM and INTERNET traffic.
 
-    [===========================================================================================================]
+[BULLRUN]
+https://en.wikipedia.org/wiki/Bullrun_(decryption_program) 
+A clandestine, HIGHLY CLASSIFIED PROGRAM to CRACK ENCRYPTION of ONLINE COMMUNICATIONS and DATA, which 
+is RUN by the [United States National Security Agency (NSA)]. In other words, it skull fucks people left 
+and right, no matter who you are.
 
-    Those agencies operate domestically whether they're allowed to or not, and they use a combination of these
-    tools and programs. I didn't cover Vault 7.
+[MYSTIC]
+https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program) 
+Collects (metadata/content) of phone calls from several countries.
 
-    Research is what all that shit is, right there.
-    Research is pretty cool, and that's what I do.
+[===========================================================================================================]
 
-    So -> if I do [Research] -> they may make an exception for me -> which means I AM that important...
+Those agencies operate domestically whether they're allowed to or not, and they use a combination of these
+tools and programs. I didn't cover Vault 7.
 
-    Someone made an exception for me when they used a CYBERATTACK that included a RANSOMWARE ATTACK against
-    my business network at multiple locations, for instance [1602 Route 9, Clifton Park NY 12065].
+Research is what all that shit is, right there.
+Research is pretty cool, and that's what I do.
 
-    Oh wait, that's basically where I uploaded some of the files and evidence I tried to give a copy of
-    to [Scott Schelling] in [SCSO-2020-028501]. Weird.
+So -> if I do [Research] -> they may make an exception for me -> which means I AM that important...
 
-    Wide ranging conspiracy...? 
-    Or... maybe there's a [bunch of fucking morons that keep (misjudging/mislabeling) me].
-#>
+Someone made an exception for me when they used a CYBERATTACK that included a RANSOMWARE ATTACK against
+my business network at multiple locations, for instance [1602 Route 9, Clifton Park NY 12065].
+
+Oh wait, that's basically where I uploaded some of the files and evidence I tried to give a copy of
+to [Scott Schelling] in [SCSO-2020-028501]. Weird.
+
+Wide ranging conspiracy...? 
+Or... maybe there's a [bunch of fucking morons that keep (misjudging/mislabeling) me].
+'@)
+###
 
 $Ctrl.X(0,"17:01","17:10",@'
 :Well, heh. *sigh* Everybody makes assumptions, right...?
@@ -2513,41 +2866,44 @@ Sounds like you're assuming that this is... all in my head.
 '@)
 
 $Ctrl.X(1,"17:10","17:17",@'
-:I'm not making assumptions, I'm making-
+:[I'm not making assumptions (...you sure about that?)], I'm making-
 I'm making an educated decision based on the facts as they are known.
 '@)
 
 $Ctrl.X(0,"17:17","17:32",@'
-:As they are known, yes, some of those facts being incorrect facts.
-Being known.
+:As they are known, yes, some of those facts being [incorrect facts].
+[Being known].
+
 Like, my [neighbor swinging a baseball bat at me], and [Mark Sheehan] not writing that
 in his report. I called (911) that day, on [June 12th], or [June 13th] by the way.
-
 '@)
 
 $Ctrl.X(1,"17:32","17:37",@'
 :And they had a different story than YOU, and YOU were the one...
 '@)
 
-<#
-    [It doesn't matter how anyone looks at that record.]
-    If a guy is [scared] about [me] being on [his property] and has a [baseball bat in his hand] that he grabbed out
-    of [fear], why didn't [he] or [his family] call 911 on [me]... instead of [me] being the [guy that called 911]...?
+##########
+$Ctrl.C(@'
+#[It doesn't matter how anyone looks at that record].
 
-    OOOoohHhhhHhHh... well I'll tell you.
-    
-    [It's because → there's some fuckin' morons in your agency.]
+If a guy is [scared] about [me] being on [his property] and has a [baseball bat in his hand] that he grabbed out
+of [fear], why didn't [he] or [his family] call 911 on [me]... instead of [me] being the [guy that called 911]...?
 
-    I'm not even trying to be nice here, [you have some fuckin' stupid people who work there.]
-    [So do the NYSP.]
-#>
+OOOoohHhhhHhHh... well I'll tell you.
+   
+[It's because → there's some fuckin' morons in your agency.]
+
+I'm not even trying to be nice here, [you have some fuckin' stupid people who work there.]
+[So do the NYSP.]
+'@)
+###
 
 $Ctrl.X(0,"17:37","17:55",@'
-:Yeah no, that's whats happening, is that a lot of these police officers are writing
-totally fabricated reports.
+:Yeah no, that's whats happening, is that a lot of these [police officers] are
+[writing totally fabricated reports].
 
-And that's why when I call a guy like YOU, and ask for corroboration or assistance,
-you give me a hard time, saying that I'm the troublemaker, and that I've been arrested
+And that's why when I call a guy like YOU, and ask for [corroboration] or [assistance],
+[you give me a hard time], saying that [I'm the troublemaker], and that I've been [arrested]
 for this, that, and the other thing... but you're not listening to the key critical
 thing here, where I initialized a call-
 '@)
@@ -2599,35 +2955,37 @@ Did you want the number for the [Russian consulate] in [New York]...?
 I'll gladly give it to you.
 '@)
 
-<#
-    ============
-    | Russians |
-    ============
+##########
+$Ctrl.C(@'
+#============
+| Russians |
+============
 
-    [01/31/18 | Tanski, bank fraud (works with Russian Mafia)]
-    https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php 
+[01/31/18 | Tanski, bank fraud (works with Russian Mafia)]
+https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php 
 
-    [01/30/20 | Tanski, Amato]
-    https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php 
+[01/30/20 | Tanski, Amato]
+https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php 
 
-    [01/23/23 | Former FBI agent charged with aiding Russian oligarch]
-    https://www.pbs.org/newshour/politics/former-fbi-agent-charged-with-aiding-russian-oligarch 
+[01/23/23 | Former FBI agent charged with aiding Russian oligarch]
+https://www.pbs.org/newshour/politics/former-fbi-agent-charged-with-aiding-russian-oligarch 
 
-    [Charles McGonigal], the special agent in charge of the [FBI’s counterintelligence division] in [New York] from 
-    (2016-2018), is [accused] in an [indictment], unsealed Monday of working with a former Soviet diplomat turned
-    Russian interpreter on behalf of [Oleg Deripaska], a [Russian billionaire] they purportedly referred to in code 
-    as [the big guy] and [the client].
+[Charles McGonigal], the special agent in charge of the [FBI’s counterintelligence division] in [New York] from 
+(2016-2018), is [accused] in an [indictment], unsealed Monday of working with a former Soviet diplomat turned
+Russian interpreter on behalf of [Oleg Deripaska], a [Russian billionaire] they purportedly referred to in code 
+as [the big guy] and [the client].
 
-    [McGonigal], who had [supervised/participated] in [investigations] of [Russian oligarchs], including [Deripaska],
-    worked to have [Deripaska]’s sanctions lifted in (2019) and took money from him in (2021) to investigate a rival
-    oligarch, the [Justice Department] said.
+[McGonigal], who had [supervised/participated] in [investigations] of [Russian oligarchs], including [Deripaska],
+worked to have [Deripaska]’s sanctions lifted in (2019) and took money from him in (2021) to investigate a rival
+oligarch, the [Justice Department] said.
 
-    The [indictment] is a [black eye] to the [FBI] at a time when the [bureau] has become [entangled] in [separate
-    politically charged investigations] involving the [handling of classified documents] by both [President Joe Biden]
-    and [former President Donald Trump], (and former senator/first lady/secretary of state [Hillary Rodham Clinton])
-    and as newly ascendant Republicans in Congress have pledged to investigate high-profile decisions by the bureau
-    and [Justice Department].
-#>
+The [indictment] is a [black eye] to the [FBI] at a time when the [bureau] has become [entangled] in [separate
+politically charged investigations] involving the [handling of classified documents] by both [President Joe Biden]
+and [former President Donald Trump], (and former senator/first lady/secretary of state [Hillary Rodham Clinton])
+and as newly ascendant Republicans in Congress have pledged to investigate high-profile decisions by the bureau
+and [Justice Department].
+'@)
+###
 
 $Ctrl.X(0,"18:46","19:00",@'
 :Look man, I'm not trying to give you a hard time, but you're not even looking at any
@@ -2657,13 +3015,15 @@ $Ctrl.X(1,"19:13","19:15",@'
 :A mockingbird.
 '@)
 
-<#
-    Oh so he has heard and seen it.
+##########
+$Ctrl.C(@'
+#[Oh, so he has heard and seen it].
 
-    It's not a mockingbird, because I've heard plenty of fucking mockingbirds my entire life.
+It's not a mockingbird, because [I've heard plenty of fucking mockingbirds] in my lifetime...
 
-    This is something else.
-#>
+This is something else.
+'@)
+###
 
 $Ctrl.X(0,"19:15","19:20",@'
 :You should wanna check that out, right...?
@@ -2689,9 +3049,11 @@ But, I've been AS FRUSTRATED, as you are, right now...?
 For the last several months.
 '@)
 
-<#
-    [Expand that out till now.]
-#>
+##########
+$Ctrl.C(@'
+#[Expand that out till now].
+'@)
+###
 
 $Ctrl.X(1,"19:40","19:43",@'
 :You think I'm frustrated...? *chuckles*
@@ -2716,59 +3078,6 @@ $Ctrl.X(1,"19:55","20:01",@'
 :Goodbye.
 '@)
 
-<#
-    ==============
-    | Conclusion |
-    ==============
-
-    Look, in the end, who really knows what...? Ya know...?
-
-    The way I see it, is that if you are like [most people], you'll ALWAYS have the mentality of someone that is a
-    [part of a group of people], NOT an [individual who thinks for themselves].
-
-    [=================================================================================================]
-    | [When people trust...] | [Then what happens is...] | [And the result is...]                     |
-    |========================|===========================|============================================|
-    | the news               | climate change            | Before the Flood (2016)                    |
-    | America's Got Talent   | bad musicians are heard   | bad music spams the radio all the time     |
-    | the police             | most crimes are ignored   | innocent people get in trouble             |
-    | the government         | NIST 9/11 report written  | US invades middle east for oil and poppies |
-    | bright individuals     | things make sense         | people become a lot more intelligent       |
-    [========================|===========================|============================================]
-
-    You see what I'm getting at here...?
-    It probably [looks like] I'm [insulting everybody and everyone]... but that is not the case.
-    It probably even looks like I'm insulting all of those things in the box up above... but I'm not.
-
-    I'm just very impressed with how far certain people will go, to perpetuate stupid bullshit that makes no sense.
-    Whether it's a snippy investigator at SCSO that isn't collecting any evidence that I put into this document...?
-    Or, the guy who runs the [Saratoga County Sheriffs Office], or the [New York State Police]...?
-
-    I think it is safe to say that [stupid people exist in a lot of places], and [I constantly run into them].
-    They constantly fail to prove that they're smarter than I am, on a rather consistent basis.
-
-    Allow me to whip out an analogy...
-
-    When I was in [9th/10th] grade, I saw this girl at [Shenendehowa High School West (formerly Koda)], and 
-    she had a stain on the rear of her skirt. I'm not sure if it was a [poop stain], or a [period blood] stain...
-    ...but [I remember seeing a bunch of people pointing and snickering at it] when they saw it. 
-
-    And yet, nobody told this girl “Hey, you've got a stain where your butt is, on your skirt.”
-    I didn't tell the girl, but I was also much younger and wasn't sure if I should tell her or not.
-
-    Society perpetuates this idea of [teaching people to keep to themselves], because you'd be an [asshole] 
-    to [tell the girl] that she's got a [poop/period blood] stain on some girls skirt.
-    That's fuckin' stupid, and that's why I constantly say that [people are fuckin' stupid].
-
-    The same exact concept applies to this guy named [Captain Jeffrey Brown].
-    I'm attempting to tell the [Saratoga County Sheriffs Office] that they have the equivalent of a stain where 
-    their asshole is, on the skirt they're wearing. Rather than to admit it and say:
-
-    “Ok, thanks for letting me know, I appreciate it...”
-    ...what they're doing is fumbling a football about a dozen times and then avoiding coming to terms with the
-    cold, hard reality.
-#>
-
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
 #   \\__//¯¯¯ Transcription [~] Impressions (02/18/23) [Part 2]                                              ___//¯¯\\   
@@ -2781,18 +3090,18 @@ $Ctrl.X(0,"10:01","10:18",@'
 :...they sent out a couple of dudes, the- I don't know what the OTHER dude's name was,
 but the dude that came out and talked with me...? 
 
-He seemed to be a rather professional sounding dude...? 
-And, uh- ya know, he seemed to be impressed with my ability to orate...?
+He seemed to be a rather [professional sounding dude]...? 
+And, uh- ya know, he seemed to be [impressed] with my ability to [orate]...?
 '@)
 
 $Ctrl.X(0,"10:18","10:38",@'
 :He didn't know what the- the term was...?
 
-But then like, uhm... at some point AFTER I had this conversation with him...
-I started to reflect on the conversation that I had with him...
+But then like, uhm... at some point [AFTER] I had this [conversation] with him...
+I started to [reflect] on the [conversation] that I had with him...
 
-...and I had varying degrees of perceptions, regarding the interview that I had with 
-this guy, and I recorded it on an audio recording...
+...and I had [varying degrees of perceptions], regarding the [interview] that I had with 
+this guy, and [I recorded it on an audio recording]...
 '@)
 
 $Ctrl.X(0,"10:38","10:55",@'
@@ -2821,9 +3130,11 @@ because, uh- the [voicemail prompt].
 The [voicemail prompt], the [name], and the [voice], sounded TOTALLY different, and...?
 '@)
 
-<#
-     It was the [same guy], he just [sounded different in person].
-#>
+##########
+$Ctrl.C(@'
+#It was the [same guy], he just [sounded different in person].
+'@)
+###
 
 $Ctrl.X(0,"11:43","12:08",@'
 :Ya know, the guy that I spoke to...? 
@@ -2903,8 +3214,6 @@ $Ctrl.X(0,"14:00","14:43",@'
 they- they uh-
 '@)
 
-# 32
-
 $Ctrl.X(0,"14:13","14:21",@'
 :If the people that work there, [think that I'm an intelligent dude], they'll have a 
 [conversation with me like they did yesterday], and they'll ask me a [single question], 
@@ -2916,7 +3225,8 @@ $Ctrl.X(0,"14:21","14:33",@'
 
 Or uh- 
 
-[Brown] : What high school did you go to, Shen...?
+[Brown] : What high school did you go to, [Shen]...?
+
 I'll be like:
 [Me]    : Yup.
 [Brown] : Alright, what year did you graduate from high school...?
@@ -2927,7 +3237,7 @@ $Ctrl.X(0,"14:33","14:46",@'
 :So, [what these questions are doing] is [establishing a baseline], for 
 [whether the investigator] can [trust the information that they're hearing] from me.
 
-Because they have to be able to [screen] whether [someone's bullshitting] them or not.
+Because they have to be able to [screen] whether [someone's bullshitting] them, or not.
 '@)
 
 $Ctrl.X(0,"14:46","15:03",@'
@@ -2938,9 +3248,11 @@ What I have uh- surmized is that...
 ...he's not the same person I spoke to on February 2nd, 2021...
 '@)
 
-<#
-    He was, actually.
-#>
+##########
+$Ctrl.C(@'
+#[He was, actually].
+'@)
+###
 
 $Ctrl.X(0,"15:03","15:26",@'
 :And uh- like, the [conversation that I recorded], and like, [I attempted to follow up]
@@ -2959,9 +3271,11 @@ recorded of me speaking with him, uh-
 I thought about that conversation, like, ever since I left.
 '@)
 
-<#
-    Obviously I have since I originally recorded this, and made a transcription.
-#>
+##########
+$Ctrl.C(@'
+#[Obviously I have since I originally recorded this, and made a transcription].
+'@)
+###
 
 $Ctrl.X(0,"15:46","16:08",@'
 :Because, one of his responses uh- indicated to me... that [the dude knew who I was],
@@ -3172,11 +3486,11 @@ So...
 '@)
 
 $Ctrl.X(0,"23:21","23:43",@'
-:When I come along, and I [capitalize] on [my sense of humor], it causes [other people] to be, uh-
-like, [repulsed] to some extent in [some circumstances].
+:When I come along, and I [capitalize] on [my sense of humor], it causes [other people] to be,
+uh- like, [repulsed] to some extent in [some circumstances].
 
-Or like, they'll be [offended] by the [language] that I use, rather than like, the fuckin' [principle]
-of the things that I'm [attempting] to [explain to people].
+Or like, they'll be [offended] by the [language] that I use, rather than like, the fuckin' 
+[principle] of the things that I'm [attempting] to [explain to people].
 '@)
 
 $Ctrl.X(0,"23:43","24:05",@'
@@ -3198,7 +3512,7 @@ $Ctrl.X(0,"24:05","24:24",@'
 I think, that if ANYTHING...?
 If he is like, uh, like a [police officer] and he DOESN'T do that...? 
 
-[He's probably gonna get a chuckle out of it.]
+[He's probably gonna get a chuckle out of it].
 
 Wanna know [WHY] he'll get a [chuckle] out of it...?
 
@@ -3220,9 +3534,15 @@ video multiple times, and he's like:
         how does he even talk like that...?
 '@)
 
-<#
-    02/12/23 | NYSP Mafiosos | https://youtu.be/ENpIkuIbqZU
-#>
+##########
+$Ctrl.C(@'
+#=================
+| NYSP Mafiosos |
+=================
+
+02/12/23 | NYSP Mafiosos | https://youtu.be/ENpIkuIbqZU
+'@)
+###
 
 $Ctrl.X(0,"24:58","25:20",@'
 :And then, before you know it...? 
@@ -3232,7 +3552,8 @@ Like:
 
 [Rufa]: Wow, this fuckin' dude took like (38) minutes out of his day to fuckin' talk shit
         about me, that's fu- like, that's fuckin' [impressive] right there, dude...
-        Ya know...? 
+        Ya know...?
+
         Holy fuck.
 '@)
 
@@ -3258,25 +3579,26 @@ $Ctrl.X(0,"25:51","26:21",@'
 However, uh- the JOB that they do...?
 
 It sometime- uh, [sometimes it is substandard], and [not satisfactory], and they have been 
-SO [desensitized] that- you really have to use [every bit of evidence that you can] against them, 
-and that like if you notice that after having a conversation with an investigator like [Jeff Brown],
-like I did yesterday...?
+SO [desensitized] that- you really have to use [every bit of evidence that you can] against
+them, and that like if you notice that after having a conversation with an investigator like
+[Jeff Brown], like I did yesterday...?
 '@)
 
 $Ctrl.X(0,"26:21","26:51",@'
 :I went all the way to- I went to, a bunch of places last night, or the other night, not last night.
-I went to the [Clifton Park-Half-], uh, the [Clifton Park Pubic Safety Building], left a notice there...
+I went to the [Clifton Park-Half-], uh, the [C. P. Pubic Safety Building], left a notice there...
 I went to the [Clifton Park-Halfmoon Public Library], left a notice there...
 I went to [Carol Yates'] house, I left a notice there...
 I went to [Sysco], on [One Liebach Lane], left a notice there...
 '@)
 
 $Ctrl.X(0,"26:51","27:31",@'
-:[Sysco] is a place that I used to work about (20) years ago, in uh- 2000... 4, I believe... 2003 or
-2004, I'm not sure uh... 
+:[Sysco] is a place that I used to work about (20) years ago, in uh- 2000... 4, I believe... 
+2003 or 2004, I'm not sure uh... 
 
-I spoke about that in a audio log somewhat recently (02/02/23) when uh, the weather here was like 
-(-15) degrees, and like, I could remember working in, at the [Sysco] warehouse in the fuckin' freezer. 
+I spoke about that in a audio log somewhat recently (02/02/23) when uh, the weather here was
+like (-15) degrees, and like, I could remember working in, at the [Sysco] warehouse in the
+fuckin' freezer. 
 
 And it was so fuckin' cold in that fuckin' freezer, that like, you could not have ANY exposed skin 
 whatsoever unless, ya know, you wanted to have frost bite. And that's how bad it was that night.
@@ -3286,11 +3608,14 @@ And like, ya know, I worked really hard, and I fuckin', like...
 '@)
 
 $Ctrl.X(0,"27:31","28:09",@'
-:I got caught- I got caught in a situation, where like, the people that worked there a lot longer than me...?
+:I got caught- I got caught in a situation, where like...
+...the people that worked there a lot longer than me...?
+
 They like- tricked me. And they started puttin' fuckin' shit in the wrong fuckin' places.
 
-And, ya know, this is how like soc- people in society do the same fuckin' shit, where they try to trick people
-that are like gung-ho, and look like uh- they're gonna fuckin' make it mad far, right...?
+And, ya know, this is how like soc- people in society do the same fuckin' shit, 
+where they try to trick people that are like gung-ho, and look like uh- they're gonna fuckin'
+make it mad far, right...?
 
 And so, society is littered with all of these uh- tricks, and traps, and booby traps, and uh-
 the investigators, the police, and all of them...? They fuckin' use all of these tricks...?
@@ -3303,23 +3628,24 @@ $Ctrl.X(0,"28:09","28:32",@'
 
 And really, like in ALL of these uh, components in society that I'm talking about...?
 
-They really DO run on the notion that there's NO WAY that someone like [Michael Cook] could be 
-[SMART ENOUGH] to EXPLAIN the STUPIDITY of people that are like, [highly respected] and have a lot of
-[money], or uh- [reputation] or [trust], from uh- [people all around society]...
+They really DO run on the notion that there's NO WAY that someone like [Michael Cook] could
+be [SMART ENOUGH] to EXPLAIN the STUPIDITY of people that are like, [highly respected] and
+have a lot of [money], or uh- [reputation] or [trust], from uh- [people all around society]...
 '@)
 
 $Ctrl.X(0,"28:32","29:15",@'
 :And, its- the reason why like, [humans are fuckin' stupid].
 
-Right...? Hu- human ha- [humans have a serious problem]. [They're fuckin' stupid], and they will use
-[every], like uh- their [credibility] or [reputation] to fuckin' [slander other people]. 
+Right...? Hu- human ha- [humans have a serious problem]. 
+[They're fuckin' stupid], and they will use [every], like uh- their [credibility] or
+[reputation] to fuckin' [slander other people]. 
 
-And, they'll use [every trick at their fuckin' disposal] to [prevent somebody like ME], from like, makin'
-em look stupid~! [They will].
+And, they'll use [every trick at their fuckin' disposal] to [prevent somebody like ME],
+from like, makin' em look stupid~! [They will].
 
-And then even AFTER I've [exposed] how fuckin' stupid they'll look, they'll look- they'll, they'll like
-try to use [ANY fuckin' excuse they can think of], because- they know that [as long as people believe 
-whatever the fuck they say]...?
+And then even AFTER I've [exposed] how fuckin' stupid they'll look, they'll look- they'll,
+they'll like try to use [ANY fuckin' excuse they can think of], because- they know that
+[as long as people believe whatever the fuck they say]...?
 
 Then [it doesn't matter if I make them look stupid].
 But- [to what extent]...?
@@ -3337,20 +3663,26 @@ And then I recorded a video...? I didn't leave a notice there, but I recorded
 the video.
 '@)
 
-<#
-    02/17/23 | GlobalFoundries | https://youtu.be/1s-qefkOjXQ
-#>
+##########
+$Ctrl.C(@'
+#===================
+| GlobalFoundries |
+===================
+
+02/17/23 | GlobalFoundries | https://youtu.be/1s-qefkOjXQ
+'@)
+###
 
 $Ctrl.X(0,"29:29","30:59",@'
-:And then I went to [TEC-SMART], and then I left a notice there, uh- on both sides of the building,
-and then uh- recorded an audio recording, right...?
+:And then I went to [TEC-SMART], and then I left a notice there, uh- on both sides of the
+building, and then uh- recorded an audio recording, right...?
 
-And then uh- I... went back to [Route 9], and went to the [Malta Town Hall], left a notice there...
-Right...?
+And then uh- I... went back to [Route 9], and went to the [Malta Town Hall],
+left a notice there... Right...?
 
 And then I went to the [Stewarts Corporation] and left a notice there, and then I went to the...
-the uh- [135 Broadway], the uh [Saratoga County Mental Health] building, the back door, left a notice 
-there...?
+the uh- [135 Broadway], the uh [Saratoga County Mental Health] building, the back door, left a
+notice there...?
 
 And then I went to... the [Saratoga Springs Public Library] and left a notice there...?
 Uh- where'd I go after that...?
@@ -3359,15 +3691,17 @@ Oh yeh, I went to the [Saratoga City Hall], left a notice there, right...?
 And then I went to the [Salvation Army], left a notice there...
 And then I went to the [Saratoga Hospital], the [Mental Health Unit]...
 
-And I was ATTEMPTING to leave a notice on the door there, when [Eric] came out, the [social worker].
+And I was ATTEMPTING to leave a notice on the door there, when [Eric] came out,
+the [social worker].
 
 And then he and I spoke for a few minutes...?
-And I [detected] like some of his fuckin' [responses] were pretty [nonchalant], and uh- ya know, I
-realize that having a conversation with somebody like THAT, is a fuckin' [waste of my time]...?
+And I [detected] like some of his fuckin' [responses] were pretty [nonchalant],
+and uh- ya know, I realize that having a conversation with somebody like THAT,
+is a fuckin' [waste of my time]...?
 
 And so, like uh- I kept it as fuckin' [limited as possible], because like, ya know...?
-Fuckin' I could [detect], like, that [the dude didn't really give a shit about what I was saying].
-Right...?
+Fuckin' I could [detect], like, that [the dude didn't really give a shit about what 
+I was saying]. Right...?
 '@)
 
 $Ctrl.X(0,"30:59","31:31",@'
@@ -3379,19 +3713,27 @@ $Ctrl.X(0,"30:59","31:31",@'
 [Eric] : Oh yeh, cool, fuckin, oh you recorded an audio recording of (3) 
          [Saratoga County Sheriffs], like, being a bunch of fuckin' faggots, back on uh- 
          [March 1st, 2022]...?
-         And like, uh- you say you got like, uh- the ability to [file a fuckin' lawsuit] against 
-         the hospital AND [Saratoga County Sheriffs]...? 
+         And like, uh- you say you got like, uh- the ability to [file a fuckin' lawsuit]
+         against the hospital AND [Saratoga County Sheriffs]...? 
          You know...? 
          Holy shit, dude~!
 
-And like, he seemed so fuckin' [calm] and [level-headed] about that, that like, ya know, after I left...?
-[I started recording an audio recording of me, like, basically making fun of him.]
+And like, he seemed so fuckin' [calm] and [level-headed] about that, that like, 
+ya know, after I left...? [I started recording an audio recording of me, like,
+basically making fun of him.]
 '@)
 
-<#
-    03/01/22 | Pecor, Nelson, Margan (morons) | https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL
-    02/17/23 | Mocking Saratoga Hospital MHU  | https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL
-#>
+##########
+$Ctrl.C(@'
+#====================
+| Lawsuit Material |
+====================
+_____________________________________________________________________________________________________________
+03/01/22 | Pecor, Nelson, Margan (morons) | https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL
+02/17/23 | Mocking Saratoga Hospital MHU  | https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+###
 
 $Ctrl.X(0,"31:31","32:08",@'
 :You know why...? 
@@ -3412,12 +3754,19 @@ uhm, having like no views on it, no likes, and like sort of like extrapolating f
 other day or whatever...?
 '@)
 
-<#
-    02/20/23 | Time Travel (Facebook altering my account data) | https://youtu.be/xCo8Wu_0Lb4
-#>
+##########
+$Ctrl.C(@'
+#============================
+| Time Travel Reference #1 |
+============================
+
+02/20/23 | Time Travel (Facebook altering my account data) | https://youtu.be/xCo8Wu_0Lb4
+'@)
+###
 
 $Ctrl.X(0,"32:08","32:17",@'
-:Did I say something [offensive], and like uh- [piss off somebody] that's been [liking my content]...?
+:Did I say something [offensive], and like uh- [piss off somebody] that's been 
+[liking my content]...?
 
 Well, theres- there's a [possibility of that], right...?
 But- the [OTHER possibility], is this...
@@ -3446,12 +3795,14 @@ They'll be able to say:
         And he was like, on a fuckin' [mission] that day...
 '@)
 
-<#
-    [Stewarts] on [Northline Road] is my old [Q107 Times Union] stop.
-    Used to have to go to [Cumberland Farms] in Milton after that.
-    Then, another [Stewarts]. Then, [Hannaford].
-    Then... another [Stewarts] in [West Milton].
-#>
+##########
+$Ctrl.C(@'
+#[Stewarts] on [Northline Road] is my old [Q107 Times Union] stop.
+Used to have to go to [Cumberland Farms] in Milton after that.
+Then, another [Stewarts]. Then, [Hannaford].
+Then... another [Stewarts] in [West Milton].
+'@)
+###
 
 $Ctrl.X(0,"32:58","33:44",@'
 :And so, like... I continued all the way through [Ballston Spa], until I got to where the 
@@ -3473,8 +3824,9 @@ I just continued on to where- toward the uh- the [Saratoga County Sheriffs Offic
 '@)
 
 $Ctrl.X(0,"33:44","34:04",@'
-:And, on my way there, I saw a couple- a few vehicles that were being driven by the- the Sheriffs
-that work at the fuckin' building. And I could tell that they WERE the [Sheriffs] because, like- 
+:And, on my way there, I saw a couple- a few vehicles that were being driven by the- the
+Sheriffs that work at the fuckin' building. And I could tell that they WERE the [Sheriffs]
+because, like- 
 
 I dunno, the way that they drive their vehicles sometimes, like an aura of like:
 
@@ -3483,15 +3835,16 @@ I dunno, the way that they drive their vehicles sometimes, like an aura of like:
 '@)
 
 $Ctrl.X(0,"34:04","34:35",@'
-:Well, uh- [sometimes you can tell when a cop is drivin' around], but like, it's sort of like the
-same idea as like, uh- [texting some girl], and [getting a baseline] of like [how they respond] to
-[text messages], and then all of a sudden, [you say something that pisses them off] and then they 
-[react totally differently], and they'll be like:
+:Well, uh- [sometimes you can tell when a cop is drivin' around], but like, it's sort of
+like the same idea as like, uh- [texting some girl], and [getting a baseline] of like
+[how they respond] to [text messages], and then all of a sudden, [you say something that
+pisses them off] and then they [react totally differently], and they'll be like:
 
 [Girl]: Well, I fuckin' had a barbeque on... [Pluto] to go to, dude. 
         You know...?
         I'm sorry, [I just got back]. 
         Uh-
+
         You said you wanted to [hang out] and [have sex], or whatever...?
         Fine, [let's do it], how about like, [next Thursday]?
 '@)
@@ -3500,45 +3853,95 @@ $Ctrl.X(0,"34:35","34:49",@'
 :It's like:
 [Me]: Well, you used to like, answer your phone within like, (10) minutes and wanna like do- 
       like, meet up within an hour, so...
-      Now...? 
+      Now...?
+
       You like, you're taking like, (10) years to get back to me, 
       and you wanna meet up in like, (30) years...? 
       Yeh, nah, something is different right now...
 '@)
 
 $Ctrl.X(0,"34:49","35:06",@'
-:And then so like, [most people in society], they're [stupid], and they [won't notice] those fuckin' 
-[subtle differences].
+:And then so like, [most people in society], they're [stupid], and they [won't notice] those
+fuckin' [subtle differences].
 
 And like, [I don't wanna say that EVERYBODY's fuckin' stupid], but like, a lot of people...? 
 They like to use this fuckin' tactic where like:
 
-[People]: Oh, [Michael Cook] thinks he's smarter than he really is, so maybe he's a fuckin' megalomaniac...
+[People]: Oh, [Michael Cook] thinks he's smarter than he really is, 
+          so maybe he's a fuckin' megalomaniac...
 '@)
 
 $Ctrl.X(0,"35:06","35:40",@'
 :No, I don't think so.
 
-I think what happens, is that [I encounter people that fuckin' underestimate me], and then they start 
-to [use these fuckin' tactics that work on everybody else], and then when I start to fuckin' talk about
-things that really matter to ME, [I will catch some resistance from people].
+I think what happens, is that [I encounter people that fuckin' underestimate me], and then
+they start to [use these fuckin' tactics that work on everybody else], and then when I start to
+fuckin' talk about things that really matter to ME, [I will catch some resistance from people].
 
 Because they'll try to say stuff like:
 
 [People]: Oh, well, you think you're more important than you really are, dude...
-          You know, there's [no way] that [Mark Zuckerberg] would [throw a stack of cash] at somebody
-          at [Google] to [minimize your fuckin' visibility]...? 
+          You know, there's [no way] that [Mark Zuckerberg] would [throw a stack of cash] at
+          somebody at [Google] to [minimize your fuckin' visibility]...? 
+          
           Your number of views...?
           Your view count...?
-          Or like, you know, [downsample the fuckin' resolution of the videos that you're uploading]...? 
+
+          Or like, you know, 
+          [downsample the fuckin' resolution of the videos that you're uploading]...? 
+          
           Uh- ya know...? 
           It's all in your fuckin head~!
 '@)
 
-<#
-    The [what I just said is NOT all in my fuckin' head] toolkit of doom:
-    02/20/23 | Time Travel | https://youtu.be/xCo8Wu_0Lb4
-#>
+##########
+$Ctrl.C(@'
+#============================
+| Time Travel Reference #2 |
+============================
+
+The [what I just said is NOT all in my fuckin' head] toolkit of doom:
+_____________________________________________________
+02/20/23 | Time Travel | https://youtu.be/xCo8Wu_0Lb4
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+If most people were to watch [this particular video], what they will [immediately] determine,
+is that it is [impossible] to comment on a post (7) years before the post even existed.
+
+That's the part that I think [a lot of morons don't understand].
+
+Post didn't exist... up until a few minutes before I recorded that video...?
+But then, somehow my account went back in time to comment on that post.
+
+Does anyone understand how fuckin' stupid that is...?
+
+It's a violation of the laws of physics to go back in time like that.
+Not to mention, it's pretty rude, because then you'd have to allow other
+people to be able to do that too.
+
+Another explanation, is that FACEBOOK HAS BEEN ALTERING PEOPLE'S DATA, 
+PARTICULARLY MINE. 
+
+Which ALSO means: 
+- limiting me
+- censoring me
+- preventing exposure
+- traffic
+- potential sources of revenue
+- profit
+- business contacts
+- et cetera
+
+What [Facebook] has been doing to me is similar to [taking a baseball bat], and 
+[breaking my legs]. Then [when I call the police], they will literally do the same
+fucking thing that they did on [June 13th, 2020], when my neighbor literally
+attempted to hit me with his baseball bat... they will say "it's ALL in your head."
+
+If it was all in my head, why did I call the police...?
+Oh. It's because [many of the police are careless morons].
+
+I'm pretty sure that anyone with eyes will be able to see that it's not all in my head.
+'@)
+###
 
 $Ctrl.X(0,"35:40","36:52",@'
 :And that IS what people fuckin attempt to like, convey to me, right...?
@@ -3553,16 +3956,19 @@ happen is that people'll be like:
           ...that would respond in like an hour, or like, ten minutes... 
           ...NOW she's taking 3 days to get back to you... 
           ...anytime that you wanna have sex with her, and you say something to her like... 
-          "hey lets fuckin' meet up." 
+          "Hey let's fuckin' meet up." 
+
           Uh~! 
           Nah, she had a [barbeque] on [Pluto] to go to, and she just got back.
           
 So like, there's NO WAY that she got the [text message] of that, she like [READ the text message],
 she was like...
 [Girl]: You know what, I'm gonna fuck this other guy...?
-        For the- and then like, you know...? 
+        For the- and then like, you know...?
+
         Fuck (5) more guys for the next (2) days, and on the third day... 
         THEN, when I have nothing else to do, I'll t-
+
         I'll text him back, and I'll come up with some stupid excuse or whatever. 
         There's no way that he'll ever know that.
 '@)
@@ -3577,20 +3983,27 @@ and texts within like (10) minutes of texting her, and like meets up within an h
 ...that SUDDENLY she's gonna take (3) days, to fuckin' get back to ya and like:
 
 [Her]: Oh well, I ALWAYS have my (2) phones on me, but for like (3) days...? 
-       I was stuck in the fuckin' wilderness, up in like uh- ya know, [Whiteface] mountain area, 
-       [Lake Placid]. 
+       I was stuck in the fuckin' wilderness, up in like uh- ya know,
+       [Whiteface] mountain area, [Lake Placid]. 
+
        Yeah, I was bein' chased by fuckin' [wolves]...?
        And uh- ya know, I- I- [lost my glass slipper]...?
        Right before the- [the clock hit midnight]...? 
-       And I fuckin'- [I dunno, dude]... 
+       And I fuckin'- [I dunno, dude]...
+
        Fuckin', I just- I didn't know WHERE the hell I was, I fuckin' like, I started rollin-
        tumblin' down a hill after the [wolves] were chasin' me]...?
+
        And once uh- ya know, I got to the bottom of the hill, I guess I got knocked out cold...
        Ya know, like uh-
+
 [Guy]: So how did you not freeze to death...?
-[Her]: Well, I didn't freeze to death because I was prepared for the elements, I wore a really nice jacket,
-       and I had like, you know, (3) layers of, you know, my- my grandmother always told me 
+[Her]: Well, I didn't freeze to death because I was prepared for the elements, 
+       I wore a really nice jacket, and I had like, you know, (3) layers of, you know, 
+       my- my grandmother always told me:
+
        'Wear (3) layers of fuckin' clothes, make sure that you don't get hypothermia~!'
+       
        You know...?
        Been livin' in fuckin' in the [Adirondacks] for like [millions of years], basically.
 
@@ -3611,21 +4024,27 @@ $Ctrl.X(0,"38:25","38:42",@'
 And then she'll be like:
 [Her]: It's just your fuckin' opinion that what I'm sayin' is fuckin' stupid, you know...?
        Fuck you.
+
        You're stupid lookin'.
        You know...?
+       
        Oh well.
        You know...?
+       
        So what...?
 '@)
 
 $Ctrl.X(0,"38:42","39:05",@'
 :[Her]: So what if I was hangin' out with, fuckin'- the wolves or, some other dude.
        *pauses*
+
        OR I MEAN, like, uh, you know, who cares if I fell down the side of a mountain or
        like I got a dick thrown in my vagina repeatedly...
        *pauses*
+
        UH- I MEAN, UH...
        Who cares if uh- like, I'm lying to you-
+       
        OR I MEAN, like, NOT lying to you, telling you- telling you how it really is, and
        telling you the truth.
 '@)
@@ -3637,8 +4056,12 @@ it doesn't matter if like, they're believed or not... Because, like...
 
 [Her]: Oh well.
        Fuckin' I fucked some other dude, and not YOU.
+
        There's no way that you'll ever know... who it was.
-       And even if you did know who it was, you'll never know where we did it...
+
+       And even if you did know who it was,
+       you'll never know where we did it...
+
        And even if you do know where we did it, you'll never be able to catch us in the act...
        And even if you DO catch us in the act, there's no way that you'll ever be able to
        stop me from being able to continue doing it, because I'll just, stare you right in 
@@ -3655,22 +4078,26 @@ I do agree with like, what [OJ Simpson FELT], when he realized that [his wife] w
 both of them.
 
 I think what he did was pro- [profusely, uh- grotesque], right...?
-And, uh- you know [there's a fine line] between like, uh- [some guy being married to some woman]
-and like [seeing his wife] like, [fucking some other dude]...? 
+
+And, uh- you know [there's a fine line] between like, uh-
+[some guy being married to some woman] and like [seeing his wife] like, 
+[fucking some other dude]...? 
+
 And like, just, ya know, [leaving the- the vicinity].
 
-Versus, like, whipping- going, [buying a gun], and like, [not saying anything], and then [boom].
-Both of em are dead. Or like stabbin' em to death, or whatever.
+Versus, like, whipping- going, [buying a gun], and like, [not saying anything], 
+and then [boom]. Both of em are dead. Or like, stabbin' em to death, or whatever.
 '@)
 
 $Ctrl.X(0,"40:33","41:27",@'
 :Right...?
 And so like, uh- now I have to [walk back all of the comments that I made so far], right...?
 
-Not walk them back specifically, to like, recant some of what I said, but because I want to shape
-it to be more comedic rather than to be like an assault on uh- like uh [law enforcement], or the 
-[justice system], or [people in general], and like have a [conclusion] where like [anybody listening]
-to this thinks that I'm just- this fuckin' [asshole that thinks that everybody is stupid]...
+Not walk them back specifically, to like, recant some of what I said, but because I want
+to shape it to be more comedic rather than to be like an assault on uh- like uh 
+[law enforcement], or the [justice system], or [people in general],
+and like have a [conclusion] where like [anybody listening] to this thinks that I'm just- 
+this fuckin' [asshole that thinks that everybody is stupid]...
 
 [I don't think that at all], I think that there's [varying degrees of stupidity], and you know, 
 when I say that [people are fuckin' stupid], typically what I mean is that people are [naive] and
@@ -3680,6 +4107,7 @@ when I say that [people are fuckin' stupid], typically what I mean is that peopl
       and they're trying to say that I'm fuckin' stupid, by sayin' that like
       there's no way that [Michael Cook], the fuckin' [scruffy lookin' nerf herder] 
       could be correct.
+
       Not at all.
 '@)
 
@@ -3712,9 +4140,17 @@ $Ctrl.X(0,"42:33","42:44",@'
 Whiteacre- uh- Michael Sharadin came out, and he was like, talkin' with em and stuff...?
 '@)
 
-<#
-    12/22/22 | Integrity | https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS
-#>
+##########
+$Ctrl.C(@'
+#=============
+| Integrity |
+=============
+
+________________________________________________________________________________________
+12/22/22 | Integrity | https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+###
 
 $Ctrl.X(0,"42:44","42:54",@'
 :I think this might actually be like, [Daniel Nelson]...
@@ -3744,13 +4180,14 @@ $Ctrl.X(0,"43:25","43:48",@'
        Fuckin', who the hell is this...?
        They just gave me their ID.
 
-The other people, they're starin' at him, or they're like, lookin' at him, and talkin' to him...?
+The other people, they're starin' at him, or they're like, lookin' at him,
+and talkin' to him...?
 
 Right...?
 Here's what I'm gonna do...
 
-I wanna get in a vantage point where like the cop like realizes that I'm like narrating anything he's
-doing...?
+I wanna get in a vantage point where like the cop like realizes that I'm like
+narrating anything he's doing...?
 '@)
 
 $Ctrl.X(0,"43:48","44:24",@'
@@ -3760,8 +4197,8 @@ Because [this is what an investigator is SUPPOSED to do], [what I'm doing right 
 If you like, SUSPECT that [some of your buddies] are [doin' something fucked up]... 
 ...[you're supposed to investigate that, not ignore it].
 
-But anyway, (3) adults, they're standin' around, and uh- there's (1) woman, (2) guys, right across
-the street from the [Dollar Tree], right...?
+But anyway, (3) adults, they're standin' around, and uh- there's (1) woman, (2) guys,
+right across the street from the [Dollar Tree], right...?
 
 Cop, with the fuckin' hat on...?
 It's a winter hat...?
@@ -3791,9 +4228,9 @@ And the other cop will be like:
 [Cop 2]: Really...?
 
 He'll be like:
-[Cop 1]: Yeh yeh yeh, I was sent on a mission to somebody's house, for like a [welfare check].
-         I didn't expect to see like, some dude, like basically [eviscerating this fuckin' girl].
-         I could see it through the window...
+[Cop 1]: Yeh yeh yeh, I was sent on a mission to somebody's house, for like a
+         [welfare check]. I didn't expect to see like, some dude, like basically
+         [eviscerating this fuckin' girl]. I could see it through the window...
 
 The other cop will be like:
 [Cop 2]: Holy shit, you really saw that through the fuckin' window...?
@@ -3812,13 +4249,14 @@ $Ctrl.X(0,"45:20","46:19",@'
 Havin' a conversation with one another, and, you know...? 
 
 Then they'll get a call on the radio, they'll be like:
-[Dispatch]: Hey, there's been a fuckin' uh- a barbeque gone wrong, now there's like uh- bunch of
-            people arguin' and somebody called us, said:
-            'You guys need to come here, cause somebody's fuckin' doin' some shady trollmeister shit.'
+[Dispatch]: Hey, there's been a fuckin' uh- a barbeque gone wrong, now there's like uh-
+            bunch of people arguin' and somebody called us, said:
+            'You guys need to come here...
+            cause somebody's fuckin' doin' some shady trollmeister shit.'
 
 And then the dispatcher will be like:
-[Dispatch]: Alright, well, uh- you gotta fuckin' go to THIS address, and you gotta be there within a
-            few minutes.
+[Dispatch]: Alright, well, uh- you gotta fuckin' go to THIS address,
+            and you gotta be there within a few minutes.
 
 And then the police will be like:
 [Police]: Well, is this an emergency...?
@@ -3895,7 +4333,7 @@ $Ctrl.X(0,"47:55","48:57",@'
         We're just fuckin' (3) people standin' next to a truck, and there is a
         Sheriff doin' somethin'...
         So like, last time this shit happened to me...?
-        Uh- it was in like, the fuckin' rougher part of Albany...?
+        Uh- it was in like, the fuckin' rougher part of [Albany]...?
         Yeah, and like (10) cops came, and then like, uh- eh- uh- the cops
         really had nothin' better to do, so like they all came...
         But then I was like 'It's not an emergency...'
@@ -3970,18 +4408,24 @@ And then I'll be like:
           I am one of those [smart fuckin' parrot dudes] that remembers a bunch of shit,
           and then [reports the same shit that I see], and then, ya know, throws in a little
           bit of my [vocal intonation changes], and [characteristics] and then...
+
           [I'll swing in like a fuckin'... crusader]. 
           This... [caped crusader], like fuckin' [Batman].
+
           And then I'll fuckin' whip out, like uh- the fuckin- the bat- uh- the [Bat-A-Rang]...?
           A couple [Bat-A-Rang], and I'll fuckin' throw em, and then like the [Bat-A-Rangs] will
           like shoot like this, rope, that like [swings around somebody's feet], and then all of
           a sudden...?
+
           A [bad guy] that WAS tryin' to run away...?
           [Now he's on the ground], cause, ya know, [I used the weapon] that fuckin', like 
           [wraps around his feet], and then [nothing he can do about it]. 
+
           And then I do that to [basically every story].
           I don't even know, how the hell I got to this point, either.
+
           I just realized that there was an [urgent need] for a [guy like me], to [come around].
+
           Do I sound more like a [Batman]...?
           Or do I sound more like uh- I dunno, dude...
           Somethin' other than [Batman]...
@@ -4048,6 +4492,7 @@ He's like:
 And then [Captain Jeff Brown] will be like:
 [Brown]: Well...? 
          Ya know...?
+
          [He SEEMED like a level-headed dude]...
          Seems like, he's pretty smart... and, ya know, he's got this WHOLE list of shit.
 
@@ -4058,42 +4503,56 @@ And like, [Michael Zurlo] will be like:
 
 And then [Captain Jeff Brown]'s like:
 [Brown]: Well...? 
-         We don't HAVE to, we could just like, ya know...? 
+         We don't HAVE to, we could just like, ya know...?
+
          Avoid it.
+
          And then NOT like, investigate a god damn thing.
+
          If we don't want- if we want to.
 
 And then like, [Michael Zurlo] will be like:
 [Zurlo]: Well, I've been doin' that for like, almost (3) years, now...
          Ya know...?
+
          This is NOT good...
          [Michael Cook] is fucking here...
+
          And he's handed us, like a list of fuckin' things that he has been doing...
          You know...?
          And, uh... 
          It seems pretty apparent, that he is a really fuckin' smart dude...
+
          And [I'm scared shitless]... [to have a conversation with him].
+
          Because, the chances are...?
          [That HE'S gonna KNOW... if I lie to him].
+
          And the chances are...?
          That [if YOU lied to him], during the conversation that you just HAD with him...
+
          Then, he is gonna know that he was being bullshitted...
          And it doesn't matter if he knows that NOW, or LATER...?
+
          Because, [he probably recorded the conversation] that you had with him.
          So NOW, like, we have to like [REALLY work hard], and, uh...
+
          You know, sorta like fuckin' [use a strategy from a totally different strategy]
          or [rule book]...
 
 And then [Captain Jeff Brown] will be like:
 [Brown]: Well, you know...?
          Maybe we could turn this [negative] into a [positive]...
+
          You know, and like, uh- maybe we could [hire him to be like an investigator],
          you know, since [he's not an idiot]...
 
 And then [Michael Zurlo] will be like:
 [Zurlo]: Over my dead body, dude.
+
          That kid has personally insulted me so many fuckin' times...?
          AND my son...?
+
          There is no way that I would ever allow him to be a part of my fuckin' police force.
          Not a fuckin' chance...
 
@@ -4103,23 +4562,31 @@ And then [Captain Jeff Brown] will be like:
 
 And then [Michael Zurlo] will be like:
 [Zurlo]: [No no no, not even another police force].
+
          We gotta fuckin' [keep this under wraps], dude.
          There is no way, that, we can allow him to be an investigator ANYWHERE, because...
          ...[he is gonna continue to investigate what happened] back in...
-         [May 2020], as well as [many of the people at the fuckin' county offices] n shit...
+         [May 2020], as well as [many of the people at the fuckin' county offices] n' shit...
+
          Ya know...?
          [Cause we're fucked].
+
          Even if this guy is like, fuckin' [homeless], and [going door-to-door], and like, 
          fuckin' [taping shit to doors] and shit...?
+
          [We're fucked].
 
 [Captain Jeff Brown]'s like:
-[Brown]: Well, [it's just your opinion], sir. 
+[Brown]: Well, [it's just your opinion], sir.
+
          He might actually not be, you know, able to do any of that...
          And, it really just comes down to whether or not [people believe us].
+
          And, ya know, if we like, have [Google] like, keep his [traffic really low] and shit...?
          And he just keeps saying [really offensive, off-the-wall type shit]...?
+
          No one will EVER [believe a word] that he says.
+
          [Even if he does have the audio recordings].
          Of us having a conversation and stuff...
 '@)
@@ -4182,9 +4649,10 @@ I have to like, [fictionalize stories] like the one I just rattled off.
 
 $Ctrl.X(0,"59:57","01:00:12",@'
 :Not because I'm trying to demonize [Michael Zurlo], ya know...
+
 [I think I've done that a number of times], but like, how does he know what my 
-[state of mind] was, [any single time] that I wrote any of the fuckin' documents that
-I wrote, [specifically] naming him...? 
+[state of mind] was, [any single time] that I wrote any of the fuckin' documents
+that I wrote, [specifically] naming him...? 
 
 Or, citing him [specifically]...?
 '@)
@@ -4200,22 +4668,15 @@ all those- all that body camera footage, permanently.
 '@)
 
 $Ctrl.X(0,"01:00:26","01:00:57",@'
-:If anything...? They probably save it for a while...? For each case where
-they make an arrest or whatever, they save those.
+:If anything...?
+They probably save it for a while...?
+For each case where they make an arrest or whatever, they save those.
 
 But- they're not gonna fuckin' save like ALL of the footage of ALL the police
 officers that wear a [body camera], because they would have so much fuckin' god 
 damn content to go through, they would have to have some way of [categorizing]
 all of it...
 '@)
-
-<#
-    And if they're writing fictional bullshit in their reports, there's no
-    way that they would be correctly categorizing any of that footage that they'd
-    be saving, not unless a higher agency of government was watching their every
-    move, and saving the data without their knowledge.
-    That is the purpose of the https://en.wikipedia.org/wiki/Utah_Data_Center
-#>
 
 $Ctrl.X(0,"01:00:57","01:01:15",@'
 :But on the other hand, maybe they DO have enough- maybe they have enough
@@ -4224,38 +4685,52 @@ resources to be able to save all of that, or maybe it's fuckin' saved in
 information, and it's not a portion of the government, it's a [corporation].
 '@)
 
-<#
-    That is basically what [PRISM] allows them to do.
-    https://en.wikipedia.org/wiki/PRISM
+##########
+$Ctrl.C(@'
+#========
+| PRISM |
+=========
 
-    It's like some really hot porn star girl that goes around indiscriminately
-    having sex with any guy on that list.
+So, if they're [writing fictional bullshit] in their [reports], there's no way that 
+they would be [correctly categorizing] any of that footage that they'd be saving...
 
-    [==========================|===================================]
-    | If the dude...           | Will she have sex with him...     |
-    |==========================|===================================|
-    | is (cool/not cool)       | yes                               |
-    | is (rich/not rich)       | yes                               |
-    | is (smart/not smart)     | yes                               |
-    | is (famous/not famous)   | yes                               |
-    | is (ugly/not ugly)       | yes                               |
-    | is not on the list       | absolutely not                    |
-    [==========================|===================================]
+...not unless a [higher agency of government] was [watching] their [every move],
+and [saving the data without their knowledge].
 
-    That's sorta how CLASSIFICATION works, believe it or not.
-    [PRISM] is also what I talk about in this particular video:
-    
-    05/25/20 1028 | IMG_0625 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D
+That is the purpose of the https://en.wikipedia.org/wiki/Utah_Data_Center
 
-    Sorta looks like the local law enforcement was found with a really huge dick in their mouth.
-#>
+That is basically what [PRISM] allows them to do.
+https://en.wikipedia.org/wiki/PRISM
+
+It's like some really hot porn star girl that goes around indiscriminately
+having sex with any guy on that list.
+
+[==========================|===================================]
+| If the dude...           | Will she have sex with him...     |
+|==========================|===================================|
+| is (cool/not cool)       | yes                               |
+| is (rich/not rich)       | yes                               |
+| is (smart/not smart)     | yes                               |
+| is (famous/not famous)   | yes                               |
+| is (ugly/not ugly)       | yes                               |
+| is not on the list       | absolutely not                    |
+[==========================|===================================]
+
+That's sorta how CLASSIFICATION works, believe it or not.
+[PRISM] is also what I talk about in this particular video:
+____________________________________________________________________________________________
+05/25/20 1028 | IMG_0625 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Sorta looks like the local law enforcement was found with a really huge dick in their mouth.
+'@)
+###
 
 $Ctrl.X(0,"01:01:15","01:01:30",@'
-:Ya know, [all of these things are TOTALLY realistic], to think that they're NOT realistic is 
-pretty fuckin' naive. 
+:Ya know, [all of these things are TOTALLY realistic],
+to think that they're NOT realistic is pretty fuckin' naive. 
 
-And I would go so far as to say, it's [pretty fuckin' stupid] for [people] to [believe everything]
-that the [police] will [say]. 
+And I would go so far as to say, it's [pretty fuckin' stupid] for [people] to
+[believe everything] that the [police] will [say]. 
 You know...? 
 
 Um...
@@ -4294,10 +4769,24 @@ there is a [group of people] that [have a lot of money], and THEY fuckin' [contr
 like, whether they do it like uh- uh, like uh... 
 '@)
 
-<#
-    World Economic Forum, New World Order
-    01/19/23 | Davos | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf
-#>
+##########
+$Ctrl.C(@'
+#========================
+| World Economic Forum |
+========================
+
+[New World Order], [World Economic Forum], basically the same idea.
+
+[Klaus Schwab] is suspected to have been involved in the [controlled demolition of World Trade Center 1, 2 + 7]
+on [09/11/2001], though [I have nothing that clearly indicates that]. It's a [theory] that I have heard from
+[many people], but I believe that [Exxon-Mobil, Secret Service, and SOME of the people in the CIA] had more 
+[DIRECT] involvement. [Larry Silverstein] and this dude had [some sort of arrangement].
+
+___________________________________________________________________________________________________
+01/19/23 | Davos | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+###
 
 $Ctrl.X(0,"01:02:44","01:03:26",@'
 :[Consciously]...? 
@@ -4354,6 +4843,7 @@ $Ctrl.X(0,"01:04:20","01:04:44",@'
 This guy [Jeff Brown] was like 'Well, that'd be nice.'
 
 Right...?
+
 So like, ya know, I'm not a- like oblivious to the notion that the police like, the-
 they- they get [desensitized] by what happens in the real world, but they ALSO get
 [desensitized] by the fact that like, some people really do have like fucked up, like
@@ -4472,8 +4962,8 @@ $Ctrl.X(0,"01:08:19","01:08:44",@'
 :And I am very certain that they have been- some of them, probably are rallying
 for me, to fuckin' do something cool or awesome, in my lifetime...?
 
-And, there might be somebody like, [Michael B.T.D.T. Pompeo].
-And I'll tell you what [Michael B.T.D.T. Pompeo], stands for.
+And, there might be somebody like, [Michael "B.T.D.T." Pompeo].
+And I'll tell you what [Michael "B.T.D.T." Pompeo], stands for.
 '@)
 
 $Ctrl.X(0,"01:08:44","01:09:07",@'
@@ -4615,27 +5105,36 @@ he doesn't fuckin' say anything to me...?
 And he's like:
 [Tanski]: Stop makin'- stop sayin' negative shit about me, dude.
           What the fuck...?
+
           Ya know, I might be the guy that's been like, hittin' the thumbs up
           button on like, all of your videos over the last X amount of time.
           Ya know...?
+
           MAYBE I did think it was funny, that you like said that me, and uh- 
           [John Hoffman] like, were fuckin', ya know, puttin it in each other's
           poop chutes or somethin'.
           Ya know...?
+
           Maybe I will think that shit was MAD funny, because there's NO WAY 
           that I would EVER fuck that dude.
-          And there is no way, that I would ever pull my dick out of 
-          [John Hoffman]'s asshole, and not even wash it...?
+
+          And there is no way, that I would ever pull my dick out
+          of [John Hoffman]'s asshole, and not even wash it...?
+
           And then have my wife suck on it... and then, ya know, when I see,
           the look, on my wifes face, like, tasting [John]'s asshole...?
+
           On my dick...?
           I would, fuckin'-
 '@)
 
 $Ctrl.X(0,"01:14:50","01:15:28",@'
 :*laughing profusely*
+
 You know...? Uh-
+
 *laughing profusely*
+
 What the fuck...
 THAT is genuinely how I laugh when I listen to the shit that I record.
 And I KNOW that other people, they laugh a lot like that, too.
@@ -4673,16 +5172,21 @@ So like, if... Bru- if I come up like a- fuckin' made-up skit where like
 $Ctrl.X(0,"01:16:22","01:16:51",@'
 :[Tanski] : I could pull MY dick out of YOUR asshole, not even wash it, and
            then make my wife suck it, and then like, she'll make the face
-           where I KNOW she tastes it...? 
+           where I KNOW she tastes it...?
+
            But- she will fuckin' pretend like she doesn't taste it at all.
+
 And then [John Hoffman] will respond:
 [Hoffman]: Wow, dude. 
            That's fuckin'...
+
            That's-
+
            I'm impressed.
 And then [Bruce Tanski]'ll be like:
 [Tanski] : Yeah, I'm fuckin' impressed with myself too, dude.
            Ya know...?
+
            Holy shit.
 '@)
 
@@ -4803,36 +5307,91 @@ and [my sense of humor], and [my intellect] to be like fuckin' stupid, because
 [it doesn't apply to them].
 '@)
 
-<#
-    Here's how I can accurately outline my importance level.
-    1) I have a very long and rich history of (using/repairing) (computers/devices)
-    2) Computers are used to spy on people and even commit intellectual property 
-       theft, identity theft, and cybercriminal activities (fraud/racketeering/etc.)
-    3) I've detected a lot of people in my community who are too stupid to know
-       stuff like that, particularly the people at the town hall.
-    4) Internet technology companies would be the perfect way to commit these
-       crimes, and so would being a member of the local government, or communication
-       companies like Verizon/Spectrum, etc.
-    5) News agencies like ABC, NBC, and CBS have a very easy to see agenda, when
-       you start to go through things that they broadcast, versus the things that
-       they don't broadcast... For instance...
-       - why did Gabby Petito get a lot of mainstream news coverage, and the 
-         many other people who had been missing for longer or whatever, never made
-         it to national broadcast television...?
-       - the answer is because someone IMPORTANT made a decision to EXPEDITE her
-         story, which means that someone has the ability to pick and choose what
-         is important, versus what isn't important, and this process illuminates
-         BIAS.
-    6) When you're intelligent like Noam Chomsky or myself, you'll become a TARGET
-    7) People seem to think that if you have a lot of money, then it is because 
-       someone earned all of that money, rightfully, and didn't commit any heinous
-       crimes or anything like that in order to obtain it...
-    8) The truth is, a lot of rich people and the police commit more crimes than the
-       citizens do. It's just that they're never going to BROADCAST those details,
-       nor will they hold themselves accountable for those things.
+##########
+$Ctrl.C(@'
+#====================
+| Importance Level |
+====================
+___________________________________________________________
+| Here's how I can accurately outline my importance level |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+1) I have a [very long and rich history] of [(using/repairing) (computers/devices)]
 
-    ^ Why my importance level is exponentially higher than the average citizen.
-#>
+2) [Computers] are used to:
+   - [spy on people]
+   - [commit intellectual property theft]
+   - [identity theft]
+   - [cybercriminal activities] 
+   - [fraud]
+   - [racketeering]
+   - [etc.]
+
+3) I've detected [a lot of people in my community] who are [too stupid] to [know]
+   stuff like [that], particularly [the people at the town hall].
+
+4) [Internet technology companies] would be the [perfect way] to [commit] these
+   [crimes], and so would being a [member of the local government], or
+   [communication companies] like [Verizon], [Spectrum], etc.
+
+5) [News agencies] like:
+   - [ABC/American Broadcast Company]
+   - [NBC/National Broadcast Company]
+   - [CBS/Columbia Broadcasting System]
+   [each] have a [very easy to see agenda], when you start to [go through] the
+   [things that they broadcast], versus the [things that they don't broadcast]... 
+   ________________
+   | For instance |
+   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+   - Why did [Gabby Petito] get a lot of [mainstream news coverage], and the [many other people] who
+     had been [missing] for [longer] or whatever, never made it to [national broadcast television]...?
+
+   - OOooooOHhhhh, well, the [answer] is because [someone important] made a 
+     [conscious decision] to [expedite her story], because she was a [beautiful
+     young white girl] that [everyone] would have [empathy] toward, for being as 
+     [beautiful] as she was. She admittedly WAS a good looking girl.
+     
+     But that [automatically] means, if it's some ugly lookin' dude like [Captain ScruffBeard III],
+     then he's gonna be told to [fuck off] without words, cause the [hot young white bitch] gets to be
+     the front of [primetime television news]. 
+     
+     Which means that someone has the ability to pick and choose [what THEY think IS important], versus...
+     [what THEY think is NOT important]...
+     ...and [this process illuminates bias], [every single news company does this].
+
+   - They are [very selective] about [what they allow to propogate their system], 
+     and they have [caused the average citizen] to think that it would be
+     [ridiculous] for [anybody] to make [direct comparisons] between [them] and 
+     [Russian State Media], or even [Chinese State Media].
+
+   - In other words, they channel [propaganda] in many cases, by filtering out
+     the things they would rather keep quiet, and when they do this, they cause
+     people to [never suspect] that they intentionally prevent certain topics
+     from being on the news.
+
+   - So if some [comprimised individuals] in the [US Federal Government] had my
+     iPhone 8+ hacked with a dangerous program called "Phantom", and with this
+     program, they attempted to murder me outside of [Computer Answers] on 
+     [May 26th, 2020], prior to [SCSO-2020-028501], then the story that SHOULD
+     be on the news will [never] make it's way to peoples eyeballs. 
+     
+     As a direct result of this [intentional content (selection/filtration)] 
+     process, if they continue to do this repeatedly, then people will think 
+     my real life story is [bullshit] since they're not making an effort to cover
+     it. If anything, [they work exponentially harder to avoid talking about it].
+
+6) When you're [intelligen]t like [Noam Chomsky] or [myself], you'll become a [target].
+
+7) People seem to think that if you have a lot of money, then it is because 
+   someone earned all of that money, rightfully, and didn't commit any heinous
+   crimes or anything like that in order to obtain it...
+
+8) The truth is, a lot of rich people and the police commit more crimes than the
+   citizens do. It's just that they're never going to BROADCAST those details,
+   nor will they hold themselves accountable for those things.
+
+^ Why my importance level is exponentially higher than the average citizen.
+'@)
+###
 
 $Ctrl.X(0,"01:20:25","01:20:41",@'
 :You know, they're very low on the totem pole.
@@ -4861,6 +5420,7 @@ $Ctrl.X(0,"01:21:01","01:21:21",@'
 [credible], they lie too. 
 
 They lie just as much as the next person.
+
 They don't wanna fuckin' say it out loud, they don't wanna like admit like who- 
 that they're a real person out loud, where other people can get a sense of how human
 they are.
@@ -4918,3 +5478,114 @@ even when they are.
 $Ctrl.X(0,"01:23:02","01:23:06",@'
 :End recording.
 '@)
+
+##########
+$Ctrl.C(@'
+#==============
+| Conclusion |
+==============
+
+Look, in the end, who really knows what...? Ya know...?
+
+The way I see it, is that if you are like [most people], you'll ALWAYS have the mentality of someone that is a
+[part of a group of people], NOT an [individual who thinks for themselves].
+
+[=================================================================================================]
+| [When people trust...] | [Then what happens is...] | [And the result is...]                     |
+|========================|===========================|============================================|
+| the news               | climate change            | Before the Flood (2016)                    |
+| America's Got Talent   | bad musicians are heard   | bad music spams the radio all the time     |
+| the police             | most crimes are ignored   | innocent people get in trouble             |
+| the government         | NIST 9/11 report written  | US invades middle east for oil and poppies |
+| bright individuals     | things make sense         | people become a lot more intelligent       |
+[========================|===========================|============================================]
+
+You see what I'm getting at here...?
+It probably [looks like] I'm [insulting everybody and everyone]... but that is not the case.
+It probably even looks like I'm insulting all of those things in the box up above... but I'm not.
+
+I'm just very impressed with how far certain people will go, to perpetuate stupid bullshit that makes no sense.
+Whether it's a snippy investigator at SCSO that isn't collecting any evidence that I put into this document...?
+Or, the guy who runs the [Saratoga County Sheriffs Office], or the [New York State Police]...?
+
+I think it is safe to say that [stupid people exist in a lot of places], and [I constantly run into them].
+They constantly fail to prove that they're smarter than I am, on a rather consistent basis.
+
+Allow me to whip out an analogy...
+
+When I was in [9th/10th] grade, I saw this girl at [Shenendehowa High School West (formerly Koda)], and 
+she had a stain on the rear of her skirt. I'm not sure if it was a [poop stain], or a [period blood] stain...
+...but [I remember seeing a bunch of people pointing and snickering at it] when they saw it. 
+
+And yet, nobody told this girl “Hey, you've got a stain where your butt is, on your skirt.”
+I didn't tell the girl, but I was also much younger and wasn't sure if I should tell her or not.
+
+Society perpetuates this idea of [teaching people to keep to themselves], because you'd be an [asshole] 
+to [tell the girl] that she's got a [poop/period blood] stain on some girls skirt.
+That's fuckin' stupid, and that's why I constantly say that [people are fuckin' stupid].
+
+The same exact concept applies to this guy named [Captain Jeffrey Brown].
+I'm attempting to tell the [Saratoga County Sheriffs Office] that they have the equivalent of a stain where 
+their asshole is, on the skirt they're wearing. 
+
+Rather than to admit it and say:
+[Them]: Ok, thanks for letting me know, I appreciate it...
+
+...what they're doing is fumbling a football about a dozen times and then avoiding coming to terms with the
+cold, hard reality.
+'@)
+###
+
+
+$Ctrl.Finalize()
+
+# $Ctrl.GetTitle()
+# $Ctrl.GetFile()
+# $Ctrl.GetSection()
+# $Ctrl.GetOutput()
+
+$Out      = @( )
+
+$Ctrl.Section += $Ctrl.TranscriptionSection(0,"Introduction",@'
+In this document, I will cover an audio log that I recorded on [02/18/2023] regarding a document I had manually
+distributed to a bunch of places on [02/17/2023], as well as a couple of transcriptions of conversations
+I've had with an investigator from the [Saratoga County Sheriffs Office] head office, [Captain Jeffrey Brown].
+'@)
+
+$Ctrl.Section += $Ctrl.TranscriptionSection(1,"Files",$Ctrl.GetFile())
+
+$Out     += "Introduction"
+$Out     += "Files"
+$C        = 1
+ForEach ($Item in @($Ctrl.GetSection()))
+{
+    $Out += "Transcription ($C)"
+    $Out += $Item.ToString()
+    $C   ++
+}
+
+
+
+$Swap = @{ }
+ForEach ($X in 0..($Out.Count-1))
+{ 
+    $Item = Switch ($X)
+    {
+        0 
+        { 
+            Write-Element -Mode 0 -Current $Out[$X] 
+        }
+        Default
+        {
+            Write-Element -Mode 0 -Current $Out[$X] -Last $Out[$X-1]
+        }
+    }
+
+    $Item += ""
+
+    $Swap.Add($Swap.Count,$Item -join "`n")
+}
+
+$Swap.Add($Swap.Count,(Write-Element -Mode 0 -Last $Out[-1] -Final))
+
+$Output = $Swap[0..($Swap.Count-1)]
