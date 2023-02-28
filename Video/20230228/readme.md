@@ -12,11 +12,11 @@
 
 [Files]
 
-| Index | Name             | Date       | Start    | End      | Duration | Url                                                               |
-|:------|:-----------------|:-----------|:---------|:---------|:---------|:------------------------------------------------------------------|
-|     0 | **20230218.mp3** | 02/18/2023 | 17:56:25 | 19:19:18 | 01:23:06 | https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu |
-|     1 | **20230217.mp3** | 02/17/2023 | 09:34:04 | 09:45:17 | 00:10:59 | https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3 |
-|     2 | **20210202.mp3** | 02/02/2021 | 11:34:59 | 11:55:02 | 00:20:01 | https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8 |
+| Index | Name             | Date       | Start    | End      | Duration |
+|:------|:-----------------|:-----------|:---------|:---------|:---------|
+|     0 | [20230218.mp3](https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu) | 02/18/2023 | 17:56:25 | 19:19:18 | 01:23:06 |
+|     1 | [20230217.mp3](https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3) | 02/17/2023 | 09:34:04 | 09:45:17 | 00:10:59 |
+|     2 | [20210202.mp3](https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8) | 02/02/2021 | 11:34:59 | 11:55:02 | 00:20:01 |
 
 <h1>
   Annotations/Links
@@ -24,7 +24,17 @@
 
 | Index | Type | Position   | Content                        |
 |:------|:-----|:-----------|:-------------------------------|
-| 14    | TXT  | `00:04:50` | Scientific model - https://en.wikipedia.org/wiki/Scientific_modelling |
+| 14    | TXT  | `00:04:50` | 
+<p>
+    What this process is called is establishing a CONTROL.
+    
+    This is part of a really cool thing that many morons like to ignore...
+    
+    It's formally known as the
+    _____________________________________________________________________
+    Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+</p> |
 | 20    | TXT  | `00:07:02` | Societal Expectations |
 | 23    | TXT  | `00:07:36` | Genuinely Funny |
 | 55    | TXT  | `00:12:44` | 02/16/23 - 2023 Work - https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf |
