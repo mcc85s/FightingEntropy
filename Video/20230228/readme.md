@@ -27,7 +27,6 @@
 <table>
     <tr>
         <th align="Left">
-            <table>
                 <tr>
                     <td>
                         Scientific Model
@@ -36,7 +35,6 @@
                         00:04:50
                     </td>
                 <tr>
-            </table>
         </th>
     </tr>
     <tr>
