@@ -23,7 +23,7 @@
 <table>
     <tr>
         <th align="Left">
-            Scientific Model
+            <b>[Scientific Model]</b>
         </th>
     </tr>
     <tr>
