@@ -10,8 +10,6 @@
   Files
 </h1>
 
-[Files]
-
 | Index | Name             | Date       | Start    | End      | Duration |
 |:------|:-----------------|:-----------|:---------|:---------|:---------|
 |     0 | [20230218.mp3](https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu) | 02/18/2023 | 17:56:25 | 19:19:18 | 01:23:06 |
@@ -22,29 +20,26 @@
   Annotations/Links
 </h1>
 
-<h2>
-    Scientific Model
-</h2>
-
 <table>
     <tr>
-        <td>
-            What this process is called is establishing a CONTROL.
-        </td>
+        <th>
+            <h2>
+                Scientific Model
+            </h2>
+        </th>
     </tr>
     <tr>
         <td>
-            This is part of a really cool thing that many morons like to ignore...
-        </td>
-    </tr>
-    <tr>
-        <td>
-            It's formally known as the "Scientific Model"
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://en.wikipedia.org/wiki/Scientific_modelling">https://en.wikipedia.org/wiki/Scientific_modelling</a>
+            <p>
+                What this process is called is establishing a CONTROL.
+            </p>
+            <p>
+                This is part of a really cool thing that many morons like to ignore...
+            </p>
+            <p>
+                It's formally known as the "Scientific Model"
+                <a href="https://en.wikipedia.org/wiki/Scientific_modelling">https://en.wikipedia.org/wiki/Scientific_modelling</a>
+            </p>
         </td>
     </tr>
 <p>
