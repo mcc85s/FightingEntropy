@@ -1,12 +1,10 @@
+[[Video Information](#video-information)] - [[Audio files](#audio-files)] - [[Links](#links)] - [[Annotations](#annotations)]
+
 ## Video Information
 
 | Date         | Name/Link                                               | Length       |
 |:-------------|:--------------------------------------------------------|:-------------|
 | `02/28/2023` | [2023_0228-(Impressions)](https://youtu.be/BWvPCHFJwsg) | `1h 54m 22s` |
-
-[[Audio files](#audio-files)]
-[[Links](#links)]
-[[Annotations](#annotations)]
 
 ## Audio Files
 
