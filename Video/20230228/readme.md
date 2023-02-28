@@ -1,146 +1,145 @@
 ## Video Information
-</h1>
 
-| Date         | Name/Link                                                | Length       |
+| Date         | Name/Link                                               | Length       |
 |:-------------|:--------------------------------------------------------|:-------------|
 | `02/28/2023` | [2023_0228-(Impressions)](https://youtu.be/BWvPCHFJwsg) | `1h 54m 22s` |
 
-1) Audio files, 2) Links, 3) Annotation Index, 4) Annotations
+1) [Audio files](#audio-files), 2) [Links](#links), 3) [Annotation Index](#annotation-index), 4) [Annotations](#annotations)
 
-# Audio Files
+## Audio Files
 
-| # | Name/Url             | Date       | Start    | End      | Duration |
-|:--|:-----------------|:-----------|:---------|:---------|:---------|
+| # | Name/Url                                                                          | Date         | Start      | End        | Duration   |
+|:--|:----------------------------------------------------------------------------------|:-------------|:-----------|:-----------|:-----------|
 | 0 | [20230218.mp3](https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu) | `02/18/2023` | `17:56:25` | `19:19:18` | `01:23:06` |
 | 1 | [20230217.mp3](https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3) | `02/17/2023` | `09:34:04` | `09:45:17` | `00:10:59` |
 | 2 | [20210202.mp3](https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8) | `02/02/2021` | `11:34:59` | `11:55:02` | `00:20:01` |
 
 ## Links
 
-| Name               | Full     |
-|:-------------------|:---------------------------------------------------------------------------------------------------------|
-| Scientific Model   | [https://en.wikipedia.org/wiki/Scientific_modelling](https://en.wikipedia.org/wiki/Scientific_modelling)
-| 2023 Work          | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf)
-| Records List       | [ https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf]( https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf)
-| Speziale + Gardner | [https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6](https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6)
-| Birds              | [https://youtu.be/zXkmxtYQ6wQ](https://youtu.be/zXkmxtYQ6wQ)
-| Resume             | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf)
-| Computer Answers   | [https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs](https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs)
-| IMG_0636           | [https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo](https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo)
-| IMG_0637           | [https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL](https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL)
-| IMG_0638           | [https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY](https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY)
-| IMG_0639           | [https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP](https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP)
-| IMG_0640           | [https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h](https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h)
-| IMG_0641           | [https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS](https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS)
-| IMG_0642           | [https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf](https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf)
-| IMG_0643           | [https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU](https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU)
-| IMG_0644           | [https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI](https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI)
-| IMG_0645           | [https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA](https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA)
-| IMG_0646           | [https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD](https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD)
-| IMG_0649           | [https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L](https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L)
-| IMG_0650           | [https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l](https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l)
-| IMG_0651           | [https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV](https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV)
-| IMG_0652           | [https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI](https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI)
-| GodMode Cursor1        | [https://youtu.be/1OzgCoBUDzs](https://youtu.be/1OzgCoBUDzs)
-| HDMI Interference      | [https://youtu.be/in7IrkoLOHo](https://youtu.be/in7IrkoLOHo)
-| TWITTER BSOD           | [https://youtu.be/12x8TrO9B5Q](https://youtu.be/12x8TrO9B5Q)
-| Buffer Overflow Attack | [https://youtu.be/H4MlJnMh9Q0](https://youtu.be/H4MlJnMh9Q0)
-| Item[0]-Original       | [https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx](https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx)
-| Item[0]-Treble         | [https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU](https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU)
-| IMG_0390               | [https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6](https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6)
-| Item[1]IMG_0391        | [https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG](https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG)
-| Item[1]-Treble         | [https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah](https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah)
-| 2020 05 24 1341        | [https://youtu.be/i88AJb_5zY4](https://youtu.be/i88AJb_5zY4)
-| A matter of nat'l sec. | [https://youtu.be/e4VnZObiez8](https://youtu.be/e4VnZObiez8)
-| FACEBOOK CENSORSHIP    | [https://youtu.be/Jmq4yBqGhTs](https://youtu.be/Jmq4yBqGhTs)
-| FACEBOOK BSOD          | [https://youtu.be/40sQXpVh_8Y](https://youtu.be/40sQXpVh_8Y)
-| Scribbles              | [https://youtu.be/vY2fIhS9ruo](https://youtu.be/vY2fIhS9ruo)
-| Scribbles              | [https://youtu.be/q0twJUzef9U](https://youtu.be/q0twJUzef9U)
-| God Mode Cursor        | [https://youtu.be/tW80Zj_H6Fw](https://youtu.be/tW80Zj_H6Fw)
-| God Mode Cursor        | [https://youtu.be/dU_5rdVkCD8](https://youtu.be/dU_5rdVkCD8)
-| Time Travel            | [https://youtu.be/xCo8Wu_0Lb4](https://youtu.be/xCo8Wu_0Lb4)
-| CIA Bulk Collection Program | [https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news](https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news)
-Vault 7, WikiLeaks | [https://wikileaks.org/vault7/](https://wikileaks.org/vault7/)
-Citizen Four, Edward Snowden | [https://en.wikipedia.org/wiki/Citizenfour](https://en.wikipedia.org/wiki/Citizenfour)
-Thinthread | [https://www.pbs.org/newshour/tag/thinthread](https://www.pbs.org/newshour/tag/thinthread)
-| Oakstar | [https://en.wikipedia.org/wiki/OAKSTAR](https://en.wikipedia.org/wiki/OAKSTAR)
-| Stormbrew | [https://en.wikipedia.org/wiki/STORMBREW](https://en.wikipedia.org/wiki/STORMBREW)
-| Trailblazer | [https://en.wikipedia.org/wiki/Trailblazer_Project](https://en.wikipedia.org/wiki/Trailblazer_Project)
-| Turbulance | [https://en.wikipedia.org/wiki/Turbulence_(NSA)](https://en.wikipedia.org/wiki/Turbulence_(NSA))
-| Genoa II | [https://en.wikipedia.org/wiki/Project_Genoa_II](https://en.wikipedia.org/wiki/Project_Genoa_II)
-| Total Information Awareness | [https://en.wikipedia.org/wiki/Total_Information_Awareness](https://en.wikipedia.org/wiki/Total_Information_Awareness)
-| President's Surveillance Program | [https://en.wikipedia.org/wiki/President%27s_Surveillance_Program](https://en.wikipedia.org/wiki/President%27s_Surveillance_Program)
-| Terrorist Surveillance Program | [https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program](https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program)
-| PRISM | [https://en.wikipedia.org/wiki/PRISM_(surveillance_program)](https://en.wikipedia.org/wiki/PRISM_(surveillance_program))
-| IMG_0625 | [https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D](https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D) 
-| IMG_0627 | [https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx](https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx) 
-| xKeyScore | [https://en.wikipedia.org/wiki/XKeyscore](https://en.wikipedia.org/wiki/XKeyscore)
-| Live Redaction | [https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw](https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw)
-| Dropmire | [https://en.wikipedia.org/wiki/Dropmire](https://en.wikipedia.org/wiki/Dropmire)
-| Stateroom | [https://en.wikipedia.org/wiki/Stateroom_(surveillance_program)](https://en.wikipedia.org/wiki/Stateroom_(surveillance_program))
-| Bullrun | [https://en.wikipedia.org/wiki/Bullrun_(decryption_program)](https://en.wikipedia.org/wiki/Bullrun_(decryption_program))
-| Mystic | [https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program)](https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program))
-| Why William Moak is stupid | [https://youtu.be/aejBB77d_oA](https://youtu.be/aejBB77d_oA)
-| Tanski, bank fraud (Russian Mafia) | [https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php](https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php) 
-| Tanski, Amato (Russian Mafia) | [https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php ](https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php )
+| Name                              | Link                                                                                                     |
+|:----------------------------------|:---------------------------------------------------------------------------------------------------------|
+| Scientific Model                  | [https://en.wikipedia.org/wiki/Scientific_modelling](https://en.wikipedia.org/wiki/Scientific_modelling)
+| 2023 Work                         | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf)
+| Records List                      | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf)
+| Speziale + Gardner                | [https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6](https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6)
+| Birds                             | [https://youtu.be/zXkmxtYQ6wQ](https://youtu.be/zXkmxtYQ6wQ)
+| Resume                            | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf)
+| Computer Answers                  | [https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs](https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs)
+| IMG_0636                          | [https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo](https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo)
+| IMG_0637                          | [https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL](https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL)
+| IMG_0638                          | [https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY](https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY)
+| IMG_0639                          | [https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP](https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP)
+| IMG_0640                          | [https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h](https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h)
+| IMG_0641                          | [https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS](https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS)
+| IMG_0642                          | [https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf](https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf)
+| IMG_0643                          | [https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU](https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU)
+| IMG_0644                          | [https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI](https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI)
+| IMG_0645                          | [https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA](https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA)
+| IMG_0646                          | [https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD](https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD)
+| IMG_0649                          | [https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L](https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L)
+| IMG_0650                          | [https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l](https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l)
+| IMG_0651                          | [https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV](https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV)
+| IMG_0652                          | [https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI](https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI)
+| GodMode Cursor1                   | [https://youtu.be/1OzgCoBUDzs](https://youtu.be/1OzgCoBUDzs)
+| HDMI Interference                 | [https://youtu.be/in7IrkoLOHo](https://youtu.be/in7IrkoLOHo)
+| TWITTER BSOD                      | [https://youtu.be/12x8TrO9B5Q](https://youtu.be/12x8TrO9B5Q)
+| Buffer Overflow Attack            | [https://youtu.be/H4MlJnMh9Q0](https://youtu.be/H4MlJnMh9Q0)
+| Item[0]-Original                  | [https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx](https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx)
+| Item[0]-Treble                    | [https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU](https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU)
+| IMG_0390                          | [https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6](https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6)
+| Item[1]IMG_0391                   | [https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG](https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG)
+| Item[1]-Treble                    | [https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah](https://drive.google.com/file/d/1NAjKoFyvfcs3Ap2n-K-fmYUo6WoBNrah)
+| 2020 05 24 1341                   | [https://youtu.be/i88AJb_5zY4](https://youtu.be/i88AJb_5zY4)
+| A matter of nat'l sec.            | [https://youtu.be/e4VnZObiez8](https://youtu.be/e4VnZObiez8)
+| FACEBOOK CENSORSHIP               | [https://youtu.be/Jmq4yBqGhTs](https://youtu.be/Jmq4yBqGhTs)
+| FACEBOOK BSOD                     | [https://youtu.be/40sQXpVh_8Y](https://youtu.be/40sQXpVh_8Y)
+| Scribbles                         | [https://youtu.be/vY2fIhS9ruo](https://youtu.be/vY2fIhS9ruo)
+| Scribbles                         | [https://youtu.be/q0twJUzef9U](https://youtu.be/q0twJUzef9U)
+| God Mode Cursor                   | [https://youtu.be/tW80Zj_H6Fw](https://youtu.be/tW80Zj_H6Fw)
+| God Mode Cursor                   | [https://youtu.be/dU_5rdVkCD8](https://youtu.be/dU_5rdVkCD8)
+| Time Travel                       | [https://youtu.be/xCo8Wu_0Lb4](https://youtu.be/xCo8Wu_0Lb4)
+| CIA Bulk Collection Program       | [https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news](https://www.wired.com/story/cia-bulk-collection-surveillance-earn-it-security-news)
+| Vault 7, WikiLeaks                | [https://wikileaks.org/vault7/](https://wikileaks.org/vault7/)
+| Citizen Four, Edward Snowden      | [https://en.wikipedia.org/wiki/Citizenfour](https://en.wikipedia.org/wiki/Citizenfour)
+| Thinthread                        | [https://www.pbs.org/newshour/tag/thinthread](https://www.pbs.org/newshour/tag/thinthread)
+| Oakstar                           | [https://en.wikipedia.org/wiki/OAKSTAR](https://en.wikipedia.org/wiki/OAKSTAR)
+| Stormbrew                         | [https://en.wikipedia.org/wiki/STORMBREW](https://en.wikipedia.org/wiki/STORMBREW)
+| Trailblazer                       | [https://en.wikipedia.org/wiki/Trailblazer_Project](https://en.wikipedia.org/wiki/Trailblazer_Project)
+| Turbulance                        | [https://en.wikipedia.org/wiki/Turbulence_(NSA)](https://en.wikipedia.org/wiki/Turbulence_(NSA))
+| Genoa II                          | [https://en.wikipedia.org/wiki/Project_Genoa_II](https://en.wikipedia.org/wiki/Project_Genoa_II)
+| Total Information Awareness       | [https://en.wikipedia.org/wiki/Total_Information_Awareness](https://en.wikipedia.org/wiki/Total_Information_Awareness)
+| President's Surveillance Program  | [https://en.wikipedia.org/wiki/President%27s_Surveillance_Program](https://en.wikipedia.org/wiki/President%27s_Surveillance_Program)
+| Terrorist Surveillance Program    | [https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program](https://en.wikipedia.org/wiki/Terrorist_Surveillance_Program)
+| PRISM                             | [https://en.wikipedia.org/wiki/PRISM_(surveillance_program)](https://en.wikipedia.org/wiki/PRISM_(surveillance_program))
+| IMG_0625 (Censorship, PRISM)      | [https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D](https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D) 
+| IMG_0627 (Cortana Phantom)        | [https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx](https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx) 
+| xKeyScore                         | [https://en.wikipedia.org/wiki/XKeyscore](https://en.wikipedia.org/wiki/XKeyscore)
+| Live Redaction (xKeyScore)        | [https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw](https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw)
+| Dropmire                          | [https://en.wikipedia.org/wiki/Dropmire](https://en.wikipedia.org/wiki/Dropmire)
+| Stateroom                         | [https://en.wikipedia.org/wiki/Stateroom_(surveillance_program)](https://en.wikipedia.org/wiki/Stateroom_(surveillance_program))
+| Bullrun                           | [https://en.wikipedia.org/wiki/Bullrun_(decryption_program)](https://en.wikipedia.org/wiki/Bullrun_(decryption_program))
+| Mystic                            | [https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program)](https://en.wikipedia.org/wiki/MYSTIC_(surveillance_program))
+| Why William Moak is stupid        | [https://youtu.be/aejBB77d_oA](https://youtu.be/aejBB77d_oA)
+| Tanski, fraud (Russian Mafia)     | [https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php](https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php) 
+| Tanski, Amato (Russian Mafia)     | [https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php ](https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php )
 | Charles McGonigal (Russian Mafia) | [https://www.pbs.org/newshour/politics/former-fbi-agent-charged-with-aiding-russian-oligarch](https://www.pbs.org/newshour/politics/former-fbi-agent-charged-with-aiding-russian-oligarch)
-| NYSP Mafiosos | [https://youtu.be/ENpIkuIbqZU](https://youtu.be/ENpIkuIbqZU)
-| GlobalFoundries | [https://youtu.be/1s-qefkOjXQ](https://youtu.be/1s-qefkOjXQ)
-| Pecor, Nelson, Margan (Morons) | [https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL](https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL)
-| Mocking Saratoga Hospital MHU | [https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL](https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL)
-| Integrity | [https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS](https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS)
-| Utah Data Center | [https://en.wikipedia.org/wiki/Utah_Data_Center](https://en.wikipedia.org/wiki/Utah_Data_Center)
-| Musk vs World Economic Forum | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf)
+| NYSP Mafiosos                     | [https://youtu.be/ENpIkuIbqZU](https://youtu.be/ENpIkuIbqZU)
+| GlobalFoundries                   | [https://youtu.be/1s-qefkOjXQ](https://youtu.be/1s-qefkOjXQ)
+| Pecor, Nelson, Margan (Morons)    | [https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL](https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL)
+| Mocking Saratoga Hospital MHU     | [https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL](https://drive.google.com/file/d/181pWqSET3PbYPiDCiOc4LWzrju0W29FL)
+| Integrity                         | [https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS](https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS)
+| Utah Data Center                  | [https://en.wikipedia.org/wiki/Utah_Data_Center](https://en.wikipedia.org/wiki/Utah_Data_Center)
+| Musk vs World Economic Forum      | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf)
 
 ## Annotation Index
 
 | #   | Time       | Name                                                                                                 |
 |:----|:---------- |:-----------------------------------------------------------------------------------------------------|
-|   0 | `00:04:50` | [`Scientific Model`](#ScientificModel)
-|   1 | `00:07:02` | [`Societal Expectations`](#SocietalExpectations)
-|   2 | `00:07:36` | [`Genuinely Funny`](#GenuinelyFunny)
-|   3 | `00:12:44` | [`2023 Work`](#2023_Work)
-|   4 | `00:12:46` | [`Records List`](#RecordsList)
-|   5 | `00:14:53` | [`Speziale + Gardner`](#SpezialeGardner)
-|   6 | `00:23:10` | [`Suspicious`](#Suspicious)
-|   7 | `00:23:30` | [`Wide-Ranging Conspiracy`](#WideRangingConspiracy)
-|   8 | `00:23:57` | [`Birds`](#Birds)
-|   9 | `00:30:24` | [`Nothin I can do`](#NothinICanDo)
-|  10 | `00:32:24` | [`Obstructing Justice`](#ObstructingJustice)
-|  11 | `00:33:06` | [`Northern Part of Saratoga County`](#NorthernPartOfSaratogaCounty)
-|  12 | `00:33:19` | [`Walker, Texas Ranger`](#WalkerTexasRanger)
-|  13 | `00:33:48` | [`Not as far as I can tell`](#NotAsFarAsICanTell)
-|  14 | `00:34:37` | [`Supporting Evidence`](#SupportingEvidence)
-|  15 | `00:35:47` | [`Mental Health versus Espionage and Cyberattacks`](#MentalHealthVersusEspionageAndCyberattacks)
-|  16 | `00:35:58` | [`No crime was committed then`](#NoCrimeWasCommittedThen)
-|  17 | `00:36:31` | [`Troublemaker`](#Troublemaker)
-|  18 | `00:36:52` | [`Not a mental health problem`](#NotAMentalHealthProblem)
-|  19 | `00:37:00` | [`You have not described a single crime`](#YouHaveNotDescribedASingleCrime)
-|  20 | `00:37:49` | [`Research`](#Research)
-|  21 | `00:38:25` | [`Why William Moak is stupid`](#WhyWilliamMoakIsStupid)
-|  22 | `00:39:34` | [`Russians`](#Russians)
-|  23 | `00:56:48` | [`NYSP Mafiosos`](#NYSPMafiosos)
-|  24 | `01:01:19` | [`GlobalFoundries`](#GlobalFoundries)
-|  25 | `01:03:21` | [`Lawsuit Material`](#LawsuitMaterial)
-|  26 | `01:03:58` | [`Time Travel Reference #1`](#TimeTravelReference1)
-|  27 | `01:04:48` | [`Stewarts Northline Road`](#StewartsNorthlineRoad)
-|  28 | `01:07:30` | [`Time Travel Reference #2`](#TimeTravelReference2)
-|  29 | `01:14:34` | [`Integrity`](#Integrity)
-|  30 | `01:33:05` | [`PRISM`](#PRISM)
-|  31 | `01:34:34` | [`World Economic Forum`](#WorldEconomicForum)
-|  32 | `01:52:15` | [`Importance Level`](#ImportanceLevel)
-|  33 | `01:54:56` | [`Conclusion`](#Conclusion)
+|   0 | `00:04:50` | [`Scientific Model`](#scientific-model)
+|   1 | `00:07:02` | [`Societal Expectations`](#societal-expectations)
+|   2 | `00:07:36` | [`Genuinely Funny`](#genuinely-funny)
+|   3 | `00:12:44` | [`2023 Work`](#2023-work)
+|   4 | `00:12:46` | [`Records List`](#records-list)
+|   5 | `00:14:53` | [`Speziale + Gardner`](#speziale-and-gardner)
+|   6 | `00:23:10` | [`Suspicious`](#suspicious)
+|   7 | `00:23:30` | [`Wide-Ranging Conspiracy`](#wide-ranging-conspiracy)
+|   8 | `00:23:57` | [`Birds`](#birds)
+|   9 | `00:30:24` | [`Nothin I can do`](#nothin-i-can-do)
+|  10 | `00:32:24` | [`Obstructing Justice`](#obstructing-justice)
+|  11 | `00:33:06` | [`Northern Part of Saratoga County`](#northern-part-of-saratoga-county)
+|  12 | `00:33:19` | [`Walker, Texas Ranger`](#walker-texas-ranger)
+|  13 | `00:33:48` | [`Not as far as I can tell`](#not-as-far-as-i-can-tell)
+|  14 | `00:34:37` | [`Supporting Evidence`](#supporting-evidence)
+|  15 | `00:35:47` | [`Mental Health versus Espionage and Cyberattacks`](#mental-health-versus-espionage-and-cyberattacks)
+|  16 | `00:35:58` | [`No crime was committed then`](#no-crime-was-committed-then)
+|  17 | `00:36:31` | [`Troublemaker`](#troublemaker)
+|  18 | `00:36:52` | [`Not a mental health problem`](#not-a-mental-health-problem)
+|  19 | `00:37:00` | [`You have not described a single crime`](#you-have-not-described-a-single-crime)
+|  20 | `00:37:49` | [`Research`](#research)
+|  21 | `00:38:25` | [`Why William Moak is stupid`](#why-william-moak-is-stupid)
+|  22 | `00:39:34` | [`Russians`](#russians)
+|  23 | `00:56:48` | [`NYSP Mafiosos`](#nysp-mafiosos)
+|  24 | `01:01:19` | [`GlobalFoundries`](#global-foundries)
+|  25 | `01:03:21` | [`Lawsuit Material`](#lawsuit-material)
+|  26 | `01:03:58` | [`Time Travel Reference #1`](#time-travel-reference-1)
+|  27 | `01:04:48` | [`Stewarts Northline Road`](#stewarts-northline-road)
+|  28 | `01:07:30` | [`Time Travel Reference #2`](#time-travel-reference-2)
+|  29 | `01:14:34` | [`Integrity`](#integrity)
+|  30 | `01:33:05` | [`PRISM`](#prism)
+|  31 | `01:34:34` | [`World Economic Forum`](#world-economic-forum)
+|  32 | `01:52:15` | [`Importance Level`](#importance-level)
+|  33 | `01:54:56` | [`Conclusion`](#conclusion)
 
 
-# Annotations
+## Annotations
 
 <h5>
    Times below are in relation to the combined audio file within the video, not the video itself.<br>
 </h5>
 
-## ScientificModel
-| Time             | Name             |
-|:---------------- |:-----------------|
+## Scientific Model
+| Time             | Name                                                                   |
+|:---------------- |:-----------------------------------------------------------------------|
 | `00:04:50`       | [Scientific Model](https://en.wikipedia.org/wiki/Scientific_modelling) |
 ```
 What this process is called is [establishing] a [CONTROL].
@@ -153,6 +152,7 @@ Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
  
+## Societal Expectations
 
 | Time       | Name                  |
 |:-----------|:----------------------|
@@ -170,9 +170,10 @@ or SIGNIFICANCE, then they can literally say things that are [blatantly false], 
 [Importance level], in many cases, can be 100% identical to [stupidity level].  
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `00:07:36` | Genuinely Funny    |
+## Genuinely Funny
+| Time       | Name            |
+|:-----------|:----------------|
+| `00:07:36` | Genuinely Funny |
 ```
 I used to think that it came down to [not being funny], but now I know 
 that [there is a group of people that work really hard] to [prevent people] 
@@ -187,8 +188,10 @@ However, sometimes these morons [OVEREXTEND THAT ABILITY], and it [BACKFIRES],
 whereby illuminating that someone really important is just really fucking moronic.  
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## 2023 Work
+
+| Time       | Name                                                                                           |
+|:-----------|:-----------------------------------------------------------------------------------------------|
 | `00:12:44` | [2023 Work](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf) |
 ```
 ________________________________________________________________________________________________________
@@ -196,9 +199,11 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `00:12:46` | [Records List](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf)
+## Records List
+
+| Time       | Name                                                                                                 |
+|:-----------|:-----------------------------------------------------------------------------------------------------|
+| `00:12:46` | [Records List](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf) |
 ```
 These records may be found with expanded details at:
 ______________________________________________________________________________________________________________
@@ -221,15 +226,19 @@ ________________________________________________________________________________
 ===============================
 ```
 
-| Time       | Name               |
-|:-----------|:-------------------|
-| `00:14:53` | [Speziale + Gardner](https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6)
+## Speziale and Gardner
+
+| Time       | Name                                                                                      |
+|:-----------|:------------------------------------------------------------------------------------------|
+| `00:14:53` | [Speziale and Gardner](https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6) |
 ```
 I spoke to [SCSO Samuel Speziale] on [06/23/2022] about [you], specifically.
 _________________________________________________________________________________________________
 06/23/22 | Speziale + Gardner | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6 
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
+
+## Suspicious
 
 | Time       | Name       |
 |:-----------|:-----------|
@@ -246,8 +255,10 @@ Apparently they don't really need to do that anymore...?
 Which is why I constantly have to tell people that the police are often times, [pretty fuckin' stupid].
 ```
 
+## Wide-Ranging Conspiracy
+
 | Time       | Name 
-|:-----------|:-------------------|
+|:-----------|:------------------------|
 | `00:23:30` | Wide-Ranging Conspiracy |
 ```
 Yeah, because I was [arrested] over a [post-dated ticket] after my [iPhone 8+] was [disabled].
@@ -315,16 +326,20 @@ Oh by the way, [Paul Pelagalli] took custody of my fuckin' children away over th
 Oh by the way, people think I went insane, cause some people are just plain old fuckin' stupid and lazy.
 ```
 
-| Time       | Name 
-|:-----------|:------|
+## Birds
+
+| Time       | Name                                  |
+|:-----------|:--------------------------------------|
 | `00:23:57` | [Birds](https://youtu.be/zXkmxtYQ6wQ) |
 ```
 [Birds - https://youtu.be/zXkmxtYQ6wQ]
 ```
 
+## Nothin I Can Do
+
 | Time       | Name 
-|:-----------|:-------------------|
-| `00:30:24` | Nothin` I can do   |
+|:-----------|:-----------------|
+| `00:30:24` | Nothin' I can do |
 ```
 That's a problem. [I called 911]. [Twice]. [My phone was hacked]. [I recorded a video of (2) dudes stalking me].
 
@@ -332,8 +347,11 @@ But also, if I [suspect] that the [telecommunications companies] are committing 
 disrupt [any 911 call] from [making it to your dispatch station], and therefore, they have [strict control] over 
 the [law enforcement system].
 ```
-| Time       | Name 
-|:-----------|:-------------------|
+
+## Obstructing Justice
+
+| Time       | Name                |
+|:-----------|:--------------------|
 | `00:32:24` | Obstructing Justice |
 ```
 What about [multiple fellow officers] [obstructing justice]...?
@@ -372,8 +390,10 @@ actually perfectly legal and easy to do, as long as you [establish prerequisites
 [police] and [telecom companies], and you [cover your tracks] and [destroy evidence] and stuff.
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Northern Part of Saratoga County
+
+| Time       | Name                             |
+|:-----------|:---------------------------------|
 | `00:33:06` | Northern Part of Saratoga County |
 ```
 [Yeh, I've been in the northern part of the county, as I used to deliver →]
@@ -463,6 +483,8 @@ While the cell service DOES suck ass in [Ballston Spa] and [West Milton], (3) to
 where I called (911). And, I left [footage] of that [failed phone call] at [Center for Security]
 ```
 
+## Walker, Texas Ranger
+
 | Time       | Name 
 |:-----------|:---------------------|
 | `00:33:19` | Walker, Texas Ranger |
@@ -479,8 +501,10 @@ Cause what if I said:
 What would he have said then...?
 ```
 
+## Not As Far As I Can Tell
+
 | Time       | Name 
-|:-----------|:-------------------|
+|:-----------|:----------------------------|
 | `00:33:48` | Not as far as I can tell... |
 ```
 That's a [problem]. [You're supposed to investigate suspicious shit].
@@ -491,8 +515,10 @@ and it [wasn't recorded].
 [That's suspicious shit right there].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Supporting Evidence
+
+| Time       | Name                |
+|:-----------|:--------------------|
 | `00:34:37` | Supporting Evidence |
 ```
 [Check this out. This stuff is called "supporting evidence"]
@@ -520,8 +546,10 @@ and it [wasn't recorded].
 [===============|========================|===================================================================]
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Mental Health Versus Espionage And Cyberattacks
+
+| Time       | Name                                            |
+|:-----------|:------------------------------------------------|
 | `00:35:47` | Mental Health versus Espionage and Cyberattacks |
 ```
 [===============|========================|===================================================================]
@@ -574,9 +602,11 @@ And, that is why I continue to suggest that there's a really long list of people
 [careless], [obtuse], and [mistake prone]...
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `00:35:58` | No crime was committed then~! |
+## No Crime Was Committed Then
+
+| Time       | Name                        |
+|:-----------|:----------------------------|
+| `00:35:58` | No crime was committed then |
 ```
 Yeah there was. 
 
@@ -587,8 +617,10 @@ As far as I know, [attempting to run someone over with their fucking vehicle] is
 It's called [ATTEMPTED (VEHICULAR MANSLAUGHTER/MURDER)].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Troublemaker
+
+| Time       | Name         |
+|:-----------|:-------------|
 | `00:36:31` | Troublemaker |
 ```
 (1) arrest out of (10) incidents...? Hm. [Most of which you've been arrested for...]
@@ -644,8 +676,10 @@ That's fuckin' weird...
 It's as if there's a [cocksucker] or [multiple cocksuckers] over at SCSO.
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Not A Mental Health Problem
+
+| Time       | Name                        |
+|:-----------|:----------------------------|
 | `00:36:52` | Not a mental health problem |
 ```
 [That's just your opinion of what's going on].
@@ -655,8 +689,10 @@ Pretty sure that I'm having a [police officer's hands going limp and ignoring th
 Way different.
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## You Have Not Described A Single Crime
+
+| Time       | Name                                  |
+|:-----------|:--------------------------------------|
 | `00:37:00` | You have not described a single crime | 
 ```
                                                                                         
@@ -669,8 +705,10 @@ Way different.
 None of those are crimes, apparently.
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Research
+
+| Time       | Name     |
+|:-----------|:---------|
 | `00:37:49` | Research |
 ```
 Oh weird, is that what you talked about when you had another call come in...?
@@ -788,8 +826,10 @@ Wide ranging conspiracy...?
 Or... maybe there's a [bunch of fucking morons that keep (misjudging/mislabeling) me].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Why William Moak Is Stupid
+
+| Time       | Name                       |
+|:-----------|:---------------------------|
 | `00:38:25` | Why William Moak is stupid |
 ```
 [It doesn't matter how anyone looks at that record].
@@ -805,8 +845,10 @@ I'm not even trying to be nice here, [you have some fuckin' stupid people who wo
 [So do the NYSP].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Russians
+
+| Time       | Name     |
+|:-----------|:---------|
 | `00:39:34` | Russians |
 ```
 [01/31/18 | Tanski, bank fraud (works with Russian Mafia)]
@@ -834,8 +876,10 @@ and as newly ascendant Republicans in Congress have pledged to investigate high-
 and [Justice Department].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## NYSP Mafiosos
+
+| Time       | Name                                          |
+|:-----------|:----------------------------------------------|
 | `00:56:48` | [NYSP Mafiosos](https://youtu.be/ENpIkuIbqZU) |
 ```
 _______________________________________________________
@@ -843,18 +887,22 @@ _______________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `01:01:19` | [GlobalFoundries](https://youtu.be/1s-qefkOjXQ)
+## GlobalFoundries
+
+| Time       | Name                                            |
+|:-----------|:------------------------------------------------|
+| `01:01:19` | [GlobalFoundries](https://youtu.be/1s-qefkOjXQ) |
 ```
 _________________________________________________________
 02/17/23 | GlobalFoundries | https://youtu.be/1s-qefkOjXQ
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `01:03:21` | Lawsuit Material   |
+## Lawsuit Material
+
+| Time       | Name             |
+|:-----------|:-----------------|
+| `01:03:21` | Lawsuit Material |
 ```
 _____________________________________________________________________________________________________________    
 03/01/22 | Pecor, Nelson, Margan (morons) | https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL
@@ -862,16 +910,21 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                              
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Time Travel Reference 1
+
+| Time       | Name                     |
+|:-----------|:-------------------------|
 | `01:03:58` | Time Travel Reference #1 |
 ```
 _________________________________________________________________________________________
 02/20/23 | Time Travel (Facebook altering my account data) | https://youtu.be/xCo8Wu_0Lb4 
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
-| Time       | Name 
-|:-----------|:-------------------|
+
+## Stewarts Northline Road
+
+| Time       | Name                    |
+|:-----------|:------------------------|
 | `01:04:48` | Stewarts Northline Road |
 ```
 [Stewarts] on [Northline Road] is my old [Q107 Times Union] stop.
@@ -881,6 +934,7 @@ Then, another [Stewarts]. Then, [Hannaford].
 Then... another [Stewarts] in [West Milton].
 ```
 
+## Time Travel Reference 2
 | Time       | Name               |
 |:-----------|:-------------------|
 | `01:07:30` | Time Travel Reference #2
@@ -926,17 +980,21 @@ OoOOOooHhhhHhhh... It's cause [many of the police are careless morons].
 I'm pretty sure that [anyone] with [eyes] will be able to [see] that [it's not all in my head].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
-| `01:14:34` | [Integrity](https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS)
+## Integrity
+
+| Time       | Name                                                                           |
+|:-----------|:-------------------------------------------------------------------------------|
+| `01:14:34` | [Integrity](https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS) |
 ```
 ________________________________________________________________________________________
 12/22/22 | Integrity | https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## PRISM
+
+| Time       | Name  |
+|:-----------|:------|
 | `01:33:05` | PRISM |
 ```
 So, if they're [writing fictional bullshit] in their [reports], there's no way that they 
@@ -972,8 +1030,10 @@ ________________________________________________________________________________
 Sorta looks like the [local law enforcement] was found with a really huge dick in their mouth.
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## World Economic Forum
+
+| Time       | Name                 |
+|:-----------|:---------------------|
 | `01:34:34` | World Economic Forum |
 ```
 [New World Order], [World Economic Forum], basically the same idea.
@@ -988,8 +1048,10 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Importance Level
+
+| Time       | Name             |
+|:-----------|:-----------------|
 | `01:52:15` | Importance Level |
 ```
 ___________________________________________________________
@@ -1071,8 +1133,10 @@ ___________________________________________________________
 ^ And THOSE are the reasons as to [Why my importance level is exponentially higher than the average US citizen].
 ```
 
-| Time       | Name 
-|:-----------|:-------------------|
+## Conclusion
+
+| Time       | Name       |
+|:-----------|:-----------|
 | `01:54:56` | Conclusion |
 ```
 Look, in the end, who really knows what...? Ya know...?
