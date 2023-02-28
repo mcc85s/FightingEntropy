@@ -4,7 +4,9 @@
 |:-------------|:--------------------------------------------------------|:-------------|
 | `02/28/2023` | [2023_0228-(Impressions)](https://youtu.be/BWvPCHFJwsg) | `1h 54m 22s` |
 
-1) [Audio files](#audio-files), 2) [Links](#links), 3) [Annotations](#annotations)
+[[Audio files](#audio-files)]
+[[Links](#links)]
+[[Annotations](#annotations)]
 
 ## Audio Files
 
