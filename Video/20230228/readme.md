@@ -22,10 +22,8 @@
 
 <table>
     <tr>
-        <th>
-            <h2>
-                Scientific Model
-            </h2>
+        <th align="Left">
+            Scientific Model
         </th>
     </tr>
     <tr>
