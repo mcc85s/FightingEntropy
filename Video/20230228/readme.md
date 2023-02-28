@@ -24,10 +24,15 @@
    Times below are in relation to the combined audio file within the video, not the video itself.
 </h3>
 
+
+<h1>
+    Scientific Model
+</h1>
+
 <table>
     <tr>
         <th align="Left">
-            [00:04:50], [Scientific Model]
+            00:04:50
         </th>
     </tr>
     <tr>
@@ -45,3 +50,4 @@
         </td>
     </tr>
 </table>
+
