@@ -26,15 +26,14 @@
    Times below are in relation to the combined audio file within the video, not the video itself.
 </h3>
 
-| Name             | Time       | Content   |
-| ---------------- | ---------- | --------- |
-| Scientific Model | `00:04:50` | `What this process is called is establishing a CONTROL.`
-|                  |            | ` This is part of a really cool thing that many morons like to ignore...`
-|                  |            | ` `
-|                  |            | `It's formally known as the`
-|                  |            | `_____________________________________________________________________`
-|                  |            | `Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling`
-|                  |            | `¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯`
-|                  |            | [Scientific Model](https://en.wikipedia.org/wiki/Scientific_modelling)
-
+| Name             | Time       | Content                                                                   |
+| ---------------- | ---------- | ------------------------------------------------------------------------- |
+| Scientific Model | `00:04:50` | `What this process is called is establishing a CONTROL.`                  |
+|                  |            | ` This is part of a really cool thing that many morons like to ignore...` |
+|                  |            | ` `                                                                       |
+|                  |            | `It's formally known as the`                                              |
+|                  |            | `_____________________________________________________________________`   |
+|                  |            | `Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling`   |
+|                  |            | `¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯`   |
+|                  |            | [Scientific Model](https://en.wikipedia.org/wiki/Scientific_modelling)    |
 
