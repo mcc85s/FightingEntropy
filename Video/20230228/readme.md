@@ -27,14 +27,7 @@
 <table>
     <tr>
         <th align="Left">
-                <tr>
-                    <td>
-                        Scientific Model
-                    </td>
-                    <td>
-                        00:04:50
-                    </td>
-                <tr>
+            00:04:50 - Scientific Model
         </th>
     </tr>
     <tr>
