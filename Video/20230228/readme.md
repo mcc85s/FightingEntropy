@@ -139,7 +139,7 @@
 |:---------------- |:-----------------------------------------------------------------------|
 | `00:04:50`       | [Scientific Model](https://en.wikipedia.org/wiki/Scientific_modelling) |
 ```
-What this process is called is [**`establishing`**] a [CONTROL].
+What this process is called is [establishing] a [CONTROL].
 
 This is part of a [really cool] thing that [many morons] like to ignore...
 
