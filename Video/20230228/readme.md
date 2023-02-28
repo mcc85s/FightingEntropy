@@ -1,18 +1,28 @@
-[[Video Information](#video-information)] - [[Audio files](#audio-files)] - [[Links](#links)] - [[Annotations](#annotations)]
+[[Video](#video-information)] - [[Audio](#audio-files)] - [[Document](#document)] - [[Script](#script)] - [[Links](#links)] - [[Annotations](#annotations)]
 
-## Video Information
+## Video
 
 | Date         | Name/Link                                               | Length       |
 |:-------------|:--------------------------------------------------------|:-------------|
 | `02/28/2023` | [2023_0228-(Impressions)](https://youtu.be/BWvPCHFJwsg) | `1h 54m 22s` |
 
-## Audio Files
+## Audio
 
 | # | Name/Url                                                                          | Date         | Start      | End        | Duration   |
 |:--|:----------------------------------------------------------------------------------|:-------------|:-----------|:-----------|:-----------|
 | 0 | [20230218.mp3](https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu) | `02/18/2023` | `17:56:25` | `19:19:18` | `01:23:06` |
 | 1 | [20230217.mp3](https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3) | `02/17/2023` | `09:34:04` | `09:45:17` | `00:10:59` |
 | 2 | [20210202.mp3](https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8) | `02/02/2021` | `11:34:59` | `11:55:02` | `00:20:01` |
+
+## Document
+| Name                        | Url |
+|:----------------------------|:----|
+| 2023_0227-(Impressions).doc | [https://github.com/mcc85s/FightingEntropy/edit/main/Video/20230228/2023_0227-(Impressions).doc](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230228/2023_0227-(Impressions).doc)
+
+## Script
+| Name                             | Url |
+|:---------------------------------|-----|
+| 2023_0224-(Impressions-Full).doc | [https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230228/2023_0224-(Impressions-Full).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230228/2023_0224-(Impressions-Full).ps1)
 
 ## Links
 
@@ -135,7 +145,7 @@
 |  33 | `01:54:56` | [`Conclusion`](#conclusion)
 
 ## Scientific Model
-| Time             | Name                                                                   |
+| Time             | Name/Url                                                               |
 |:---------------- |:-----------------------------------------------------------------------|
 | `00:04:50`       | [Scientific Model](https://en.wikipedia.org/wiki/Scientific_modelling) |
 ```
