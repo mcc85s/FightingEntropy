@@ -4,7 +4,7 @@
 |:-------------|:--------------------------------------------------------|:-------------|
 | `02/28/2023` | [2023_0228-(Impressions)](https://youtu.be/BWvPCHFJwsg) | `1h 54m 22s` |
 
-1) [Audio files](#audio-files), 2) [Links](#links), 3) [Annotation Index](#annotation-index), 4) [Annotations](#annotations)
+1) [Audio files](#audio-files), 2) [Links](#links), 3) [Annotations](#annotations)
 
 ## Audio Files
 
@@ -91,7 +91,11 @@
 | Utah Data Center                  | [https://en.wikipedia.org/wiki/Utah_Data_Center](https://en.wikipedia.org/wiki/Utah_Data_Center)
 | Musk vs World Economic Forum      | [https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0119-(MuskWEF).pdf)
 
-## Annotation Index
+## Annotations
+
+<h5>
+   Times below are in relation to the combined audio file within the video, not the video itself.<br>
+</h5>
 
 | #   | Time       | Name                                                                                                 |
 |:----|:---------- |:-----------------------------------------------------------------------------------------------------|
@@ -129,13 +133,6 @@
 |  31 | `01:34:34` | [`World Economic Forum`](#world-economic-forum)
 |  32 | `01:52:15` | [`Importance Level`](#importance-level)
 |  33 | `01:54:56` | [`Conclusion`](#conclusion)
-
-
-## Annotations
-
-<h5>
-   Times below are in relation to the combined audio file within the video, not the video itself.<br>
-</h5>
 
 ## Scientific Model
 | Time             | Name                                                                   |
