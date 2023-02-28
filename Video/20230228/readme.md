@@ -26,16 +26,25 @@
     Scientific Model
 </h2>
 
+<table>
+    <tr>
+        <td>
+            What this process is called is establishing a CONTROL.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            This is part of a really cool thing that many morons like to ignore...
+        </td>
+    </tr>
+    <tr>
+        <td>
+            It's formally known as the "Scientific Model"
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://en.wikipedia.org/wiki/Scientific_modelling">https://en.wikipedia.org/wiki/Scientific_modelling</a>
+        </td>
+    </tr>
 <p>
-    What this process is called is establishing a CONTROL.
-    
-    This is part of a really cool thing that many morons like to ignore...
-    
-    It's formally known as the
-
-    Scientific model - https://en.wikipedia.org/wiki/Scientific_modelling 
-</p>
-
-<h2>
-    Societal Expectations
-</h2>
