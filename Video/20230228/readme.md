@@ -27,12 +27,16 @@
 <table>
     <tr>
         <th align="Left">
-            <td> 
-                Scientific Model
-            </td>
-            <td>
-                00:04:50
-            </td>
+            <table>
+                <tr>
+                    <td>
+                        Scientific Model
+                    </td>
+                    <td>
+                        00:04:50
+                    </td>
+                <tr>
+            </table>
         </th>
     </tr>
     <tr>
