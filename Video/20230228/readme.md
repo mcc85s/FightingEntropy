@@ -197,7 +197,7 @@ whereby illuminating that someone really important is just really fucking moroni
 
 ## 2023 Work
 
-| Time       | Name                                                                                           |
+| Time       | Name/Url                                                                                       |
 |:-----------|:-----------------------------------------------------------------------------------------------|
 | `00:12:44` | [2023 Work](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0216-(2023Work).pdf) |
 ```
@@ -208,7 +208,7 @@ ________________________________________________________________________________
 
 ## Records List
 
-| Time       | Name                                                                                                 |
+| Time       | Name/Url                                                                                             |
 |:-----------|:-----------------------------------------------------------------------------------------------------|
 | `00:12:46` | [Records List](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf) |
 ```
@@ -235,7 +235,7 @@ ________________________________________________________________________________
 
 ## Speziale and Gardner
 
-| Time       | Name                                                                                      |
+| Time       | Name/Url                                                                                  |
 |:-----------|:------------------------------------------------------------------------------------------|
 | `00:14:53` | [Speziale and Gardner](https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6) |
 ```
@@ -335,7 +335,7 @@ Oh by the way, people think I went insane, cause some people are just plain old 
 
 ## Birds
 
-| Time       | Name                                  |
+| Time       | Name/Url                              |
 |:-----------|:--------------------------------------|
 | `00:23:57` | [Birds](https://youtu.be/zXkmxtYQ6wQ) |
 ```
@@ -885,7 +885,7 @@ and [Justice Department].
 
 ## NYSP Mafiosos
 
-| Time       | Name                                          |
+| Time       | Name/Url                                      |
 |:-----------|:----------------------------------------------|
 | `00:56:48` | [NYSP Mafiosos](https://youtu.be/ENpIkuIbqZU) |
 ```
@@ -896,7 +896,7 @@ _______________________________________________________
 
 ## GlobalFoundries
 
-| Time       | Name                                            |
+| Time       | Name/Url                                        |
 |:-----------|:------------------------------------------------|
 | `01:01:19` | [GlobalFoundries](https://youtu.be/1s-qefkOjXQ) |
 ```
@@ -989,7 +989,7 @@ I'm pretty sure that [anyone] with [eyes] will be able to [see] that [it's not a
 
 ## Integrity
 
-| Time       | Name                                                                           |
+| Time       | Name/Url                                                                       |
 |:-----------|:-------------------------------------------------------------------------------|
 | `01:14:34` | [Integrity](https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS) |
 ```
