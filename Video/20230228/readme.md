@@ -21,6 +21,7 @@
 <h1>
   Annotations/Links
 </h1>
+
 | Index | Type | Position   | Content                        |
 |:------|:-----|:-----------|:-------------------------------|
 | 14    | TXT  | `00:04:50` | Scientific model - https://en.wikipedia.org/wiki/Scientific_modelling |
@@ -33,7 +34,7 @@
 | 75    | TXT  | `00:13:30` | Note |
 | 84    | TXT  | `00:14:02` | Note |
 | 95    | TXT  | `00:14:29` | Note |
-| 100   | TXT  | `00:14:53` | 06/23/22 | Speziale + Gardner | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6 |
+| 100   | TXT  | `00:14:53` | 06/23/22 - Speziale + Gardner - https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6 |
 | 113   | TXT  | `00:16:24` | Note |
 | 124   | TXT  | `00:16:49` | Note |
 | 188   | TXT  | `00:23:10` | Note |
@@ -61,13 +62,13 @@
 | 359   | TXT  | `00:42:31` | Note |
 | 373   | TXT  | `00:46:21` | Note |
 | 376   | TXT  | `00:47:04` | Note |
-| 406   | TXT  | `00:56:48` | 02/12/23 | NYSP Mafiosos | https://youtu.be/ENpIkuIbqZU  |
-| 416   | TXT  | `01:01:19` | 02/17/23 | GlobalFoundries | https://youtu.be/1s-qefkOjXQ |
+| 406   | TXT  | `00:56:48` | 02/12/23 - NYSP Mafiosos - https://youtu.be/ENpIkuIbqZU  |
+| 416   | TXT  | `01:01:19` | 02/17/23 - GlobalFoundries - https://youtu.be/1s-qefkOjXQ |
 | 419   | TXT  | `01:03:21` | Lawsuit Material |
 | 421   | TXT  | `01:03:58` | Time Travel Reference #1 |
 | 424   | TXT  | `01:04:48` | Note |
-| 431   | TXT  | `01:07:30` | 02/20/23 | Time Travel Reference #2 | https://youtu.be/xCo8Wu_0Lb4 |
-| 442   | TXT  | `01:14:34` | 12/22/22 | Integrity | https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS |
+| 431   | TXT  | `01:07:30` | 02/20/23 - Time Travel Reference #2 - https://youtu.be/xCo8Wu_0Lb4 |
+| 442   | TXT  | `01:14:34` | 12/22/22 - Integrity - https://drive.google.com/file/d/1KEi8FluNABAIZYFfWpgLy9KAkEnfMSyS |
 | 473   | TXT  | `01:33:05` | PRISM |
 | 479   | TXT  | `01:34:34` | World Economic Forum |
 | 524   | TXT  | `01:52:15` | Importance Level |
