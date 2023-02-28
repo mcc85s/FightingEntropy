@@ -20,10 +20,14 @@
   Annotations/Links
 </h1>
 
+<h3>
+   Times below are in relation to the combined audio file within the video, not the video itself.
+</h3>
+
 <table>
     <tr>
         <th align="Left">
-            <b>[Scientific Model]</b>
+            | [Scientific Model] - [00:04:50] |
         </th>
     </tr>
     <tr>
@@ -40,4 +44,4 @@
             </p>
         </td>
     </tr>
-<p>
+</table>
