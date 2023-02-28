@@ -24,30 +24,16 @@
    Times below are in relation to the combined audio file within the video, not the video itself.
 </h3>
 
-
-<h1>
-    Scientific Model
-</h1>
-
-<table>
-    <tr>
-        <th align="Left">
-            00:04:50
-        </th>
-    </tr>
-    <tr>
-        <td>
-            <p>
-                What this process is called is establishing a CONTROL.
-            </p>
-            <p>
-                This is part of a really cool thing that many morons like to ignore...
-            </p>
-            <p>
-                It's formally known as the "Scientific Model"
-                <a href="https://en.wikipedia.org/wiki/Scientific_modelling">https://en.wikipedia.org/wiki/Scientific_modelling</a>
-            </p>
-        </td>
-    </tr>
-</table>
+| Name             | Time       | Content   |
+| ---------------- | ---------- | --------- |
+| Scientific Model | `00:04:50` | `
+What this process is called is establishing a CONTROL.
+    
+This is part of a really cool thing that many morons like to ignore...
+    
+It's formally known as the
+_____________________________________________________________________
+Scientific model | https://en.wikipedia.org/wiki/Scientific_modelling 
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+` |
 
