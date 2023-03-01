@@ -4,7 +4,7 @@
 
 | Date         | Name/Link                                               | Length       |
 |:-------------|:--------------------------------------------------------|:-------------|
-| `03/01/2023` | [2023_00301-(New-TranscriptionCollection)](https://youtu.be/5-sMXuLxz0c) | `0h 53m 20s` |
+| `03/01/2023` | [2023_0301-(New-TranscriptionCollection)](https://youtu.be/5-sMXuLxz0c) | `0h 53m 20s` |
 
 ## Document
 
