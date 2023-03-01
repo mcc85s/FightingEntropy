@@ -1,4 +1,4 @@
-[[Video](#video-information)] - [[Audio](#audio-files)] - [[Document](#document)] - [[Script](#script)] - [[Links](#links)] - [[Annotations](#annotations)]
+[[Video](#video)] - [[Audio](#audio)] - [[Transcriptions](#transcriptions)] - [[Document](#document)] - [[Script](#script)] - [[Links](#links)] - [[Annotations](#annotations)]
 
 ## Video
 
@@ -13,6 +13,14 @@
 | 0 | [20230218.mp3](https://drive.google.com/file/d/19ULWQYI_X5eHnUsSpxW9ONHUaB8inWVu) | `02/18/2023` | `17:56:25` | `19:19:18` | `01:23:06` |
 | 1 | [20230217.mp3](https://drive.google.com/file/d/182GBCdeBN_s6R7EBWj6XrvIqiIJeKAZ3) | `02/17/2023` | `09:34:04` | `09:45:17` | `00:10:59` |
 | 2 | [20210202.mp3](https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8) | `02/02/2021` | `11:34:59` | `11:55:02` | `00:20:01` |
+
+## Transcriptions
+
+| # | Name     | Doc                                                                               | Pdf                                                 |
+|:--|:----------------------------------------------------------------------------------|:-------------|:-----------|:-----------|:-----------|
+| 0 | 20230218 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).doc))            | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).pdf) 
+| 1 | 20230217 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).pdf) 
+| 2 | 20210202 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).pdf) 
 
 ## Document
 | Name                        | Url |
