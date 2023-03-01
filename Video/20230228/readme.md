@@ -16,9 +16,9 @@
 
 ## Transcriptions
 
-| # | Name     | Doc                                                                               | Pdf                                                 |
-|:--|:----------------------------------------------------------------------------------|:-------------|:-----------|:-----------|:-----------|
-| 0 | 20230218 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).doc))            | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).pdf) 
+| # | Name     | Doc          | Pdf        |
+|:--|:---------|:-------------|:-----------|
+| 0 | 20230218 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).doc))            | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).pdf) |
 | 1 | 20230217 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).pdf) 
 | 2 | 20210202 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).pdf) 
 
