@@ -1,3 +1,29 @@
+<#
+.SYNOPSIS
+.DESCRIPTION
+.LINK
+.NOTES
+
+ //==================================================================================================\\ 
+//  Script                                                                                            \\
+\\  Date       : 2023-03-01 09:12:48                                                                  //
+ \\==================================================================================================// 
+
+    FileName   : New-TranscriptionCollection
+    Solution   : [FightingEntropy()][2022.12.0]
+    Purpose    : For categorizing a transcription of audio recordings
+    Author     : Michael C. Cook Sr.
+    Contact    : @mcc85s
+    Primary    : @mcc85s
+    Created    : 2023-03-01
+    Modified   : 2023-03-01
+    Demo       : N/A
+    Version    : 0.0.0 - () - Finalized functional version 1
+    TODO       : N/A
+
+.Example
+#>
+
 Function New-TranscriptionCollection
 {
     [CmdLetBinding()]Param(    
@@ -36,10 +62,10 @@ Function New-TranscriptionCollection
 
     Class TranscriptionParty
     {
-        [UInt32]   $Index
+        [Int32]    $Index
         [String]    $Name
         [String] $Initial
-        TranscriptionParty([UInt32]$Index,[String]$Name)
+        TranscriptionParty([Int32]$Index,[String]$Name)
         {
             $This.Index   = $Index
             $This.Name    = $Name
@@ -58,7 +84,7 @@ Function New-TranscriptionCollection
         [String]          $Date
         [String]          $Time
         [String]      $Position
-        Hidden [String] $Length
+        [String]      $Duration
         [String]          $Type
         [String]          $Note
         TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
@@ -68,7 +94,7 @@ Function New-TranscriptionCollection
             $This.Date     = $Position.Date
             $This.Time     = $Position.Time
             $This.Position = $Position.Position
-            $This.Length   = [TimeSpan]$End - $This.Position
+            $This.Duration = [TimeSpan]$End - $This.Position
             $This.Type     = Switch -Regex ($Note)
             {
                 "^\*{1}" { "Action"    }
@@ -128,7 +154,7 @@ Function New-TranscriptionCollection
             $Position = $This.Position($Position)
             Return [TranscriptionDateTime]::New([Switch]$True,$This.Time,$Position)
         }
-        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        [Object] TranscriptionParty([Int32]$Index,[String]$Name)
         {
             Return [TranscriptionParty]::New($Index,$Name)
         }
@@ -179,13 +205,13 @@ Function New-TranscriptionCollection
 
     Class TranscriptionHistoryItem
     {
-        [UInt32]    $Index
-        [UInt32]     $File
-        [UInt32]     $Rank
-        [String]    $Party
-        [String] $Position
-        [TimeSpan] $Length
-        [String]     $Note
+        [UInt32]      $Index
+        [UInt32]       $File
+        [UInt32]       $Rank
+        [String]      $Party
+        [String]   $Position
+        [TimeSpan] $Duration
+        [String]       $Note
         TranscriptionHistoryItem([UInt32]$Index,[UInt32]$File,[Object]$Item)
         {
             $This.Index    = $Index
@@ -193,7 +219,12 @@ Function New-TranscriptionCollection
             $This.Rank     = $Item.Index
             $This.Party    = $Item.Party
             $This.Position = $Item.Position
+            $This.Duration = $Item.Duration
             $This.Note     = $Item.Note
+        }
+        [String] ToString()
+        {
+            Return "{0}/{1}/{2}" -f $This.Index, $This.File, $This.Party
         }
     }
 
@@ -212,6 +243,33 @@ Function New-TranscriptionCollection
         {
             $This.Output += $This.TranscriptionHistoryItem($This.Output.Count,$File,$Current.Output[-1])
         }
+        Finalize()
+        {
+            $Time = [TimeSpan]::FromSeconds(0)
+
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Position = $Time.ToString()
+                $Time          = $Time + [TimeSpan]$Item.Duration 
+            }
+        }
+        [String] ToString()
+        {
+            Return "<TranscriptionHistory>"
+        }
+    }
+
+    Class TranscriptionSection
+    {
+        [UInt32] $Index
+        [String] $Name
+        [String[]] $Content
+        TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Content = $Content
+        }
     }
 
     Class TranscriptionCollection
@@ -221,6 +279,7 @@ Function New-TranscriptionCollection
         [Object]           $File
         [Object]        $History
         Hidden [Int32] $Selected
+        [Object]        $Section
         TranscriptionCollection([String]$Name,[String]$Date)
         {
             $This.Name     = $Name
@@ -228,22 +287,27 @@ Function New-TranscriptionCollection
             $This.File     = @( )
             $This.History  = $This.TranscriptionHistoryList()
             $This.Selected = -1
+            $This.Section  = @( )
         }
         [Object] TranscriptionFile([UInt32]$Index,[String]$Name,[String]$Date,[String]$Start,[String]$Length,[String]$Url)
         {
             Return [TranscriptionFile]::New($Index,$Name,$Date,$Start,$Length,$Url)
         }
-        [Object] TranscriptionParty([UInt32]$Index,[String]$Name)
+        [Object] TranscriptionParty([Int32]$Index,[String]$Name)
         {
             Return [TranscriptionParty]::New($Index,$Name)
         }
-        [Object] TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$Note)
+        [Object] TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
         {
-            Return [TranscriptionEntry]::New($Index,$Party,$Position,$Note)
+            Return [TranscriptionEntry]::New($Index,$Party,$Position,$End,$Note)
         }
         [Object] TranscriptionHistoryList()
         {
             Return [TranscriptionHistoryList]::New()
+        }
+        [Object] TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            Return [TranscriptionSection]::New($Index,$Name,$Content)
         }
         Write([String]$Line)
         {
@@ -305,7 +369,7 @@ Function New-TranscriptionCollection
 
             $This.Write("Party [+] [$Name] added.")
         }
-        AddEntry([UInt32]$Index,[String]$Position,[String]$Note)
+        AddEntry([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
         {
             $Current = $This.Current()
 
@@ -317,15 +381,225 @@ Function New-TranscriptionCollection
             $Current.Output += $This.TranscriptionEntry($Current.Output.Count,
                                                         $Current.Party[$Index],
                                                         $Current.GetPosition($Position),
+                                                        $Current.Position($End),
                                                         $Note)
 
             $This.History.Add($This.Selected,$Current)
 
             $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
         }
-        X([UInt32]$Index,[String]$Position,[String]$Note)
+        AddContext([String]$Note)
         {
-            $This.AddEntry($Index,$Position,$Note)
+            $Current  = $This.Current()
+            $Position = $Current.Output[-1].Position
+
+            $Current.Output += $This.TranscriptionEntry($Current.Output.Count,
+                                                        $This.TranscriptionParty(-1,"T X T"),
+                                                        $Current.GetPosition($Position),
+                                                        $Position,
+                                                        $Note)
+
+            $This.History.Add($This.Selected,$Current)
+
+            $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
+        }
+        Finalize()
+        {
+            $This.History.Finalize()
+        }
+        X([UInt32]$Index,[String]$Position,[String]$End,[String]$Note)
+        {
+            $This.AddEntry($Index,$Position,$End,$Note)
+        }
+        C([String]$Note)
+        {
+            $This.AddContext($Note)
+        }
+        [String] Pad([String]$String,[UInt32]$Mode,[UInt32]$Length)
+        {
+            $Item = Switch ($Mode)
+            {
+                0 { $String.PadRight( $Length , " " ) }
+                1 { $String.PadLeft(  $Length , " " ) }
+            }
+
+            Return $Item
+        }
+        [String] GetTitle()
+        {
+            Return "{0} [~] {1}" -f $This.Name, $This.Date
+        }
+        [String[]] GetSection()
+        {
+            $Out  = @( )
+            $List = $This.History.Output | ? Party -eq Txt | ? Note -match "^\="
+
+            ForEach ($Item in $List)
+            {
+                $Content = $Item.Note -Split "`n"
+                $Out    += $Content[1].Substring(2,($Content[1].Length-4))
+            }
+
+            Return $Out
+        }
+        [String[]] GetFile()
+        {
+            $Out         = @{ }
+            $Count       = $This.File.Count
+            $Depth       = @{ 
+
+                Index    = ([String]$Count).Length
+                Name     = ($This.File.Name | Sort-Object Length)[-1].Length
+            }
+
+            If ($Depth.Index -lt 5)
+            {
+                $Depth.Index = 5
+            }
+
+            If ($Depth.Name -lt 4)
+            {
+                $Depth.Name = 4
+            }
+
+            ForEach ($Item in $This.File)
+            {
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad("Index",0,$Depth.Index),
+                                                     $This.Pad("Name",0,$Depth.Name),
+                                                     $This.Pad("Date",0,10),
+                                                     $This.Pad("Start",0,8),
+                                                     $This.Pad("End",0,8),
+                                                     $This.Pad("Duration",0,8)
+                $Out.Add($Out.Count,$Line)
+
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad("-----",0,$Depth.Index),
+                                                     $This.Pad("----",0,$Depth.Name),
+                                                     $This.Pad("----",0,10),
+                                                     $This.Pad("-----",0,8),
+                                                     $This.Pad("---",0,8),
+                                                     $This.Pad("--------",0,8)
+
+                $Out.Add($Out.Count,$Line)
+
+                $Line = "{0} {1} {2} {3} {4} {5}" -f $This.Pad($Item.Index,1,$Depth.Index),
+                                                     $This.Pad($Item.Name,1,$Depth.Name),
+                                                     $This.Pad($Item.Date,1,10),
+                                                     $This.Pad($Item.Start,1,8),
+                                                     $This.Pad($Item.End,1,8),
+                                                     $This.Pad($Item.Duration,1,8)
+
+                $Out.Add($Out.Count,$Line)
+                $Out.Add($Out.Count," ".PadLeft(116," "))
+                $Line = "[Url]: {0}" -f $Item.Url
+
+                $Out.Add($Out.Count,$Line)
+                $Out.Add($Out.Count," ".PadLeft(116," "))
+            }
+
+            Return $Out[0..($Out.Count-1)]
+        }
+        [String[]] GetOutput()
+        {
+            $Out      = @{ }
+            $Count    = $This.History.Output.Count
+            $Depth    = @{ 
+
+                Index  = ([String]$Count).Length
+                Party  = ($This.History.Output.Party | Sort-Object Length | Select-Object -Unique -Last 1).Length
+                Buffer = 0
+            }
+
+            If ($Depth.Index -lt 5)
+            {
+                $Depth.Index = 5
+            }
+
+            If ($Depth.Party -lt 5)
+            {
+                $Depth.Party = 5
+            }
+
+            $Depth.Buffer = $Depth.Index + $Depth.Party + 10
+
+            # Header
+            $Line = "{0} {1} {2} {3}" -f $This.Pad("Index",0,$Depth.Index),
+                                         $This.Pad("Party",0,$Depth.Party),
+                                        "Position",
+                                        "Note"
+            $Out.Add(0,$Line)
+
+            $Line = "{0} {1} {2} {3}" -f $This.Pad("-----",0,$Depth.Index),
+                                         $This.Pad("-----",0,$Depth.Index),
+                                        "--------",
+                                        "----"
+
+            $Out.Add(1,$Line)
+
+            # Content
+            ForEach ($X in 0..($This.History.Output.Count-1))
+            {
+                $Item    = $This.History.Output[$X]
+                $Content = $Item.Note -Split "`n"
+
+                If ($Item.Party -eq "TXT")
+                {
+                    $Line = "{0} {1} {2} " -f $This.Pad($Item.Index,0,$Depth.Index),
+                                              $This.Pad($Item.Party,0,$Depth.Party),
+                                              $Item.Position
+
+                    $Line = $Line.PadRight(116,"=")
+
+                    $Out.Add($Out.Count,$Line)
+                    $Out.Add($Out.Count," ".PadRight(116," "))
+
+                    ForEach ($Slice in $Content)
+                    {
+                        $Out.Add($Out.Count,"    $Slice")
+                    }
+
+                    $Out.Add($Out.Count," ".PadRight(116," "))
+                    $Out.Add($Out.Count,"=".PadRight(116,"="))
+                }
+
+                Else
+                {
+                    If ($Content.Count -eq 1)
+                    {
+                        $Line = "{0} {1} {2} $content" -f $This.Pad($Item.Index,0,$Depth.Index),
+                                                          $This.Pad($Item.Party,0,$Depth.Party),
+                                                          $Item.Position
+                                                    
+
+                        $Out.Add($Out.Count,$Line)
+                    }
+                    If ($Content.Count -gt 1)
+                    {
+                        $C = 0
+                        ForEach ($Slice in $Content)
+                        {
+                            If ($C -eq 0)
+                            {
+                                $Line = "{0} {1} {2} {3}" -f $This.Pad($Item.Index,0,$Depth.Index),
+                                                             $This.Pad($Item.Party,0,$Depth.Party),
+                                                             $Item.Position,
+                                                             $Slice
+                            }
+                            Else
+                            {
+                                $Line = "{0} {1}" -f " ".PadRight($Depth.Buffer," "),
+                                                    $Slice
+                            }
+
+                            $C ++
+                            $Out.Add($Out.Count,$Line)
+                        }
+                    }
+                }
+
+                $Out.Add($Out.Count," ".PadRight(116," "))
+            }
+
+            Return $Out[0..($Out.Count-1)]
         }
         [String] ToString()
         {
