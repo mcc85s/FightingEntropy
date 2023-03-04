@@ -1,0 +1,1666 @@
+// ## This file was taken from the first comment of this forum post:
+// ## https://www.bleepingcomputer.com/forums/t/768015/windows-experts-check-out-the-virus-that-no-one-wants-to-acknowledge/
+// ## Everything below is verbatim of what the OP posted.
+
+; Copyright © Microsoft Corporation.  All rights reserved.
+ 
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider=%MSFT%
+PnpLockdown=1
+DriverVer = 06/21/2006,10.0.22000.1
+ 
+[SourceDisksNames]
+3426=windows cd
+ 
+[SourceDisksFiles]
+msisadrv.sys    = 3426
+isapnp.sys      = 3426
+ 
+[DestinationDirs]
+DefaultDestDir = 12                ; DIRID_DRIVERS
+ 
+[ControlFlags]
+BasicDriverOk=*
+ExcludeFromSelect=*
+ 
+[Manufacturer]
+%GENDEV_MFG%=GENDEV_SYS,NTamd64
+%ACC_MFG%=ACC_SYS,NTamd64
+%ACER_MFG%=ACER_SYS,NTamd64
+%ALI_MFG%=ALI_SYS,NTamd64
+%AMD_MFG%=AMD_SYS,NTamd64
+%ATI_MFG%=ATI_SYS,NTamd64
+%COMPAQ_MFG%=COMPAQ_SYS,NTamd64
+%CONTAQ_MFG%=CONTAQ_SYS,NTamd64
+%CYRIX_MFG%=CYRIX_SYS,NTamd64
+%HITACHI_MFG%=HITACHI_SYS,NTamd64
+%HP_MFG%=HP_SYS,NTamd64
+%IBM_MFG%=IBM_SYS,NTamd64
+%INTEL_MFG%=INTEL_SYS,NTamd64
+%MICRON_MFG%=MICRON_SYS,NTamd64
+%NATSEMI_MFG%=NATSEMI_SYS,NTamd64
+%NEC_MFG%=NEC_SYS,NTamd64
+%NVIDIA_MFG%=NVIDIA_SYS,NTamd64
+%OPTI_MFG%=OPTI_SYS,NTamd64
+%SERVERWORKS_MFG%=SERVERWORKS_SYS,NTamd64
+%SIS_MFG%=SIS_SYS,NTamd64
+%SMSC_MFG%=SMSC_SYS,NTamd64
+%TOSHIBA_MFG%=TOSHIBA_SYS,NTamd64
+%UMC_MFG%=UMC_SYS,NTamd64
+%VIA_MFG%=VIA_SYS,NTamd64
+%VLSI_MFG%=VLSI_SYS,NTamd64
+%LEGACY_MFG%=LEGACY_SYS,NTamd64
+ 
+[GENDEV_SYS.NTamd64]
+%PCI\CC_0601_Desc%       = MSISADRV, PCI\CC_0601       ; PCI-ISA BRIDGE
+%PCI\CC_0602_Desc%       = MSISADRV, PCI\CC_0602       ; PCI-EISA BRIDGE
+%PCI\CC_0600_Desc%       = NO_DRV, PCI\CC_0600         ; HOST PCI BRIDGE
+%PCI\CC_0500_Desc%       = NO_DRV,PCI\CC_0500          ; RAM Controller
+ 
+%*PNP0A00_Desc% = MSISADRV, *PNP0A00       ; ISA BUS
+%*PNP0A01_Desc% = MSISADRV, *PNP0A01       ; EISA BUS
+%*PNP0A04_Desc% = MSISADRV, *PNP0A04       ; VL BUS
+%*PNP0000_Desc% = NO_DRV_PIC, *PNP0000     ; PIC
+%*PNP0001_Desc% = NO_DRV_PIC, *PNP0001     ; EISA PIC
+%*PNP0003_Desc% = NO_DRV_PIC, *PNP0003     ; APIC
+%*PNP0004_Desc% = NO_DRV_PIC, *PNP0004     ; Cyrix SLiC MPIC
+%*PNP0100_Desc% = NO_DRV_X, *PNP0100       ; System Timer
+%*PNP0101_Desc% = NO_DRV_X, *PNP0101       ; EISA System Timer
+%*PNP0103_Desc% = NO_DRV_HPET, *PNP0103    ; HPET
+%*PNP0200_Desc% = NO_DRV_X, *PNP0200       ; DMA
+%*PNP0201_Desc% = NO_DRV_X, *PNP0201       ; EISA DMA
+%*PNP0800_Desc% = NO_DRV_X, *PNP0800       ; System Speaker
+%*PNP0B00_Desc% = NO_DRV_X, *PNP0B00       ; Real Time Clock
+%*PNP0A05_Desc% = NO_DRV_X_PNP, *PNP0A05   ; Generic ACPI Bus
+%*PNP0A06_Desc% = NO_DRV_X_PNP, *PNP0A06   ; Extended IO Bus
+%*PNP0C00_Desc% = NO_DRV_X, *PNP0C00       ; PnP BIOS
+%*PNP0C01_Desc% = NO_DRV_MBRES, *PNP0C01   ; System board
+%*PNP0C02_Desc% = NO_DRV_MBRES, *PNP0C02   ; Motherboard resources
+%*PNP0C04_Desc% = NO_DRV_X, *PNP0C04       ; Numeric processor
+%*PNP0C09_Desc% = NO_DRV, *PNP0C09         ; Embedded Controller
+%*PNP0C0B_Desc% = NO_DRV, *PNP0C0B         ; APM FAN
+%*PNP0C0C_Desc% = NO_DRV, *PNP0C0C         ; APM Power Button
+%*PNP0C0D_Desc% = NO_DRV, *PNP0C0D         ; APM Lid
+%*PNP0C0E_Desc% = NO_DRV, *PNP0C0E         ; APM Sleep Button
+%*PNP0C15_Desc% = NO_DRV, *PNP0C15         ; Docking Station
+%*PNP0C32_Desc% = NO_DRV, *PNP0C32         ; Direct Application Launch Button
+%*PNP0D80_Desc% = NO_DRV_GEN, *PNP0D80     ; Standard Power Management Controller
+;%*PNP0C05_Desc% = NO_DRV, *PNP0C05        ; APM BIOS
+;%*PNP0C0A_Desc% = NO_DRV, *PNP0C0A        ; APM Battery
+;%*PNP0C0F_Desc% = NO_DRV, *PNP0C0F        ; ACPI IRQ Holder
+;%*PNP0C13_Desc% = NO_DRV, *PNP0C13        ; PnP BIOS in ACPI fail safe
+ 
+%ACPI0004_Desc% = NO_DRV_X_PNP, *ACPI0004 ; Generic ACPI Bus - Module Device
+%ACPI0004_Desc% = NO_DRV_X_PNP, ACPI0004 ; Generic ACPI Bus - Module Device
+%ACPI0010_Desc% = NO_DRV_X_PNP, *ACPI0010 ; Generic ACPI Processor Container Device/
+%ACPI\FixedButton_Desc% = NO_DRV, ACPI\FixedButton ; ACPI Fixed Feature Button
+%ACPI\ThermalZone_Desc% = NO_DRV, ACPI\ThermalZone ; ACPI Thermal Zone
+%ACPI\DockDevice_Desc% = NO_DRV, ACPI\DockDevice ; ACPI Dock Device
+%ACPI\DockDevice_Desc% = MS_TPDOCK, ACPI\DockDevice&_SB_.PCI_.OAK_ ; ACPI Dock Device (TP 570 Dock)
+%ACPI\DockDevice_Desc% = MS_TPSLICE, ACPI\DockDevice&_SB_.PCI_.ISA_.SLCE ; ACPI Dock Device (TP 570 Slice)
+ 
+%ISAPNP\ReadDataPort_Desc% = NO_DRV, ISAPNP\ReadDataPort
+%*LEGACYISAPNP_Desc% = LEGACY_ISAPNP_DRV, *LEGACYISAPNP ; References LEGACY_ISAPNP_DRV files
+%LPTENUM\MicrosoftRawPort958A_Desc% = NO_DRV, LPTENUM\MicrosoftRawPort958A ; Printer Port Logical Interface
+ 
+[ACC_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10AA&DEV_0000
+ 
+[ACER_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1025&DEV_1435
+ 
+[ALI_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10B9&DEV_1445
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10B9&DEV_1449
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1451
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10B9&DEV_1489
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1521
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10B9&DEV_1523
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1531
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_10B9&DEV_1533
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1541
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1621
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1647
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_10B9&DEV_1651
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_10B9&DEV_7101
+ 
+[AMD_SYS.NTamd64]
+%IommuDevice_Desc% = NO_DRV,PCI\VEN_1002&DEV_5A23
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_1022&DEV_1100
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_1022&DEV_1101
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_1022&DEV_1102
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_1022&DEV_1103
+%IommuDevice_Desc% = NO_DRV,PCI\VEN_1022&DEV_1419
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1022&DEV_740B
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_1022&DEV_7413
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_1022&DEV_7443
+%InterruptController_Desc% = NO_DRV,PCI\VEN_1022&DEV_7451
+%InterruptController_Desc% = NO_DRV,PCI\VEN_1022&DEV_7459
+%SmBus_Desc% = NO_DRV,PCI\VEN_1022&DEV_746A
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_1022&DEV_746B
+%SmBus_Desc% = NO_DRV,PCI\VEN_1022&DEV_780B
+ 
+[ATI_SYS.NTamd64]
+%SmBus_Desc% = NO_DRV,PCI\VEN_1002&DEV_4372
+%LpcController_Desc% = MSISADRV,PCI\VEN_1002&DEV_4377
+%SmBus_Desc% = NO_DRV_MEM,PCI\VEN_1002&DEV_4385
+%LpcController_Desc% = MSISADRV,PCI\VEN_1002&DEV_438D
+ 
+[COMPAQ_SYS.NTamd64]
+%PciToEisaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_0001
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_0002
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_0E11&DEV_1000
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_0E11&DEV_2000
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_AE29
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_AE2B
+%PciController_Desc% = NO_DRV, PCI\VEN_0E11&DEV_A0F0
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_A0F3
+%PciController_Desc% = NO_DRV, PCI\VEN_0E11&DEV_A0F7
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_0E11&DEV_AE2A
+%PciController_Desc% = NO_DRV, PCI\VEN_0E11&DEV_AE31
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_0E11&DEV_AE69
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_0E11&DEV_AE6C&CC_0600
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_0E11&DEV_AE6D
+%PciController_Desc% = NO_DRV, PCI\VEN_8086&DEV_123F&SUBSYS_A2F90E11
+%ThermalControlDevice_Desc% = NO_DRV, *CPQA0EF
+%ThermalControlDevice_Desc% = NO_DRV, *CPQAE08
+%LegacyDevice_Desc% = NO_DRV, *CPQAE30
+%LegacyDevice_Desc% = NO_DRV, *CPQAE3B
+%LegacyDevice_Desc% = NO_DRV, *CPQAE3C
+%LegacyDevice_Desc% = NO_DRV, *CPQAE4A
+%LegacyDevice_Desc% = NO_DRV, *CPQAE4B
+%LegacyDevice_Desc% = NO_DRV, *CPQAE4C
+%LegacyDevice_Desc% = NO_DRV, *CPQAE4D
+%LegacyDevice_Desc% = NO_DRV, *CPQAE53
+%LegacyDevice_Desc% = NO_DRV, *CPQAE54
+%LegacyDevice_Desc% = NO_DRV, *CPQAE55
+%LegacyDevice_Desc% = NO_DRV, *CPQB05F
+%LegacyDevice_Desc% = NO_DRV, *CPQB118
+%LegacyDevice_Desc% = NO_DRV, *CPQB119
+%LegacyDevice_Desc% = NO_DRV, *CPQB11A
+%LegacyDevice_Desc% = NO_DRV, *CPQFA1B
+ 
+[CONTAQ_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1080&DEV_0600
+ 
+[CYRIX_SYS.NTamd64]
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1078&DEV_0000
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1078&DEV_0002
+ 
+[HITACHI_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1054&DEV_3005
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1054&DEV_3006
+ 
+[HP_SYS.NTamd64]
+%InterruptController_Desc% = NO_DRV, PCI\VEN_103C&DEV_10C1
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_103C&DEV_10ED
+%PciController_Desc% = NO_DRV, PCI\VEN_103C&DEV_1219
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_103C&DEV_121A
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_103C&DEV_121B
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_103C&DEV_121C
+%LegacyDevice_Desc% = NO_DRV, *HWPC209
+ 
+[IBM_SYS.NTamd64]
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1014&DEV_000A
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1014&DEV_0017
+%ConfigurationDevice_Desc% = NO_DRV, *IBM006A
+ 
+[INTEL_SYS.NTamd64]
+%LegacyDevice_Desc% = NO_DRV_MEM, *INT0800
+%SgxDevice_Desc% = NO_DRV_GEN, ACPI\INT0E0C
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0008
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0040
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0050
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_0051
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0069
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0100
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0104
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0108
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0150
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0154
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0158
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_015C
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0326
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0327
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0331
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0333
+%MemoryController_Desc% = NO_DRV, PCI\VEN_8086&DEV_0334
+%InterruptController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0371
+%InterruptController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0373
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0374
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0434
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_043E
+%PciToEisaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_0482
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_0483
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_0484
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_0486
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_04A3&REV_00
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_04A3&REV_01
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_04A3&REV_02
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_04A3&REV_03
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_04A3
+%SpiController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0800
+%SpiController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0801
+%I2cDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0802
+%I2cDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0803
+%I2cDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0804
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_8086&DEV_080D
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_0813
+%SpiController_Desc% = NO_DRV,PCI\VEN_8086&DEV_0815
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_0817
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1130
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_8086&DEV_1161
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_1225
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_122D
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_122E
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_1234
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_1235
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_1237
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_123C
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_123D
+%PciController_Desc% = NO_DRV, PCI\VEN_8086&DEV_123F
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_1250
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1361
+%InterruptController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1461
+%PciController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1462
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1A21
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_1A30
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_1A38
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1C22
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_1C24
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C40
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C41
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C42
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C43
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C44
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C46
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C47
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C49
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4A
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4B
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4C
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4D
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4E
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C4F
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C50
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C52
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C54
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C56
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C58
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C59
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C5A
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1C5C
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D22
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D24
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1D40
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1D41
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D73
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D76
+%PciController_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D77
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D70
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D71
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1D72
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_1E22
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_1E24
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_8086&DEV_1E31
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E41
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E42
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E43
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E44
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E46
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E47
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E48
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E49
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E4A
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E53
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E55
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E56
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E57
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E58
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E59
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E5B
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E5D
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E5E
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_1E5F
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_2310
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_2330
+%PerformanceCounter_Desc% = NO_DRV,PCI\VEN_8086&DEV_2331
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2332
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2352
+%WatchdogTimer_Desc% = NO_DRV,PCI\VEN_8086&DEV_2360
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2364
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2365
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_2410
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_2413
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_2420
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_2423
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_2440
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_2443
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_244C
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2480
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_2483
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_248C
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_24C0
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_24C3
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_24CC
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_24D0
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_24D3
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_24DC
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2500
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2501
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_250B
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2530
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2531
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2540
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2541
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2544
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2546
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2548
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_254C
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2550
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2551
+%PciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_2554
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_8086&DEV_255D
+%PciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_2560
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2570
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2576
+%MemoryController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2578
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_257E
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2580
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2584
+%MemoryController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2588
+%CpuToDramController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2590
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_25A1
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_25A4
+%WatchdogTimer_Desc% = NO_DRV, PCI\VEN_8086&DEV_25AB
+%MemoryController_Desc% = NO_DRV, PCI\VEN_8086&DEV_25AC
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_25C0
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_25D0
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_25D4
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_25D8
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_25F0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_25F1
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_25F3
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_25F5
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_25F6
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2600
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_260C
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2610
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2611
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2612
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2613
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2614
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2615
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2617
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2618
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2619
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_261A
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_261B
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_261C
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_261D
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_261E
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2620
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2621
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2622
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2623
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2624
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2625
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2626
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2627
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2640
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2641
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2642
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_266A
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2670
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_269B
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2770
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2774
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2778
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_277C
+%CpuToDramController_Desc% = NO_DRV,PCI\VEN_8086&DEV_27A0
+%CpuToDramController_Desc% = NO_DRV, PCI\VEN_8086&DEV_27AC
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_27B0
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_27B8
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_27B9
+%LpcController_Desc% = MSISADRV,PCI\VEN_8086&DEV_27BC
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_27BD
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_27DA
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2810
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2811
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2812
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2814
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2815
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_283E
+%ThermalControlDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_284F
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2910
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2911
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2912
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2914
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2916
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2917
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2918
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_2919
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_2930
+%ThermalControlDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_2932
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2970
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_2980
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2990
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_29A0
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_29B0
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_29C0
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_29D0
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_29E0
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_29F0
+%CpuToDramController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2A00
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A09
+%CpuToDramController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2A10
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A19
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A29
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A39
+%CpuToDramController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2A40
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A49
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A59
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A69
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A79
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A89
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2A99
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AA9
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AB9
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AC9
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AD9
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AE9
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2AF9
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B00
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B02
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B68
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B6A
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B04
+%CachingAgent_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B08
+%CachingAgent_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B0C
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B10
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B14
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B16
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B13
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B18
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B1C
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B1E
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B1B
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B20
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B22
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B24
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B28
+%ConfigurationDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B2A
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B2C
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B30
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B34
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B38
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B3C
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B40
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B42
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B44
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B46
+%DebugDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B48
+%DebugDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B4C
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B50
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B52
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B54
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B56
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B58
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B5A
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B5C
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B5E
+%SmiPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B60
+%SmiPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B62
+%SmiPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B64
+%SmiPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B66
+%CacheCoherenceEngine_Desc% = NO_DRV,PCI\VEN_8086&DEV_2B6C
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C01
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C10
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C11
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C14
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C15
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C18
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C19
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C1A
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C1C
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C20
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C21
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C22
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C23
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C28
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C29
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C2A
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C2B
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C30
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C31
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C32
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C33
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C40
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C41
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C50
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C51
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C52
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C53
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C54
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C55
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C56
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C57
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C70
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C81
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C90
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C91
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C98
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C99
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C9A
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2C9C
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA1
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA2
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA3
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA8
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CA9
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CAA
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2CAB
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D81
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D90
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D91
+%PhysicalLayerPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D92
+%PhysicalLayerPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D93
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D94
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D95
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D98
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D99
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D9A
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_2D9C
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA0
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA1
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA2
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA3
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA8
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DA9
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DAA
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DAB
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DB0
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DB1
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DB2
+%MemoryControllerChannel_Desc% = NO_DRV,PCI\VEN_8086&DEV_2DB3
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E00
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E08
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E10
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E18
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E20
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E28
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E30
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E38
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E40
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E48
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E58
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E68
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E78
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E88
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_2E90
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2E98
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2EA8
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2EB8
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2EC8
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2ED8
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2EE8
+%PerformanceCounter_Desc% = NO_DRV, PCI\VEN_8086&DEV_2EF8
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3340
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3400
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3401
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3402
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3403
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3404
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3405
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3406
+%IoHubToEsiPortBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3407
+%PhysicalLayerPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_3418
+%PhysicalLayerPort_Desc% = NO_DRV,PCI\VEN_8086&DEV_3419
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3422
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3423
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3424
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3425
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3426
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3427
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3428
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3429
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_342A
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_342B
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_342C
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_342D
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_342E
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_342F
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3430
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3431
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3432
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3433
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3438
+%InterruptController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3504
+%InterruptController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3505
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_3575
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_3578
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3580
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3584
+%CpuToIoController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3585
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3590
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3591
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3592
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3593
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3594
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_359B
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_359E
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_35B0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_35B1
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_35B5
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_35C8
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3600
+%QuickdataDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_360B
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_360C
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_360D
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_360E
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_360F
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3610
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A10
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A14
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A16
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A18
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A1A
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3A1E
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_3A30
+%ThermalControlDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3A32
+%VirtualizationEngineController_Desc% = NO_DRV, PCI\VEN_8086&DEV_3A51
+%SmBus_Desc% = NO_DRV, PCI\VEN_8086&DEV_3A60
+%ThermalControlDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3A62
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B00
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B01
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B02
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B03
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B04
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B05
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B06
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B07
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B08
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B09
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0A
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0B
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0C
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0D
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0E
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B0F
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B10
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B11
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B12
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B13
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B14
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B15
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B16
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B17
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B18
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B19
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1A
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1B
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1C
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1D
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1E
+%LpcController_Desc% = MSISADRV, PCI\VEN_8086&DEV_3B1F
+%VirtualizationEngineController_Desc% = NO_DRV, PCI\VEN_8086&DEV_3B30
+%ThermalControlDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_3B32
+%VirtualizationEngineController_Desc% = NO_DRV, PCI\VEN_8086&DEV_3B53
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C00
+%NontransparentBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C0D
+%NontransparentBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C0E
+%NontransparentBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C0F
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C20
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C21
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C22
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C23
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C24
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C25
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C26
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C27
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C28
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C2A
+%InterruptController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C2C
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C2E
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C2F
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C40
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C43
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C44
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C45
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C46
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C71
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C80
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C83
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C84
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C90
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C93
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C94
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CA0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CA8
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CAA
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CAB
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CAC
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CAD
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CAE
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB0
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB1
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB2
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB3
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB4
+%ThermalControlDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB5
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB6
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB7
+%CpuToDramController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CB8
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CC0
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CC1
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CC2
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CD0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE3
+%PerformanceMonitor_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE4
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE6
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE8
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CE9
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CEA
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CEB
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CEC
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CED
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CEE
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CEF
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CF4
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CF5
+%AddressDecoder_Desc% = NO_DRV,PCI\VEN_8086&DEV_3CF6
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C41
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C42
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C86
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_3C96
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_4000
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_4001
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_4003
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_402D
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_402E
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_4030
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_4031
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_4035
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_4036
+%PciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_4110
+%MemoryController_Desc% = NO_DRV,PCI\VEN_8086&DEV_65C0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_65F0
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_65F1
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_65F3
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_65F5
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_65F6
+%DmaDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_65FF
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7000
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_7030
+%CpuToPciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_7100
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7110&CC_0680
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7110&CC_0601
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7110&REV_01&CC_0680
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7110&REV_01&CC_0601
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7113&REV_00
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7113&REV_01
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7113
+%SystemGraphicsController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7120
+%SystemGraphicsController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7122
+%SystemGraphicsController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7124
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_7180
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_7190
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_7192
+%CpuToIoController_Desc% = NO_DRV, PCI\VEN_8086&DEV_7194
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7198
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_8086&DEV_719B
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_8086&DEV_7600
+%SmBus_Desc% = NO_DRV,PCI\VEN_8086&DEV_7603
+%LegacyDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_8002
+%PciBridge_Desc% = NO_DRV, PCI\VEN_8086&DEV_84C4
+%MemoryController_Desc% = NO_DRV, PCI\VEN_8086&DEV_84C5
+%DmiDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_A000
+%DmiDevice_Desc% = NO_DRV, PCI\VEN_8086&DEV_A010
+%PciBridge_Desc% = NO_DRV,PCI\VEN_8086&DEV_B555&SUBSYS_B555119F
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D130
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D131
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D132
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D133
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D134
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D135
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D136
+%DmiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D137
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D150
+%QpiDevice_Desc% = NO_DRV,PCI\VEN_8086&DEV_D151
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_D155
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_D156
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_D157
+%Registers_Desc% = NO_DRV,PCI\VEN_8086&DEV_D158
+ 
+[MICRON_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1042&DEV_3000
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1042&DEV_3010
+ 
+[NATSEMI_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1066&DEV_0001
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1066&DEV_8002
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1066&DEV_0002
+%LegacyDevice_Desc% = MSISADRV, PCI\VEN_100B&DEV_0011
+ 
+[NEC_SYS.NTamd64]
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00A8&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00A8&CC_0000
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00A9&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AA&CC_0500
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AB&SUBSYS_00AB1033
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AC&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AD&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AE&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00AF
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00B0
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1033&DEV_00B1&CC_0600
+ 
+[NVIDIA_SYS.NTamd64]
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_10DE&DEV_005E
+%LpcController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_00D3
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_00E4
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0052
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0084
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_00D4
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0264
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0368
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_03EB
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0446
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0542
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_07D8
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0752
+%PciController_Desc% = NO_DRV, PCI\VEN_10DE&DEV_0AA2
+ 
+[OPTI_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1045&DEV_C822
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1045&DEV_C832
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1045&DEV_C557
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1045&DEV_C558
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1045&DEV_C567
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1045&DEV_C568
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1045&DEV_C700
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1045&DEV_C701
+ 
+[SERVERWORKS_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0005&CC_0600
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0007
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0008
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0009&CC_0600
+%IoBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0010&CC_0600
+%Northbridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0011&CC_0600
+%Northbridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0012&CC_0600
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0013
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0014&CC_0600
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0015
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0016&CC_0600
+%Northbridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0017&CC_0600
+%IoBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0101&CC_0600
+%IoBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0110&CC_0600
+%Southbridge_Desc% = MSISADRV, PCI\VEN_1166&DEV_0200
+%Southbridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0201&CC_0600
+%Southbridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0203&CC_0600
+%PciBridge_Desc% = NO_DRV, PCI\VEN_1166&DEV_0205&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1166&DEV_0214&CC_1018
+%LpcController_Desc% = MSISADRV, PCI\VEN_1166&DEV_0225
+%LpcController_Desc% = MSISADRV, PCI\VEN_1166&DEV_0227
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1166&DEV_0230
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1166&DEV_0234&CC_0601
+ 
+[SIS_SYS.NTamd64]
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1039&DEV_0008
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1039&DEV_0009
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0406
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1039&DEV_0496
+%HostBridge_Desc% = NO_DRV, PCI\VEN1039&DEV_0540
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0630
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0635
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0730
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0735
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0755
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0760
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0756
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0761
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0648
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0649
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0655
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0656
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0661
+%PciToLpc_Desc% = MSISADRV, PCI\VEN_1039&DEV_0963
+%PciToLpc_Desc% = MSISADRV, PCI\VEN_1039&DEV_0964
+%PciToLpc_Desc% = MSISADRV, PCI\VEN_1039&DEV_0965
+%PciToLpc_Desc% = MSISADRV, PCI\VEN_1039&DEV_0966
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0662
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1039&DEV_0741
+ 
+[SMSC_SYS.NTamd64]
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1055&DEV_9460
+%PowerManagementController_Desc% = NO_DRV,PCI\VEN_1055&DEV_9463
+ 
+[TOSHIBA_SYS.NTamd64]
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1179&DEV_0601
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1179&DEV_0618
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1179&DEV_0602
+%ChipsetController_Desc% = NO_DRV,PCI\VEN_1179&DEV_0603
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1179&DEV_0611
+ 
+[UMC_SYS.NTamd64]
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1060&DEV_8886
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1060&DEV_886A
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1060&DEV_E886
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1060&DEV_8881
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1060&DEV_0891
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1060&DEV_E881
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1060&DEV_E891
+ 
+[VIA_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0204
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0208
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0282
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0296
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0305
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0308
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0336
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0351
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0364
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0391
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0409
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0501
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_0505
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_0576
+%CpuToPciAndPciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1107&DEV_0576
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_0586
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_0596
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0597
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0598
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0601
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0605
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_0691
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_0686
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1204
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1208
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1282
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1296
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1308
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1336
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1351
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1364
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_1409
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2204
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2208
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2282
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2296
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2308
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2336
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2351
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2364
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_2409
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_287B&CC_0600
+%ChipsetController_Desc% = NO_DRV, PCI\VEN_1106&DEV_287E
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_3040
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_3050
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_3051
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_3057
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_3074
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3091
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3099
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3101
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_3109
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3112
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3116
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3123
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3128
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1106&DEV_3147
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3148
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3156
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3168
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1106&DEV_3177
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3188
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3189
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3204
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3205
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3208
+%PciToIsaBridge_Desc% = MSISADRV,PCI\VEN_1106&DEV_3227
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_324B&CC_0600
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_324E
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3282
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_3287
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3296
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3336
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_3337
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3351
+%MemoryControllerChannel_Desc% = NO_DRV, PCI\VEN_1106&DEV_3353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_3364
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_337B&CC_0600
+%MemoryControllerChannel_Desc% = NO_DRV, PCI\VEN_1106&DEV_3409
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4204
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4208
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4282
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4296
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4308
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4336
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4351
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_4353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_4364
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_4409
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_1106&DEV_5208
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_1106&DEV_5238
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_1106&DEV_5308
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1106&DEV_5327
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1106&DEV_5336
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_1106&DEV_5340
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1106&DEV_5351
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1106&DEV_5353
+%InterruptController_Desc% = NO_DRV_MEM, PCI\VEN_1106&DEV_5364
+%InterruptController_Desc% = NO_DRV, PCI\VEN_1106&DEV_5409
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_6327
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_6340
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_6353
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_6364
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_6409
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7204
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7208
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7238
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7258
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7259
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7269
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7282
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7296
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7308
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7314
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7324
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7327
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7336
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7340
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7351
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7353
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7364
+%HostBridge_Desc% = NO_DRV, PCI\VEN_1106&DEV_7409
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_8231
+%PowerManagementController_Desc% = NO_DRV, PCI\VEN_1106&DEV_8235
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1106&DEV_8324
+%LegacyDevice_Desc% = MSISADRV, PCI\VEN_1106&DEV_8409
+%InterruptController_Desc% = NO_DRV_MEM,PCI\VEN_1106&DEV_B113
+%LegacyDevice_Desc% = MSISADRV, PCI\VEN_1106&DEV_8353
+%LegacyDevice_Desc% = NO_DRV, PCI\VEN_1106&DEV_A353
+ 
+[VLSI_SYS.NTamd64]
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1004&DEV_0005
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1004&DEV_0006
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1004&DEV_0101
+%PciToIsaBridge_Desc% = MSISADRV, PCI\VEN_1004&DEV_0103
+%CpuToPciBridge_Desc% = NO_DRV, PCI\VEN_1004&DEV_0104
+ 
+[LEGACY_SYS.NTamd64]
+; Legacy install sections still here for Include/Needs by old INFs.
+; Moved to msisadrv.inf
+%LegacyDevice_Desc% = ISAPNP_DRV
+%LegacyDevice_Desc% = ISAPNP_DOCKONLY_DRV
+; Moved to pci.inf
+%LegacyDevice_Desc% = PCI_DRV_ROOT
+%LegacyDevice_Desc% = PCI_DRV
+%LegacyDevice_Desc% = PciIoSpaceNotRequired
+%LegacyDevice_Desc% = PciSriovSupported
+%LegacyDevice_Desc% = PciAcsNotRequired
+%LegacyDevice_Desc% = PciASPMOptIn
+%LegacyDevice_Desc% = PciASPMOptOut
+%LegacyDevice_Desc% = PciD3ColdSupported
+%LegacyDevice_Desc% = PciDoNotUseAcs
+%LegacyDevice_Desc% = PciEnableAllBridgeInterrupts
+%LegacyDevice_Desc% = PciAtomicsOptIn
+%LegacyDevice_Desc% = PciExtraSettleTimeRequired
+%LegacyDevice_Desc% = PciIgnoreErrorsDuringPLDR
+%LegacyDevice_Desc% = PciForceSBR
+%LegacyDevice_Desc% = PciBridgeUseNativeWakeInfo
+%LegacyDevice_Desc% = PciRecoveryDisabled
+%LegacyDevice_Desc% = PciRecoveryEnabled
+ 
+; Generic ISA Bus / PCI-ISA Bridge / PCI-EISA Bridge
+[MSISADRV]
+CopyFiles=MsIsaDrv_CopyFiles
+ 
+[MsIsaDrv_CopyFiles]
+msisadrv.sys,,,0x100 ;COPYFLG_PROTECTED_WINDOWS_DRIVER_FILE
+ 
+[MSISADRV.Services]
+AddService = msisadrv, %SPSVCINST_ASSOCSERVICE%, msisadrv_ServiceInstallSection
+ 
+[msisadrv_ServiceInstallSection]
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_BOOT_START%
+ErrorControl   = %SERVICE_ERROR_CRITICAL%
+ServiceBinary  = %12%\msisadrv.sys
+LoadOrderGroup = "Boot Bus Extender"
+AddReg = msisadrv_ServiceInstallSection_AddReg
+ 
+[msisadrv_ServiceInstallSection_AddReg]
+HKR,,Tag,0x00010001,2
+ 
+; External INFs may include ISAPNP_DRV section.  This section is provided for
+; backwards compatibility with those infs.  New infs should use include
+; msisadrv section instead.
+[ISAPNP_DRV]
+CopyFiles=MsIsaDrv_CopyFiles
+ 
+[ISAPNP_DRV.Services]
+AddService = msisadrv, %SPSVCINST_ASSOCSERVICE%, msisadrv_ServiceInstallSection
+ 
+; ISA PnP Bus
+; The LEGACY_ISAPNP_DRV should only be used for systems which require
+; the ability to enumerate devices via ISAPNP protocol.  Most systems should use
+; msisadrv.
+[LEGACY_ISAPNP_DRV]
+CopyFiles=IsaPnp_CopyFiles
+ 
+[IsaPnp_CopyFiles]
+isapnp.sys,,,0x100 ;COPYFLG_PROTECTED_WINDOWS_DRIVER_FILE
+ 
+[LEGACY_ISAPNP_DRV.Services]
+AddService = isapnp, %SPSVCINST_ASSOCSERVICE%, isapnp_ServiceInstallSection, isapnp_EventLogInstallSection
+ 
+[isapnp_ServiceInstallSection]
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_BOOT_START%
+ErrorControl   = %SERVICE_ERROR_CRITICAL%
+ServiceBinary  = %12%\isapnp.sys
+LoadOrderGroup = "Boot Bus Extender"
+AddReg         = ISAPNP_DRV.AddReg
+ 
+[ISAPNP_DRV.AddReg]
+HKR,,HasBootConfig,0x00010001,00000000
+ 
+[isapnp_EventLogInstallSection]
+AddReg = isapnp_EventLog_AddReg
+ 
+[isapnp_EventLog_AddReg]
+HKR,,EventMessageFile,%REG_EXPAND_SZ%,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\isapnp.sys"
+HKR,,TypesSupported,%REG_DWORD%,7
+ 
+; Dock only PCI-(E)ISA Bridge
+; Only neccessary if bridge is located prior to ISA bridge in laptop device
+; number-wise
+[ISAPNP_DOCKONLY_DRV]
+CopyFiles=IsaPnp_CopyFiles
+ 
+[ISAPNP_DOCKONLY_DRV.HW]
+AddReg = ISAPNP_DOCKONLY_DRV_AddReg
+ 
+[ISAPNP_DOCKONLY_DRV.Services]
+AddService = isapnp, %SPSVCINST_ASSOCSERVICE%, isapnp_ServiceInstallSection, isapnp_EventLogInstallSection
+ 
+[ISAPNP_DOCKONLY_DRV_AddReg]
+HKR,,DeferBridge,0x00010001,00000001
+ 
+; Do-nothing section used to avoid "Unknown hardware" installation prompts.
+[NO_DRV]
+ 
+[NO_DRV.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+; NO_DRV Variation with MUTEing
+[NO_DRV_X]
+AddReg = NO_DRV_X_REG
+ 
+[NO_DRV_X.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_X_REG]
+HKR,,ResourcePickerExceptions,0,"IO@0-0xFF:*;IO:HAL,MBRES;IRQ:HAL,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation with MUTEing
+[NO_DRV_X_PNP]
+AddReg = NO_DRV_X_PNP_REG
+ 
+[NO_DRV_X_PNP.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_X_PNP_REG]
+HKR,,ResourcePickerExceptions,0,"IO@0-0xFF:*;IO:HAL,MBRES;IRQ:HAL,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation - MUTEing for PIC/APIC
+[NO_DRV_PIC]
+AddReg = NO_DRV_PIC_REG
+ 
+[NO_DRV_PIC.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_PIC_REG]
+HKR,,ResourcePickerExceptions,0,"IO@0-0xFF:*;IO:HAL,MBRES;MEM:HAL,MBRES,*;IRQ:HAL,MBRES,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation - MUTEing for HPET
+[NO_DRV_HPET]
+AddReg = NO_DRV_HPET_REG
+ 
+[NO_DRV_HPET.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_HPET_REG]
+HKR,,ResourcePickerExceptions,0,"MEM:HAL,MBRES,*;IRQ:HAL,MBRES,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation - MUTEing/TAGing for motherboard resource
+[NO_DRV_MBRES]
+AddReg = NO_DRV_MBRES_REG
+ 
+[NO_DRV_MBRES.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_MBRES_REG]
+HKR,,ResourcePickerExceptions,0,"IO:HAL,MBRES,*;MEM:HAL,MBRES,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation - MUTEing for MEM only conflicts
+[NO_DRV_MEM]
+AddReg = NO_DRV_MEM_REG
+ 
+[NO_DRV_MEM.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[NO_DRV_MEM_REG]
+HKR,,ResourcePickerExceptions,0,"MEM:HAL,MBRES,*"
+HKR,,ResourcePickerTags,0,"MBRES"
+ 
+; NO_DRV Variation - Add generic driver installed property
+[NO_DRV_GEN]
+AddProperty=NO_DRV_GEN_Properties
+ 
+[NO_DRV_GEN_Properties]
+GenericDriverInstalled,,,,1
+ 
+[NO_DRV_GEN.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+; Overrides for dock eject priority (3rd party INFs should use the ID of the
+; _DCK device, ie the one with a OEM hardware ID and a compat ID of PNP0C15)
+[MS_TPDOCK]
+ 
+[MS_TPDOCK.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[MS_TPDOCK.HW]
+AddReg = MS_TPDOCK_HW.AddReg
+ 
+[MS_TPDOCK_HW.AddReg]
+HKR,,EjectPriority,0x00010001,00000100
+ 
+[MS_TPSLICE]
+ 
+[MS_TPSLICE.Services]
+AddService = , %SPSVCINST_ASSOCSERVICE%   ; null service install
+ 
+[MS_TPSLICE.HW]
+AddReg = MS_TPSLICE_HW.AddReg
+ 
+[MS_TPSLICE_HW.AddReg]
+HKR,,EjectPriority,0x00010001,00000080
+ 
+; Section to provide backwards compatibilty for INFs that are dependent on
+; PCI specific machine.inf sections, which were moved to pci.inf
+ 
+[PCI_DRV_ROOT]
+Include=pci.inf
+Needs=PCI_ROOT
+ 
+[PCI_DRV_ROOT.Services]
+Include=pci.inf
+Needs=PCI_ROOT.Services
+ 
+[PCI_DRV_ROOT.HW]
+Include=pci.inf
+Needs=PCI_ROOT.HW
+ 
+[PCI_DRV]
+Include=pci.inf
+Needs=PCI_BRIDGE
+ 
+[PCI_DRV.Services]
+Include=pci.inf
+Needs=PCI_BRIDGE.Services
+ 
+[PCI_DRV.HW]
+Include=pci.inf
+Needs=PCI_BRIDGE.HW
+ 
+; Section for device INFs to include in their DDInstall section, for features
+; that are not detectable by just looking at the device hardware.
+;
+; Note that these sections provide backwards compatibilty for INFs that are
+; dependent on PCI specific machine.inf sections, which were moved to pci.inf.
+; New device INFs should include these sections from pci.inf instead.
+;
+; Example INF usage for PCI-based device:
+;
+; [PciDevice_Install]
+; ...
+;
+; [PciDevice_Install.HW]
+; Include = pci.inf
+; Needs   = PciIoSpaceNotRequired.HW, PciSriovSupported.HW
+; ...
+;
+; See pci.inf for all supported feature sections.
+ 
+; IO space not required.
+[PciIoSpaceNotRequired]
+Needs=PciIoSpaceNotRequired.HW
+ 
+[PciIoSpaceNotRequired.HW]
+Include=pci.inf
+Needs=PciIoSpaceNotRequired.HW
+ 
+; SRIOV supported.
+[PciSriovSupported]
+Needs=PciSriovSupported.HW
+ 
+[PciSriovSupported.HW]
+Include=pci.inf
+Needs=PciSriovSupported.HW
+ 
+; ACS not required.
+[PciAcsNotRequired]
+Needs=PciAcsNotRequired.HW
+ 
+[PciAcsNotRequired.HW]
+Include=pci.inf
+Needs=PciAcsNotRequired.HW
+ 
+; Opt-in to ASPM.
+[PciASPMOptIn]
+Needs=PciASPMOptIn.HW
+ 
+[PciASPMOptIn.HW]
+Include=pci.inf
+Needs=PciASPMOptIn.HW
+ 
+; Opt-out of ASPM.
+[PciASPMOptOut]
+Needs=PciASPMOptOut.HW
+ 
+[PciASPMOptOut.HW]
+Include=pci.inf
+Needs=PciASPMOptOut.HW
+ 
+; D3 cold supported.
+[PciD3ColdSupported]
+Needs=PciD3ColdSupported.HW
+ 
+[PciD3ColdSupported.HW]
+Include=pci.inf
+Needs=PciD3ColdSupported.HW
+ 
+; Prevents Windows from enabling ACS on the Bridge.  Will also prevent
+; any feature that requires ACS.
+[PciDoNotUseAcs]
+Needs=PciDoNotUseAcs.HW
+ 
+[PciDoNotUseAcs.HW]
+Include=pci.inf
+Needs=PciDoNotUseAcs.HW
+ 
+; Normally Windows will filter out bridge interrupts that it does not use.
+; Set this flag to disable bridge interrupt filtering.
+[PciEnableAllBridgeInterrupts]
+Needs=PciEnableAllBridgeInterrupts.HW
+ 
+[PciEnableAllBridgeInterrupts.HW]
+Include=pci.inf
+Needs=PciEnableAllBridgeInterrupts.HW
+ 
+; Opt-in to Atomics.
+[PciAtomicsOptIn]
+Needs=PciAtomicsOptIn.HW
+ 
+[PciAtomicsOptIn.HW]
+Include=pci.inf
+Needs=PciAtomicsOptIn.HW
+ 
+; Set this flag if a device requires extra
+; settle time after D3Cold transitions.
+[PciExtraSettleTimeRequired]
+Needs=PciExtraSettleTimeRequired.HW
+ 
+[PciExtraSettleTimeRequired.HW]
+Include=pci.inf
+Needs=PciExtraSettleTimeRequired.HW
+ 
+; Set this flag if a device generates
+; errors that should be ignored during
+; PLDR.
+[PciIgnoreErrorsDuringPLDR]
+Needs=PciIgnoreErrorsDuringPLDR.HW
+ 
+[PciIgnoreErrorsDuringPLDR.HW]
+Include=pci.inf
+Needs=PciIgnoreErrorsDuringPLDR.HW
+ 
+; Set this flag if a device wants to force Secondary Bus Reset event if
+; it has sibling functions.
+[PciForceSBR]
+Needs=PciForceSBR.HW
+ 
+[PciForceSBR.HW]
+AddReg=PciForceSBR.RegHW
+ 
+[PciForceSBR.RegHW]
+HKR,e5b3b5ac-9725-4f78-963f-03dfb1d828c7, ForceSBR,0x10001,1
+ 
+; Set this flag if a non-root-integrated bridge wants to determine its lowest
+; wake-able D-state in S0 from native PCI PMCSR register
+[PciBridgeUseNativeWakeInfo]
+Needs=PciBridgeUseNativeWakeInfo.HW
+ 
+[PciBridgeUseNativeWakeInfo.HW]
+AddReg=PciBridgeUseNativeWakeInfo.RegHW
+ 
+[PciBridgeUseNativeWakeInfo.RegHW]
+HKR,e5b3b5ac-9725-4f78-963f-03dfb1d828c7, BridgeUseNativeWakeInfo,0x10001,1
+ 
+; Opt-Out of Recovery.
+[PciRecoveryDisabled]
+Needs=PciRecoveryDisabled.HW
+ 
+[PciRecoveryDisabled.HW]
+AddReg=PciRecoveryDisabled.RegHW
+ 
+[PciRecoveryDisabled.RegHW]
+HKR,e5b3b5ac-9725-4f78-963f-03dfb1d828c7, RecoveryDisabled,0x10001,1
+ 
+; Opt-in to Recovery.
+[PciRecoveryEnabled]
+Needs=PciRecoveryEnabled.HW
+ 
+[PciRecoveryEnabled.HW]
+AddReg=PciRecoveryEnabled.RegHW
+ 
+[PciRecoveryEnabled.RegHW]
+HKR,e5b3b5ac-9725-4f78-963f-03dfb1d828c7, RecoveryEnabled,0x10001,1
+ 
+[Strings]
+ 
+; localizable
+MSFT = "Microsoft"
+ACC_MFG = "ACC"
+ACER_MFG="ACER"
+ALI_MFG="ALi"
+AMD_MFG = "AMD"
+ATI_MFG = "ATI"
+COMPAQ_MFG="Compaq"
+CONTAQ_MFG = "CONTAQ"
+CYRIX_MFG = "CYRIX"
+HITACHI_MFG = "Hitachi"
+HP_MFG = "Hewlett-Packard"
+IBM_MFG = "IBM"
+INTEL_MFG = "Intel"
+MICRON_MFG = "Micron Electronics"
+NATSEMI_MFG = "National Semiconductor"
+NEC_MFG = "NEC"
+NVIDIA_MFG = "NVIDIA"
+OPTI_MFG = "Opti"
+SERVERWORKS_MFG = "ServerWorks (RCC)"
+SIS_MFG = "Silicon Integrated Systems"
+SMSC_MFG = "Standard Microsystems Corp."
+TOSHIBA_MFG = "Toshiba"
+ULI_MFG = "ULI"
+UMC_MFG = "UMC"
+VIA_MFG = "VIA"
+VLSI_MFG = "VLSI"
+LEGACY_MFG = "LEGACY"
+GENDEV_MFG = "(Standard system devices)"
+ 
+; class codes
+PCI\CC_0601_Desc = "PCI standard ISA bridge"
+PCI\CC_0602_Desc = "PCI standard EISA bridge"
+PCI\CC_0500_Desc = "PCI standard RAM Controller"
+PCI\CC_0600_Desc = "PCI standard host CPU bridge"
+ 
+; pnp
+*PNP0A00_Desc = "ISA Plug and Play bus"
+*PNP0A01_Desc = "EISA bus"
+*PNP0A04_Desc = "ISA Plug and Play bus with VL slots"
+*PNP0000_Desc = "Programmable interrupt controller"
+*PNP0001_Desc = "EISA programmable interrupt controller"
+*PNP0003_Desc = "Advanced programmable interrupt controller"
+*PNP0004_Desc = "Cyrix SLiC MP interrupt controller"
+*PNP0100_Desc = "System timer"
+*PNP0101_Desc = "EISA system timer"
+*PNP0103_Desc = "High precision event timer"
+*PNP0200_Desc = "Direct memory access controller"
+*PNP0201_Desc = "EISA direct memory access controller"
+*PNP0800_Desc = "System speaker"
+*PNP0A05_Desc = "Generic Bus"
+*PNP0A06_Desc = "Extended IO Bus"
+*PNP0B00_Desc = "System CMOS/real time clock"
+*PNP0C00_Desc = "Plug and Play BIOS"
+*PNP0C01_Desc = "System board"
+*PNP0C02_Desc = "Motherboard resources"
+*PNP0C04_Desc = "Numeric data processor"
+*PNP0C09_Desc = "Microsoft ACPI-Compliant Embedded Controller"
+*PNP0C0B_Desc = "ACPI Fan"
+*PNP0C0C_Desc = "ACPI Power Button"
+*PNP0C0D_Desc = "ACPI Lid"
+*PNP0C0E_Desc = "ACPI Sleep Button"
+*PNP0C15_Desc = "Docking Station"
+*PNP0C32_Desc = "Direct Application Launch Button"
+*PNP0D80_Desc = "Standard Power Management Controller"
+;*PNP0C05_Desc = "Advanced Power Management support"
+;*PNP0C0A_Desc = "ACPI Battery"
+;*PNP0C0F_Desc = "ACPI IRQ Holder for PCI IRQ Steering"
+;*PNP0C13_Desc = "Plug and Play BIOS (fail safe)"
+ 
+; acpi
+ACPI0004_Desc = "ACPI Module Device"
+ACPI0010_Desc = "ACPI Processor Container Device"
+ACPI\FixedButton_Desc = "ACPI Fixed Feature Button"
+ACPI\ThermalZone_Desc = "ACPI Thermal Zone"
+ACPI\DockDevice_Desc = "Docking Station"
+*LEGACYISAPNP_Desc = "Legacy ISAPNP device"
+ISAPNP\ReadDataPort_Desc = "ISAPNP Read Data Port"
+LPTENUM\MicrosoftRawPort958A_Desc = "Printer Port Logical Interface"
+ 
+; generic
+LegacyDevice_Desc = "Legacy device"
+ChipsetController_Desc = "Chipset Controller"
+MemoryController_Desc = "Memory Controller"
+SmBus_Desc = "SM Bus Controller"
+DmaDevice_Desc = "DMA Device"
+CpuToPciAndPciToIsaBridge_Desc = "CPU-to-PCI and PCI-to-ISA Bridge"
+PciBridge_Desc = "PCI Bridge"
+CpuToPciBridge_Desc = "CPU to PCI Bridge"
+PciToIsaBridge_Desc = "PCI to ISA Bridge"
+PciToEisaBridge_Desc = "PCI to EISA Bridge"
+PciToLpc_Desc = "PCI to LPC Bridge"
+LpcController_Desc = "LPC Controller"
+PowerManagementController_Desc = "Power Management Controller"
+IommuDevice_Desc = "IOMMU Device"
+PciController_Desc = "PCI Controller"
+PerformanceCounter_Desc = "Performance Counter"
+PerformanceMonitor_Desc = "Performance Monitor"
+Registers_Desc = "Registers"
+HostBridge_Desc = "Host Bridge"
+InterruptController_Desc = "Interrupt Controller"
+CpuToIoController_Desc = "CPU to IO Controller"
+ChipsetHostController_Desc = "Chipset Host Controller"
+CpuToDramController_Desc = "CPU to DRAM Controller"
+WatchdogTimer_Desc = "Watchdog Timer"
+ThermalControlDevice_Desc = "Thermal Control Device"
+CacheCoherenceEngine_Desc = "Cache Coherence Engine"
+CachingAgent_Desc = "Caching Agent"
+DebugDevice_Desc = "Debug Device"
+QpiDevice_Desc = "QPI Device"
+SmiPort_Desc = "SMI Port"
+IoHubToEsiPortBridge_Desc = "IO Hub to ESI Port Bridge"
+QuickdataDevice_Desc = "QuickData Device"
+AddressDecoder_Desc = "Address Decoder"
+MemoryControllerChannel_Desc = "Memory Controller Channel"
+PhysicalLayerPort_Desc = "Physical Layer Port"
+VirtualizationEngineController_Desc = "Virtualization Engine Controller"
+NontransparentBridge_Desc = "Non-Transparent Bridge"
+SystemGraphicsController_Desc = "System Graphics Controller"
+DmiDevice_Desc = "DMI Device"
+IoBridge_Desc = "IO Bridge"
+Southbridge_Desc = "Southbridge"
+Northbridge_Desc = "Northbridge"
+I2cDevice_Desc = "I2C Device"
+SpiController_Desc = "SPI Controller"
+ConfigurationDevice_Desc = "Configuration Device"
+SgxDevice_Desc = "SGX Device"
+ 
+; non-localizable
+SPSVCINST_ASSOCSERVICE = 0x00000002
+SERVICE_KERNEL_DRIVER  = 1
+SERVICE_BOOT_START     = 0
+SERVICE_DEMAND_START   = 3
+SERVICE_ERROR_NORMAL   = 1
+SERVICE_ERROR_CRITICAL = 3
+REG_EXPAND_SZ          = 0x00020000
+REG_DWORD              = 0x00010001
