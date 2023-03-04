@@ -1,7 +1,3 @@
-// ## This file was taken from the first comment of this forum post:
-// ## https://www.bleepingcomputer.com/forums/t/768015/windows-experts-check-out-the-virus-that-no-one-wants-to-acknowledge/
-// ## Everything below is verbatim of what the OP posted.
-
 C:\>dism /online /get-packages
  
 Deployment Image Servicing and Management tool
