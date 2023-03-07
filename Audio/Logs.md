@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h2>Last updated: [03/02/23]</h2>
+<h2>Last updated: [03/07/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **03/07/23** | 1h 46m 51s | **2023_03_07_14_38_03.mp3**    | [Content Selection](https://drive.google.com/file/d/1GKdbcmL5rTYLOtwdo-vEV_V3Zf-xBCNd)
 | **03/02/23** | 0h 45m 24s | **2023_03_02_11_44_13.mp3**    | [State of Confession](https://drive.google.com/file/d/1EgJjiKkF0aK7exMQnbu-i-l6AzwMGtdp)
 | **03/02/23** | 1h 21m 05s | **2023_03_02_08_42_34.mp3**    | [Jealousy](https://drive.google.com/file/d/1EUyZKp2T3amTy8oNsT7rwGHrW6YbDhfr)
 | **02/26/23** | 0h 52m 23s | **2023_02_26_21_23_06.mp3**    | [SCSO K. Rossi](https://drive.google.com/file/d/1D2tVC_kO_-SYz27eiYPrd-wyTHBI-YRd)
