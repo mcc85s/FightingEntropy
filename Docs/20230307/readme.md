@@ -59,6 +59,20 @@
 | **02/28/2023** | Impressions                       | [https://youtu.be/BWvPCHFJwsg](https://youtu.be/BWvPCHFJwsg)
 | **03/02/2023** | Catricala - Tanski                | [https://drive.google.com/file/d/1evNeAtEHwpA9tIs8qtuoavV6irB85xgX](https://drive.google.com/file/d/1evNeAtEHwpA9tIs8qtuoavV6irB85xgX)
 
+## Pics
+| Index | Name/Link |
+|:------|:----------|
+| 0     | [Kuhn/Manager Dude](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230302-01.jpg)
+| 1     | [Snyders](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230307-01-Snyders.jpg)
+| 2     | [Bubbles](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230307-02-Bubbles.jpg)
+| 3     | [Friendlys](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230307-03-Friendlys.jpg)
+| 4     | [Price Chopper](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230307-04-PriceChopper.jpg)
+| 5     | [Cooks Deli](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/20230307-05-CooksDeli.png)
+| 6     | [SCSO-2020-003177 #1](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/SCSO-2020-003177-01.JPG)
+| 7     | [SCSO-2020-003177 #2](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/SCSO-2020-003177-02.JPG)
+| 8     | [SCSO-2020-003177 #3](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/SCSO-2020-003177-03.JPG)
+| 9     | [SCSO-2020-003177 #4](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230307/Pics/SCSO-2020-003177-04.JPG)
+
 ## Annotations
 ## Introduction
 ## Investigation
