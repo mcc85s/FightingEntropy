@@ -1606,5 +1606,877 @@ about bias. Uh- a girl, a lady walked out of the same, uh- minivan.
 40:49
 They're goin'- she's goin' to the same place.
 And I think... ya know...?
-Uh- some- some girl is leaving another place...
-and...
+
+Uh- some- some girl is leaving another place, and...
+She has a child. A girl, they're gettig in- no, they're walking to the SUV that I've been
+standing near recording, so I'm not gonna be rude.
+
+41:15
+I'm not gonna narrate what they're doin'... 
+Ya know, narration has a- there is a bit of a rude aspect to, like, narrating what
+people are doing.
+
+Right...?
+So, rather than to be openly or blatantly rude, take a step back, step behind the pylon...
+and then like, kinda peer around the corner almost like I'm tryin' to hide...
+Well, I am tryin' to hide, while I'm narrating what they're doin'.
+
+41:45
+Uh- a sense of bias. So like...
+
+I did mention that it is pretty windy...?
+It is sorta cold...?
+But- ya know, like, my sense of bias is gonna be a natural thing, to where, uh I would
+prefer that the environment be a little warmer than it is, and not so windy.
+
+42:16
+Cause then I would have more liberties to like, go around and doing stuff, instead of like, 
+standing behind this pylon, while like, people are getting in and out of their vehicles.
+
+42:28
+So, uh...
+Sometimes when I'm writing documents...?
+I have to like, overlap certain things.
+Or, embed them within each other.
+
+42:40
+And uh- one thing that I noticed when I was performing like, transcriptions and stuff, is like, 
+when people are having a conversation, and like, what they're saying is interfereing with 
+what the other person is saying...?
+
+Sometimes, it seems like the words get tossed around.
+Or like, the voice or the sounds, they sorta like blend together...?
+
+And like, even though the people when they're talking in person, it makes total sense...?
+
+43:16
+Uh, when you listen to the audio recording, sometimes it is absolutely impossible, or damn
+near impossible to make out what the hell somebody is saying.
+
+And uh, ya know when, when listening to an audio transcription for the first time...?
+
+Uh- you're gonna have a really rough idea of what words are being stated...?
+And, then, then once you have the initial transcrioption figured out...?
+Then you're gonna realize when and where certain words didn't make it into the transcription,
+so you add em and tweak em like I do...?
+
+43:51
+But then also, like if you wanna add some styling like I do, I format like, the things that
+I write uh- I use the square brackets, and then I also use the bold...? Right...?
+
+44:06
+I've used a varying degree of uh, fonts, and uh programs, and uh methods...? Right...?
+I could've like, used PowerPoint, to like, tell a story about a 1000 different ways till
+Sunday, or I could've gone to like, Premiere Pro, I could've edited a whole bunch of scenes,
+I could've used OpenShot...? Or whatever...? Right...?
+
+44:27
+But, out of all those programs, I think the best way to tell a story...
+Well, it's my opinion, it's like, uh live.
+
+Ya know...? It's- what I'm focusing on right now, is a live presentation.
+
+Ya know, when the people listen to what I'm doing right now, it's not gonna be live...?
+But- ya know, I could very easily go in front of a group of people, that know what, what 
+I'm gonna- that- that predict some of my behaviors, or things I'm gonna talk about, and
+then like, basically do the same thing that I'm doing right now.
+
+45:03
+But- it is very difficult to get a bunch of people in the same place at the same time, 
+for something that is totally unexpected or unscheduled. And, I don't like the idea of
+scheduling things.
+
+Mainly because, if I had to schedule what I'm doing right now...?
+It would take on a different feeling and it would feel more forced anbd coerced, rather
+than to be free flowing and dynamic, like it is right now.
+
+45:32
+So I'm sort of like, covering a whole variety of topics.
+And, something like this, is gonna catch a lot of people by surprise.
+
+Because a lot of people aren't gonna to understand what the hell I'm saying, even though
+they can hear me saying the words and the words sound, like, ya know... they're not like
+uh- it's not like I'm talking about dragons flying around in the sky, and the sky is like,
+turning a bunch of different colors, and then you got leprechauns and Zebras flying around,
+or uh- unicorns...?
+
+46:05
+You got leprechauns, unicorns, and aliens, all like dancing in big friggen circles in the
+sky. Nah, I'm not talking about shit like that.
+
+Nah, it's- eh- THOSE are delusions. Right...?
+But- ya know, given enough like, expansion of those details and stuff, it could be that
+someone is using a metaphor, and someone is not paying close enough attention to that.
+
+46:33
+And they don't have the observation skills necessary to be able to deci- to dissect whether
+or not somebody's using a metaphor or not. And so, I'm
+
+There is a category, or range of intelligence, where...
+Most people expect... people in society, to talk about things that they saw on TV...
+or like a movie, or a book or the news...? Right...?
+
+47:06
+It's like, they- they saw an interesting story somewhere else, and whether it was 
+syndicated or it was printed, or whatever, communicated somehow...? Uh-
+
+47:19
+There exists like, a number of barriers, that prevent like, truly interesting stories
+from being told, so that like, people that like, have a really cool personality... 
+
+They're, they're given a lot more uh- like uh, screen time or viewing time, or whatever.
+
+47:42
+Whereas somebody like me, who's attempting to dissect and examine certain subjects, at
+length, ya know, some people have made it very clear to me, that they don't like how uh,
+how descript I am. 
+
+But further to that point, like, uh... 
+
+48:11
+If I were to teach people, how to talk the way that I am- that I've, been talking, and 
+presenting myself, I would likely be somebody like a professor, at a school.
+
+I've mentioned this numerous times before...
+What is it that made like [George Carlin] such a really powerful speaker, was his writing.
+And writing is a very important skill to have, if you're gonna be presenting yourself
+like I do, or really even at all. But-
+
+48:42
+But- ya know, do I think that like, most uh reporters or uh, TV anchors, do I think that
+they do their own writing...? I dunno. I really don't think that they do... 
+
+I think like, they read a teleprompter, and somebody prepared what goes into that
+teleprompter ahead of time, and, they have an idea for like, how much time they have...?
+
+How long it's gonna take for them to talk about the particular subject...?
+
+So the teleprompter is only gonna have a certain maximum word limit...?
+
+49:21
+And, sometimes the anchors, they don't know how to pronounce certain words...?
+(Guiliana Bruno from WTEN was attempting to pronounce a medication name, and she literally
+said "Uh, what...?")
+
+So like, uh- being considerate of all those things, um...
+Being an anchor on a, news station, is a bit of a choreographed uh- situation...
+
+49:45
+Whereas what I'm doing is [a lot harder to do]... without question...
+
+What I'm doing is a lot more difficult to do, than what they do...
+
+But that doesn't mean that what they do isn't difficult, cause it is.
+
+50:01
+It has to be syncopated...?
+It has to be in rhythm...?
+It has to be, uh- short and to the point...?
+Because most people are gonna have a hard time wrapping their heads around like, 
+a lot of rich content. But- ya know, that varies. Depends on what the content is.
+
+50:23
+So when I ask the quqestion like uh- what do I wanna talk about, or uh- if I say, even
+me, I convey a sense of bias to some degree, with uh- the things that I will... 
+
+Like I can say for certain that this particular audio recording...?
+Uh, I'm gonna go and make it publicly available, because I've gotten to the point where
+I'm a lot more comfortable, uh- with the things that I'm talking about. 
+
+And, though I am still improvising to a large extent...?
+I've talked about a number of, constructive things so far.
+
+50:59
+And most notably, like uh- strategies.
+And, one strategy that I uh- wanted to- to, get around to, is this, right...?
+
+Uhm, when I'm programming, when I'm sittin' in front of the computer screen and I'm
+like, actually programming something...? 
+
+51:20
+Uh- I think about the number of ways to dissect, uh the properties, or the task at hand,
+and I stick with the rather simple building blocks. 
+
+I don't uh- try to get- there are some cases where I'll go to extreme lengths to make
+things that are pretty complicated, but I've gotten to the point where I can dissect the
+idea of what I wanna build pretty easily...?
+
+51:47
+And then have a way to showcase it pretty easily, too.
+
+And then like, ya know, I've written a fair amount of programming already, so like, 
+I will know:
+[Me]: Ok, in the one function I wrote, I did this...?
+      I'd like to copy and paste it, but I ALSO wanna like, rebuild it from the ground up.
+
+52:07
+And so, that's what I'll do. 
+
+I'll uh- rebuild something from the ground up, and I'll just continue to go at the same
+thing that I did already, right...?
+
+Not to the degree where I'm spending like, like weeks or months, uh building something...
+But- to the degree where, uh- I'll start to refine the edges a little bit more.
+
+Or I'll sand the edges down.
+
+52:37
+And, instead of it being a harsh 90 degree corner, right angle...?
+It'll be a smooth beveled surface, ya know...? Like a curve.
+
+So, when I used to build maps for Quake III Arena, one uh- relatively new concept was uh-
+curves. So, prior to Quake III Arena, in order to make curves, you had to like, chisel out
+like, brushes.
+
+And, you know, if you wanted to make like a beveled surface...?
+You'd have to- like you- you'd have to uh- I dunno, I'll have to expand upon this concept
+a bit more, but- 
+
+53:25
+Uh, Quake III Arena and Doom, well, Quake and Doom, the way that they calculated like, the
+space of a room, or the area of uh, or was uh- considered the playable area...?
+
+Uh- it had to use a number of techniques that like, divided the non-playable area, from the
+playable area, and then like, whatever the geometry was...? Uh- it would have to break 
+everything down to triangles.
+
+And, when Quake III Arena came out, it took the idea of brushes, and then it inserted this
+idea of like, curves, to where the curves could be like uh- generated by the hardware.
+
+54:16
+And then it would be able to dynamically adjust, whether or not the curve was complex or
+simple. And, uh- another term for this is basically the uh- draw distance.
+
+So like, uhm, if I'm like, compared to real life, right, uh- 
+
+If I'm walking down the road, and I see like, the golden arches for McDonalds like (3)
+miles away down the road...? 
+
+Well, chances are that I could get away with using some really cheap uh, geometry to reflect
+that. You don't want it to look like, awful, but you're not anywhere near the golden arches
+to be able to determine whether that thing has like thousands of polygons, or just like a 
+handful.
+
+55:15
+Whereas uh, you know, if you're like- you know, about like, a quarter mile away from the
+golden arches...? You're gonna be able to see a lot more detail.
+
+And then once you get like, about 10 feet to the damn sign...?
+Then, you're gonna see a HELL of a lot more detail.
+
+Then you're really gonna wa- probably not gonna wanna use thousands of uh, triangles, or
+uh polygons, but- ya know, uh- these are the thigns that uh- tesselation addresses.
+
+55:30
+Tesselation uh- is something that- I don't know if Nvidia pioneered tesselation, but- uh,
+it's a pretty cool idea, is this uh- graphics demonstration, I think it was Heaven...?
+
+It might've been uh- called something else, I can't remember exactly.
+(Unigine Heaven, with the dragon. It's not a game, its a benchmark utility.)
+
+But, it's like uh- you could turn the tesselation on...?
+And, the higher the tesselation, the more polygons it would draw...?
+
+56:22
+So like, the programming for the game hadn't changed at all, but the level of detail uh
+was raised immensely. And that's what LOD stands for, LOD bias or uh, distance... these
+are all, uh- property or uh something terms...? Right, and...
+
+56:47
+Running something through like, a game engine, uh everything has properties, right...?
+
+So like, the game engine has to load a whole bunch of details, not unlike how uh...
+When I start to play music, or I start to like, uh- rattle off one of these lectures,
+I'm talking about a bunch of, like, details.
+
+So, asset management. 
+And asset management comes down to like, documentation.
+
+57:16
+And, uh recording myself, and knowing how to rpersent it, and...
+being able to make it consumable, and making sure that people understand it.
+
+And uh- the things that seem rather simple and intuitive...?
+
+57:32
+Like in the real world...?
+You find out really quickly that even something as simple as what I'm doing right now,
+it isn't that simple, but further to that point... uh-
+
+A lot of people take things for granted.
+So what I mean is this, like I have put a lot of effort into trying to like uh...
+Shape my voice, and my narrative, when making these things...?
+
+Right, so like, there's a lady in a SUV, it's a Honda SUV...?
+She's pullin' up to the, the parking spot...?
+She just stopped.
+
+58:11
+Uh- no, she's rollin' up a lil b-
+Uh- now she stopped.
+
+Alright...? She's lookin' left...? She's lookin' right...?
+She is making sure her jacket's zipped up all the way...?
+And, she's about to get out...?
+Uh- somebody in a truck just drove up...?
+
+58:27
+See, what I'm doing right now, is I'm using a distraction technique.
+But I'm also, like, using observations, right...?
+
+So, in a conversation that I would be having with somebody, I could use one of these
+distraction techniques, if I want to distract from uh, the point that I was just about
+to make.
+
+58:45
+But- the point that I was about to make, is gonna be harder for me to reach, unless...
+Uh- I can remember walking down a path, or where my por- point of origin was. 
+
+And so, with most people, they're not go- they're gonna have a really rough time, being
+able to comprehend all the things that I stated so far in this audio recording...
+
+59:09
+Hearing it, they'll understand it just fine.
+But comprehending it, is a different thing.
+
+You can hear somebody talk, you can listen to somebody talk, you can hear them talk, but
+to comprehend it, requires being able to like, uh- understand what was stated, and then 
+repeat it back.
+
+59:30
+And comprehension is, fucking difficult. Lemme tell ya.
+Because, ya know, most people, like, go on autopilot, right...?
+
+So like I'm- I haven't been- like, on autopilot at all in this entire uh, recording.
+Like I'm- I would say it sorta falls in line with performance acting, but I'm not acting.
+I'm- being myself.
+So, it's more like, performance profession.
+
+1:00:00
+Right...?
+Dude in his Range Rover...? Gray Range Rover just pulled up.
+He's got his (sun)glasses on, and his winter hat.
+
+He just turned his, Range Rover off...?
+And, ya know...?
+He looks like a cool dude.
+With his glasses on.
+And, those are observation tehcniques.
+
+1:00:21
+And then, it's another distraction...?
+It's another strategy.
+Uh- really, the beginning and the end of this whole lecture comes down to, telling an
+interesting story andm knowing what to say, to cause the story to BE interesting...
+...they're (2) totally different subjects, and I have to tape em together as I'm making
+these things, because it's not really all that intuitive.
+
+1:00:53
+And uh- a few people are gonna be able to appreciate somethin' like this.
+Ya know, maybe like hundreds of years in the future...?
+People will like, listen to some of my audio recordings, and they'll be like:
+[People]: Wow, this dude...?
+          Ya know...?
+          He is like a- he was like the Shakespeare of ya know, 2000. 23.
+          How did he not get standing ovations like, every time that he hit the record 
+          button...?
+
+1:01:24
+Well, I can tell ya, it's because uh- the way our society is shaped now, is sort of like,
+on demand. Ya know like, when people watch primetime television, they're like:
+[People]: Well, we'll put primetime television on because like, most people work like 9-5.
+          And then when they get outta work, they wanna like, watch the news.
+          Some people work 8-4 though, [Michael Cook], so, we'll have like an hour long
+          session of news...? And then we'll have ANOTHER hour long session of news that's
+          sorta like covers the same topics that they just covered... the last hour...?
+          And then while people are like, watchin' the news...?
+          They'll be able to like, cook themselves dinner and shit.
+
+1:02:10
+And that's basically what the news companies do.
+Ya know...?
+It's what they do.
+
+Most people in society, they work 9-5, because, that is when people feel like doin' shit.
+
+1:02:27
+Ya know, what if erverybody worked at night...?
+Nah, that's fuckin' stupid, cause ya know, the circadian rhythm, [Michael Cook].
+You wanna talk about your circadian rhythm, you dont' wanna fight the urge to wanna
+fall asleep, because if you do...? Then you might be awake all night. 
+And you ddn't want that.
+
+1:02:54
+Not if you want to be able to, uh- have a uh- have a healthy routine...?
+Or a healthy lifestyle or whatever...>
+You wanna make damn certain that you're well rested, in order to comprehend stuff...?
+And that, uh-
+
+1:03:16
+Yeah, there's a lot goin' on right now, looks like the guy in his Range Rover is takin' off.
+There's a  guy like, talkin to some girl...?
+Have- having a bag...?
+And, uh- he's got a red car...?
+And then some third dude got into another SUV...?
+A fuckin' Subaru or whatever...?
+
+1:03:35
+Dude in the Range Rover, he stopped. He's like "what the hell...?"
+But uh- yeah, how do I tell, these- these details that I'm rattling off, what the hell
+do they mean for anybody else...? And so like, it all comes down to like, the presentation.
+Right...?
+
+1:04:03
+The presentation, is something that few people are gonna be able to appreciate, because...
+Uh- if they wanna learn something from some of my observation skills, they're gonna have
+a fun time doing it. They're gonna like, learn some cool shit, and then they're also gonna
+like, see some cool shit, too...
+
+1:04:24
+They're gonna be like:
+[Them]: Wow.
+        That fuckin' Michael Cook dude worked really hard, to like, be a cut above the rest.
+
+But the problem is like, most people, they're not gonna appreciate what I'm doing, unless
+they know what the hell I'm tryin' to do.
+
+1:04:43
+Whereas, someone like George Carlin, he spent years doin' this.
+I- I would imagine...
+I would imagine, like, he probably had a tape recorder.
+And then he listened to himself all the time, he's like:
+[Carlin]: You know what, dude...?
+          I'm gonna buy a tape...?
+          And then record myself just talkin' about a whole bunch of shit that wrote about...?
+
+1:04:59
+And then, ya know, at some point...?
+He started to like, uh- get in front of people, talking about those things that he wrote 
+about, and recorded...? And then, eventually things took off. But- I gotta say, it probably
+took a lot of fucking work. 
+
+1:05:24
+Whereas like, uhm...
+Let me go out on a limb here, and say that guys like Bill Burr, or uh- Louis C.K....?
+Uh- they probably too, have done this same thing, right...?
+And like, what the hell was it that caused Bill Burr to go from being this relatively
+unknown person, to suddenly being the one of the best names in comedy...?
+
+1:05:51
+Well, I think is appearance on Breaking Bad, was uh- definitely uh- helpful...
+Right...?
+Playing Kubee on Breaking Bad...?
+It's like:
+[Somebody]     : Wow, that dude that played the fuckin' Huell's like, sidekick...?
+                 In Breaking Bad...?
+                 He's a fuckin' comedian...?
+[Someone Else] : Yeah, he's a fuckin' really GOOD comedian, too.
+                 Talks about smashin' muffins, and shit.
+
+1:06:17
+Smashin' the muffins...?
+Right...?
+He asks himself the same sorts of questions that like Louis C.K. and George Carlin do.
+He's like:
+[Burr]: How many muffins, could I destroy, before anybody did anything about it...?
+        Ya know...?
+        If I destroy (1) muffin, will the lady like, freak out and be like:
+        "What the hell did you do THAT, for...?"
+
+1:06:39
+And then like, 
+Ya know, that's- that's sort of a question that I ask myself.
+Was like, inter- interjecting into his joke, and expanding upon it.
+Or extending it, right...?
+
+1:06:48
+[Me]: Well, I just destroyed one of your muffins, lady.
+And then the lady would be like:
+[Lady]: Well, what the fuck...
+        Why would you DO that...?
+And then I would be Like:
+[Me]: Well, just to see what you would do.
+
+1:07:06
+And so what I'm doing, is I'm sorta slowing down the whole scene in my head.
+It's making the whole situation seem rather unrealistic, but- 
+Ya know, it's making it comedic.
+
+Slowing down a situation is a tactic that I have learned to use, to describe the innate
+nature of somethin,g right...? So, if uh- if you start havin' a conversation with this uh-
+this muffin lady...
+
+1:07:33
+Say:
+[Me]: You know what...?
+      I destroyed one of your muffins, because I just felt like it.
+      I wanted to see what you would do.
+
+And then the lady would be like:
+[Lady]: Well that's- rather rude of you.
+        Do you know how long I take, to make these fucking muffins, buddy...?
+
+And then I would say:
+[Me]: I dunno.
+      How long do you take to make those muffins...?
+
+And the lady will be like, put her hand on her hip and be like:
+[Lady]: I fuckin' slave over the stove, to make these god damn muffins...
+        ...and you're just gonna walk up, and then smash one of my fuckin' muffins...?
+        How dare you...?
+
+And then I would say:
+[Me]: Well, what if I smash another one...?
+      
+And then the lady would be like:
+[Lady]: You better not do it...
+        Better not do it...
+
+And then I would be like:
+[Me]: Well, what are you gonna do if I do do that...?
+
+And then the lady would be like:
+[Lady]: Well, ya know I'm gonna be pissed...
+
+And then I would say:
+[Me]: Well, how much more pissed would you be, than you are right now...?
+      Twice as pissed...?
+
+1:08:34
+Lady'll be like:
+[Lady]: Well, I dunno.
+        Maybe not TWICE as pissed, I would still be just the same amount of pissed...
+        but just slightly more...
+
+1:08:43
+Right...?
+So these things all touch on philosophy.
+
+Am I gonna like capitalize on a bit that Bill Burr did...?
+Well, I have expanded upon what made that skit as funny as it is...
+
+And sort of coalescing it into uh- the same sort of conversation that uh-
+Lincoln Osiris slash Kirk Lazerus has with Tugg Speedman in, Tropic Thunder.
+
+He's just a dude, playin' a dude, disguised as another dude.
+
+1:09:20
+Well, or are you a dude, that claims to know what dude he is, or that- that does NOT
+know what dude he is, but claims to know what dude he is, by playing other dudes...?
+
+Because, ya know, the reality is this, right...?
+Uhm, in programming...?
+I'm gonna tie all these things together here, right now.
+
+1:09:47
+In programming, you really have to deal with the concept of 0, 1, or more than 1.
+
+So if there is 0 of something, then you're gonna have 'no'.
+If you have 1...? Then you have 'an' or 'a'.
+
+If you have more than 1...? You're gonna have 'some', or 'many' or 'most'...?
+And then, like if you have, like the maximum number that you could possibly have, of
+something, you're gonna have 'all'.
+
+1:10:25
+Right, so...
+
+Those terms right there, illuminate [spectrum] between like, ya know, uh- defining the
+least amount of things that could be had... to the, the [approximate], or uh [sensible]
+amount of things that could be had, talked about... to the most amount of things that
+could be had, or talked about, or seen, or observed...
+
+1:10:49
+So like, these thigns are gonna sound non-sensical, because, I'm literally throwing out
+a bunch of mathematical operators, with language. And this is how comedy gets its'
+comedic feel to it. It all comes down to math, and generally speaking, a punchline or
+something that makes something funny...? Is, the amount of time that goes into it.
+
+(Whether that is the amount of time that goes into writing the joke, or delivering
+it, OR, the amount of time that passes within the joke. It all applies.)
+
+1:11:22
+Ya know, like uh- 
+[You]   : 1, 2, skip a few, 99, 100.
+
+Like, 
+[Person]: Well, you didn't count 1 to 100.
+[You]   : Yeah, I did.
+[Person]: No you didn't, you said 1, 2, 99, 100.
+
+And then you're like:
+[You]   : Nope, I said 'skip a few'... as well.
+
+And the person'll be like:
+[Person]: Yeah, but that's not even- that's not a number...
+          that's like you're skipping a few.
+
+And then you're like:
+[You]   : Well yeah, I am skippin' a few.
+          I'm skippin' like, 3 to 98.
+          Ya know...?
+          Who the hell are you...?
+          You're NOT skippin' like, 3 to 98.
+          Ya know...?
+          3 to 98.
+
+1:12:04
+1, 2, skip a few, 99, 100.
+3 to 98 is bypassed.
+There's no need to say all that with that shorthand methodology.
+
+And programming works in the same way.
+Where like, if you have a pattern, that can be arrived at...?
+With a rather adamant conclusion...?
+
+Then you can aggregate what the- you can project what that mathematical formula
+might turn out to be, and that's like 'level of detail', and that's also like uh-
+complexity.
+
+1:12:35
+Like uh- the news, they want all the details, they don't want everybody to see a
+McDonalds as like the lowest detail possible from like (3) miles away with the least
+amount of polygons, but- that's because they're gonna talk about like hundreds of
+subjects like that.
+
+1:12:56
+Whereas, like, somebody like [Bill Burr], [Louis C.K.], or [George Carlin]... they're
+gonna be like:
+[Them]: Well, we're gonna talk a litle bit more like [Noam Chomsky] here...
+        about like [the muffin lady], or like uh- the amount of people on the planet
+        that have [sucked a dick]... or the concept of [money], [bullshit], 
+        [politics], [religion]...
+        
+1:13:25
+George Carlin talked about a lot of subjects, that were pretty difficult to talk about.
+Ya know, some guy told me:
+[Some guy]: One thing that you never wanna do is talk about [money] and [politics], or
+            [religion]
+
+And I was like:
+[Me]: Well, why...?
+
+He's like:
+[Some guy]: Because nobody agrees on anything.
+            When- in any of those subjects.
+            So, if you steer clear of those subjects, you'll be fine.
+
+1:13:47
+But, somebody like [George Carlin], he's gonna be like:
+
+[Carlin]: You know what, I'm gonna talk about [money], [religion], and [politics] in the
+          same fucking joke...
+
+Right...?
+And he's like, "Uh- the fuckin' government...? Like..."
+Ya know, I'm not gonna recap any of his skits.
+Because, uh- if I were to like recap skits by [George Carlin] and I'd be emulating
+[George Carlin], and I don't wanna do that.
+
+1:14:14
+There are some components of uh some of the things that he did, that were very interesting
+that I would like to capitalize on, but- I don't want to reintroduce other people's skits
+or bits, ya know, I don't wanna be uh- like uh- high on potneuse...?
+
+1:14:29
+Where uh- a dude steals a joke, and then like, the one- the one kid, played by uh- what's
+his name, played by Jordan Peele, "I'd like get high on potneuse"
+
+And then everbody's like "Shut the hell up, dude. You're annoying."
+And then the other guy's like "I'd like to get high on potneuse~!"
+And then the whole entire room of people, like laughs at the joke.
+He's like:
+[Peele]: But you just like, stole my joke, dude...
+
+1:15:04
+Oh no, hold on a second, that's not how it unfolds.
+
+He says the joke to his buddy that's sitting next to him quietly...
+And his buddy just says it like, louder.
+And then everybody laughs at it.
+
+1:15:19
+Ya know, the interesting thing about that particular skit, is that- that is how 
+people treat each other, in society. Is like, somebody that is really liked is gonna
+repeat something that like, the original author came up with...?
+
+And the original author is gonna be told:
+[People]: You know what...? 
+          No one fuckin' likes you, dude.
+          So what, you came up with a funny joke...
+          And that COOL kid that didn't come up with it, he said it.
+          And everybody laughed.
+          Oh well, woe is you, dude.
+
+1:15:49
+Yeah, that is like, that is the uh bit of uh- sadistic way to look at it.
+
+There is a lot of grotesque things, that occur in humanity, but there's also
+a lot of uh- really cool, awe inspiring, awesome things, and I think that-
+being able to blend them together, requires a sense of finesse, in being able
+to talk about these things.
+
+1:16:25
+Like, uh- yeah, I dunno. Uhm, being able to talk abuot these things requires a bit
+of uh- practice, and reexamination, of everything that I said. So, chances are, that I've 
+spoken about, uh- a lot of uh, useful things in this audio recording. But-
+
+1:16:57
+I may very well, like, end this recording, and listen to it...?
+Like a bit- the pair of recordings that I made the other day...?
+
+1:17:06
+And uh- when I end this recording and I listen to it...?
+I'm gonna think of additional concepts that I wanted to tal- that I wanna talk about.
+That maybe I didn't include.
+
+Right...? In the prior iteration.
+
+1:17:17
+And this is important, because if I wanna talk about, uh- if I wanna make like a
+curriculum or teach people, or make it seem interesting and comedic, and to let it flow
+on its own right...
+
+Well, how would I go about doing that, without like, uh- making a bunch of failed attempt
+first...? And that's just it.
+
+1:17:40
+Some people, like uh- they will fail so many times, but at some point they eventually, they,
+they start to get it right, and they start to spread out their legs. And then their own
+sense of identity, or their own uniqueness, their unique character, or their point or
+their view of the world, is able to be capitalized on.
+
+And, these are the things that [George Carlin] talked about.
+
+1:18:11
+Ya know, uh- he has an interview with uh- I think it was uh- David Letterman.,..?
+I'm not sure, but- ya know, he's like:
+[Letterman]: So, [George Carlin]...
+
+And then [George Carlin]'s like
+[Carlin]: Well, hello, David Letterman, how ya doin'...?
+
+And, David Letterman's like:
+[Letterman]: I dunno, dude.
+             I'm- I'm doin' alright.
+             Ya know...?
+             You got this uh- 
+             You got this friggen uh- standup special or whatever...?
+
+And then [George Carlin]'s like:
+[Carlin]: Yeh yeh yeh, I got this standup special, uh-
+          It's like I did (7) things that you don't wanna talk about on the TV...?
+          Or that you'll never hear on the TV...?
+          And I did well with that skit...?
+          But- ya know, I, uh- spent a while thinkin' about some other stuff...?
+          And I wanted to capitalize on some other subjects...?
+          That were harder to talk about...?
+          Like [money], [religion], and [politics]...?
+
+1:19:11
+And then, ohhhhhh boy.
+What the hell was it-
+[Brain Droppings]... that's when he comes up with [Brain Droppings].
+
+[Brain Droppings] wasn't the thing that they were talking about, but ya know, like, 
+ya know I am sorta like, skipping around in like, [George Carlin]'s like, history...
+
+Of uh- being a comedian and stuff, right...?
+
+1:19:31
+He's like, this is... 
+[It's Bad For Ya].
+Or, [Brain Droppings].
+Or, uh- [The (7) Words That You'll Never Hear on the fuckin' TV], nah.
+
+1:19:44
+Now you'll hear like at least like (5) of those words on the TV...
+You might not hear all (7)...?
+But you'll hear (5) of em.
+
+Ya know, like uh- in the show Breaking Bad, you know, on like AMC...?
+Uh-
+
+1:20:03
+The FCC allowed these shows, to have (1) F-Bomb per season.
+I can't remember another time in Breaking Bad where they use the F-word like on TV, 
+but um, I remember like uh- the Nazi dudes, they were standing' over Hank..
+
+(Ozymandias)
+And they were like:
+[Nazi]: So, you got any last words there, dude...?
+
+And then Hank's like:
+[Hank]: I'm ASAC Shraeder, and you can go fuck yourself.
+
+And then he gets popped, right in the head.
+
+1:20:42
+Or uh- it's assumed that he gets shot in the head, but you know, it happens off camera.
+But um- ya know...? Like, you'll hear some of these words on the TV from time to time.
+
+1:20:58
+You'll never hear the- you'll- it- it- if it is ever, like, heard on primetime TV...?
+Oh my god, you're gonna like, be fired.
+
+You're gonna be fired...?
+You're gonna be like, thrown into a pit of despair...?
+You're never gonna be expected to ever crawl your way out of that pit of despair...?
+And you're gonna have to give up on your life, and everything you have ever done...
+...in order to like, get over the (1) time that you swore on TV.
+
+1:21:28
+It's gonna look sooo bad...?
+And like, people are gonna be like:
+[People]: Oh my god, it's the guy that swore on primetime TV...?
+          Right...?
+          Oh my god, it's the guy that swore on primetime TV...
+          Oh my god.
+          Whatever will we do...?
+          The guy swore, once, on primetime TV.
+
+1:21:57
+And then the whole entire world, came to a grinding halt.
+And then, a whole bunch of, like uh- nuclear weapons started flying all over the 
+fuckin' place...? Like on X-Men Apocalypse...?
+And then, uh- ya know holy shit.
+And then everybody, on the face of the planet died, because...
+
+Some dude said the F-word on primetime TV.
+
+1:22:25
+Yeah, ah. That's fuckin' stupid, right...?
+Nobody's gonna die by sayin' the F-word.
+But- the media...?
+They like to make it appear as if they actually issue these fines for like, swearing
+on TV or whatever... Or, maybe they do actually fine the people, or whatever.
+
+1:22:42
+I have come to the conclusion that they probably don't fine anybody for swearing on
+primetime TV, they just want people to believe that that's there, because ya know,
+when people can't swear in public, or like, or whatever...? It causes people to be
+more obedient.
+
+1:23:02
+The- then when you start to swear and stuff...?
+It's like:
+"Uh~! He's a delinquent, and that means that he's a fuckface..."
+
+Yep.
+It is a bit of uh- like uh- like uh- hypocritical way to look at it. Um...
+
+1:23:24
+Yeah, so I think uh- I'm all done with this particular audio log, uhm...
+
+In closing... I would like to say, that- being able to focus on something thats
+interesting and to keep the lecture going...? It can be pretty difficult to do
+sometimes, but sometimes I will force myself to do it, like I did in the very
+beginning of this audio recording.
+
+1:23:51
+Ya know, and then, once I get into the swing of things...?
+I might start to use strategies that I've rattled off...?
+
+Though, like- I've really only cracked the surface of the number of strategies
+that COULD be used, and the varying degrees of uh- perceptions that people may have
+when they hear it, 
