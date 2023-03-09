@@ -10,6 +10,7 @@
 | Date         | Name/Link                                               | Length       |
 |:-------------|:--------------------------------------------------------|:-------------|
 | `03/07/2023` | [Content Selection](https://drive.google.com/file/d/1GKdbcmL5rTYLOtwdo-vEV_V3Zf-xBCNd) | `1h 46m 51s` |
+| `03/09/2023` | [Content Selection (Edited)](https://drive.google.com/file/d/16FzglVQ6NExZX2ysMUpMiPEZ-MaO00FR) | `1h 46m 51s` |
 
 ## Document
 
