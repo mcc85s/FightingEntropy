@@ -2,14 +2,14 @@
 
 ## Video
 
-| Date         | Name/Link                                               | Length       |
-|:-------------|:--------------------------------------------------------|:-------------|
-| `03/09/2023` | [2023_0309-(Content-Selection)]()                       | `0h 00m 00s` |
+| Date         | Name/Link                                                     | Length       |
+|:-------------|:--------------------------------------------------------------|:-------------|
+| `03/11/2023` | [2023_0311-(Content-Selection)](https://youtu.be/OYc0CxWPto4) | `1h 54m 07s` |
 
 ## Audio
-| Date         | Name/Link                                               | Length       |
-|:-------------|:--------------------------------------------------------|:-------------|
-| `03/07/2023` | [Content Selection](https://drive.google.com/file/d/1GKdbcmL5rTYLOtwdo-vEV_V3Zf-xBCNd) | `1h 46m 51s` |
+| Date         | Name/Link                                                                                       | Length       |
+|:-------------|:------------------------------------------------------------------------------------------------|:-------------|
+| `03/07/2023` | [Content Selection](https://drive.google.com/file/d/1GKdbcmL5rTYLOtwdo-vEV_V3Zf-xBCNd)          | `1h 46m 51s` |
 | `03/09/2023` | [Content Selection (Edited)](https://drive.google.com/file/d/16FzglVQ6NExZX2ysMUpMiPEZ-MaO00FR) | `1h 46m 51s` |
 
 ## Document
