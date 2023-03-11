@@ -712,7 +712,7 @@ $Ctrl.AddParty("Michael C. Cook Sr.")
 
 $Ctrl.X(0,"00:00:00","00:00:20", @'
 :Audio log [Tuesday March 7th 2023], [Michael Cook] speaking it is currently [2:38 PM].
-I'm makin this [audio log] to talk about, uh-
+I'm makin' this [audio log] to talk about, uh-
 '@)
 
 $Ctrl.X(0,"00:00:20","00:00:37", @'
@@ -1030,7 +1030,7 @@ $Ctrl.X(0,"00:11:29","00:11:47", @'
 [Somebody] : Well, what is it that you're...
              How do you do it...?
 
-             Do you like, start out wiht like uh-
+             Do you like, start out with like uh-
              like a [video game], or somethin'...?
 
              Or do you go to like a [toy store], and buy a, like a [board game]...?
@@ -1522,7 +1522,7 @@ Uh- and uh, ya know, he's the [director], he's a good [director], and uh-
 somebody decided to like, take a huge dump, all over what he had planned...
 
 And they talked about how like, he was like crankin' on his pud, around a couple of uh-
-female colleages.
+female colleagues.
 '@)
 
 $Ctrl.X(0,"00:28:07","00:28:24", @'
@@ -1693,7 +1693,7 @@ $Ctrl.X(0,"00:33:54","00:34:27", @'
 
 I can't remember the exact number, but- ya know, uh- it works in the other way, where
 you're making [sheer exaggeration], that's a [hyperbole], but- instead of uh- making
-something sound MORE [intense], you make it seem much more [miniscule], and then uh-
+something sound MORE [intense], you make it seem much more [minuscule], and then uh-
 it's the [same technique], but...
 '@)
 
@@ -1819,9 +1819,9 @@ And it's- another [older lady].
 
 $Ctrl.X(0,"00:38:13","00:38:26", @'
 :She's got a hat on...?
-It looks like a tophat...?
+It looks like a top-hat...?
 
-It looks like an [Englishman tophat].
+It looks like an [Englishman top-hat].
 Like, what [Charlie Chaplin] would wear.
 And, uh...
 '@)
@@ -2122,7 +2122,7 @@ Depends on what the [content] is.
 '@)
 
 $Ctrl.X(0,"00:50:23","00:50:59", @'
-:So when I ask the quqestion like uh- what do I wanna talk about, or uh- if I say, even
+:So when I ask the question like uh- what do I wanna talk about, or uh- if I say, even
 me, I convey a [sense of bias] to [some degree], with uh- the things that I will... 
 
 Like, I can say for certain that [this particular audio recording]...?
@@ -2222,18 +2222,18 @@ And then once you get like, about [(10) feet] to the damn sign...?
 Then, you're gonna see a [HELL of a lot more detail].
 
 Then you're really gonna wa- probably not gonna wanna use [thousands] of uh, [triangles], or
-uh [polygons], but- ya know, uh- these are the things that uh- [tesselation] addresses.
+uh [polygons], but- ya know, uh- these are the things that uh- [tessellation] addresses.
 '@)
 
 $Ctrl.X(0,"00:55:30","00:56:22", @'
-:[Tesselation] uh- is something that- I don't know if [Nvidia] pioneered [tesselation], but- uh,
+:[Tessellation] uh- is something that- I don't know if [Nvidia] pioneered [tessellation], but- uh,
 it's a pretty cool idea, is this uh- [graphics demonstration], I think it was [Heaven]...?
 
 It might've been uh- called something else, I can't remember exactly.
 ([Unigine Heaven], with the dragon. It's not a [game], its a [benchmark utility].)
 
-But, it's like uh- you could turn the [tesselation] on...?
-And, the higher the [tesselation], the more [polygons] it would draw...?
+But, it's like uh- you could turn the [tessellation] on...?
+And, the higher the [tessellation], the more [polygons] it would draw...?
 '@)
 
 $Ctrl.X(0,"00:56:22","00:56:47", @'
@@ -2294,7 +2294,7 @@ Uh- somebody in a truck just drove up...?
 '@)
 
 $Ctrl.X(0,"00:58:27","00:58:45", @'
-:See, what I'm doing right now, is I'm using ar [distaction technique].
+:See, what I'm doing right now, is I'm using a [distraction technique].
 But I'm also, like, using [observations], right...?
 
 So, in a [conversation] that I would be having with somebody, I could use one of these
@@ -2341,7 +2341,7 @@ And, ya know...?
 
 [He looks like a cool dude].
 With his [glasses] on.
-And, those are [observation tehcniques].
+And, those are [observation techniques].
 '@)
 
 $Ctrl.X(0,"01:00:21","01:00:53", @'
@@ -2372,8 +2372,8 @@ $Ctrl.X(0,"01:01:24","01:02:10", @'
 :Well, I can tell ya, it's because uh- the way our [society] is [shaped] now, is sort of like,
 [on demand]. 
 
-Ya know like, when people watch [primetime television], they're like:
-[People]: Well, we'll put [primetime television] on because like, most people work like (9-5).
+Ya know like, when people watch [prime time television], they're like:
+[People]: Well, we'll put [prime time television] on because like, most people work like (9-5).
 
           And then when they get outta work, they wanna like, [watch the news].
 
@@ -2405,7 +2405,7 @@ You wanna talk about your [circadian rhythm], you don't wanna [fight] the urge t
 [fall asleep], because if you do...? 
 
 Then you might be awake all night. 
-And you ddn't want that...
+And you don't want that...
 '@)
 
 $Ctrl.X(0,"01:02:54","01:03:16", @'
@@ -2640,7 +2640,7 @@ the [least amount] of things that could be [had]...
 '@)
 
 $Ctrl.X(0,"01:10:49","01:11:22", @'
-:So like, these things are gonna [sound non-sensical], because, I'm [literally] throwing
+:So like, these things are gonna [sound nonsensical], because, I'm [literally] throwing
 out a bunch of [mathematical operators], with [language].
 
 And, this is how [comedy] gets its' [comedic feel] to it.
@@ -2706,7 +2706,7 @@ like that.
 $Ctrl.X(0,"01:12:56","01:13:25", @'
 :Whereas, like, somebody like [Bill Burr], [Louis C.K.], or [George Carlin]... they're
 gonna be like:
-[Them]: Well, we're gonna talk a litle bit more like uh- [Noam Chomsky] here...
+[Them]: Well, we're gonna talk a little bit more like uh- [Noam Chomsky] here...
         about like the [muffin lady], or like uh- the amount of people on the planet
         that have [sucked a dick]... or the concept of [money], [bullshit], 
         [politics], [religion]...
@@ -2753,7 +2753,7 @@ $Ctrl.X(0,"01:14:29","01:15:04", @'
 :Where uh- a [dude] steals a joke, and then like, the one- the one kid, played by uh- what's
 his name, played by [Jordan Peele], "I'd like get [high on potneuse]~!"
 
-And then everbody's like "Shut the hell up, dude. You're annoying."
+And then everybody's like "Shut the hell up, dude. You're annoying."
 And then the other guy's like "I'd like to get [high on potneuse]~!"
 And then the whole entire room of people, like laughs at the joke.
 
@@ -2856,10 +2856,10 @@ And, [David Letterman]'s like:
              Ya know...?
 
              You got this uh- 
-             You got this friggen uh- [standup special], or whatever...?
+             You got this friggen uh- [stand-up special], or whatever...?
 
 And then [George Carlin]'s like:
-[Carlin]: Yeh yeh yeh, I got this [standup special], uh- I got it- ya know, uh-
+[Carlin]: Yeh yeh yeh, I got this [stand-up special], uh- I got it- ya know, uh-
           Ya know, it's like I did (7) things that you don't wanna talk about on the TV...?
           Or that you'll never hear on the TV...?
           And I did well with that skit...?
@@ -2921,7 +2921,7 @@ Like, you'll [hear] some of these words on the TV from time to time.
 '@)
 
 $Ctrl.X(0,"01:20:58","01:21:28", @'
-:You'll never hear the- you'll- it- it- if it is ever, like, heard on [primetime TV]...?
+:You'll never hear the- you'll- it- it- if it is ever, like, heard on [prime time TV]...?
 Oh my god, you're gonna like, be [fired].
 
 You're gonna be [fired]...?
@@ -2935,14 +2935,14 @@ And you're gonna have to [give up on your life], and [everything you have ever d
 $Ctrl.X(0,"01:21:28","01:21:57", @'
 :It's gonna look sooo bad...?
 And then like, people are gonna be like:
-[People]: Oh my god, it's the guy that [swore] on [primetime TV]...?
+[People]: Oh my god, it's the guy that [swore] on [prime time TV]...?
           Right...?
 
-          Oh my god, it's the guy that [swore] on [primetime TV]...
+          Oh my god, it's the guy that [swore] on [prime time TV]...
           Oh my god.
 
           Whatever will we do...?
-          The guy [swore], [once], on [primetime TV].
+          The guy [swore], [once], on [prime time TV].
 '@)
 
 $Ctrl.X(0,"01:21:57","01:22:25", @'
@@ -2954,7 +2954,7 @@ fuckin' place...? Like on [X-Men Apocalypse]...?
 And then, uh- ya know holy shit.
 And then everybody, on the [face of the planet died], because...
 
-Some dude said the F-word on [primetime TV].
+Some dude said the F-word on [prime time TV].
 '@)
 
 $Ctrl.X(0,"01:22:25","01:22:42", @'
@@ -2970,7 +2970,7 @@ on TV or whatever... Or, [maybe they do actually fine the people], or whatever.
 
 $Ctrl.X(0,"01:22:42","01:23:02", @'
 :I have uh- come to the [conclusion], that [they probably don't fine anybody] for [swearing]
-on [primetime TV], they just want people to [believe] that that's there, because ya know,
+on [prime time TV], they just want people to [believe] that that's there, because ya know,
 [when people can't swear in public], or like, or whatever...?
 
 It causes people to be [more obedient].
