@@ -1,4 +1,4 @@
-[Video](#video) - [Audio](#audio) - [Transcription](#transcription) - [Document](#document) - [Script](#script) - [Link](#link) - [Annotation](#annotation)
+[[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Document](#document)] - [[Script](#script)] - [[Link](#link)] - [[Annotation](#annotation)]
 ## Video
  
 | Index | Date       | Name/Link                                               | Duration    |
