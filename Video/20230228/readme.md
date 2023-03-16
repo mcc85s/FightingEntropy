@@ -119,7 +119,7 @@
 | 2     | 00:07:36 | [Genuinely Funny](#genuinely-funny)                                                                 |
 | 3     | 00:12:44 | [2023 Work](#2023-work)                                                                             |
 | 4     | 00:12:46 | [Records List](#records-list)                                                                       |
-| 5     | 00:14:53 | [Speziale + Gardner](#speziale-+-gardner)                                                           |
+| 5     | 00:14:53 | [Speziale and Gardner](#speziale-and-gardner)                                                       |
 | 6     | 00:23:10 | [Suspicious](#suspicious)                                                                           |
 | 7     | 00:23:30 | [Wide-Ranging Conspiracy](#wide-ranging-conspiracy)                                                 |
 | 8     | 00:23:57 | [Birds](#birds)                                                                                     |
@@ -140,9 +140,9 @@
 | 23    | 00:56:48 | [NYSP Mafiosos](#nysp-mafiosos)                                                                     |
 | 24    | 01:01:19 | [GlobalFoundries](#globalfoundries)                                                                 |
 | 25    | 01:03:21 | [Lawsuit Material](#lawsuit-material)                                                               |
-| 26    | 01:03:58 | [Time Travel Reference #1](#time-travel-reference-#1)                                               |
+| 26    | 01:03:58 | [Time Travel Reference 1](#time-travel-reference-1)                                                 |
 | 27    | 01:04:48 | [Stewarts Northline Road](#stewarts-northline-road)                                                 |
-| 28    | 01:07:30 | [Time Travel Reference #2](#time-travel-reference-#2)                                               |
+| 28    | 01:07:30 | [Time Travel Reference 2](#time-travel-reference-2)                                                 |
 | 29    | 01:14:34 | [Integrity](#integrity)                                                                             |
 | 30    | 01:33:05 | [PRISM](#prism)                                                                                     |
 | 31    | 01:34:34 | [World Economic Forum](#world-economic-forum)                                                       |
@@ -214,10 +214,10 @@ More stuff happening, than not happening.
 That's just the way it is.
 ```
 
-## Speziale + Gardner
-| Time       | Name               |
-|:-----------|:-------------------|
-| `00:14:53` | Speziale + Gardner |
+## Speziale and Gardner
+| Time       | Name                 |
+|:-----------|:---------------------|
+| `00:14:53` | Speziale and Gardner |
 
 ```
 Stuff happening.
@@ -487,10 +487,10 @@ More stuff happening, than not happening.
 That's just the way it is.
 ```
 
-## Time Travel Reference #1
-| Time       | Name                     |
-|:-----------|:-------------------------|
-| `01:03:58` | Time Travel Reference #1 |
+## Time Travel Reference 1
+| Time       | Name                    |
+|:-----------|:------------------------|
+| `01:03:58` | Time Travel Reference 1 |
 
 ```
 Stuff happening.
@@ -513,10 +513,10 @@ More stuff happening, than not happening.
 That's just the way it is.
 ```
 
-## Time Travel Reference #2
-| Time       | Name                     |
-|:-----------|:-------------------------|
-| `01:07:30` | Time Travel Reference #2 |
+## Time Travel Reference 2
+| Time       | Name                    |
+|:-----------|:------------------------|
+| `01:07:30` | Time Travel Reference 2 |
 
 ```
 Stuff happening.
