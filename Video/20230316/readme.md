@@ -155,11 +155,6 @@
 | `00:04:50` | Scientific Model |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Societal Expectations
@@ -168,11 +163,6 @@ That's just the way it is.
 | `00:07:02` | Societal Expectations |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Genuinely Funny
@@ -181,11 +171,6 @@ That's just the way it is.
 | `00:07:36` | Genuinely Funny |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## 2023 Work
@@ -194,11 +179,6 @@ That's just the way it is.
 | `00:12:44` | 2023 Work |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Records List
@@ -207,11 +187,6 @@ That's just the way it is.
 | `00:12:46` | Records List |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Speziale and Gardner
@@ -220,11 +195,6 @@ That's just the way it is.
 | `00:14:53` | Speziale and Gardner |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Suspicious
@@ -233,11 +203,6 @@ That's just the way it is.
 | `00:23:10` | Suspicious |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Wide-Ranging Conspiracy
@@ -246,11 +211,6 @@ That's just the way it is.
 | `00:23:30` | Wide-Ranging Conspiracy |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Birds
@@ -259,11 +219,6 @@ That's just the way it is.
 | `00:23:57` | Birds |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Nothin I can do
@@ -272,11 +227,6 @@ That's just the way it is.
 | `00:30:24` | Nothin I can do |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Obstructing Justice
@@ -285,11 +235,6 @@ That's just the way it is.
 | `00:32:24` | Obstructing Justice |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Northern Part of Saratoga County
@@ -298,11 +243,6 @@ That's just the way it is.
 | `00:33:06` | Northern Part of Saratoga County |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Walker, Texas Ranger
@@ -311,11 +251,6 @@ That's just the way it is.
 | `00:33:19` | Walker, Texas Ranger |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Not as far as I can tell
@@ -324,11 +259,6 @@ That's just the way it is.
 | `00:33:48` | Not as far as I can tell |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Supporting Evidence
@@ -337,11 +267,6 @@ That's just the way it is.
 | `00:34:37` | Supporting Evidence |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Mental Health versus Espionage and Cyberattacks
@@ -350,11 +275,6 @@ That's just the way it is.
 | `00:35:47` | Mental Health versus Espionage and Cyberattacks |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## No crime was committed then
@@ -363,11 +283,6 @@ That's just the way it is.
 | `00:35:58` | No crime was committed then |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Troublemaker
@@ -376,11 +291,6 @@ That's just the way it is.
 | `00:36:31` | Troublemaker |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Not a mental health problem
@@ -389,11 +299,6 @@ That's just the way it is.
 | `00:36:52` | Not a mental health problem |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## You have not described a single crime
@@ -402,11 +307,6 @@ That's just the way it is.
 | `00:37:00` | You have not described a single crime |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Research
@@ -415,11 +315,6 @@ That's just the way it is.
 | `00:37:49` | Research |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Why William Moak is stupid
@@ -428,11 +323,6 @@ That's just the way it is.
 | `00:38:25` | Why William Moak is stupid |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Russians
@@ -441,11 +331,6 @@ That's just the way it is.
 | `00:39:34` | Russians |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## NYSP Mafiosos
@@ -454,11 +339,6 @@ That's just the way it is.
 | `00:56:48` | NYSP Mafiosos |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## GlobalFoundries
@@ -467,11 +347,6 @@ That's just the way it is.
 | `01:01:19` | GlobalFoundries |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Lawsuit Material
@@ -480,11 +355,6 @@ That's just the way it is.
 | `01:03:21` | Lawsuit Material |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Time Travel Reference 1
@@ -493,11 +363,6 @@ That's just the way it is.
 | `01:03:58` | Time Travel Reference 1 |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Stewarts Northline Road
@@ -506,11 +371,6 @@ That's just the way it is.
 | `01:04:48` | Stewarts Northline Road |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Time Travel Reference 2
@@ -519,11 +379,6 @@ That's just the way it is.
 | `01:07:30` | Time Travel Reference 2 |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Integrity
@@ -532,11 +387,6 @@ That's just the way it is.
 | `01:14:34` | Integrity |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## PRISM
@@ -545,11 +395,6 @@ That's just the way it is.
 | `01:33:05` | PRISM |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## World Economic Forum
@@ -558,11 +403,6 @@ That's just the way it is.
 | `01:34:34` | World Economic Forum |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Importance Level
@@ -571,11 +411,6 @@ That's just the way it is.
 | `01:52:15` | Importance Level |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
 
 ## Conclusion
@@ -584,9 +419,4 @@ That's just the way it is.
 | `01:54:56` | Conclusion |
 
 ```
-Stuff happening.
-All the time.
-
-More stuff happening, than not happening.
-That's just the way it is.
 ```
