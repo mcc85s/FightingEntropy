@@ -740,9 +740,10 @@ Function New-MarkdownFile
     
                 $This.Out($H,($Head -join " - "))
             }
+            $This.Out($H,"")
     
             # Content Loop
-            ForEach ($X in 0..6)
+            ForEach ($X in 0..($C-1))
             {
                 $This.Out($H,("## {0}" -f $This.Output[$X].Name))
                 $This.Out($H,"")
