@@ -15,11 +15,11 @@
 
 ## Transcription
 
-| Index | Date         | Name     | Doc                                                                                                     | Pdf                                                                                                     |
-|:------|:-------------|:---------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------|
-| 0     | `02/18/2023` | 20230218 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).doc)             | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).pdf)             |
-| 1     | `02/17/2023` | 20230217 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).pdf) |
-| 2     | `02/02/2021` | 20210202 | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).pdf) |
+| Index | Date         | Name         | Doc                                                                                                     | Pdf                                                                                                     |
+|:------|:-------------|:-------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------|
+| 0     | `02/18/2023` | **20230218** | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).doc)             | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0228-(20230218).pdf)             |
+| 1     | `02/17/2023` | **20230217** | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0220-(SCSOCaptainJeffBrown).pdf) |
+| 2     | `02/02/2021` | **20210202** | [Doc](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).doc) | [Pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Records/2023_0221-(SCSOCaptainJeffBrown).pdf) |
 
 ## Document
 
@@ -112,42 +112,42 @@
 
 ## Annotation
 
-| Index | Time     | Name                                                                                                |
-|:------|:---------|:----------------------------------------------------------------------------------------------------|
-| 0     | 00:04:50 | [Scientific Model](#scientific-model)                                                               |
-| 1     | 00:07:02 | [Societal Expectations](#societal-expectations)                                                     |
-| 2     | 00:07:36 | [Genuinely Funny](#genuinely-funny)                                                                 |
-| 3     | 00:12:44 | [2023 Work](#2023-work)                                                                             |
-| 4     | 00:12:46 | [Records List](#records-list)                                                                       |
-| 5     | 00:14:53 | [Speziale and Gardner](#speziale-and-gardner)                                                       |
-| 6     | 00:23:10 | [Suspicious](#suspicious)                                                                           |
-| 7     | 00:23:30 | [Wide-Ranging Conspiracy](#wide-ranging-conspiracy)                                                 |
-| 8     | 00:23:57 | [Birds](#birds)                                                                                     |
-| 9     | 00:30:24 | [Nothin I can do](#nothin-i-can-do)                                                                 |
-| 10    | 00:32:24 | [Obstructing Justice](#obstructing-justice)                                                         |
-| 11    | 00:33:06 | [Northern Part of Saratoga County](#northern-part-of-saratoga-county)                               |
-| 12    | 00:33:19 | [Walker, Texas Ranger](#walker,-texas-ranger)                                                       |
-| 13    | 00:33:48 | [Not as far as I can tell](#not-as-far-as-i-can-tell)                                               |
-| 14    | 00:34:37 | [Supporting Evidence](#supporting-evidence)                                                         |
-| 15    | 00:35:47 | [Mental Health versus Espionage and Cyberattacks](#mental-health-versus-espionage-and-cyberattacks) |
-| 16    | 00:35:58 | [No crime was committed then](#no-crime-was-committed-then)                                         |
-| 17    | 00:36:31 | [Troublemaker](#troublemaker)                                                                       |
-| 18    | 00:36:52 | [Not a mental health problem](#not-a-mental-health-problem)                                         |
-| 19    | 00:37:00 | [You have not described a single crime](#you-have-not-described-a-single-crime)                     |
-| 20    | 00:37:49 | [Research](#research)                                                                               |
-| 21    | 00:38:25 | [Why William Moak is stupid](#why-william-moak-is-stupid)                                           |
-| 22    | 00:39:34 | [Russians](#russians)                                                                               |
-| 23    | 00:56:48 | [NYSP Mafiosos](#nysp-mafiosos)                                                                     |
-| 24    | 01:01:19 | [GlobalFoundries](#globalfoundries)                                                                 |
-| 25    | 01:03:21 | [Lawsuit Material](#lawsuit-material)                                                               |
-| 26    | 01:03:58 | [Time Travel Reference 1](#time-travel-reference-1)                                                 |
-| 27    | 01:04:48 | [Stewarts Northline Road](#stewarts-northline-road)                                                 |
-| 28    | 01:07:30 | [Time Travel Reference 2](#time-travel-reference-2)                                                 |
-| 29    | 01:14:34 | [Integrity](#integrity)                                                                             |
-| 30    | 01:33:05 | [PRISM](#prism)                                                                                     |
-| 31    | 01:34:34 | [World Economic Forum](#world-economic-forum)                                                       |
-| 32    | 01:52:15 | [Importance Level](#importance-level)                                                               |
-| 33    | 01:54:56 | [Conclusion](#conclusion)                                                                           |
+| Index | Time     | Name                                                                                                    |
+|:------|:---------|:--------------------------------------------------------------------------------------------------------|
+| 0     | 00:04:50 | **[Scientific Model](#scientific-model)**                                                               |
+| 1     | 00:07:02 | **[Societal Expectations](#societal-expectations)**                                                     |
+| 2     | 00:07:36 | **[Genuinely Funny](#genuinely-funny)**                                                                 |
+| 3     | 00:12:44 | **[2023 Work](#2023-work)**                                                                             |
+| 4     | 00:12:46 | **[Records List](#records-list)**                                                                       |
+| 5     | 00:14:53 | **[Speziale and Gardner](#speziale-and-gardner)**                                                       |
+| 6     | 00:23:10 | **[Suspicious](#suspicious)**                                                                           |
+| 7     | 00:23:30 | **[Wide-Ranging Conspiracy](#wide-ranging-conspiracy)**                                                 |
+| 8     | 00:23:57 | **[Birds](#birds)**                                                                                     |
+| 9     | 00:30:24 | **[Nothin I can do](#nothin-i-can-do)**                                                                 |
+| 10    | 00:32:24 | **[Obstructing Justice](#obstructing-justice)**                                                         |
+| 11    | 00:33:06 | **[Northern Part of Saratoga County](#northern-part-of-saratoga-county)**                               |
+| 12    | 00:33:19 | **[Walker, Texas Ranger](#walker,-texas-ranger)**                                                       |
+| 13    | 00:33:48 | **[Not as far as I can tell](#not-as-far-as-i-can-tell)**                                               |
+| 14    | 00:34:37 | **[Supporting Evidence](#supporting-evidence)**                                                         |
+| 15    | 00:35:47 | **[Mental Health versus Espionage and Cyberattacks](#mental-health-versus-espionage-and-cyberattacks)** |
+| 16    | 00:35:58 | **[No crime was committed then](#no-crime-was-committed-then)**                                         |
+| 17    | 00:36:31 | **[Troublemaker](#troublemaker)**                                                                       |
+| 18    | 00:36:52 | **[Not a mental health problem](#not-a-mental-health-problem)**                                         |
+| 19    | 00:37:00 | **[You have not described a single crime](#you-have-not-described-a-single-crime)**                     |
+| 20    | 00:37:49 | **[Research](#research)**                                                                               |
+| 21    | 00:38:25 | **[Why William Moak is stupid](#why-william-moak-is-stupid)**                                           |
+| 22    | 00:39:34 | **[Russians](#russians)**                                                                               |
+| 23    | 00:56:48 | **[NYSP Mafiosos](#nysp-mafiosos)**                                                                     |
+| 24    | 01:01:19 | **[GlobalFoundries](#globalfoundries)**                                                                 |
+| 25    | 01:03:21 | **[Lawsuit Material](#lawsuit-material)**                                                               |
+| 26    | 01:03:58 | **[Time Travel Reference 1](#time-travel-reference-1)**                                                 |
+| 27    | 01:04:48 | **[Stewarts Northline Road](#stewarts-northline-road)**                                                 |
+| 28    | 01:07:30 | **[Time Travel Reference 2](#time-travel-reference-2)**                                                 |
+| 29    | 01:14:34 | **[Integrity](#integrity)**                                                                             |
+| 30    | 01:33:05 | **[PRISM](#prism)**                                                                                     |
+| 31    | 01:34:34 | **[World Economic Forum](#world-economic-forum)**                                                       |
+| 32    | 01:52:15 | **[Importance Level](#importance-level)**                                                               |
+| 33    | 01:54:56 | **[Conclusion](#conclusion)**                                                                           |
 
 ## Scientific Model
 | Time       | Name             |
