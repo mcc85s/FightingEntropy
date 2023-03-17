@@ -11,14 +11,14 @@
 
 | Index | Date         | Name/Link                                                                                                                                                           |
 |:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa Central Schools).ps1)** |
+| 0     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa%20Central%20Schools).ps1)** |
 
 ## Document
 
 | Index | Date         | Name/Link                                                                                                                                                           |
 |:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).doc](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa Central Schools).doc)** |
-| 1     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa Central Schools).pdf)** |
+| 0     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).doc](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa%20Central%20Schools).doc)** |
+| 1     | `03/17/2023` | **[2023_0317-(Shenendehowa Central Schools).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230316/2023_0317-(Shenendehowa%20Central%20Schools).pdf)** |
 
 ## Link
 
