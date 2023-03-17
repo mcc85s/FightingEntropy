@@ -33,4 +33,4 @@
 | 6     | `10/21/2019` | **[2019_1021-(Spectrum)](https://youtu.be/zs0C_ig-4CQ)**                                    |
 | 7     | `01/25/2019` | **[2019_0125-(Computer Answers - MDT)](https://youtu.be/5Cyp3pqIMRs)**                      |
 | 8     | `12/05/2021` | **[2021_1205-([FightingEntropy(π)][FEInfrastructure])](https://youtu.be/6yQr06_rA4I)**      |
-| 9     | `01/12/2023` | **[2023_0112-(PowerShell | Virtualization Lab + FEDCPromo)](https://youtu.be/9v7uJHF-cGQ)** |
+| 9     | `01/12/2023` | **[2023_0112-(PowerShell - Virtualization Lab + FEDCPromo)](https://youtu.be/9v7uJHF-cGQ)** |
