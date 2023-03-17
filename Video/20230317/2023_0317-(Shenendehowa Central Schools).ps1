@@ -19,9 +19,6 @@ Class VideoDate
     }
 }
 
-$Name = "20230317-(stuff whatever blah)"
-$Temp = [VideoDate]($Name.Substring(0,8).Replace("_",""))
-$Date = [DateTime]$Temp.ToString()
 Class VideoEntry
 {
     [UInt32]         $Index
