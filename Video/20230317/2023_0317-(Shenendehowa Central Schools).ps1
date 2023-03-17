@@ -88,9 +88,49 @@ Class VideoReel
             }
         }
     }
+    [Void] Out([Hashtable]$Hash,[Object]$Object)
+    {
+        ForEach ($Item in $Object)
+        {
+            $Hash.Add($Hash.Count,$Item)
+        }
+    }
     [String] GetTitle()
     {
         Return "{0} [~] {1}" -f $This.Name, $This.Date
+    }
+    [String[]] GetFile([UInt32]$Index)
+    {
+        If ($Index -gt $This.Output.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $H     = @{ }
+        $Item  = $This.Output[$Index]
+        $Lines = $Item.Description -Split "`n"
+
+        $This.Out($H,"Index       : $($Item.Index)")
+        $This.Out($H,"Date        : $($Item.Date)")
+        $This.Out($H,"Name        : $($Item.Name)")
+        $This.Out($H,"Url         : $($Item.Url)")
+
+        If ($Lines.Count -lt 2)
+        {
+            $This.Out($H,"Description : $($Item.Description)")
+        }
+
+        Else
+        {
+            $This.Out($H,"Description : $($Lines[0])")
+
+            For ($X = 1; $X -lt $Lines.Count; $X ++)
+            {
+                $This.Out($H,"              $($Lines[$X])")
+            }
+        }
+
+        Return $H[0..($H.Count-1)]
     }
 }
 
@@ -131,7 +171,7 @@ shop at: [1602 Route 9, Clifton Park, NY 12065].
 
 By the way, [the month that this video was recorded], was...
 [the month where I set the highest sales record at that shop].
-Which- probably remains as being the most profitable month in it's 
+Which- probably remains as being the most profitable month in its'
 history.
 '@)
 
@@ -224,7 +264,7 @@ correctly documenting stuff is really important.
 I also cover my trip to [Stratton Air National Guard], though I 
 never explained to my children that the "bird" that I recorded
 was in [direct response] to the (3) audio recordings that I recorded
-on (May 19th, 2020), (May 20th, 2020), and (May 21st, 2020).
+on [May 19th, 2020], [May 20th, 2020], and [May 21st, 2020].
 '@)
 
 $Ctrl.Add("2019_1021-(Spectrum)",
