@@ -6,8 +6,8 @@ Class VideoDate
     Hidden [UInt32] $Year
     VideoDate([String]$Date)
     {
-        $This.Day   = $Date.Substring(6,2)
-        $This.Month = $Date.Substring(4,2)
+        $This.Day   = $Date.Substring(4,2)
+        $This.Month = $Date.Substring(6,2)
         $This.Year  = $Date.Substring(0,4)
         $This.Date  = "{0:d2}/{1:d2}/{2:d4}" -f $This.Day, 
                                                 $This.Month, 
@@ -21,18 +21,18 @@ Class VideoDate
 
 Class VideoEntry
 {
-    [UInt32]       $Index
-    [String]        $Date
-    [String]        $Name
-    [String]         $Url
-    [Object] $Description
+    [UInt32]         $Index
+    [String]          $Date
+    [String]          $Name
+    [String]           $Url
+    [String[]] $Description
     VideoEntry([UInt32]$Index,[String]$Name,[String]$Url,[String]$Description)
     {
         $This.Index       = $Index
         $This.Date        = $This.GetDate($Name)
         $This.Name        = $Name
         $This.Url         = $Url
-        $This.Description = $Description
+        $This.Description = $Description -Split "`n"
     }
     [String] GetDate([String]$Name)
     {
@@ -62,6 +62,31 @@ Class VideoReel
     Add([String]$Name,[String]$Url,[String]$Description)
     {
         $This.Output += $This.VideoEntry($This.Output.Count,$Name,$Url,$Description)
+    }
+    Review([UInt32]$Index)
+    {
+        If ($Index -gt $This.Output.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $Item   = $This.Output[$Index]
+        $Title  = "Date: {0}, Name: {1}" -f $Item.Date, $Item.Name
+        $Prompt = "Url: {0}" -f $Item.Url
+        
+        Write-Theme -Title $Title -InputObject $Item.Description -Prompt $Item.Url
+
+        (Get-Host).UI.PromptForChoice($Item.Name,"Launch [$($Item.Url)]...?",@("&Yes","&No"),0)
+        {
+            0 
+            {
+                Start $Item.Url
+            }
+            1
+            {
+                [Console]::WriteLine("Skipping")
+            }
+        }
     }
 }
 
