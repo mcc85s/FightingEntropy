@@ -73,7 +73,7 @@ Class VideoReel
         $Item   = $This.Output[$Index]
         $Title  = "Date: {0}, Name: {1}" -f $Item.Date, $Item.Name
         $Prompt = "Url: {0}" -f $Item.Url
-        
+
         Write-Theme -Title $Title -InputObject $Item.Description -Prompt $Item.Url
 
         (Get-Host).UI.PromptForChoice($Item.Name,"Launch [$($Item.Url)]...?",@("&Yes","&No"),0)
@@ -116,7 +116,7 @@ This is the same thing that I experienced at [Northstar Chevrolet],
 and it is a metaphor for my experience with [Spectrum].
 '@)
 
-$Ctrl.Add("Spectrum Cable Modem Reset",
+$Ctrl.Add("2017_0817-(Spectrum Cable Modem Reset)",
 "https://youtu.be/LfZW-s0BMow",
 @'
 [Cable modem] subjected to buffer overflow attack (off screen).
