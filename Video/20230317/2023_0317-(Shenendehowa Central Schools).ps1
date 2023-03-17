@@ -19,20 +19,23 @@ Class VideoDate
     }
 }
 
+$Name = "20230317-(stuff whatever blah)"
+$Temp = [VideoDate]($Name.Substring(0,8).Replace("_",""))
+$Date = [DateTime]$Temp.ToString()
 Class VideoEntry
 {
     [UInt32]         $Index
     [String]          $Date
     [String]          $Name
     [String]           $Url
-    [String[]] $Description
+    [String]   $Description
     VideoEntry([UInt32]$Index,[String]$Name,[String]$Url,[String]$Description)
     {
         $This.Index       = $Index
         $This.Date        = $This.GetDate($Name)
         $This.Name        = $Name
         $This.Url         = $Url
-        $This.Description = $Description -Split "`n"
+        $This.Description = $Description
     }
     [String] GetDate([String]$Name)
     {
@@ -87,6 +90,10 @@ Class VideoReel
                 [Console]::WriteLine("Skipping")
             }
         }
+    }
+    [String] GetTitle()
+    {
+        Return "{0} [~] {1}" -f $This.Name, $This.Date
     }
 }
 
@@ -243,4 +250,64 @@ $Ctrl.Add("2019_0125-(Computer Answers - MDT)",
 In this particular video, I was using the Microsoft Deployment Toolkit
 to deploy [Windows] to [virtual machines] in a similar manner to how I
 also do this in the video [FightingEntropy()][FEInfrastructure].
+'@)
+
+$Ctrl.Add("2021_1205-([FightingEntropy(π)][FEInfrastructure])",
+"https://youtu.be/6yQr06_rA4I",
+@'
+[FEInfrastructure] is a part of the [FightingEntropy(π)] module
+/modification for [Windows PowerShell], that has been many months
+in the making.
+
+The tool allows a [system administrator] to perform 
+[advanced system administration] of:
+[+] [DHCP]
+[+] [DNS]
+[+] [Active Directory]
+[+] [Hyper-V]
+[+] [Windows Deployment Services]
+[+] [Deployment and Imaging Service Module]
+[+] [Microsoft Deployment Toolkit]
+[+] [Internet Information Services]
+...though not every aspect is shown in this video.
+
+The tool showcases a [graphical user interface] that ties all
+of these components together, to build an [Active Directory]
+topology, and then using [ADDS], building a [virtual machine
+topology] that can be [managed] and [deployed] using [Hyper-V]... 
+
+...to then be installed using the [Microsoft Deployment Toolkit]
+featuring both [vanilla installation method], AND, 
+the [FriendsOfMDT method PowerShell Deployment].
+
+However, the [PowerShell Deployment] method by [FriendsofMDT] has
+been [extended] to provide [more options] within a [PXE environment],
+to [fully install said virtual machines].
+
+The utility ALSO provides the ability to spin up:
+[+] [gateways]
+[+] [servers]
+[+] [other workstations]
+[+] [other AD site-to-site ISTG connections]
+[+] [subnets]
+[+] [networks], etc. 
+
+However, the [implementation] of [those] will be [featured]...
+...in a [future video].
+'@)
+
+$Ctrl.Add("2023_0112-(PowerShell | Virtualization Lab + FEDCPromo)",
+"https://youtu.be/9v7uJHF-cGQ",
+@'
+This is installing an instance of [Windows Server 2016] on a machine
+that has [Hyper-V], over a [Remote Desktop Connection], by using
+[PowerShell Direct], and the custom (script/function) that I wrote to
+deploy the operating system from an ISO file.
+
+This is pretty complicated stuff and it exhibits that I am performing
+[senior level system administration] as well as [senior level 
+application development].
+
+Updated version of this video found here:
+https://www.youtube.com/watch?v=nqTOmNIilxw
 '@)
