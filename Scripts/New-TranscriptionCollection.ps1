@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-03-18 10:45:59                                                                  //
+\\  Date       : 2023-03-18 11:01:36                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-TranscriptionCollection
@@ -77,21 +77,6 @@ Function New-TranscriptionCollection
         }
     }
 
-    Class TranscriptionNote
-    {
-        [UInt32]   $Index
-        [String] $Content
-        TranscriptionNote([UInt32]$Index,[String]$Content)
-        {
-            $This.Index   = $Index
-            $This.Content = $Content.TrimEnd(" ")
-        }
-        [String] ToString()
-        {
-            Return $This.Content
-        }
-    }
-
     Class TranscriptionEntry
     {
         [UInt32]         $Index
@@ -101,34 +86,22 @@ Function New-TranscriptionCollection
         [String]      $Position
         [String]      $Duration
         [String]          $Type
-        [Object[]]        $Note
+        [String]          $Note
         TranscriptionEntry([UInt32]$Index,[Object]$Party,[Object]$Position,[String]$End,[String]$Note)
         {
-            $This.Index     = $Index
-            $This.Party     = $Party
-            $This.Date      = $Position.Date
-            $This.Time      = $Position.Time
-            $This.Position  = $Position.Position
-            $This.Duration  = [TimeSpan]$End - $This.Position
-            $This.Type      = Switch -Regex ($Note)
+            $This.Index    = $Index
+            $This.Party    = $Party
+            $This.Date     = $Position.Date
+            $This.Time     = $Position.Time
+            $This.Position = $Position.Position
+            $This.Duration = [TimeSpan]$End - $This.Position
+            $This.Type     = Switch -Regex ($Note)
             {
                 "^\*{1}" { "Action"    }
                 "^\:{1}" { "Statement" }
                 "^\#{1}" { "Context"   }
             }
-
-            $This.Note      = @( )
-
-            $Content        = $Note.Substring(1) -Split "`n"
-
-            ForEach ($Line in $Content)
-            {
-                $This.Note += $This.TranscriptionNote($This.Note.Count,$Line)
-            }
-        }
-        [Object] TranscriptionNote([UInt32]$Index,[String]$Content)
-        {
-            Return [TranscriptionNote]::New($Index,$Content)
+            $This.Note     = $Note.Substring(1)
         }
         [String] ToString()
         {
@@ -158,6 +131,19 @@ Function New-TranscriptionCollection
             $This.Duration = $This.Position($Duration)
             $This.End      = ([DateTime]"$Date $Start" + [TimeSpan]$Duration).ToString("HH:mm:dd")
             $This.Url      = $Url
+            $This.Party    = @( )
+            $This.Output   = @( )
+        }
+        TranscriptionFile([UInt32]$Index,[Object]$File)
+        {
+            $This.Index    = $Index
+            $This.Name     = $File.Name
+            $This.Time     = $This.DateTime($File.Date,$File.Start)
+            $This.Date     = $This.Time.Date
+            $This.Start    = $This.Time.Time
+            $This.Duration = $This.Position($File.Duration)
+            $This.End      = ([DateTime]"$($File.Date) $($File.Start)" + [TimeSpan]$File.Duration).ToString("HH:mm:dd")
+            $This.Url      = $File.Link
             $This.Party    = @( )
             $This.Output   = @( )
         }
@@ -288,85 +274,14 @@ Function New-TranscriptionCollection
 
     Class TranscriptionSection
     {
-        [UInt32] $Index
-        [String] $Name
+        [UInt32]     $Index
+        [String]      $Name
         [String[]] $Content
         TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
         {
             $This.Index   = $Index
             $This.Name    = $Name
             $This.Content = $Content
-        }
-    }
-
-    Class TranscriptionEdit
-    {
-        [UInt32]         $Index
-        Hidden [UInt32] $Buffer
-        [String]         $Party
-        [String]      $Position
-        [Object[]]        $Note
-        TranscriptionEdit([String]$Line)
-        {
-            $Split         = $This.Splice($Line)
-            $This.Index    = $Split[0]
-            $This.Party    = $Split[1]
-            $This.Position = $Split[2]
-
-            $This.Add($Line)
-        }
-        [String[]] Splice([String]$Line)
-        {
-            $Value       = [Regex]::Matches($Line,"^\d+\s+\w+\s+\d{2}\:\d{2}\:\d{2}\s+").Value
-            $This.Buffer = $Value.Length
-
-            Return @($Value -Split " " | ? Length -gt 0)
-        }
-        [Object] TranscriptionNote([UInt32]$Index,[String]$Content)
-        {
-            Return [TranscriptionNote]::New($Index,$Content)
-        }
-        Add([String]$Line)
-        {
-            If ($Line.Length -gt 0)
-            {
-                $This.Note += $This.TranscriptionNote($This.Note.Count,$Line.Substring($This.Buffer))
-            }
-        }
-    }
-
-
-    Class TranscriptionUpdate
-    {
-        [Object] $Output
-        TranscriptionUpdate([String]$Path)
-        {
-            If (![System.IO.File]::Exists($Path))
-            {
-                Throw "Invalid file"
-            }
-
-            $This.Output = @( )
-            $Content     = [System.IO.File]::ReadAllLines($Path)
-
-            ForEach ($X in 0..($Content.Count-1))
-            {
-                Switch -Regex ($Content[$X])
-                {
-                    "^\d+\s+\w+\s+\d{2}\:\d{2}\:\d{2}"
-                    {
-                        $This.Output += $This.TranscriptionEdit($Content[$X])
-                    }
-                    Default
-                    {
-                        $This.Output[-1].Add($Content[$X])
-                    }
-                }
-            }
-        }
-        [Object] TranscriptionEdit([String]$Content)
-        {
-            Return [TranscriptionEdit]::New($Content)
         }
     }
 
@@ -391,6 +306,10 @@ Function New-TranscriptionCollection
         {
             Return [TranscriptionFile]::New($Index,$Name,$Date,$Start,$Length,$Url)
         }
+        [Object] TranscriptionFile([UInt32]$Index,[Object]$File)
+        {
+            Return [TranscriptionFile]::New($Index,$File)
+        }
         [Object] TranscriptionParty([Int32]$Index,[String]$Name)
         {
             Return [TranscriptionParty]::New($Index,$Name)
@@ -406,14 +325,6 @@ Function New-TranscriptionCollection
         [Object] TranscriptionSection([UInt32]$Index,[String]$Name,[String[]]$Content)
         {
             Return [TranscriptionSection]::New($Index,$Name,$Content)
-        }
-        [Object] TranscriptionUpdate([String]$Path)
-        {
-            Return [TranscriptionUpdate]::New($Path)
-        }
-        [Object] Update([String]$Path)
-        {
-            Return $This.TranscriptionUpdate($Path)
         }
         Write([String]$Line)
         {
@@ -464,7 +375,7 @@ Function New-TranscriptionCollection
         }
         AddFile([Object]$File)
         {
-            $Item = $This.TranscriptionFile($This.File.Count,$File.Name,$File.Date,$File.Time,$File.Duration,$File.Url)
+            $Item = $This.TranscriptionFile($This.File.Count,$File)
 
             $Out  = @( ) 
             $Out += "Added [+] File     : [{0}]" -f $Item.Name
@@ -610,11 +521,11 @@ Function New-TranscriptionCollection
                                                      $This.Pad($Item.Duration,1,8)
 
                 $Out.Add($Out.Count,$Line)
-                $Out.Add($Out.Count,"")
+                $Out.Add($Out.Count," ".PadLeft(116," "))
                 $Line = "[Url]: {0}" -f $Item.Url
 
                 $Out.Add($Out.Count,$Line)
-                $Out.Add($Out.Count,"")
+                $Out.Add($Out.Count," ".PadLeft(116," "))
             }
 
             Return $Out[0..($Out.Count-1)]
@@ -671,14 +582,14 @@ Function New-TranscriptionCollection
                     $Line = $Line.PadRight(116,"=")
 
                     $Out.Add($Out.Count,$Line)
-                    $Out.Add($Out.Count,"")
+                    $Out.Add($Out.Count," ".PadRight(116," "))
 
                     ForEach ($Slice in $Content)
                     {
                         $Out.Add($Out.Count,"    $Slice")
                     }
 
-                    $Out.Add($Out.Count,"")
+                    $Out.Add($Out.Count," ".PadRight(116," "))
                     $Out.Add($Out.Count,"=".PadRight(116,"="))
                 }
 
@@ -717,7 +628,7 @@ Function New-TranscriptionCollection
                     }
                 }
 
-                $Out.Add($Out.Count,"")
+                $Out.Add($Out.Count," ".PadRight(116," "))
             }
 
             Return $Out[0..($Out.Count-1)]
