@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h2>Last updated: [03/13/23]</h2>
+<h2>Last updated: [03/18/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **03/18/23** | 1h 27m 45s | **2023_03_18_07_30_55.mp3**    | [Chains of Humanity](https://drive.google.com/file/d/1Lfvqujq3p6IpNVcKuKxPkoCjagZwTDPI)
 | **03/12/23** | 2h 52m 21s | **2023_03_13_13_11_11.mp3**    | [Investigation 101](https://drive.google.com/file/d/1HoW96G3dmH_r5PTpbbRR4CSjxd_LMsCE)
 | **03/07/23** | 1h 46m 51s | **2023_03_07_14_38_03.mp3**    | [Content Selection](https://drive.google.com/file/d/1GKdbcmL5rTYLOtwdo-vEV_V3Zf-xBCNd)
 | **03/02/23** | 0h 45m 24s | **2023_03_02_11_44_13.mp3**    | [State of Confession](https://drive.google.com/file/d/1EgJjiKkF0aK7exMQnbu-i-l6AzwMGtdp)
