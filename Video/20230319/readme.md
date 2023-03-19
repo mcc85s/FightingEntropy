@@ -2,10 +2,10 @@
   <tr>
     <td>
       <p align="center" width="100%">
-        <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230319/supersonic.JPG">
+        [<b>Chains of Humanity</b>] - [<b>03/19/2023</b>]
       </p>
       <p align="center" width="100%">
-         [Chains of Humanity] - [03/19/2023]
+        <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230319/supersonic.JPG">
       </p>
     </td>
   </tr>
