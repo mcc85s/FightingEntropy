@@ -2,7 +2,7 @@
 
 | Date         | Name                   | Thumbnail     |
 |:-------------|:-----------------------|:--------------|
-| `03/19/2023` | **Chains of Humanity** | [!supersonic] | 
+| `03/19/2023` | **Chains of Humanity** | ![supersonic] | 
 
 [[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Link](#link)]
 
