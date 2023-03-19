@@ -1,15 +1,5 @@
-# [Markdown]
-$File = New-MarkdownFile -Name "Chains of Humanity" -Date "03/19/2023"
-
-# [Audio]
-$File.Add("Audio")
-$File.Select(0)
-$Item = $File.Current()
-$Item.Add("03/18/2023","Chains of Humanity","https://drive.google.com/file/d/1Lfvqujq3p6IpNVcKuKxPkoCjagZwTDPI","07:30:55","08:58:40","01:27:45")
-
-# [Transcription]
-$Ctrl = New-TranscriptionCollection -Name $File.Name -Date $File.Date
-$Ctrl.AddFile($Item.Output[0])
+$Ctrl = New-TranscriptionCollection -Name "Chains of Humanity" -Date "03/18/2023"
+$Ctrl.AddFile("Chains of Humanity","03/18/2023","07:30:55","01:27:45","https://drive.google.com/file/d/1Lfvqujq3p6IpNVcKuKxPkoCjagZwTDPI")
 
 $Ctrl.Select(0)
 $Ctrl.AddParty("Michael C. Cook Sr.")
@@ -2573,40 +2563,3 @@ Huh...
 $Ctrl.X(0,"01:27:38","01:27:45",@'
 :End log.
 '@)
-
-# [Transcription]
-
-# [Header/Title]
-(Write-Theme $Ctrl.GetTitle() -Text).Replace("#"," ") | Set-Clipboard
-
-# [Sections]
-
-$Out       = "Introduction",
-             "File",
-             "Party",
-             "Transcription",
-             "Conclusion"
-
-$Swap = @{ }
-ForEach ($X in 0..($Out.Count-1))
-{ 
-    $Item = Switch ($X)
-    {
-        0 
-        { 
-            Write-Element -Mode 0 -Current $Out[$X] 
-        }
-        Default
-        {
-            Write-Element -Mode 0 -Current $Out[$X] -Last $Out[$X-1]
-        }
-    }
-
-    $Item += ""
-
-    $Swap.Add($Swap.Count,$Item -join "`n")
-}
-
-$Swap.Add($Swap.Count,(Write-Element -Mode 0 -Last $Out[-1] -Final))
-
-$Output = $Swap[0..($Swap.Count-1)]
