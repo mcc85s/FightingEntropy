@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-03-18 11:01:36                                                                  //
+\\  Date       : 2023-03-19 14:21:44                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-TranscriptionCollection
@@ -15,8 +15,8 @@
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2023-03-18
-    Modified   : 2023-03-18
+    Created    : 2023-03-19
+    Modified   : 2023-03-19
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -521,11 +521,11 @@ Function New-TranscriptionCollection
                                                      $This.Pad($Item.Duration,1,8)
 
                 $Out.Add($Out.Count,$Line)
-                $Out.Add($Out.Count," ".PadLeft(116," "))
+                $Out.Add($Out.Count,"")
                 $Line = "[Url]: {0}" -f $Item.Url
 
                 $Out.Add($Out.Count,$Line)
-                $Out.Add($Out.Count," ".PadLeft(116," "))
+                $Out.Add($Out.Count,"")
             }
 
             Return $Out[0..($Out.Count-1)]
@@ -582,14 +582,14 @@ Function New-TranscriptionCollection
                     $Line = $Line.PadRight(116,"=")
 
                     $Out.Add($Out.Count,$Line)
-                    $Out.Add($Out.Count," ".PadRight(116," "))
+                    $Out.Add($Out.Count,"")
 
                     ForEach ($Slice in $Content)
                     {
                         $Out.Add($Out.Count,"    $Slice")
                     }
 
-                    $Out.Add($Out.Count," ".PadRight(116," "))
+                    $Out.Add($Out.Count,"")
                     $Out.Add($Out.Count,"=".PadRight(116,"="))
                 }
 
@@ -628,7 +628,7 @@ Function New-TranscriptionCollection
                     }
                 }
 
-                $Out.Add($Out.Count," ".PadRight(116," "))
+                $Out.Add($Out.Count,"")
             }
 
             Return $Out[0..($Out.Count-1)]
