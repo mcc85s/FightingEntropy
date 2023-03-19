@@ -1,4 +1,4 @@
-[supersonic]: https://github.com/mcc85s/FightingEntropy/edit/main/Video/20230319/supersonic.JPG
+[supersonic]: https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230319/supersonic.jpg
 
 | Date         | Name                   | Thumbnail     |
 |:-------------|:-----------------------|:--------------|
