@@ -1,10 +1,8 @@
+[supersonic]: https://github.com/mcc85s/FightingEntropy/edit/main/Video/20230319/supersonic.jpg
 
-
-<h1>
-  [Chains of Humanity] - [03/19/2023]
-</h1>
-
-[supersonic](supersonic.jpg)
+| Date         | Name                   | Thumbnail     |
+|:-------------|:-----------------------|:--------------|
+| `03/19/2023` | **Chains of Humanity** | [!supersonic] | 
 
 [[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Link](#link)]
 
