@@ -1,5 +1,5 @@
 # [Markdown]
-$File = New-MarkdownFile -Name "Chains of Humanity" -Date "03/18/2023"
+$File = New-MarkdownFile -Name "Chains of Humanity" -Date "03/19/2023"
 
 # [Audio]
 $File.Add("Audio")
@@ -12,9 +12,10 @@ $Ctrl = New-TranscriptionCollection -Name $File.Name -Date $File.Date
 $Ctrl.AddFile($Item.Output[0])
 
 $Ctrl.Select(0)
+$Ctrl.AddParty("Michael C. Cook Sr.")
 
 $Ctrl.X(0,"00:00:00","00:00:32",@'
-Audio log, [Saturday] [March 18th, 2023]
+:Audio log, [Saturday] [March 18th, 2023]
 Michael Cook speaking... It's currently [07:31AM].
 
 I'm... not entirely sure what I'm gonna talk about in this particular 
@@ -26,7 +27,7 @@ The idea behind uh- like this [hive mentality] that people have regarding
 '@)
 
 $Ctrl.X(0,"00:00:32","00:00:58",@'
-And, how uh- [all of these things combined], they sort of like uh- 
+:And, how uh- [all of these things combined], they sort of like uh- 
 they [commandeer] people's uh- [sensibilities], right...?
 
 So I have [spoken] about this [concept] numerous times [before], and uh-
@@ -35,7 +36,7 @@ It really is a [daunting task], because I'm not entirely certain
 '@)
 
 $Ctrl.X(0,"00:00:58","00:01:34",@'
-...without uh- [causing people] to, uh- I don't know, feel [repulsed], 
+:...without uh- [causing people] to, uh- I don't know, feel [repulsed], 
 by either [what I'm saying], or the [reality], or [both].
 
 So, [take this into consideration], right...?
@@ -47,7 +48,7 @@ I think it's like [Carrie Ann Moss], or somethin'...?
 '@)
 
 $Ctrl.X(0,"00:01:34","00:02:02",@'
-Well, anyway uh- in the movie, [The Matrix], uh- [Morpheus] asks [Neo],
+:Well, anyway uh- in the movie, [The Matrix], uh- [Morpheus] asks [Neo],
 uh whether he would like to take the [red pill] or the [blue pill].
 
 Right...? And uh- 
@@ -55,7 +56,7 @@ I forget exactly which one is which, but uh-
 '@)
 
 $Ctrl.X(0,"00:02:02","00:02:24",@'
-I- I think the [red pill] is the one where he goes back in to Never Never land,
+:I- I think the [red pill] is the one where he goes back in to [Never Never land],
 and then the [blue pill], if he takes that one, then he wakes up. And he sees
 [how far down the rabbit hole goes] and everything...
 
@@ -64,7 +65,7 @@ It's been a while since I've seen the actual movie, but- the [notion] that I'm
 '@)
 
 $Ctrl.X(0,"00:02:24","00:03:01",@'
-It really is a [100% identical] uh- it's an [illustration] for how uh- the
+:It really is a [100% identical] uh- it's an [illustration] for how uh- the
 [concept of money controls people].
 
 It [controls] their [actions]...?
@@ -80,9 +81,9 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:03:01","00:03:31",@'
-So... When I was (10) years old, [my father was murdered].
+:So... When I was (10) years old, [my father was murdered].
 He was a [cab driver] in [Albany], working for a company name [OK Cab],
-or OK Ta- excuse me, ].
+or OK Ta- excuse me, [OK Taxi].
 
 And, uh- the office was located on uh- [Second Ave].
 I guess it used to be over on [Essex Street].
@@ -91,7 +92,7 @@ But um...
 '@)
 
 $Ctrl.X(0,"00:03:31","00:03:58",@'
-I remember [my father] used to [bring me along with him] sometimes,
+:I remember [my father] used to [bring me along with him] sometimes,
 when he would [do] his [job].
 
 Right...?
@@ -104,7 +105,7 @@ but what I [will] say, is this, right...? Um...
 '@)
 
 $Ctrl.X(0,"00:03:58","00:04:38",@'
-[My father] may [not] have been [killed] over the [money] he had in his [possession]...
+:[My father] may [not] have been [killed] over the [money] he had in his [possession]...
 Right...?
 
 And uh- it took me a really long time to even ask this question, like,
@@ -121,7 +122,7 @@ And, uh- [money] is basically just a [token] that [allows people] to
 '@)
 
 $Ctrl.X(0,"00:04:38","00:05:06",@'
-Um- there are a lot of things that are [enveloped within] the 
+:Um- there are a lot of things that are [enveloped within] the 
 [concept] of the [monetary system].
 
 So for instance, like uh- [guilt] and [shame]...?
@@ -133,12 +134,10 @@ Uh... [intelligence]...?
 
 [All] these things are [enveloped] within the [monetary system],
 believe it or not.
-
-
 '@)
 
 $Ctrl.X(0,"00:05:06","00:05:30",@'
-Right...?
+:Right...?
 And uh- ya know, um... if [people think about] what's [right] and [wrong]...
 
 They have to figure out like, uh- at [what point] does something
@@ -150,7 +149,7 @@ be [considered right]...?
 '@)
 
 $Ctrl.X(0,"00:05:30","00:05:51",@'
-And so, the concept of [philosophy], defines [when] and [where] those- those
+:And so, the concept of [philosophy], defines [when] and [where] those- those
 uh things are [located].
 
 But- [typically] in our [society], uh- people will uh- go along with other
@@ -160,7 +159,7 @@ Or even in some cases, the [evidence].
 '@)
 
 $Ctrl.X(0,"00:05:51","00:06:25",@'
-Right...?
+:Right...?
 And so, back on uh [September 12th, 2022]... uh- 
 former uh [Secretary of State], [Hillary Rodham Clinton], 
 I believe she was the [Secretary of State]... 
@@ -177,7 +176,7 @@ And it's like...
 '@)
 
 $Ctrl.X(0,"00:06:25","00:06:53",@'
-Yeh, like, the- the [people in the news]...?
+:Yeh, like, the- the [people in the news]...?
 They like to [dance around] the uh- the [usage] of the [word],
 [prejudge], or [prejudice]...?
 
@@ -189,7 +188,7 @@ but [most people associate prejudice] with like uh- a [negative connotation].
 '@)
 
 $Ctrl.X(0,"00:06:53","00:07:16",@'
-However, [prejudice] can also be applied in the [positive connotation], and
+:However, [prejudice] can also be applied in the [positive connotation], and
 uh- being able to describe what terms define what's in the [negative zone]
 and the [positive zone]...?
 
@@ -200,7 +199,7 @@ Or, you're watching [anything] on [broadcast television]...
 '@)
 
 $Ctrl.X(0,"00:07:16","00:07:48",@'
-Right...?
+:Right...?
 
 More often than not, you'll [learn more] from [watching things] on
 [YouTube], or [doing your own research] and going to like, [Wikipedia]...
@@ -216,7 +215,7 @@ thumbs up by, universally uh- practically uh, [universal acclaim].
 '@)
 
 $Ctrl.X(0,"00:07:48","00:08:12",@'
-Right, and so, this [concept of money] uh- it [disillusions people] to the 
+:Right, and so, this [concept of money] uh- it [disillusions people] to the 
 [degree] where... it causes people to [disable] their uh- their uh 
 [natural tendency] to be like:
 
@@ -226,7 +225,7 @@ Right, and so, this [concept of money] uh- it [disillusions people] to the
 '@)
 
 $Ctrl.X(0,"00:08:12","00:08:42",@'
-Well, [somebody else] gets [something] that [they didn't get], right...?
+:Well, [somebody else] gets [something] that [they didn't get], right...?
 So like uh- let me put this into a [context], right...?
 
 Um- I went to [school] with a guy named [Chad Gregory].
@@ -239,7 +238,7 @@ and uh- we went to the [same school], right...?
 '@)
 
 $Ctrl.X(0,"00:08:42","00:09:07",@'
-Uh- at [no point whatsoever] did I think to myself, because I'm
+:Uh- at [no point whatsoever] did I think to myself, because I'm
 not like most people, like when he started to succeed with his
 company, "Well what about ME, or MY business or whatever...?"
 
@@ -251,7 +250,7 @@ likeable guy, to basically [everybody].
 '@)
 
 $Ctrl.X(0,"00:09:07","00:09:42",@'
-Right...?
+:Right...?
 Um- I haven't seen him nor talked to him for a while.
 But- um, the [concept] that I'm [alluding] to, there, is like,
 [envy] and [jealousy].
@@ -268,7 +267,7 @@ But at the same time, I understand like, he's worked with
 '@)
 
 $Ctrl.X(0,"00:09:42","00:10:14",@'
-I'm not gonna talk about that right now.
+:I'm not gonna talk about that right now.
 What I am gonna say is this...
 
 Right...?
@@ -283,7 +282,7 @@ It's [what motivates most people].
 '@)
 
 $Ctrl.X(0,"00:10:14","00:10:50",@'
-Right...?
+:Right...?
 
 But- ya know, like uh- after uh- [suffering] the [loss] of my [father]
 and everything, I really [spent a number of years] just kind of like, 
@@ -298,7 +297,7 @@ and everything, right...?
 '@)
 
 $Ctrl.X(0,"00:10:50","00:11:21",@'
-So like, case in point.
+:So like, case in point.
 
 Um, there's this video of like a couple of kids, well, they're not kids,
 they're like, adults. And they got like uh- I dunno, they have like uh-
@@ -313,7 +312,7 @@ I don't know how much [money] they have, but- ya know,
 '@)
 
 $Ctrl.X(0,"00:11:21","00:11:40",@'
-Right...?
+:Right...?
 They think that like, what they do is [COOL]...?
 
 And then like, that's why they're [rich] and everything...?
@@ -329,7 +328,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:11:40","00:12:00",@'
-But like, uh- [most people in society]...?
+:But like, uh- [most people in society]...?
 
 If they see, like, [somebody] taking a [shitload of cash],
 and [throwing it in a dumpster], and [lighting it on fire]...? 
@@ -345,7 +344,7 @@ But-
 '@)
 
 $Ctrl.X(0,"00:12:00","00:12:27",@'
-Ya know, take a step back from [what causes that cash to be made],
+:Ya know, take a step back from [what causes that cash to be made],
 and then you [realize] that like, heh.
 
 A lot of things are [wasted] and [destroyed], in order to [create] all 
@@ -360,7 +359,7 @@ our [monetary system] is [overprovisioned].
 '@)
 
 $Ctrl.X(0,"00:12:27","00:12:51",@'
-Ya know, back in the old days, uh- people would, uh- uh- my friend
+:Ya know, back in the old days, uh- people would, uh- uh- my friend
 [Eric] told me about all this, but like- the way he that he [defined it]
 was something that I was [already talking to him about], but he wasn't like, 
 [paying attention] to the [words] that I was [saying]...
@@ -371,7 +370,7 @@ I didn't [describe it] the [way] that [he understood it].
 '@)
 
 $Ctrl.X(0,"00:12:51","00:13:17",@'
-But basically, it's like this.
+:But basically, it's like this.
 
 If there is, like, somebody that owns a gar- a [bar of gold]...?
 And they wanna like, use it to like, trade for [goods] or [services] or 
@@ -386,7 +385,7 @@ And, because of how [valuable] it is.
 '@)
 
 $Ctrl.X(0,"00:13:17","00:13:36",@'
-Right...?
+:Right...?
 The [blacksmith] is [tough]...
 
 He can make [weapons] out of [metal]...?
@@ -399,7 +398,7 @@ Ya know...?
 '@)
 
 $Ctrl.X(0,"00:13:36","00:14:05",@'
-Not necessarily [smart guys]...?
+:Not necessarily [smart guys]...?
 
 But [tough guys] and [weapons].
 Ya know...?
@@ -415,7 +414,7 @@ I dunno, like a [horse and carriage] or something...
 '@)
 
 $Ctrl.X(0,"00:14:05","00:14:40",@'
-Um- now, [compound that] by like uh- [hundreds] or [thousands] of [people]
+:Um- now, [compound that] by like uh- [hundreds] or [thousands] of [people]
 in a [village], they all have like, a [piece] of that- gar- [bar of gold]...?
 
 That they [own]...?
@@ -431,7 +430,7 @@ The gold- the blacksmith got to a point where like:
 '@)
 
 $Ctrl.X(0,"00:14:40","00:14:54",@'
-Cause basically what would happen is like, somebody would [take the gold],
+:Cause basically what would happen is like, somebody would [take the gold],
 and then they'd tran- they'd- they'd [give it to the other person],
 and then the [other person] would give the- the [goods] or [service] or
 whatever, back...?
@@ -441,14 +440,14 @@ and [bring it back] to the [blacksmith].
 '@)
 
 $Ctrl.X(0,"00:14:54","00:15:06",@'
-So like, the person that [originally] had the gold, would keep it with the
+:So like, the person that [originally] had the gold, would keep it with the
 [blacksmith], they'd take it out, from the [blacksmith], and then they would
 [go trade the gold for the thing], and then the [other person] would [come back]
 with that [same bar of gold], and then [holy shit], there it is.
 '@)
 
 $Ctrl.X(0,"00:15:06","00:15:29",@'
-So, the [blacksmith] caught onto this, and started [overprovisioning-] excuse
+:So, the [blacksmith] caught onto this, and started [overprovisioning-] excuse
 me, [overprovisioning] the uh- amount of gold, that could be [provisioned].
 
 It's basically [bullshit].
@@ -461,7 +460,7 @@ Is just, like, [inflated like a balloon].
 '@)
 
 $Ctrl.X(0,"00:15:29","00:15:50",@'
-Ya know, you take the [original balloon], right...?
+:Ya know, you take the [original balloon], right...?
 And then you blow, like, [hot air] into it, which is basically the
 same thing as [bullshit], [hot air] and [bullshit]...
 
@@ -472,13 +471,13 @@ It [expanded].
 '@)
 
 $Ctrl.X(0,"00:15:50","00:16:39",@'
-And like, uh- once you like, try to take the [balloon back]...?
+:And like, uh- once you like, try to take the [balloon back]...?
 
 Like, [somebody owns that entire balloon], but- it's been [provisioned]
 to a [whole bunch of other people] by the [blacksmith], uh- then you
 [pop it], and then all that [hot air] goes to [waste].
 
-So like, that's the idea of what our [economy] is backed by[].
+So like, that's the idea of what our [economy] is [backed by].
 A lot of fuckin' [hot air].
 
 Right...?
@@ -493,7 +492,7 @@ to do with [money].
 '@)
 
 $Ctrl.X(0,"00:16:39","00:17:07",@'
-It had more to do with the [fear of death], by [somebody else].
+:It had more to do with the [fear of death], by [somebody else].
 Or, I dunno. [I could be wrong] about some of these uh- uh-
 [suspicions] of mine, [I could be wrong]...
 
@@ -508,7 +507,7 @@ Because then people would be like:
 '@)
 
 $Ctrl.X(0,"00:17:07","00:17:51",@'
-Right...?
+:Right...?
 And uh-
 
 It comes down to like, uh- when [people know their rights]...?
@@ -538,7 +537,7 @@ Right, and the police- sometimes the [police] will [say] uh:
 '@)
 
 $Ctrl.X(0,"00:17:51","00:18:08",@'
-Right...?
+:Right...?
 
 That's what happened, like, with me and this guy from SCSO, 
 [K. Rossi]... back on, [February 26th, 2023] at the [Market 32]
@@ -548,7 +547,7 @@ I told him...
 '@)
 
 $Ctrl.X(0,"00:18:08","00:18:56",@'
-Uh- that uh- ya know, I'm not gonna cover the whole concept at
+:Uh- that uh- ya know, I'm not gonna cover the whole concept at
 length here, but uh- what I am gonna say is this... right...?
 
 [Being intelligent] does [not] equate to [becoming rich] or [successful].
@@ -565,7 +564,7 @@ And that is what the [police] tend to- tend to [take orders from].
 '@)
 
 $Ctrl.X(0,"00:18:56","00:19:19",@'
-So like, if you ARE [intelligent enough] to like, [tell] the 
+:So like, if you ARE [intelligent enough] to like, [tell] the 
 [police officers] that aren't doing their jobs correctly, that:
 [You]: You're doin' your jobs [incorrectly]...
 
@@ -579,7 +578,7 @@ So like, if you ARE [intelligent enough] to like, [tell] the
 '@)
 
 $Ctrl.X(0,"00:19:19","00:19:46",@'
-And then so like, [that] is what [causes] so many [problems] in our
+:And then so like, [that] is what [causes] so many [problems] in our
 [society]. Right...? 
 
 I'm not gonna [go around] and like, uh- try to like, [blast] individual
@@ -594,7 +593,7 @@ sounding like...
 '@)
 
 $Ctrl.X(0,"00:19:46","00:20:05",@'
-They [don't understand], [how] to [do] their [job] as well as [I do] in
+:They [don't understand], [how] to [do] their [job] as well as [I do] in
 [many cases], right...? What- the problem is that like, [most other people],
 they'll think that I'm either [bullshitting them], or they'll say:
 
@@ -603,7 +602,7 @@ they'll think that I'm either [bullshitting them], or they'll say:
 '@)
 
 $Ctrl.X(0,"00:20:05","00:20:23",@'
-Some people [WILL] have this [mentality].
+:Some people [WILL] have this [mentality].
 Right...?
 
 It's because, like, this uh- idea of uh- [money], it [causes people] to
@@ -615,7 +614,7 @@ Ok. (No, you don't.)
 '@)
 
 $Ctrl.X(0,"00:20:23","00:20:50",@'
-But you know, further to that point, like, our [government] like, 
+:But you know, further to that point, like, our [government] like, 
 [encourages] this [mentality], and uh- [many of the people] in the 
 [press] or the [news agencies]...?
 
@@ -629,7 +628,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:20:50","00:21:08",@'
-So, the [interest] is, that [everybody] wants to keep this [hot air]
+:So, the [interest] is, that [everybody] wants to keep this [hot air]
 inside the [balloon].
 
 No- they don't-
@@ -639,7 +638,7 @@ are [reproducing], they [divide] right down the middle and stuff, right...?
 '@)
 
 $Ctrl.X(0,"00:21:08","00:21:34",@'
-Well, uh- that's what this [whole system] is [attempting] to do, is to 
+:Well, uh- that's what this [whole system] is [attempting] to do, is to 
 [prevent] the [cell] from [dividing].
 
 Or, from [collapsing], I should say... right?
@@ -650,11 +649,11 @@ So, um, the [entire world] would [devolve into chaos] if the
 However, there doesn't seem to be [enough effort] on uh- like uh- 
 [going around] and [popping people's balloons]...
 
-(Like when the DoD uses its budget to spend 1400 dollars on 32 dollar parts)
+(Like when the DoD uses its budget to spend (1400) dollars on (32) dollar parts)
 '@)
 
 $Ctrl.X(0,"00:21:34","00:21:53",@'
-Right...?
+:Right...?
 
 Or like, what'll happen is like, people will get like uh-
 they'll try to get like, their house or their [property evaluated]...?
@@ -666,7 +665,7 @@ Nah, I was just thinkin' about this earlier, actually, like...
 '@)
 
 $Ctrl.X(0,"00:21:53","00:22:14",@'
-And people will uh- go and buy like a (400,000) dollar house or somethin',
+:And people will uh- go and buy like a (400,000) dollar house or somethin',
 right...?
 
 And they'll be like:
@@ -683,7 +682,7 @@ And then like...
 '@)
 
 $Ctrl.X(0,"00:22:14","00:22:53",@'
-Now [they're all there], they're in the [brand new (400,000) dollar house],
+:Now [they're all there], they're in the [brand new (400,000) dollar house],
 right...?
 
 And then, all of a sudden...?
@@ -706,7 +705,7 @@ And then the people with the [(600,000) dollar house] will be like:
 '@)
 
 $Ctrl.X(0,"00:22:53","00:23:12",@'
-And then they'll be like:
+:And then they'll be like:
 [400K]: Well it's just your opinion that my house looks [cheaper] than your...
         uh- lame-looking house.
 
@@ -718,7 +717,7 @@ Not realizing that like there's [very little], [visual difference] between the
 '@)
 
 $Ctrl.X(0,"00:23:12","00:23:34",@'
-Yeah, one of em might have like an [indoor pool] or something, and like, I dunno.
+:Yeah, one of em might have like an [indoor pool] or something, and like, I dunno.
 Like, I dunno.
 
 It is...
@@ -728,7 +727,7 @@ in the garage or something [lame] like that. And they'll be like that's the
 '@)
 
 $Ctrl.X(0,"00:23:34","00:24:19",@'
-So like- what I can say for certain, is that like [most houses]...?
+:So like- what I can say for certain, is that like [most houses]...?
 Uh- the [raw materials] to build, like a (400,000) or (600,000) dollar house...?
 
 It's like, [(20,000) dollars].
@@ -746,7 +745,7 @@ And that it fits [according to plan], and it fits like, somebody's like- uh...
 '@)
 
 $Ctrl.X(0,"00:24:19","00:24:37",@'
-I dunno. It- it fits every... [box] or [requirement] that is [expected] of it...?
+:I dunno. It- it fits every... [box] or [requirement] that is [expected] of it...?
 And then uh- once all of that is said and done...?
 
 Right...?
@@ -755,7 +754,7 @@ or what they could [sell it], for.
 '@)
 
 $Ctrl.X(0,"00:24:37","00:25:20",@'
-Ya know, [houses] typically uh- when they're [resold], 
+:Ya know, [houses] typically uh- when they're [resold], 
 they [maintain their value], where like if you [buy] a [car], 
 most cars [lose value], unless of course you [buy] like a 
 really [well-built car]...
@@ -772,7 +771,7 @@ It loses like [(5) grand] in value...
 '@)
 
 $Ctrl.X(0,"00:25:20","00:26:17",@'
-So even if you drive it [right off the lot], and you drive it [right back]...?
+:So even if you drive it [right off the lot], and you drive it [right back]...?
 You're only gonna get like [(25,000) dollars] back outta that [(30) grand].
 
 Right...?
@@ -798,7 +797,7 @@ Oh boy.
 '@)
 
 $Ctrl.X(0,"00:26:17","00:26:53",@'
-Yeah, so like, these are the things that uh- go into like [keeping value].
+:Yeah, so like, these are the things that uh- go into like [keeping value].
 
 It- it, and uh- ya know, like uh- this [coffee shop] that I was going to
 for a while, they have like a [bunch of paintings there], right...?
@@ -818,7 +817,7 @@ Mainly because, like, it's not the [proper setting] to [sell art].
 '@)
 
 $Ctrl.X(0,"00:26:53","00:27:10",@'
-Though, I might be like uh- [I might not be correct about that], maybe 
+:Though, I might be like uh- [I might not be correct about that], maybe 
 some time- at- at some point in time, someone will come along, and they'll
 be like:
 [Someone]: I'd like to [buy] this [painting] right here...
@@ -832,7 +831,7 @@ And they'll be like:
 '@)
 
 $Ctrl.X(0,"00:27:10","00:27:41",@'
-And then uh- they [buy] the [painting], and then they like- they [brag] about it.
+:And then uh- they [buy] the [painting], and then they like- they [brag] about it.
 They're like:
 [Someone] : Look at this, [awesome painting] that I got at the [coffee shop].
             You know, it's amazing...
@@ -853,7 +852,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:27:41","00:28:15",@'
-And uh- heh. Like, they got to a point where like they just [slowly], make
+:And uh- heh. Like, they got to a point where like they just [slowly], make
 the cars, like have these [design flaws] that [cost a lot of money] or [time]
 to [fix]...? Or [both]...?
 
@@ -866,7 +865,7 @@ quickly even if they are [brand new]... right, and uh-
 '@)
 
 $Ctrl.X(0,"00:28:15","00:28:57",@'
-That's mainly because uh- ya know, the [foundation] does tend to matter.
+:That's mainly because uh- ya know, the [foundation] does tend to matter.
 But also, the [materials].
 
 Uhm, the idea behind like, uh- like- a [layer of roofing] is that it'll 
@@ -885,7 +884,7 @@ name of his company be the [sales point].
 '@)
 
 $Ctrl.X(0,"00:28:57","00:29:24",@'
-Right...? And uh- it's such a [simple idea], to like, 
+:Right...? And uh- it's such a [simple idea], to like, 
 make a [sales point] about the [name of the business].
 
 That uh- it- it- really, it's like uh- a no- practically a [no brainer].
@@ -896,7 +895,7 @@ that I- I wanna [walk back], from many of the points I made, and talk
 '@)
 
 $Ctrl.X(0,"00:29:24","00:29:43",@'
-Like, everybody in society...?
+:Like, everybody in society...?
 
 They do this uh- this thing where, [every decision] that they [make],
 is meant to like, [put more money] in their [pocket] somehow, rather 
@@ -905,7 +904,7 @@ than to  like, uh- [increase] the [value] of the [things] that they're
 '@)
 
 $Ctrl.X(0,"00:29:43","00:30:05",@'
-Right...?
+:Right...?
 
 A lot of people- uh- they [struggle] to [identify] with, what is it that
 gives- excuse me, they [struggle] to [identify] with uh- like, the [reason]
@@ -917,7 +916,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:30:05","00:30:34",@'
-Uhm, each of these things that I've rattled off, their [value] is
+:Uhm, each of these things that I've rattled off, their [value] is
 [determined] through [some means].
 
 Right...? 
@@ -932,7 +931,7 @@ not [picture perfect], or whatever...?
 '@)
 
 $Ctrl.X(0,"00:30:34","00:31:09",@'
-They won't even like, [continue] to [appraise] the [house] or [nothin]'.
+:They won't even like, [continue] to [appraise] the [house] or [nothin]'.
 Nah, they'll just see it, and they'll be like: 
 [Appraiser]: This house is [shit].
              [I'm outta here].
@@ -948,7 +947,7 @@ something on their behalf or whatever, but- uhm...
 '@)
 
 $Ctrl.X(0,"00:31:09","00:31:34",@'
-[People in society], they do this, where uh- they [judge] each other based
+:[People in society], they do this, where uh- they [judge] each other based
 on people's [possessions], rather than like uh- like [how intelligent they are],
 or what they have to offer...?
 
@@ -958,7 +957,7 @@ do. So like, if uh- [if somebody owns property]...?
 '@)
 
 $Ctrl.X(0,"00:31:34","00:32:26",@'
-And they have a [house] or a [bunch of stuff] on the [property], and it's all
+:And they have a [house] or a [bunch of stuff] on the [property], and it's all
 [shit], but [they still own the property]...?
 
 Ya know, and the person could be really, like, [not very intelligent at all]...?
@@ -978,7 +977,7 @@ And the [reason] that they [do] it, is because...
 '@)
 
 $Ctrl.X(0,"00:32:26","00:32:59",@'
-Right...?
+:Right...?
 
 So when [people pay their taxes], they're [paying] the [schools] to [educate]
 their [children] to [judge each other] based on their [possessions]. Ya know,
@@ -996,7 +995,7 @@ Then [they're] a [scumbag].
 '@)
 
 $Ctrl.X(0,"00:32:59","00:33:40",@'
-Right...?
+:Right...?
 
 But- at [some point] in the [future], the [concept] behind [money], is gonna
 be replaced by, a [concept] that they had [back in 1776]. 
@@ -1013,7 +1012,7 @@ or [wealthy], that uh- they have a [negative connotation] of
 '@)
 
 $Ctrl.X(0,"00:33:40","00:34:14",@'
-However, [it is one of the seven deadly sins].
+:However, [it is one of the seven deadly sins].
 
 I'm not gonna really talk about the [seven deadly sins] so much, 
 because, uhm- really [what they all devolve into], is like these
@@ -1030,7 +1029,7 @@ However, uh- [some people see that as a one-way street].
 '@)
 
 $Ctrl.X(0,"00:34:14","00:35:04",@'
-Right...?
+:Right...?
 As soon as they have like a [title]...?
 
 They [forget] about like, the idea behind like, uh- [treating people] as
@@ -1053,7 +1052,7 @@ And uh...
 '@)
 
 $Ctrl.X(0,"00:35:04","00:35:28",@'
-There are so many [scams] and [systems] in play, that [cause people] to not
+:There are so many [scams] and [systems] in play, that [cause people] to not
 even [realize] that they've been [fooled], in [virtually every instance]
 where uh- ya know someone's [signing their life away].
 
@@ -1065,7 +1064,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:35:28","00:36:01",@'
-So, um, president [Joe Bide]n thinks that it would be a [good idea] to 
+:So, um, president [Joe Biden] thinks that it would be a [good idea] to 
 [eliminate student debt]. And [I agree].
 
 But- do you know who [doesn't] think it's a [good idea] to 
@@ -1079,7 +1078,7 @@ The reason being, is it gives them [ability] to uh- [earn] uh-
 '@)
 
 $Ctrl.X(0,"00:36:01","00:36:33",@'
-Right...?
+:Right...?
 So like, they have all these [systems] set up to where like uh-
 most- [a lot of people] that [go to school]...?
 
@@ -1090,7 +1089,7 @@ furthers their, [career] or whatever.
 '@)
 
 $Ctrl.X(0,"00:36:33","00:37:30",@'
-Right...?
+:Right...?
 And uh- ya know, there's [something at play here], 
 where a [lot] of [people] are [getting bamboozled], and it [allows] like,
 [certain people] to become [very successful], and a lot of [other people]
@@ -1106,7 +1105,7 @@ They [don't] wanna [pay people] that are like [willing to compete], with uh
 '@)
 
 $Ctrl.X(0,"00:37:30","00:38:05",@'
-Like, if I go around and I [expose] a whole bunch of things like, uh [Joe Manchin].
+:Like, if I go around and I [expose] a whole bunch of things like, uh [Joe Manchin].
 Li- or uh- P- [Paul] or [Joe], I can't remember his first name, it's either
 [Paul] or [Joe].
 
@@ -1121,7 +1120,7 @@ Uh- he's like:
 '@)
 
 $Ctrl.X(0,"00:38:05","00:38:31",@'
-Mainly because, um, there are a number of [lobbyists] or whatever they call
+:Mainly because, um, there are a number of [lobbyists] or whatever they call
 the people that like [pay] the [people] in the [government] that [run] for
 [office]...?
 
@@ -1135,7 +1134,7 @@ because, [they're gonna wind up doing their bidding].
 '@)
 
 $Ctrl.X(0,"00:38:31","00:39:12",@'
-Right...?
+:Right...?
 
 So, [this isn't a consistent case], but it's [consistent enough] to where
 you can see- like there- w- whether you know [who's involved] in [what]...?
@@ -1153,17 +1152,17 @@ and uh- whether they have any [communications] with one another.
 '@)
 
 $Ctrl.X(0,"00:39:13","00:39:24",@'
-So, these are the sort of things you might be able to [see] or [aggregate]
+:So, these are the sort of things you might be able to [see] or [aggregate]
 at a comp- like a place like the [National Security Agency], or like
 [Verizon], or like any sort of [telecommunications company].
 '@)
 
 $Ctrl.C(@'
-Like, Facebook, Twitter, Microsoft, Verizon, Charter, AT&T, T-Mobile, etc.
+#Like, Facebook, Twitter, Microsoft, Verizon, Charter, AT&T, T-Mobile, etc.
 '@)
 
 $Ctrl.X(0,"00:39:24","00:40:05",@'
-Right...?
+:Right...?
 So like, if uh- it comes down to like, [Joe Manchin] and [some rich billionaire]
 keeping a [secret] or whatever, then they have to make sure that a [whole bunch]
 of [people], in the [law enforcement system] and the [justice system], like, 
@@ -1176,7 +1175,7 @@ and [economy], right...?
 '@)
 
 $Ctrl.X(0,"00:40:05","00:40:47",@'
-So... Now, I gotta uh- like uh- [unwind] this like a- a [fair amount], because
+:So... Now, I gotta uh- like uh- [unwind] this like a- a [fair amount], because
 [I don't think that everybody, uh- with a lot of money does this]...
 
 They might do [certain things] to a [certain extent], but I really don't think
@@ -1191,7 +1190,7 @@ The guy uh- the [CEO] of [Oracle], [Larry Ellison].
 '@)
 
 $Ctrl.X(0,"00:40:47","00:41:13",@'
-Like, uh- [he's not the type of dude] that I think, he's goin' around,
+:Like, uh- [he's not the type of dude] that I think, he's goin' around,
 doin' the shit that I just described.
 
 Ya know, he- he- uh- he did well for himself with [Oracle], and [Oracle]
@@ -1203,7 +1202,7 @@ And uh-
 '@)
 
 $Ctrl.X(0,"00:41:13","00:41:33",@'
-Ya know, [Oracle] is [nothing to joke about].
+:Ya know, [Oracle] is [nothing to joke about].
 
 They're uh- they're a [big company], and I find it [really hard to believe], 
 that uh- a guy like [Larry Ellison], would go around, like paying people
@@ -1211,7 +1210,7 @@ to like uh- [say no] to the [student loan forgiveness] thing.
 '@)
 
 $Ctrl.X(0,"00:41:33","00:42:01",@'
-However, uhm, [there are a lot of people] that could never, ever, ever, come
+:However, uhm, [there are a lot of people] that could never, ever, ever, come
 close to like the success of [Microsoft] or [Oracle], that like, they have like
 [thousands of friends] that like, are [friends] with [governors] all around the
 [country] in [each state]...
@@ -1221,7 +1220,7 @@ uh- [all (50) states] making [parts] for the [F-35]...
 '@)
 
 $Ctrl.X(0,"00:42:01","00:42:42",@'
-Right...?
+:Right...?
 Sort of like, uh- [somebody suckin' on somebody's teat].
 
 That's- that's- that's the [idea] behind [money], is that [somebody] has to 
@@ -1242,7 +1241,7 @@ many [people] as they can...
 '@)
 
 $Ctrl.X(0,"00:42:42","00:43:20",@'
-Ya know, it's like:
+:Ya know, it's like:
 [Somebody]: Initial here.
             Initial there...
             Initial there...
@@ -1268,7 +1267,7 @@ turning- like- [their forseeable future]...
 '@)
 
 $Ctrl.X(0,"00:43:20","00:43:56",@'
-...is [paying off the car payments] or the [house payments] or [mortgage]...
+:...is [paying off the car payments] or the [house payments] or [mortgage]...
 
 And then like, all of the [unexpected things] that [happen] in the [future]...?
 Will [likely] cause them to like, uhm, [derail].
@@ -1286,7 +1285,7 @@ This is something that [Edward Snowden] talks about, with [John Oliver].
 '@)
 
 $Ctrl.X(0,"00:43:56","00:44:39",@'
-But even that, [that's not even true], because you could be [shanked], by
+:But even that, [that's not even true], because you could be [shanked], by
 [somebody in the prison].
 
 But- um, ya know, the- the idea that I'm [alluding] to, is [specifically],
@@ -1299,7 +1298,7 @@ that [place their bets], they [place bets], right...?
 '@)
 
 $Ctrl.X(0,"00:44:39","00:45:04",@'
-So like, [they know] that [the odds are], that [most people] that [get] a
+:So like, [they know] that [the odds are], that [most people] that [get] a
 [student loan], they're not gonna- like, be able to [do] a [whole lot] with
 it or whatever, and like uh- 
 
@@ -1309,7 +1308,7 @@ gonna get like, much in the way of like uh- [compensation] for all of their
 '@)
 
 $Ctrl.X(0,"00:45:04","00:45:35",@'
-And then so like, the companies that issue these loans, they'll have 
+:And then so like, the companies that issue these loans, they'll have 
 [predatory lending practices] even, ya know, this is something that [ITT Tech]
 like uh- experienced, uhm...
 
@@ -1321,7 +1320,7 @@ Basically it's like a [residual], it's like [residual income].
 '@)
 
 $Ctrl.X(0,"00:45:35","00:46:09",@'
-When they don't [pay] their- their [loan payments].
+:When they don't [pay] their- their [loan payments].
 Right...?
 So like, what happens is this.
 
@@ -1338,7 +1337,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:46:09","00:46:49",@'
-[All of these industries], have like a [circle of fifths] going on, where like, 
+:[All of these industries], have like a [circle of fifths] going on, where like, 
 [even if the person cannot pay] for the, the thing...?
 Or [they don't have collateral for it]...?
 
@@ -1355,7 +1354,7 @@ They're not gonna get that [interest anymore] if the [loans] are [forgiven].
 '@)
 
 $Ctrl.X(0,"00:46:49","00:47:24",@'
-No... so like, it basically, [it violates their entire corrupt system].
+:No... so like, it basically, [it violates their entire corrupt system].
 And, believe it or not, there are like [a ton of industries] that [do]
 this shit.
 
@@ -1363,12 +1362,12 @@ Though like, I don't know the [particulars], I just know that like, it's
 [happening to a lot of people]. Where, people can [easily] get a [loan]- a 
 [student loan] to [go to school] and stuff, right...?
 
-But- if they want a[ business loan], for their [business]...?
+But- if they want a [business loan], for their [business]...?
 Then, they're basically told to [fuck off], because...
 '@)
 
 $Ctrl.X(0,"00:47:24","00:47:47",@'
-You gotta have like uh-
+:You gotta have like uh-
 You gotta have [(100) rings]...?
 
 From like, [Sonic the Hedgehog 2]...?
@@ -1382,7 +1381,7 @@ You're the fuckin', you're the- uh, [Super Saiyan] lookin' hedgehog...
 '@)
 
 $Ctrl.X(0,"00:47:47","00:48:12",@'
-Your hair's all blonde, or whitish...?
+:Your hair's all blonde, or whitish...?
 You look like a meaner version of yourself...?
 
 And uh- you're not even, your feet aren't even touchin' the ground 
@@ -1397,7 +1396,7 @@ And beat [Dr. Robotnik] about (8)- (12) times...?
 '@)
 
 $Ctrl.X(0,"00:48:12","00:49:23",@'
-Uh- you have to beat, [Dr. Robotnik]'s stupid fuckin', uh- boss...?
+:Uh- you have to beat, [Dr. Robotnik]'s stupid fuckin', uh- boss...?
 Uh- the first level boss...?
 
 And then like, the- then you get to fight [Dr. Robotnik] himself, 
@@ -1432,7 +1431,7 @@ his uh- [doom ship].
 '@)
 
 $Ctrl.X(0,"00:49:23","00:50:09",@'
-And then you gotta [fly] through the [sky]...?
+:And then you gotta [fly] through the [sky]...?
 With [Tails]...?
 
 And then you gotta like, uhm, you gotta like fl- jump from platform to
@@ -1450,13 +1449,13 @@ And then [Mario] does that...
 And then, when [Mario] does that...?
 
 Then uh- then [Super Mar-], [Super Sonic], and [Mario], they- they do 
-the  [fist bump of doom], and then it causes like an [explosion], and
+the [fist bump of doom], and then it causes like an [explosion], and
 then uh- an [explosion of coolness], and then what happens, is uh-
 then you get like, uh-
 '@)
 
 $Ctrl.X(0,"00:50:09","00:50:55",@'
-What the hell's his name...? 
+:What the hell's his name...? 
 Uh- the [Echidna]... (Not [Knuckles] the echidna...)
 
 I can't even remember his name.
@@ -1480,13 +1479,13 @@ You might be [better off] just playin' the fuckin' game [Sonic the Hedgehog 2]..
 '@)
 
 $Ctrl.X(0,"00:50:55","00:51:11",@'
-And then like, beating [Dr. Robotnik], and collecting all the fuckin'
+:And then like, beating [Dr. Robotnik], and collecting all the fuckin'
 [Chaos Emeralds], and then, eh- ya know, I'm making it- sound very 
 [long winded] and like, [complicated] for a reason, right...?
 '@)
 
 $Ctrl.X(0,"00:51:11","00:51:44",@'
-It's basically like uh- the- the [level] of uh- [treachery] that [some wealthy
+:It's basically like uh- the- the [level] of uh- [treachery] that [some wealthy
 people] have [established] with the [banking system], and the [blacksmith] of
 [doom] that's on the [other side of the planet] that has an [unlimited amount]
 of [gold] that it can [provision] to [people].
@@ -1499,7 +1498,7 @@ people from like, having a- a- [a modicum of success].
 '@)
 
 $Ctrl.X(0,"00:51:44","00:52:04",@'
-Right...?
+:Right...?
 And uh- everybody has a [different definition] of what [success] means.
 
 Does [success] mean that you're gonna have [billions of dollars] like
@@ -1510,11 +1509,11 @@ But- ya know, uh- [that doesn't necessarily mean that], uh-
 '@)
 
 $Ctrl.C(@'
-Consider the story of [Elizabeth Holmes] or [Samuel Bankman-Fried]
+#Consider the story of [Elizabeth Holmes] or [Samuel Bankman-Fried]
 '@)
 
 $Ctrl.X("00:52:04","00:52:25",@'
-That [doesn't necessarily mean] that you [can't find success in other ways].
+:That [doesn't necessarily mean] that you [can't find success in other ways].
 
 So like, if you [get] to a [point] in your [life] where you've [made] all of 
 the [observations] that [I have], you can [avoid] going through the fuckin'
@@ -1523,7 +1522,7 @@ as well as like [many other people my generation]...
 '@)
 
 $Ctrl.X(0,"00:52:25","00:52:50",@'
-Right...?
+:Right...?
 And then you can [start to focus] on like [what things] [people] will [need]
 in the [future], when [the entire system] that we have [now]...?
 
@@ -1536,7 +1535,7 @@ right now, there's [a lot of things] that are [thrown away every day],
 '@)
 
 $Ctrl.C(@'
-Or in some cases, [Emminent Domain], the gov't just takes back the house
+#Or in some cases, [Emminent Domain], the gov't just takes back the house
 and land [forcibly] and you have [no control over it].
 
 They can even take the [house] and [property] away [illegally],
@@ -1544,7 +1543,7 @@ and [not compensate the owner].
 '@)
 
 $Ctrl.X(0,"00:52:50","00:53:08",@'
-And then, in many cases like a house that like they- someone, like- if
+:And then, in many cases like a house that like they- someone, like- if
 [someone] gets a [mortgage] on a [house], and they [pay half of the mortgage], 
 [they don't get half of that money back], [they don't get that money back],
 if they [can't continue to pay it off]...
@@ -1554,7 +1553,7 @@ No, [they lose it all].
 '@)
 
 $Ctrl.X(0,"00:53:08","00:53:51",@'
-Oh boy.
+:Oh boy.
 [They forfeit it all].
 
 Same thing occurs with the [cars].
@@ -1575,13 +1574,13 @@ You can [bet] your [ass] that [they'll spend money], to like, [find some way] to
 '@)
 
 $Ctrl.C(@'
-That is the purpose of [cyberattacks] and [corporate espionage] with [tools] from the 
+#That is the purpose of [cyberattacks] and [corporate espionage] with [tools] from the 
 [Central Intelligence Agency/Vault 7], or the [National Security Agency], such as the
 things [Edward Snowden] leaked in (2013), and [Julien Assange] leaked in (2017)
 '@)
 
 $Ctrl.X(0,"00:53:51","00:54:25",@'
-Ohhhhhh... so [that's] what our [society] is like, uh- heh.
+:Ohhhhhh... so [that's] what our [society] is like, uh- heh.
 
 That's what it [devolves] to, is... [finding ways] to [screw people over] 
 without having to [openly admit] that [that's what they're doing].
@@ -1597,7 +1596,7 @@ Well, [in some cases] that'll be the [military] that does that.
 '@)
 
 $Ctrl.X(0,"00:54:25","00:55:05",@'
-But- ya know, they're [not] gonna [send] the [military] after a
+:But- ya know, they're [not] gonna [send] the [military] after a
 [fuckin' citizen] that's [not payin' his student loans], no.
 
 If anything, what they'll do is, they'll try to like, send a [bunch] of 
@@ -1611,7 +1610,7 @@ what was the [name] of that [book]...?
 '@)
 
 $Ctrl.X(0,"00:55:05","00:55:33",@'
-Uh, [Lord of the Flies]...?
+:Uh, [Lord of the Flies]...?
 Right...?
 
 You go to this island [Lord of the Flies], and you're a [full-grown adult], 
@@ -1628,7 +1627,7 @@ And it's like, they're like:
 '@)
 
 $Ctrl.C(@'
-Perfect metaphor for [SCSO K. Rossi] in this audio recording...
+#Perfect metaphor for [SCSO K. Rossi] in this audio recording...
 [Name]     : SCSO-2023-013374.mp3
 [Date]     : 02/26/2023
 [Start]    : 19:17:16
@@ -1637,7 +1636,7 @@ Perfect metaphor for [SCSO K. Rossi] in this audio recording...
 '@)
 
 $Ctrl.X(0,"00:55:33","00:55:52",@'
-That's basically a [metaphor] for like, [how our gov't gets down].
+:That's basically a [metaphor] for like, [how our gov't gets down].
 Right...?
 
 It's not a [consistent case] where like, [everybody] uh- they have [smart people]
@@ -1650,7 +1649,7 @@ Right...?
 '@)
 
 $Ctrl.X(0,"00:55:52","00:56:24",@'
-And, they don't wanna [openly admit] these things...?
+:And, they don't wanna [openly admit] these things...?
 
 Uh, the [people in the government], they know that they have like, some 
 fuckin' [shady trollmeisters] amongst them, and they also know that they
@@ -1666,7 +1665,7 @@ I really don't know how to [describe it], but- you know, like uh-
 '@)
 
 $Ctrl.X(0,"00:56:24","00:56:42",@'
-So, what I can say, is this, [what] gives the [paintings] their [value],
+:So, what I can say, is this, [what] gives the [paintings] their [value],
 is [not] just the [amount of time] that uh- a [person] put into [painting]
 the [painting]...?
 
@@ -1675,7 +1674,7 @@ to be able to [envision] the [idea] within the [painting].
 '@)
 
 $Ctrl.X(0,"00:56:42","00:57:02",@'
-Right, and so like, uh- I was looking at this [one painting], and it had
+:Right, and so like, uh- I was looking at this [one painting], and it had
 a [reflection], and in a- it was basically a [picture], of a [pond] within
 the [woods]. 
 
@@ -1686,7 +1685,7 @@ And I thought that was [pretty cool].
 '@)
 
 $Ctrl.X(0,"00:57:02","00:57:14",@'
-Right...?
+:Right...?
 
 But- um, when it comes to an [appraisal] of a car, it really just comes
 down to like, [reading a god damn blue book], and just [determining]
@@ -1696,18 +1695,18 @@ Right...?
 '@)
 
 $Ctrl.C(@'
-Like getting a [Carfax], not taking the [Carfox]'s word for it.
+#Like getting a [Carfax], not taking the [Carfox]'s word for it.
 '@)
 
 $Ctrl.X(0,"00:57:14","00:57:33",@'
-Uhm, and then also, uh- when it comes to [appraising] a [house]...
+:Uhm, and then also, uh- when it comes to [appraising] a [house]...
 
 The [quickest way] that they can [appraise] a [house], is by like, 
 [taking a look at it], and seeing if its like, [perfect] from the [outside].
 '@)
 
 $Ctrl.X(0,"00:57:33","00:57:49",@'
-If it's [not perfect] from the [outside], they're gonna tell ya "Bye."
+:If it's [not perfect] from the [outside], they're gonna tell ya "Bye."
 
 If it is [perfect] on the [outside], then they'll take a look [inside], and
 then they'll look to see if the [aesthetics match up], and the [measurements]
@@ -1715,7 +1714,7 @@ are [level], and this, that and the other thing...?
 '@)
 
 $Ctrl.X(0,"00:57:49","00:58:17",@'
-And they'll get very, uh- into the [nitty gritty] of like, how uh- everything
+:And they'll get very, uh- into the [nitty gritty] of like, how uh- everything
 [appears], [appearances].
 How things [appear].
 
@@ -1730,7 +1729,7 @@ as everything [looks perfect], then [it doesn't matter].
 '@)
 
 $Ctrl.X(0,"00:58:17","00:59:19",@'
-And, then they can, like [evaluate] this [(400,000) dollar house], to be 
+:And, then they can, like [evaluate] this [(400,000) dollar house], to be 
 worth [(400,000) dollars].
 
 Right...?
@@ -1751,7 +1750,7 @@ And like, they just write it off, they're just like:
 '@)
 
 $Ctrl.X(0,"00:59:19","00:59:52",@'
-Right, and [someone else] basically [owns] that [person].
+:Right, and [someone else] basically [owns] that [person].
 
 [They don't see it that way], because [they see themselves] as the [owner]
 of the [house], or the [car], or uh- the [student loan]...?
@@ -1767,7 +1766,7 @@ And the [amount of time] they spend [doing] whatever the hell they [do], and
 '@)
 
 $Ctrl.X(0,"00:59:52","01:00:37",@'
-It's like, unless you get to- you could make it [(29) years] and [(6) months] 
+:It's like, unless you get to- you could make it [(29) years] and [(6) months] 
 into a [mortgage payment], but like, if you [break both your legs] in the last
 [(6) months], and you've got [no way] to pay the- the [remaining balance] of
 the [mortgage] or whatever, and you can't get it like, uhm, you can't get the 
@@ -1782,7 +1781,7 @@ that [they had left to pay].
 '@)
 
 $Ctrl.X(0,"01:00:37","01:01:24",@'
-Which is a [tragedy], because heh. 
+:Which is a [tragedy], because heh. 
 Ya know, it's [all] or [nothing].
 
 It's basically a [game], and uh- there are so many uh [layers of deception]
@@ -1798,7 +1797,7 @@ do [everything I've explained] in this [whole audio log].
 '@)
 
 $Ctrl.X(0,"01:01:24","01:02:04",@'
-[That is what they teach the kids at the school].
+:[That is what they teach the kids at the school].
 
 Ya know, they [do teach them] a lot of [helpful things in life], 
 [I'm not discounting that]. But they [ALSO] like [teach them things],
@@ -1819,7 +1818,7 @@ And then the [leader] of the [debate club] goes around, tellin' everybody:
 '@)
 
 $Ctrl.X(0,"01:02:04","01:02:43",@'
-And then what they do, is they wind up, doin' uhm, they wind up like uh-
+:And then what they do, is they wind up, doin' uhm, they wind up like uh-
 [backpedaling] on thier [campaign promises], because [someone came along] and
 they were like:
 [Someone]: Hey.
@@ -1835,7 +1834,7 @@ And they'll be like:
 '@)
 
 $Ctrl.X(0,"01:02:43","01:03:10",@'
-And then they'll be like:
+:And then they'll be like:
 [Leader] : Well... uhm, [hell yeah]! 
            I would like that a [lot]~!
 
@@ -1851,7 +1850,7 @@ and then [they become that person's property].
 '@)
 
 $Ctrl.X(0,"01:03:10","01:03:45",@'
-[Believe it or not].
+:[Believe it or not].
 
 The [coolest kid in class], becomes [another person's property],
 and then like the [coolest kid in class], like he [drives around] 
@@ -1872,7 +1871,7 @@ He's gonna [run his fuckin' mouth] and say:
 '@)
 
 $Ctrl.X(0,"01:03:45","01:04:03",@'
-Right, and the [reason] that they [do] it is because, like,
+:Right, and the [reason] that they [do] it is because, like,
 [they have no control over it].
 
 [They really don't].
@@ -1886,7 +1885,7 @@ And [that is how our entire society works].
 '@)
 
 $Ctrl.X(0,"01:04:03","01:04:38",@'
-Ya know, I'm goin' all the way back down to like, the [primal roots]
+:Ya know, I'm goin' all the way back down to like, the [primal roots]
 of how [humans evolve] and everything, right...?
 
 [At the end of the day], this [entire system] is gonna [collapse],
@@ -1902,7 +1901,7 @@ with [solar energy].
 '@)
 
 $Ctrl.X(0,"01:04:38","01:05:02",@'
-And then they'll have to like [send people] to [go around] and
+:And then they'll have to like [send people] to [go around] and
 [sabotage] people's [solar panels], be like:
 [People]: How dare you use [renewable energy], you [stupid son of a bitch]...
           Nah, now your [solar panels] aren't workin'...
@@ -1915,7 +1914,7 @@ Or an [entire month]...?
 '@)
 
 $Ctrl.X(0,"01:05:02","01:05:31",@'
-Ya know...?
+:Ya know...?
 Not unlike when there's a [hole] in somebody's [gas tank]...?
 
 [They're not gonna get very far], when their car, uh- tank- 
@@ -1929,7 +1928,7 @@ Ya know, then you're gonna keep drivin, and then like, and you'll be like:
 '@)
 
 $Ctrl.X(0,"01:05:31","01:06:07",@'
-And then like, they're gonna get like, half the distance they normally
+:And then like, they're gonna get like, half the distance they normally
 would, and be like
 [Someone] : What the fuck is goin' on, dude...? 
             I'm only gettin' like (150) miles a tank...?
@@ -1947,7 +1946,7 @@ then it [burns through the gasoline a lot faster].
 '@)
 
 $Ctrl.X(0,"01:06:07","01:07:01",@'
-And this might be something that a [warranty] uh- uh- someone like
+:And this might be something that a [warranty] uh- uh- someone like
 [Northstar Chevrolet] would do, when you [pay] for a [warranty].
 
 The [full bumper-to-bumper warranty 5000], and then you go to bring the car
@@ -1972,7 +1971,7 @@ I can't remember.
 '@)
 
 $Ctrl.X(0,"01:07:01","01:07:37",@'
-But I know that the [engine] and [transmission] [died] in [that vehicle],
+:But I know that the [engine] and [transmission] [died] in [that vehicle],
 and I had to get them [both replaced], [separately].
 
 Ya know the car made it about [(280,000) miles], would've been able to drive
@@ -1987,7 +1986,7 @@ and it [takes opportunities away] from [other people].
 '@)
 
 $Ctrl.X(0,"01:07:37","01:08:35",@'
-And then they're told that like uh- ya- ya know, I'm not gonna get into
+:And then they're told that like uh- ya- ya know, I'm not gonna get into
 the nitty gritty of like uh- how uh- [how deep the layers of deception]
 truly are...?
 
@@ -2014,7 +2013,7 @@ And, uh-
 '@)
 
 $Ctrl.X(0,"01:08:35","01:09:20",@'
-And has had [all] these fuckin' [stupid scams happen to them]...
+:And has had [all] these fuckin' [stupid scams happen to them]...
 Right...?
 
 So, [here's an analogy], uhm...
@@ -2032,7 +2031,7 @@ ya know, makes me [smell]- makes my [backpack smell] like uh- [cologne] or
 '@)
 
 $Ctrl.X(0,"01:09:20","01:10:01",@'
-But- ya know, like, uh- the [slices of pizza], when I go to [heat them up],
+:But- ya know, like, uh- the [slices of pizza], when I go to [heat them up],
 they'll [taste] like the fuckin' the [cologne], or the [body spray].
 
 And I'm sittin' there thinkin':
@@ -2051,7 +2050,7 @@ Uhm, like the [smell permeates other substances], and it [carries forward] like
 '@)
 
 $Ctrl.X(0,"01:10:01","01:10:33",@'
-So [osmosis] is sort of like how [water] will [pass through a membrane], right...?
+:So [osmosis] is sort of like how [water] will [pass through a membrane], right...?
 
 And uh- the [way] that it [does it], is because the [molecules] are [able] to 
 [pass through], like, the [thing] in the [middle]. Typically, it'll be like [glass]
@@ -2064,7 +2063,7 @@ It can also go through like uh- [varying other membranes] and stuff too, right?
 '@)
 
 $Ctrl.X(0,"01:10:33","01:11:09",@'
-But- ya know uh- the [thick] and [thin] of it is this...
+:But- ya know uh- the [thick] and [thin] of it is this...
 
 Well, [some people are pretty stupid], and uh- [they] think that [other people]
 are [idiots]. And like, [when someone isn't an idiot], they'll actually 
@@ -2077,7 +2076,7 @@ that isn't like [tied] to the [chains of humanity] at all.
 '@)
 
 $Ctrl.X(0,"01:11:09","01:11:39",@'
-You know, the [chains of humanity], is probably gonna be the name of this
+:You know, the [chains of humanity], is probably gonna be the name of this
 audio log. [Chains of Humanity]... [I like that idea].
 
 The [Chains of Humanity], um- 
@@ -2091,7 +2090,7 @@ Possess-
 
 
 $Ctrl.X(0,"01:11:39","01:12:18",@'
-But- I think, that a [lot] of [people] put a [lot] of [emphasis] on like, 
+:But- I think, that a [lot] of [people] put a [lot] of [emphasis] on like, 
 [having stuff], and like, [if you don't have stuff]...?
 
 Then you're a [loser].
@@ -2107,7 +2106,7 @@ So like, that's how it is, it's like...
 '@)
 
 $Ctrl.X(0,"01:12:18","01:12:41",@'
-Somebody who's a [first time house buyer]...?
+:Somebody who's a [first time house buyer]...?
 They [buy the house]...?
 
 They spend the (30) years paying off the mortgage, and [owning the house] and everything...?
@@ -2124,7 +2123,7 @@ So like...
 
 
 $Ctrl.X(0,"01:12:41","01:13:06",@'
-Their [retirement accounted] for them to be able to uh-
+:Their [retirement accounted] for them to be able to uh-
 
 Ya know, uh- be able to- ya know, [buy breakfast, lunch, and dinner] for the
 next fuckin' [(15) years]...? And uh- you know uh-, maybe the maximum like,
@@ -2135,7 +2134,7 @@ Yeh.
 '@)
 
 $Ctrl.X(0,"01:13:06","01:14:02",@'
-So [they go to the library], and they [study up] on [all the things] that like,
+:So [they go to the library], and they [study up] on [all the things] that like,
 [Michael Cook] was attempting to [teach them], like [(30) years] before they
 retired...
 
@@ -2166,7 +2165,7 @@ They collapsed...?
 '@)
 
 $Ctrl.X(0,"01:14:02","01:15:19",@'
-[Why did these great empires collapse]...?
+:[Why did these great empires collapse]...?
 Well, it's because like, [humanity has a very serious flaw].
 
 And the flaw is, [appearances]- it's- eh, [humanity] [operates] on this [notion],
@@ -2188,7 +2187,7 @@ Is the [hot-dumb bitch].
 The [hot-dumb bitch]...?
 She likes to [lie a lot].
 
-[Every time] that she [opens her mouth], you[ never really know] whether 
+[Every time] that she [opens her mouth], you [never really know] whether 
 you can [trust] what the hell she's [saying]...?
 
 But, [she is fuckin' hot], dude.
@@ -2204,7 +2203,7 @@ Ya know, [these] are [things] that you're [not gonna fuckin' know about]...
 '@)
 
 $Ctrl.X(0,"01:15:19","01:15:57",@'
-Right...?
+:Right...?
 And then behind [door number (2)]...?
 
 There is a [smart girl].
@@ -2223,7 +2222,7 @@ And you can have a [LOT] of kids with this girl, too...
 '@)
 
 $Ctrl.X(0,"01:15:57","01:16:07",@'
-Right...?
+:Right...?
 
 So, [door number (1)]...? 
 [Door number (2)]...?
@@ -2235,13 +2234,13 @@ You've got the [hot-crazy wife matrix of doom], shit...
 '@)
 
 $Ctrl.C(@'
-_________________________________________________________________
+#_________________________________________________________________
 | The Universal Hot-Crazy Matrix | https://youtu.be/bbpGkrViOcE |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
 $Ctrl.X(0,"01:16:07","01:16:36",@'
-It's basically, a random, fuckin', a [randomly generated value]...
+:It's basically, a random, fuckin', a [randomly generated value]...
 Nobody knows what the hell is behind [door number (3)]... 
 
 You just know that it could be some [hot, really dumb bitch]...?
@@ -2257,7 +2256,7 @@ Right...? (This is all a metaphor for the Punnett square)
 '@)
 
 $Ctrl.X(0,"01:16:36","01:17:12",@'
-And, [in order to understand] like the [true value] of [all]
+:And, [in order to understand] like the [true value] of [all]
 these things, of [all] these particular [girls]...?
 
 You have to have a [courting session] with them.
@@ -2272,10 +2271,10 @@ Ya know, like um-
 '@)
 
 $Ctrl.X(0,"01:17:12","01:17:38",@'
-The [idea] behind [marriage], is like:
+:The [idea] behind [marriage], is like:
 "Oh, [as soon as you get married to somebody], you're like [TIED to somebody]."
 
-And uh- [another thin]g behind [marriage] is like, [how much money] goes into like,
+And uh- [another thing] behind [marriage] is like, [how much money] goes into like,
 a [relationship] or [whatever].
 Right...?
 
@@ -2284,7 +2283,7 @@ So, all these things that I've said, [they don't account] for like uh- the
 '@)
 
 $Ctrl.X(0,"01:17:38","01:18:33",@'
-Right, [some people], they're gonna be like, uh- [reluctant] to- to [say]
+:Right, [some people], they're gonna be like, uh- [reluctant] to- to [say]
 whether they [regret] something or not...?
 
 Because like, they might make it like [(20) years] through their [mortgage]
@@ -2302,7 +2301,7 @@ And it offered some [smart ways] to [improve] their [quality of life]...?
 '@)
 
 $Ctrl.X(0,"01:18:33","01:19:09",@'
-So these things are [very important], because, like...
+:So these things are [very important], because, like...
 
 [We have this technology now], it's the [first time] in [human civilization],
 where we can really [fine tune] the [amount of things] that are [being wasted],
@@ -2317,7 +2316,7 @@ that like, continue to be [lobbied] by [some rich bastard] who's [corrupt].
 '@)
 
 $Ctrl.X(0,"01:19:09","01:19:45",@'
-And like, they act like [Joe Manchin], and [Joe Manchin], or [Paul Manchin], 
+:And like, they act like [Joe Manchin], and [Joe Manchin], or [Paul Manchin], 
 he's gonna continue to say:
 [Manchin]: I don't like the [student loan forgiveness package of doom]...
            Nah, [I don't like the way it looks].
@@ -2333,7 +2332,7 @@ their [disposal], to [continue being like the slave masters back in the 1800]'s.
 '@)
 
 $Ctrl.X(0,"01:19:45","01:20:08",@'
-Yeah.
+:Yeah.
 That is, [effectively] what uh- [our society does right now].
 
 Right...?
@@ -2349,7 +2348,7 @@ Well, um...
 '@)
 
 $Ctrl.X(0,"01:20:08","01:20:47",@'
-Now, like [everybody] is like [forced] to like, [live around the poverty line]
+:Now, like [everybody] is like [forced] to like, [live around the poverty line]
 or [below] or [above], or [whatever].
 
 They do a [really good job] of makin' it [seem like] they [give] a [shit] about
@@ -2364,7 +2363,7 @@ And uh...
 '@)
 
 $Ctrl.X(0,"01:20:47","01:21:31",@'
-Ya know, the [legacy] of [Richard Sackler] is [not] a [good one]...
+:Ya know, the [legacy] of [Richard Sackler] is [not] a [good one]...
 
 But- there are [a lot of people] that will basically [chortle] on his [nutsack],
 and like, [do whatever the hell he tells them to].
@@ -2385,7 +2384,7 @@ Ya know, they'll be like:
         
 
 $Ctrl.X(0,"01:21:31","01:22:14",@'
-Yeh, so like, what I'm- so- [alluding to], is like, [Richard Sackler] has his
+:Yeh, so like, what I'm- so- [alluding to], is like, [Richard Sackler] has his
 own [security team]. Ah- uh, [more than likely].
 
 Ya know, he's [got enough money] to fuckin' pay for... [enough weapons], and uh-
@@ -2403,9 +2402,8 @@ Effectively what I'm [alluding to] is this, like,
 [money causes people to act pretty fuckin' stupid, sometimes].
 '@)
 
-
 $Ctrl.X(0,"01:22:14","01:22:45",@'
-Ya know, I don't wanna say it's like a [consistent case] where like, [money]
+:Ya know, I don't wanna say it's like a [consistent case] where like, [money]
 causes people to thi- [think] or [do] [stupid shit]...
 
 But, it's [often enough] to where like, sometimes you can [ask somebody]:
@@ -2428,7 +2426,7 @@ Then they'll change their answer, and be like:
 '@)
 
 $Ctrl.X(0,"01:22:45","01:23:21",@'
-[Somebody] : Uh, cause [I wouldn't want other people to see that video].
+:[Somebody] : Uh, cause [I wouldn't want other people to see that video].
 [You]      : But- you said that [you] would [do it] for a [million dollars]...?
 [Somebody] : [Not if other people could see it], though.
 [You]      : Well, why not...?
@@ -2448,7 +2446,7 @@ $Ctrl.X(0,"01:22:45","01:23:21",@'
 '@)
 
 $Ctrl.X(0,"01:23:21","01:24:04",@'
-So, the [concept] there, is that [as long as people can do things] where
+:So, the [concept] there, is that [as long as people can do things] where
 they're not being [seen]...? Uh, then [they'll continue to do those things],
 because [they're not being seen].
 
@@ -2466,7 +2464,7 @@ that [like to suck somebody's dude's- somebody's dick], for a [million dollars],
 '@)
 
 $Ctrl.X(0,"01:24:04","01:24:58",@'
-Yeah, so the [concept] that I'm [alluding to] is like, we live in a certain 
+:Yeah, so the [concept] that I'm [alluding to] is like, we live in a certain 
 dimension, and uh- I'm gonna touch on this [Carl Sagan] metaphor here, right...?
 
 So [Carl Sagan], he's like:
@@ -2490,7 +2488,7 @@ a [lot] of [people] in our [society]...?
 '@)
 
 $Ctrl.X(0,"01:24:58","01:25:45",@'
-They think that [as long as nobody sees what they do]- the [decisions] that
+:They think that [as long as nobody sees what they do]- the [decisions] that
 [they make], that [there's no way] that [anyone] could- [would ever know].
 
 And that's why, like [that's what's so dangerous about humanity], is that there
@@ -2511,7 +2509,7 @@ for a [million dollars], and that's-
 '@)
 
 $Ctrl.X(0,"01:25:45","01:26:02",@'
-[They're gonna continue to do it], because [people] aren't able to [see] them [doing it], 
+:[They're gonna continue to do it], because [people] aren't able to [see] them [doing it], 
 they're [doing it] within the [shadows].
 
 And [as long as nobody knows that they're doin' it in the shadows]...?
@@ -2522,7 +2520,7 @@ And [no one] is [ever] gonna [stop them].
 '@)
 
 $Ctrl.X(0,"01:26:02","01:26:36",@'
-[People wise up].
+:[People wise up].
 
 And they [listen] to [some] of the [things] I'm [attempting] to [educate other people].
 [There are ways] to [see things], that [other people], like, will say:
@@ -2538,7 +2536,7 @@ Of uh- the [body spray], on my [slice of pizza], from [within the bag]...?
 '@)
 
 $Ctrl.X(0,"01:26:36","01:27:05",@'
-It's the [same concept] to like:
+:It's the [same concept] to like:
 [Somebody]: [No one will ever know] that [I sucked some dude's dick]
             for a [million dollars]...
 
@@ -2553,7 +2551,7 @@ That is just [a fuckin' opinion], dude.
 '@)
 
 $Ctrl.X(0,"01:27:05","01:27:26",@'
-Some people, they do this, where they're gonna fuckin' [suck some dude's dick]
+:Some people, they do this, where they're gonna fuckin' [suck some dude's dick]
 for a [million dollars], [as long as nobody sees it].
 
 But, if you [ask them] the [same question]:
@@ -2565,7 +2563,7 @@ But, if you [ask them] the [same question]:
 '@)
 
 $Ctrl.X(0,"01:27:26","01:27:38",@'
-Well, that's a [problem] because basically, [shedding some light] on the
+:Well, that's a [problem] because basically, [shedding some light] on the
 subject causes [somebody] to [change] their [decision making process].
 
 Huh...
@@ -2573,5 +2571,42 @@ Huh...
 '@)
 
 $Ctrl.X(0,"01:27:38","01:27:45",@'
-End log.
+:End log.
 '@)
+
+# [Transcription]
+
+# [Header/Title]
+(Write-Theme $Ctrl.GetTitle() -Text).Replace("#"," ") | Set-Clipboard
+
+# [Sections]
+
+$Out       = "Introduction",
+             "File",
+             "Party",
+             "Transcription",
+             "Conclusion"
+
+$Swap = @{ }
+ForEach ($X in 0..($Out.Count-1))
+{ 
+    $Item = Switch ($X)
+    {
+        0 
+        { 
+            Write-Element -Mode 0 -Current $Out[$X] 
+        }
+        Default
+        {
+            Write-Element -Mode 0 -Current $Out[$X] -Last $Out[$X-1]
+        }
+    }
+
+    $Item += ""
+
+    $Swap.Add($Swap.Count,$Item -join "`n")
+}
+
+$Swap.Add($Swap.Count,(Write-Element -Mode 0 -Last $Out[-1] -Final))
+
+$Output = $Swap[0..($Swap.Count-1)]
