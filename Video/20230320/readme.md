@@ -1,4 +1,6 @@
 # Virtualization Lab - Desktop Deployment [03/20/2023]
+In this video, I cover the various aspects involved in extracting useful programming I have already written, in order to aggregate a different desired end result.
+
 [[Video](#video)] - [[Script](#script)] - [[Link](#link)]
 
 <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230320/thumbnail.jpg">
