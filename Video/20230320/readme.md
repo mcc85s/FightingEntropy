@@ -1,5 +1,8 @@
 # Virtualization Lab - Desktop Deployment [03/20/2023]
-In this video, I cover the various aspects involved in extracting useful programming I have already written, in order to aggregate a different desired end result.
+
+| Description |
+|:------------|
+| In this video, I cover the various aspects involved in extracting useful programming I have already written, in order to aggregate a different desired end result.
 
 [[Video](#video)] - [[Script](#script)] - [[Link](#link)]
 
