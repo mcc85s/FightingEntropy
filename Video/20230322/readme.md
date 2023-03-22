@@ -2,11 +2,7 @@
 
 | Description |
 |:------------|
-| In this video, I cover the [Android: Media Transfer Protocol]
-by using the [PowerShell: New-Object -ComObject Shell.Application]
-explorer interface, and custom classes that enhance its'
-filesystem-like capabilities.
-This isn't complete or anything, it's a proof of concept. |
+| In this video, I cover the [**Android: Media Transfer Protocol**] by using the [**PowerShell: New-Object -ComObject Shell.Application**] explorer interface, and custom classes that enhance its' filesystem-like capabilities. This isn't complete or anything, it's a proof of concept. |
 
 [[Video](#video)] - [[Script](#script)] - [[Link](#link)]
 
