@@ -6,6 +6,8 @@
 
 [[Video](#video)] - [[Script](#script)] - [[Link](#link)]
 
+<img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230322/thumbnail.jpg">
+
 ## Video
 
 | Index | Date         | Name/Link                                                          | Duration      |
