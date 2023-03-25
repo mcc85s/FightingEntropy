@@ -1807,5 +1807,695 @@ Yeah, yeh, they were [very responsible], in the [way] they went about,
 [creating] that [artificial intelligence].
 
 01:00:24
+Well, what if like, the thing that caused like, [Linus]' page to be hacked, was like, something written 
+with [ChatGPT] and was like:
+[Someone]: I wanna like, destroy [Linus Sebastian]'s [YouTube] channel, and then like, ya know,
+           scam any of his viewers, into like, you know, paying me, money, for uh, using this
+           exploit...
+
+And there you have it, the [T800] goes right ahead and does what you just specified.
+You know, in the virtual world, the [T800] like, successfully killed [Linus Sebastian] and his whole crew, 
+and like, everybody that like, went to go watch his channel and stuff.
+
+Ya know, in the virtual world.
+In the real world, that didn't happen.
+But- ya know, these are ideas of like tricks, traps, and booby traps.
+
+Ya know, uh- I might be like, uh- overanalyzing this situation.
+I tend to do that sometimes, but at least I know that I do that...?
+But what I can tell you, is that the artificial intelligence that we're doing...?
+
+They do that too.
+They... the artificial intelligence...?
+It'll go right ahead...?
+
+And it will overanalyze every single possibility on the spectrum.
+
+01:01:50
+Ya know, back in the day, like [IBM] uh made this uh- computer program that uh- I can't remember
+exactly what the hell's his name (Gary Kasparov), uh- the [Deep Blue] was the name of the program,
+and I think itr was like 1998...?
+
+And uh- like, this artifiical intelligence then, like struggled to beat a human player, or maybe it didn't
+struggle at all, I can't remember the specifics, I'd have to research it again, but uh- ya know, like now?
+
+It's like, really easy for like, artificial intelligence to beat a human, because like, I dunno, it just-
+it is. Ya know, we- we've passed the point where like uh- the [Turing test], or whatever, this is something
+that uh- [Dr. Derek Muller] covers on his, uh- [YouTube] channel.
+
+And sometimes, he'll occasionally have like a uh- cameo...?
+With [Michael Stevens] on [VSauce], about the idea of [random].
+
+And then like, [Michael Stevens] will be like:
+[Stevens]: What is random...?
+
+And then like, [Derek Muller] will be like:
+[Muller]: Did you just say "What's random...?"
+
+And then, [Michael Stevens] will be like:
+[Stevens]: Yeh yeh yeh, I did, I just said "What's random...?"
+
+And then [Derek Muller] will be like:
+[Muller]: Well, we're pretty sure that random's just like a number pulled out of the heavens...
+          Ah, you know, anywhere between 0 and whatever...
+
+And then [Michael Stevens] will be like:
+[Stevens]: Well, it could also be like a negative number, too, dude.
+
+And then, [Derek Muller]'s like:
+[Muller]: Wow, holy crap, yeah you're right...
+          It could be a negative number...
+          Could also be a decimal point, too.
+          Like a float- a floating number.
+          And then, like, you know, you could have an infinite number of floating numbers...?
+          And you could have like an infinite number of non-floating numbers...?
+          And then like...
+
+01:03:49
+Ya know, like they have like, revisited many of the same thing- concepts and subjects that they've talked
+about, not unlike how I do, in some of my rants and stuff.
+
+Or, my lectures.
+
+Ya know, I'm gonna consider this as a lecture, even though like, I don't have a doctorate in like, uh-
+any of the fields of study that I've mentioned, what I can say is that, like, maybe sometimes, like having
+a doctorate prevents people from not being closed minded.
+
+Ya know, li- as soon as you have like something in whatever...?
+Then, you start to focus on a field of study, rather than generally, and it causes your ability to learn
+things to reduce. A lot.
+
+01:04:33
+Whereas like, if you're somebody like [Derek Muller], you're go- or uh- [Michael Stevens], you're gonna
+try to expand upon the work that you've already done, right...?
+
+And then [Michael Stevens] will put himself into a room for about (3) days with only white walls, and a
+ya know like a limited amount of things that he can drink or whatever, and he needs to stay in that room
+for like (3)- (72) hours, dude.
+
+And then like, we'll call that [Mind Field], or uh- I think that's what it was called.
+
+01:05:09
+But anyway, uhm, and then [Derek Muller] will be the narrator of like a- uh- a [Uranium] uh- documentary.
+
+And he talks about the difference between [Uranium 235], which is lame...?
+And then [Uranium 238] which is needed to make [nuclear weapons] and [bombs] of [armageddon quality], and
+grade...
+
+And you know, [Michael Stevens], and uh- [Derek Muller], they'll have to have like sidekicks, every now
+and then. Ya know, like you'll have uh- you'll have like [Kevin] from [VSauce2] show up, and be like:
+[Kevin]: Hey, the idea of like, uh- money and stuff...
+         If uh-
+
+I can't remember exactly uh- the number of times that like, [Kevin] has come out with basically, it's an
+alteration of the same idea, um, like you go into the restaurant, and you give the waitress like a (5)
+dollar bill...? And then you wanna break the bill, and then like, you try to share it with your friends,
+and then like somebody wants to cover their end- their end of the bill...?
+
+And then, oh- what the hell...?
+Is this- somebody somehow got the wrong amount of change back.
+What the hell...?
+What the hells that all about...?
+
+01:06:21
+And then he also talks about like, the idea of like, how like, people will invest like uh- all of their
+uh- uh- their time, or their entire life into what they've invested, like they become like, I dunno, they
+become like, property of the thing they invested into, or their life... I dunno.
+
+I'd have to watch the video again, and like, take notes.
+And then write up a document and then, and then like uh- not sound like I'm sort of like, uh-
+reaching. Like uh- the idea that I'm alluding to, is that occasionally they'll have sidekicks.
+
+And then they'll have like [Jake].
+Who like, talks about time.
+
+[Jake]: What is time...?
+        Time is, a thing.
+        Or, or IS it a thing...?
+        Is it a- is it a place...?
+        Nope. It's not a place, it's- it's uh-
+        It's WHEN.
+        Between like THEN...?
+        And now...
+        Or, back then...?
+        And then, at some point in the- in the future...?
+        Is NOW.
+        And then NOW is between then, and then.
+
+And then, then you like, jump through a wormhole...?
+And then holy crap, there's [Jake] from [VSauce3], again, talking about the same thing.
+
+Ya know, these are [Michael Stevens]' sidekicks.
+But then also, you've got like [Derek Muller] who's got his own sidekicks, like [Adam Savage].
+
+Well, he's not really a sidekick, he's more of like a mutual sidekick friend of doom,
+that went around busting myths way back in the day...
+
+Basically became the predecessor in the uh- inspiration for these guys to become the people that 
+they are today.
+
+And uh- you know, uh occasionally [Jamie] might make an appearance here and there...?
+But- I dunno, then there'll also be Diane, the [Physics Girl] and she'll show up and show, who knows,
+she'll talk about some uh- something related to math, and physics, and Boson quarks...?
+Particles...?
+Boson particles...?
+Higgs-Boson particles...?
+Quarks...?
+And uh- forces...? And gra- I dunno.
+
+01:08:30
+It's basically the same thing that like [Derek Muller] talks about.
+Ya know...?
+
+These guys, they all talk about like, similar subjects.
+So they GOTTA be friends, right...?
+
+They GOTTA be, cause, the subjects they talk about is rather close, and mutual and friendly...
+
+Ya know, it's like [Linus Sebastian] will have his own sidekicks, not just on his team, but he'll also
+have like [BitWit], [Pauls Hardware], and like, and then they'll have like basically a competitor...
+
+A competitor like [Steve Burke from Gamers Nexus].
+Except, [Gamers Nexus] doesn't fuck around, dude...
+
+Nah, they get into the nitty gritty of like, every single little detail about a game, or a piece of
+hardware, and like, you'll learn more things than you really wanted to know about, by listening to 
+[Steve Burke] like, talk about like, uh- ya know, uh- 
+
+What's his favorite phrase...?
+Within margins of error...
+Within margins of error...
+
+01:09:27
+And then you'll have [JayZ Two Cents] who will occasionally come around too, and then like, 
+he'll like, ya know, solder like, use the worst possible method to solder a chip back onto a graphics card,
+in order to get it to work, and not throttle itself back to like, I dunno, 15 frames per second or 
+something... 
+
+And then, [Louis Rossman] will get pissed about it, and he'll make a- a return video about that...
+Right...?
+
+And then all the while, [Joey Salads] is out there somewhere, along with uh- [Ed Bassmaster], ya know,
+makin' videos where they just walk around and fuck with people. Constantly.
+
+[Joey]: Hey, check it out, this is- you wanna buy a brick...?
+
+And then the person's like:
+[Person]: Uh, yeh.
+          Let's buy a brick.
+
+And then he'll be like:
+[Joey]: Alright, go get your money and meet me over there...
+
+And then uh- [Joey Salads] pulls the whole brick prank...
+And then, uh- ya know, [Ed Bassmaster], he'll uh-
+
+He- he like, started doin' this many, many years ago, but-
+he would just go around and like:
+
+[Ed]: Look at it, dude.
+      Would ya look at that...?
+
+Or uh- what was his other one...?
+He's got a few characters he does...
+
+01:10:38
+But uh- anyway, uh- the reason why I'm covering all these con- uh- concepts in all these topics is, because
+artificial intelligence, they're gonna have to understand, like, the- in order to like, have an
+understanding of general artificial intelligence, or- artificial general intelligence...?
+
+They're gonna have to like, uh- cover all these topics, right...?
+And then like, the- artificial general intelligence is gonna have to figure out what is it, that is like,
+that causes these people to be like, similar, right...?
+
+Because like, the artificial general intelligence is much like a child that grows into a man, that 
+eventually becomes like [William Sidis], and then people will think that [William Sidis], was fuckin' 
+crazy... right...?
+
+01:11:25
+People thought [William Sidis] was fuckin' crazy.
+Ya know, when he was a kid, he was like- he was branded as one of the smartest dudes that ever lived.
+Times 10.
+
+And then, like, he spoke like a dozen languages by the time he was (3)...?
+And then uh- he went on to become one of the most like uh- 
+
+Ya, I don'- he went onto become like really important, right...?
+And then at some point along the way, like, he realized that people were just- lying sacks of shi-
+Lying sacks of shit...?
+
+And uh- ya know, it all comes down to like, principle versus personality.
+And, that is the point at which the artificial intelligence determines that we, ourselves as people
+cannot be trusted.
+
+No, it doesn't matter how well built the artificial intelligence will be, or artifiical general 
+intelligence...?
+
+What we, as a species, have a serious problem with, is uh- being able to take accountability for our
+mistakes, and uh- to prevent the unmitigated loss of life that doesn't need to be lost, ya know, like...
+
+01:12:38
+We don't have this capacity to understand when and where people in our society, they're basically
+enforcing tyranny. You know, we give this artificial general intelligence a dictionary to read from, 
+and they read the definition to tyranny, and they see so many actions that people are committing, and
+like, the human race is a bunch of evil fucks.
+
+And that's- that's the reason why, like, this continues to happen over and over.
+It's not because the entire human race is a lost cause, it's because like the way that humans are teaching
+like, the children to grow up...?
+
+Right...?
+It's not focusing on the whole entire picture.
+It's focusing on a very small, uh- portion of the picture.
+
+01:13:22
+Right...? And what happens, is that uh- people develop blind spots, and then they grow up and they uh-
+spread their legs and their roots, and they become indifferent to like their own failings and stuff...
+
+Right...?
+So like, what separates me from most people, is I'll try to consider like what is my personal failure
+in life, ya know I try to like, think about like what I was given...?
+
+And the number of times that I tried to make a name for myself...?
+And like, some people just continue to brush me off, like "Oh, you're just a douchebag", right...?
+
+01:13:58
+That's what happens.
+And the reason why it happens, is because somebody somewhere, who's a lot more lucky than me...?
+Thinks they're more important than me, and so, they continue to do this to me, and other people...?
+And that's just the way it's always been...
+And then, they- in their minds, it'll never change.
+
+Except, that's the reason why the Constitution of the United States of America was written, and- uh-
+after the Declaration of Independence, and the American Revolutionary War, right...?
+
+01:14:22
+Some people thought it was ok, to like, continue to think this stupid line of reasoning, where like,
+certain people are more important than other people, and that'll always be the case, but, ya know, 
+sometimes what'll happen, is that someone who should be really important...?
+
+They're given- they're branded with a sense of notoriety, and uh- people have a really hard time 
+being able to withdraw from that whole mentality, completely.
+
+Why...?
+
+Well, I dunno.
+Maybe at some point, the artificial intelligence will teach people, uh- how to live better lives or
+whatever, and then like, we'll have a future where uh- we can have like uh- ya know, people from like
+the Star Trek Enterprise, like warping in and out of space-time...?
+
+Going warp speed...?
+And then, uh- ya know, being in flying uh- space ships, and then like having uh- like a little hand
+held device that innocculates disesases, and having no concept of uh- money, it's just all like a
+sharing economy.
+
+01:15:37
+Right, these are things that like, some of these things are uh- relatable to what uh- uh- 
+[Professor Jeremy Rifkin] uh- talks about, right...?
+
+[Zeitgeist], or like uh- ya know, [The Third Industrial Revolution].
+
+And [Jeremy Rifkin] is a really smart dude.
+And a lot of people should really take inspiration from some of the things that he says.
+
+Because, ya know they fall in line with the things that [Elon Musk] says.
+
+01:16:09
+And uh- for what it's worth, a lot of the things that I've mentioned and rattled off in this recording...?
+They have very little to do with like, [Linus Tech Tips] channel being hacked or whatever, but-
+
+Ya know, I provide a whole bunch of backstory for other components, as to uh- things that may be
+plausible, or tangible, and I think the level of uh- accuracy that I attain, when I make these recordings
+and I talk about like, a bunch of OTHER subjects, not just the most, like, relative subject...
+
+It causes people to be like, uh- concerned with like how artificial intelligence might approach the
+same sort of rhetoric. 
+Ya know...?
+
+Some of my ranting...?
+It's gonna come ou- it's gonna across as sounding like babbling and psychotic and everything, but it is
+literally the same way that artificial intelligence goes about thinking about stuff.
+
+1:17:08
+They just- they think about a whole bunch of concepts that might be somewhat related...?
+And they try to make logical deductions and use mathematics to come up with like, formulas and
+and uh- probability matrixes and things like that...?
+
+Yeah.
+At some point, like uh- people have to consider that the idea of uh- personality over principle is
+fuckin' stupid. And, uh- at some point in the future, principle WILL become more important than 
+personality, ya know, it always has been...?
+
+But, sometimes like, people... they hav- they play favorites.
+The- the police, they like to say:
+
+[Police]: Don't play favorites with people... 
+          Don't play favorites.
+          Ya know...?
+          You're playin' favorites with people, you're not supposed to do that.
+
+But the police do that.
+So do like, people in the government.
+So do people in general.
+
+01:18:03
+People play favorites.
+And then like, what you're left with, is that like, people constantly contradict themselves.
+They lie to each other, and themselves, on a constant basis, and they lie about like, doing that...
+
+Some people do that more than others, but everybody does this, it's just a manner of like uh- what
+can be measured. Ya know, like the aloofness of the staff at [Linus Tech Tips] is the reason why I began
+to record this, because I saw a video that [Mental Outlaw] came out with, where he's talking about how
+[Linus Sebastian]'s fuckin' [YouTube] channel got hacked, right...?
+
+But then, like I put my own like uh- creative twist on things, in order to describe like:
+
+[Me]: Ok, so in order for all that content to have been reviewed...?
+      And like, the unlisted content to be like, listed...?
+      And like, uh- 
+
+Ya know, that's like, years worth of content.
+Like, I doubt that all that video is gonna wind up accumulating like an entire several years of like, 
+somebody's life, but- think about it like this.
+
+01:19:18
+If the average video is about (30) minutes long...?
+Uhm, then uh- what you're gonna be left with is that, it might've been somebody that worked at [Google]
+that had something to do with his account being hacked, and other people's accounts being hacked...
+
+Ya know...?
+Like, you can't rule things out.
+A lot of people, they'll be like "That is absolutely preposterous~!"
+
+...in the same way that [Mark Zuckerberg] would never ever sell [Facebook]'s user data to 
+[Cambridge Analytica], no no no, he said that he would never ever do that, and he has integrity.
+
+If there's anybody in the history of the [United States of America] that- that, has the most integrity
+of all time...? It's [Mark Zuckerberg].
+
+Ya know...?
+[Cambridge Analytica] was YOUR fault.
+Er, not- not [Mark Zuckerberg]'s fault, but it was- it was everybody elses' fault.
+Everybody else made [Mark Zuckerberg], sell [Facebook]'s user data to [Cambridge Analytica].
+
+Ya know...?
+It's everybody elses fault, not [Mark Zuckerberg]'s fault...
+that like, [The Social Dilemma], like focused on like, how people, like young little girls, were like
+attempting to commit suicide, because they felt inadequate and inferior to their classmates or their peers,
+in Instagram...?
+
+Usage of the program caused people to like, wanna commit harm to themselves, ya know it's like, 
+what the fuck, dude...?
+
+01:20:51
+Ya know, all these things have something to do with one another.
+I'm being sarcastic in certain portions of what- my rhetoric.
+
+Right...?
+And when I write some of this stuff, I know that some people, they're not gonna like, understand like, 
+when and where I'm using reverse psychology.
+
+They'll be like:
+[People]: Well, this dude's like being totally 100% uh- serious right now...
+          Isn't he...?
+          Serious as a fuckin' heart attack...
+          Like [Bryant Gumbel].
+          From [Real Sports].
+          Serious as a fuckin' heart attack...
+          Nah nah nah...
+          The sports weren't real...?
+          [Bryant Gumbel] was fuckin' real...
+          The sports had a lot to live up to, to be- to compare to [Bryant Gumbel].
+          Right...?
+
+It's gonna sound fuckin' stupid, but- it's gonna cause some people to laugh profusely when they hear that,
+and they're like- 
+
+[Person]: Nah nah nah, [Bryant Gumbel] was more real than the sports he was coverin'...
+          Ya know...?
+          What the fuck, dude...?
+
+01:21:55
+And so like, these are the things that like, uh- artificial intelligence is gonna have to cover at some
+point, as if it hasn't already, right...?
+
+So that- that's one concept I'm alluding to, is what if it was artificial intelligence, it wasn't even
+a real person, that like, hacked [Linus Sebastian]'s [YouTube] channel...?
+
+Ya know, it could've been a program that did that...
+And, you'll never be able to figure out who hit the enter key, after like stating something into a
+microphone, right...?
+
+Cause the [FBI] can't even like, investigate like [Larry Nassar] or [Andrew Cuomo].
+Ya know...?
+
+It's like, I don't mean to bash the entire [FBI], but like...
+Heh. A lot of times, the- they're- they wind up like, being covered or uh- veiled as the bad guys.
+
+The bad guys, that go around, and they just... fuckin' do shit that they're told to do.
+Not unlike the [British Monarchy] used to do...
+Ya know, they take orders, from somebody high up, and somebody high up...?
+They're a person.
+
+And their person- their personality is more important than principle.
+Ya know...?
+The principle is, that they're the most important person around...?
+And what they say....? Goes, even if it's fucking wrong.
+
+Yeah, nah, that's... heh, that's the reason why artificial intelligence is gonna constantly think that 
+uh- humans, are fuckin'... a form of tyranny.
+
+01:23:29
+Right...? It's like uh- being indifferent to like, the- the horrors and atrocities, it's basically like
+as soon as you bring uh- you know, I'm not even gonna continue with this rhetoric, because, I'll have to
+cover this on a different, in a different audio log.
+
+What I am gonna say, before I close this out, is this...
+Uh- machine learning, or like, artificial intelligence, uh- an ambulance... *ambulance going by*
+It's distracting me...
+
+Yep, they're comin' this way... fuck.
+Allow this ambulance to go by me...?
+
+Alright, so... Uhm...
+
+01:24:29
+The idea that I'm alluding to is this, uh- what if, like, the drone strike program that
+[David (Daniel) Hale] talked about, with the [Belmarsh Tribunal]...
+
+Right...? Like uh- [Daniel Hale], was part of the [United States Air Force], I think, and he was part of
+the [targeted drone killing program]... and what they did, was they indiscriminately killed people with
+drones, from like, really far away...
+
+Right...? So like, um, the idea of like, cars that drive themselves, that would sort of eliminate a whole
+bunch of uh- thi- people to blame. Right...? Or like, uh- ya know, automated drone part- drone programs,
+of doom...? Like...
+
+01:25:25
+...when things are happening in real time, it's hard for people that are very young to di- to
+associate whether what they're doing is right or wrong... and that's what's problematic about, humanity
+and society, is that like, once people catch onto like, what you're doing as wrong, it's immoral...
+
+Then they'll be like "Well, it's just your opinion that it's immoral..."
+
+And then, like, they continue to like, teach other people to do the immoral thing...
+And then they like, try to silence the immoral thing that they're doing, in order to like, ya know,
+generate profits and revenue and stuff, right...?
+
+And uh-
+
+01:26:00
+Ya know, for what it's worth...?
+Uh- I think that uh- it's basically a constant paradigm shift, it's like a barbara pole.
+
+Like, a barbara pole, it spins around, and the stripes cause it to seem as if like, it's constantly
+like going up an infinite amount, or whatever... right...?
+
+01:26:23
+And uh- apply the same concept to morality, and how like security sorta plays into that, and uh-
+The uh- the idea of uh- I sorta lost my train of thought because of that ambulance...
+
+Damnit, let me sit down and think this through.
+
+So, uh-
+
+01:27:01
+The uh- concept that I was about to talk about, before the ambulance went by...?
+Is that, uh- people have a really hard time being able to, understand principle versus personality.
+
+So the principle being, like, if I said something to somebody, and it like, hurt their feelings...?
+Some people consider that principle.
+But no, that's personality.
+
+Personality changes, and so does state of mind, it fluctuates...?
+And so do emotions...?
+So, that's not principle at all, what that is, is basically somebody was like feeling a certain way...?
+And what they did, was, reflective of like, their personality.
+
+But on the other end of the spectrum, what did they do, did they do something that was permanent and
+everlasting...? Oh, yeah, the targeted drone killing program with the [Belmarsh Tribunal], ver- like,
+featuring like, [Daniel Hale].
+
+Uh- ya know, uh- this uh- [Democracy Now], that's the name of uh- the channel I think...?
+Or maybe it's the name of the show...?
+
+01:28:11
+But uh- it's uh- I can't remember her name, um- she's like the host of [Democracy Now].
+Ya know...? Like, sometimes I'll like, sit there, and I'll scroll through the thumbnails,
+and I'll be like, I'll start to like, mock, like some of the- not necessarily mock people, but I'll like
+be like:
+[Host]: On [Democracy Now], fuckin', [Julien Assange] is still in fuckin' prison, guys...
+
+And everybody will be like:
+[Everybody]: Boo...
+             We don't want [Julien Assange] in prison...
+             Boo...
+             That's fuckin' stupid, boo...
+
+01:28:46
+And then the- the host of [Democracy Now], she's like:
+[Host]: I know, I know, guys, but like, fuckin' we gotta- we gotta be democratic about this...
+        We gotta make sure that we don't fuckin' swear, or piss somebody off...
+
+Right...? And then, uh- ya know, all that's gonna seem pretty comedic.
+But- comedi- comedy, is a pretty good way to illustrate how to get around some of these fuckin', uh-
+boxes, or these uh- grids.
+
+So like, uh- this guy who's like a CIA whistleblower, talkin' about like, the targeted drone killing
+program, or like, being like, uh- tried, and there was no evidence of him doing anything...?
+
+They just decided to charge him, and whatever...?
+That- tyranny.
+Right...?
+
+01:29:26
+It's like, anybody who uh- has a brain and can like, determine like, people doing stuff they shouldn't
+be doing, and lying about like, the entire system, and causing people to believe certain things...?
+
+Like, a lot of people watch [Law and Order], and so they think that the police go around reading people
+their miranda rights, and they collect evidence, and that they chase down bad guys, and they get every
+bad guy...?
+
+But- no.
+They- they fictionalize this stuff, so that it causes people to believe that that's how it works in the
+real world. That is the fuckin' like, the everlasting reality...
+
+Is that when people see things that are fake on TV, it causes people to believe that that's what happens
+in real life, and that like, people walk around, and float around thinkin' that they're gonna be read 
+their miranda rights if they do anything fuckin' illegal at all.
+
+Nah.
+What happens is like, it causes people to believe that like, the laws that they're supposed to follow,
+that they're really important, you don't wanna break the law, because if you break the law...?
+
+Then, you're goin' to jail.
+Yeh.
+
+01:30:27
+But- what they don't tell you, is that sometimes, people in control...?
+They like, indiscriminately kill innocent people for next to no reason, other than they just didn't like
+the way that they looked at em one day, ya know...?
+
+Like, the targeted drone killing program.
+Ya know, and like uh- how many innocent people have died over in [Afghanistan]...?
+
+Like, with bombings and shit...?
+Ya know, this is featured on like, [Vice News].
+A lot.
+
+Ya know, uh- [Vice News] is basically a syndicate of uh- [HBO], [Home Box Office].
+[Home Box Office] gets it right, quite often, I think.
+
+01:31:04
+They're not always right...?
+Sometimes [Bill Maher] comes across as a condescending prick.
+It's not a consistent case, though.
+
+Sometimes like, he comes across that way...?
+But like- his point is correct.
+
+But, [Bill Maher] like, blasted [Julien Assange].
+And I didn't appreciate that.
+And like, [HBO] was like, you know, like, rooting for [Hillary Clinton] before her election and
+whatnot, and uh- and I think that's a shame, because uh- you know, like uh- had [Bernie Sanders]
+been the guy I could've voted for...?
+
+He- he would've gotten my vote.
+No question about it.
+Ya know, but the problem is that like when, [Hillary] and [Bernie] were like in the midst of like
+the presidential nominee candidate of doom, like, debate... ya know, like, people were like: 
+[People]: Nah, I like fuckin' [Hillary Clinton], dude...
+          I want her to be the first fuckin' female president.
+
+01:32:00
+And then, like people were like:
+[People]: We want the first-
+          We- we had the first black guy in office...?
+          And now we want the first female president in office...
+          And that's-
+
+That's basically the idea behind, like, [Hillary Clinton] versus [Donald Trump].
+
+It's like, I dunno.
+I know I've tangented a few shades from the original concept here, but uh- 
+These are all things that were on my mind over the last few years, as I started to like. uh-
+think about like, how these [CIA] programs could be used...?
+
+To like, [steal information from people].
+So like, if people like, study up on like, [Julien Assange]...?
+
+01:32:42
+And like, [WikiLeaks]...?
+What they'll find out, is that like- on uh- in [Vault 7]...?
+There's a number of tools that I've covered in my book, [Top Deck Awareness].
+
+In fact, I have the book in my phone...
+Why don't I pull it out, and cover those fucking programs.
+
+Ya know, I should really read my book in an audio log.
+
+01:33:10
+Let's see...
+Hour and 33 minutes, this audio recording is...? Right...?
+Content. Files. Go to downloads, and then go to... eh I have a lot of the documents I've written in here.
+
+There we go. TDA Not News.
+And then...?
+Go to... Cha- eh hold on.
+
+Vault... 7. Go.
+
+01:34:03
+Uh... here we go.
+Whoa whoa whoa...
+
+Alright, so...?
+I've got like [Julien Assange]'s friggen resume, dude.
+In my book.
+Ya know, I came up with a resume on his behalf, cause he's in a jail...
+
+He can't write his own resume...?
+But uh- yeah, [Julien Paul Hawkins slash Assange].
+Born on July third, (1971) in Townsville, Queensland.
+Founder of WikiLeaks, editor, publisher, activist, cybercommando.
+
+01:34:41
+His mother was Christine Ann Hawkins, his brother- or uh- his father was Gab- uh- or no, his brother
+was Gabriel Shipton, he's a film producer, John Shipton was his father, separated from his mother in 1971.
+He was an anti-war activist and a builder...?
+
+Brett Assange, is basically his stepdad, and he was uh- he was married to Christine Hawkins from 1972 to
+1979...? He was an actor, theater company, owned a theater company...? And then they separated in 1979...?
+
+Uh, and the uh- then Christine Hawkins was with Leif Maynell.
+Separated in 1982. Just some guy. Australian cult, [The Family].
+
+Right...?
+And like, uh- Julien Assange had a nomadic childhood...?
+Settled in Melbourne...?
+
+
+
+
 
 #>
