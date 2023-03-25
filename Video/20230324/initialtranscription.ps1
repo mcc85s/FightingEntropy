@@ -2493,9 +2493,531 @@ Separated in 1982. Just some guy. Australian cult, [The Family].
 Right...?
 And like, uh- Julien Assange had a nomadic childhood...?
 Settled in Melbourne...?
+Uh- 
 
+Goolmangar Primary, 1979 to 1983, New South Wales, lived in 30 or so towns by age 15.
+And then uh- Townsville State High... 1983 to 1989, in Queensland.
+Lived with mother and half brother, uh- Gabriel.
+Uh- home schooled from 1983 to 1989.
 
+And uh- began hacking at 16.
+Used the alias "Mendax".
 
+Yeah, so he began hacking at age 16.
+Alias "Mendax", International Subversives...
+Trax, with Trax and Prime Suspect...
+Which I suspect is like, David Lee and Luke Harding...?
 
+01:36:13
+Right...? In 1989, he was like in the- the NASA competition, Worms Against Nuclear Killers.
 
+And in Se- September 1991, discovered hacking, he was discovered haking the Melbourne master terminal
+of Nortel Telecommunications Corporation, Australian Federal Police tapped Assange's phone line, he
+was using a modem...
+
+Uh- [Victoria Police Child Exploitation Unit], so uh- [Julien Assange] helped prosecute individuals 
+responsible for publishing or distributing child porn...?
+
+Starting one of the first public Internet service providers in Australia Suburbia (Public Access Network).
+
+01:36:55
+And then like, in 1994, Central Queensland University, studied programming, mathematics, and physics, 
+began programming in 1994...?
+
+He was raided, and caught uh- with about 31 hacking related crimes, in 1995, authored TCP port scanner
+Strobe, uh- moderated the AUCRYPTO forum, and uh- in 1996 patches to the open-source database management
+system Postgre- uh- it's basically the other thing of SQL that's not MySQL, it's Postgre, I don't know
+how to pronounce it.
+
+Uh- usenet caching software NNTPCache, right...?
+Uh- and then uh- ran Best of Security website, computer security advice, with 5,000 uh- subscribers.
+
+In 1996 he pleaded guilty to 24 charges, uh- others got dropped, he (was) ordered to pay restitution of
+Australian dollars... Released on good behavior bond, lenient penalty due to the absence of 
+[malicious/mercenary] intent, uh disrupted childhood...
+
+01:38:08
+And- because of his disrupted childhood...
+Rubberhose deniable encryption system. Cryptography.
+Contributed research of Suelette Dreyfuss Underground.
+
+Earthmen Technology, co-founder.
+Ya know, voice-data harvesting technology.
+This patent should worry people.
+Everyone's overseas phone calls are or may soon be tapped.
+Transcribed and archived in the bowels of an unaccountable foreign spy agency.
+Registered leaks.org, was never active.
+Publicized- uh that was in 1999.
+Uh, the was all in 1998 by the way.
+In 1999, registered leaks.org, was never active.
+Publicized a patent granted to the [National Security Agency].
+
+Uh- [Surfraw], a command line interface for web-based search engines.
+In 2000.
+
+01:39:03
+In 2003++, the University of Melbourne, studied programming mathematics and physics.
+In 2006, he was the [WikiLeaks] founder, uh- and uh- he floated around for a few years like I did, with
+my company, uh- but in 2010, international attention when it published a series of leaks provided by
+U.S. Army Intel analyst, Bradly/Chelsea Manning, included the Baghdad air strike, New Baghdad Iraq in 
+2007. July something 2007. 
+
+That's not written here, in my document, but I remember it.
+Uh- April 2010.
+
+And then the Ira- the Afghanistan war logs in July of 2010...?
+And the Iraq war logs in October of 2010...?
+And then Cablegate in November of 2010.
+
+And then- OH MY GOD... guess what happened as a direct result of like, Cablegate and releasing all
+those logs...? The U.S. government launched a criminal investigation into [WikiLeaks], oh no.
+
+Why did they do it- did they do it in direct response to the things that he was releasing...?
+Uhm, yes, they did.
+
+And uh- Sweden issued an international arrest warrant in November of 2010, basically like, uh-
+allegations of sexual misconduct, allegations were pretext for extradition from Sweden to the US...?
+
+The US felt like abusing it's power and didn't care if they had to make up some bullshit charges to get
+him in prison for the Manning leak...?
+
+Ohhhhhh. In 2012, lost battle against extradition to Sweden, he breached bail and took refuge in the
+embassy of Ecuador in uh- Embassy of Ecuador in London.
+Ecuador granted asylum on grounds of political persecution...?
+
+01:40:53
+Uh- and then during the 2016 US election campaign, WikiLeaks published a confidential- WikiLeaks published
+the confidential Democractic party emails, and was blamed for leaking those emails which revealed that the
+party favored Hillarty Clinton over Bernie Sanders.
+
+Which I was just talking about. Right...?
+
+Assange publihed a series of documents detailing a series of cyber warfare and electronic surveillance
+tools called "Vault 7", that was in March of 2017. This prompted senior CIA officials to start having
+serious discussions about kidnapping and assassinating [Julien Assange].
+
+Not unlike what I think happened on [May 26th, 2020] outside of the [Computer Answers], right...?
+To me.
+
+And then, asylum withdrawn after disputes with Ecuadorian authorities, on uh- [April 11th, 2019]...?
+Uh- police invited into embassy, and then [Assange] was arrested, this was the day after uh-
+[Derek Muller] released the video or the- thi- this was the day after the picture of the first black
+hole was released, and then uh- or no, the first picture of [a] black hole, I'm saying that incorrectly.
+
+Uh-
+
+01:42:09
+And then the day after, the police were invited into the embassy, and [Assange] was arrested...?
+And found guilty of breaching bail, and sentenced to (50) weeks in prison...?
+
+Uh- unsealed, uh- US uncealed indictment against [Assange] related to the leaks provided by [Manning],
+you know, when uh- when someone unseals an indictment against somebody...?
+
+It's not unlike jizzing in somebody's fuckin' face.
+Ya know, like, if uh- if I were to jizz in some girl's face...?
+That's like my indictment, I want her to, you know, surrender to like a fuckin' solid stream of jizz.
+From my dick. Right...? So like, when the US unseals an indictment against [Assange], related to the
+leaks provided by [Manning], it's not unlike- it's basically the same thing.
+
+Right...?
+And then like, [Donald Trump]...?
+Was supposed to like, be arrested, or indicted and arrested this week, but guess what happened...?
+Like the people in the district attorneys office...? They're like:
+[NYC]: This- we can't do this, because it's gonna start an all out war...
+
+01:43:15
+Yeah, so basically, like when uh- it's easy enough to like, indict someone, like uh- [Julien Assange], the
+government will do that, and they won't have any issue in throwing down the gauntlet in that regard.
+
+Whereas, if it's like, ya know, former president like [Donald Trump]...?
+Or if it's like former presidential candidate [Hillary Clinton]...?
+They'll just let that shit slide, because they do illegal shit too, and they don't want someone really
+important to like, get in trouble.
+
+Nah, it's fuckin' stupid.
+Anyway, uh- yeah, so, uh- Assange has been confined in [Balmarsh, London] since.
+
+I think- eh, I'm not entirely cer- uh- sure what's happened since then, uh 
+(Editors form newspapers criticized the US Government)
+Washington Post, New York Times, Press freedom organizations...
+
+USG charged Assange under the Espionage Act of 1917, blatant attack against the first amendment of
+the United States Constition, which guarantees freedom of the press... on [5/23/2019].
+
+01:44:19
+Sweden prosecutors- prosecutors dropped the investigation.
+Oh- why did the- fuckin' Sweden prosecutors drop THEIR investigation...?
+Oh, it's because the objective was to get [Assange] into a prison cell, somehow, it didn't matter how...?
+
+It just mattered- what mattered was that someone got him in jail, for basically exposing a whole bunch
+of shit. Right...?
+
+Ohhhh boy.
+Right...? And, uh- their evidence had weakened considerably due to the long period of time that they
+never had any legitimate evidence of sexual misconduct to begin with. Yeah, that's basically it.
+
+01:44:55
+And then uh- UK district Judge V. Baraitser...
+_________________________________________________
+| https://wikispooks.com/wiki/Vanessa_Baraitser |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+... or [Baritser], ruled against US extradition of [Assange], stated doing so would be oppresive given
+concerns over [Mr. Assange] and his mental health, risk of suicide, on [January 4, 2021]...?
+
+[Assange] was denied bail, pending an appeal by the [United States] on uh [January 6th, 2021].
+
+It's basically like uh- the terms of him being thrown in jail, are like:
+[Judge]: Alright, you committed sexual misconduct...?
+         But like while you're IN jail, then we'll drop the sexual misconduct charges and then like,
+         swap in like, something that keeps you in jail for the next (175) years.
+
+Ohhhhh, that's what our justice system does. (And England's, and various other countries as well.)
+
+01:45:44
+So like, I know I started this like, talking about like, uh- ya know, uh- [Linus Sebastian]'s like,
+[YouTube] channel being hacked, but I'm getting to that.
+
+I was covering like uh- [Julien Assange]'s fuckin' um, his uh- resume, because I wanted to get to the
+[Vault 7] things...
+
+So, [Vault Series (7)] is a series of documents, that [WikiLeaks] began to publish on [03/07/2017], 
+detailing the activities and capabilities of the United States (CIA/Central Intelligence Agency) to 
+perform: 
+
+[+] [electronic surveillance]
+[+] [cyber warfare]
+[+] [espionage]
+[+] [advanced lying techniques]
+[+] [poorly executed mathematics]
+
+These files detail the agency's software capabilities from (2013-2016+), effectively compromising:
+[+] [cars]
+[+] [smart TVs]
+[+] [web browsers (Google Chrome, Microsoft Edge, Mozilla Firefox, Opera)]
+[+] [smartphones (Apple[iOS], Google[Android])]
+[+] [servers, desktops, tablets, laptops (Windows/MacOS/Linux)]
+
+01:46:43
+Oh, ok, so...
+
+The reason why I like, went on those tangents to circle back around to what I just did...?
+Because it all like, boils down to [Vault 7], and like, the documents that like, [Julien Assange] leaked...?
+
+Like, made people in the government look fuckin' stupid (not hard to do), and that's why he's in prison,
+and the people that are in the government that look- that were made to look stupid by the leaks that 
+fuckin' [Julien Assange] released...?
+
+Like, they have the capability of doing shit like uh- hacking [Linus Sebastian]'s fuckin' [YouTube] channel,
+and never being caught doing it.
+
+01:47:16
+OooooOOOhhHhhhHhh...
+
+So like, it could literally be, somebody that works in the [Central Intelligence Agency], or, you know, 
+just because the, [Vault 7] covered the leaks of, uh- [WikiLeaks], uh- [CIA], it doesn't mean the federal,
+uh- [SVR]...?
+
+The [Foriegn Intelligence Service of Russia]...?
+That they have the same fuckin' software, or they hit [CTRL+C] and then [CTRL+V], and then they use the
+same fuckin' software, to do the same shit to the same sort of targets.
+
+And like, maybe they'll use a translator to change all the fuckin' code around and stuff...?
+Or, it could really even be as simple as like, [Cerberus] or [Advanced Persistent Threat 29] that fuckin'
+targeted like, [Linus Sebastian]'s fuckin' [YouTube] channel, but what I can tell ya is that the same
+fuckin' group of hackers attacked me, and my business network at [1602 Route 9, Clifton Park, NY 12065],
+back on [January 15th, 2019].
+
+Which prompted me into like, you know, like doing all of this research and development stuff, right...?
+
+01:48:14
+So, people that are really like uh- respected members of the community, or like, they have a channel like
+[Mental Outlaw], or [Louis Rossman]...? They might find some of the things that I f- that I say to be rather
+hard to believe or, not so plausible...?
+
+But once I circle around to like, ya know, like people in the fuckin' government doin' like stupid fuckin'
+shit, and never being caught doing it, and then like, then some of the things that I'm saying start to
+make sense.
+
+Oooohhhhhh... so, some of the things I'm saying start to make sense.
+Ya know...?
+
+01:48:51
+[Year Zero], documentation. 
+That's the first thing, it's basically uh- (7818) webpages with (943) attachments, purportedly from the
+[CIA], which already contains more pages than former [NSA] contractor, [Edward Snowden]'s [NSA] release.
+
+Number 2 is [Dark Matter], [Apple iPhone].
+I'm not gonna read all of these, I'm just gonna read the descriptions, uh-
+
+Uh, number 3 is [Marble]: Obfuscation framework.
+Uh- number 4 is [Grasshopper]: Shape-shifting malware framework.
+Uh- which is basic-,
+Grasshopper focused on (PSP/Personal Security Products) avoidance.
+
+PSP's are antivirus software such as:
+[+] [Microsoft Security Essentials]
+[+] [Symantec Endpoint]
+[+] [Kaspersky Internet Security]
+
+It's stuff that [John Hammond] and [David Bomball] would cover, in their [YouTube] videos...?
+Right...?
+
+Uhm, advanced, [HIVE]: Advanced Phishing Man in the middle.
+This is something that I have detected numerous fucking times, right...?
+It's basically, based on the [CIA] top-secret virus program created by its (EDB/Embedded Development Branch). 
+
+The (6) documents published by WikiLeaks are related to the [HIVE] multi-platform [CIA] malware suite. 
+
+A CIA back-end infrastructure with a public-facing HTTPS interface used by CIA, to transfer information from
+target desktop computers and smartphones to the CIA. Then, it opens those devices to receive further commands
+from CIA operators to execute specific tasks. While executing, it hides its presence behind non-suspicious
+looking public domains through a masking interface known as SWITCHBLADE. 
+
+It's also called a (LP/Listening Post) and (C2/Command and Control).
+
+Right...?
+
+01:50:25
+These are things that [Russia] has, and fuckin' uh- [China] has.
+
+[Weeping Angel/Willow]: SmartTV's microphone and WiFi.
+Ya know, uh- basically it's SmartTV's...?
+They're being used to commit espionage against people...
+
+[Scribbles]: Adds a beacon to particular documents.
+Uh- yeh, I have recorded multiple videos of this, too.
+And uh- though I'm not certain that like, it's always used for like malici-
+
+Some of these tools might not be used for malicious means, they might be being used to PROTECT people.
+But- ya know, not knowing the origin of whether somebody's being protected by it, or whether they're
+using it to fuckin' siphon information to commit an act of war or treason against a citizen, that's
+pretty hard to say.
+
+01:51:09
+But- ya know, what if like the[ Foreign Intelligence Service] and the [CIA], they have like a ring of people
+that like, direct them...? And they all, like, res- they all like, take orders from one [New World Order]...?
+
+Or like, fuckin' [Davos]...?
+The [World Economic Forum]...?
+
+OooooooohhhhhHhhhHhhh...
+OOOooOOOooOHhhhhHHhhhhhhHHh...
+Is that what I've been getting at...?
+
+Oooooohhhh, I think it IS what I've been getting at...
+Ooooohhhhhhhhh...
+
+Someone with a lot of money can use these programs to bascially skull fuck people, left and right.
+Whether it's [Linus Sebastian], or it's fuckin' [Elon Musk]...?
+
+Or whatever...?
+
+Really, like, it comes down to this.
+If your- revenue depends on [YouTube], then you're gonna be an easy victim no matter what.
+
+But if your source of revenue, like depends on like, developing things, like the- uh- fuckin', [SpaceX]...?
+
+01:52:09
+Or, uh- [Tesla]...?
+
+Like, [Tesla]'s [YouTube] channel, wasn't like, bringing in revenue...
+Well, maybe it was, to some extent, but- ya know, uh- they're not (that) worried about like fuckin' uh- 
+the [YouTube] channel uh- getting like, hacked.
+
+They're a lot more worried about like uh- like, cars.
+Driving into fuckin' objects, with their self driving capabilities, and stuff.
+
+Uh- [After Midnight/Assassin]: Kernel-grade malware with PAYLOAD SCRIPTS.
+[Athena]: Hijacks Windows Remote Access Services/Domain Name Service
+[Athena] and uh- [Hera].
+Not just [Athena].
+
+01:52:52
+[Pandemic]: Infects SMB shares, and spreads to others.
+Oh, it could've been [Pandemic], instead of like, something that like, like, it might not've been like, 
+what [Mental Outlaw] thought.
+
+Right...? It could've been like, uh- ya know, something infected their SMB share, and it propogated to
+like, somebody's fuckin' like, desk or whatever...? And when they had the channel, the mock channel all
+ready to go...?
+
+Uhm, they were able to like, finally commandeer the entire thing.
+
+Yeh. I think that's what happened.
+Ya know, someone was slowly siphoning this information, like, it didn't just happen in like a 24 hour
+period. It didn't just happen in like a couple minutes, either.
+
+This was a surgical attack, against like, [Linus Sebastian]'s channel.
+It's like, he was being spied on, basically.
+
+01:53:42
+It's what I'm getting at.
+
+[Cherry Blossom]: Hijacks control of (ROUTERS + ACCESS POINTS).
+And uh- [Brutal Kangaroo]: Infects thumb drives, makes hidden network...?
+Uh- oh wait, uh- [Brutal Kangaroo].
+
+[Elsa]: Collects [GPS coordinates] from [WiFi radios], so, even though I don't have service right
+now on my phone, or my other phone...?
+
+I know that there is something on my phone that is able to, when it connects to uh- an access point...?
+It has a location. So like, when I leave that access point, it like, collects like breadcrumbs for
+where I'm going.
+
+So like, at like, at like 10 o'clock, it'll get a- uh- it'd be like me calling 911...?
+At 11 o'clock, it'd be like me calling 911 again...?
+And then at 12 o'clock, it'd be like me calling 911...?
+
+And then like, each time that I call 911, I'm using- calling 911 as a metaphor...
+Every time that I call 911, its saving the- the latitude and the longitude, down to like the 
+billionth of an arc second, or whatever the hell it is.
+
+Right...?
+And then, uh- then they can get like what's called a [Telemetry Footprint].
+
+01:54:50
+These are the things that I told like uh- [State Trooper Salvador], [New York State Trooper Salvador],
+back in [July] of (2020).
+
+Right...?
+I told him about my [GitHub] project, the things that I was researching and developing...?
+And I told him about the [Telemetry Footprint] and everything...?
+
+And sometimes these cops just think that I'm fuckin' like, [insane] or [stupid].
+
+Ya know, like- I've done the research.
+Right...?
+
+ELSA is a geolocation malware for WiFi-enabled devices, like whether- whether it's eh- whether it's
+for Microsoft Windows operating system, or whether it's for a different fuckin' device or operating
+system...?
+
+It's, all the same to me.
+Like, once you see that a tool exists for (1) particular program or device...?
+
+You can safely assume that it has already been made for other devices and sof- like, operating systems
+as well.
+
+01:55:45
+[Outlaw Country]: Targets Linux OS, hijacks outbound traffic
+[Outlaw Country] is pretty fuckin' dangerous, because like, even people on Linux, have no idea that they're
+targeted with this fuckin' program, [Outlaw Country].
+
+And, [Bothan Spy/GyrFalcon]: Swipes uh- SSH credentials for Windows/Linux.
+So, chances are, that like, uh- they could've used that program too, or something like it, and like,
+[Bothan Spy] and [GyrFalcon] projects of the [CIA], both of these (implants/projects) are designed to
+(intercept + exfiltrate) SSH credentials but work on different OS's with different attack vectors.
+
+[Bothan Spy] is an implant that targets the [SSH client program] [Xshell] on the [Microsoft Windows] 
+platform, and steals [user credentials] for [all active SSH sessions] (what about the inactive ones...?). 
+
+These credentials are either [username] and [password] in case of [password-authenticated SSH sessions], 
+or [username], [filename] of [private SSH key] and [key password] if [public key authentication] is used.
+
+[Bothan Spy] can [exfiltrate] the [stolen credentials] to a [CIA-controlled server] (the implant never
+touches the disk on the target system), or save it to an [encrypted file] for [later exfiltration] by 
+[other means]. 
+
+[Bothan Spy] is installed as [Shellterm 3.x] extension on the [target machine].
+
+[GyrFalcon] targets the [OpenSSH client] on [Linux] platforms:
+[+] [CentOS]
+[+] [RHEL]
+[+] [Debian]
+[+] [Suse]
+[+] [Ubuntu]
+...though I'm sure it targets others as well.
+
+The implant can not only steal [user credentials] of [active SSH session], but is ALSO capable of 
+collecting [full] or [partial] [OpenSSH session traffic]. 
+
+[All collected information] is stored in an [encrypted file] for [later exfiltration]. 
+
+It is [installed] and [configured] by using a [CIA-developed root kit] (JQC/KitV) on the [target machine].
+
+So, that right there, is fuckin' scary.
+[BothanSpy] and [GyrFalcon].
+
+01:57:41
+[High Rise]: Targets Android, hijacks SMS.
+
+[High Rise] is an [Android application] designed for [mobile devices] running [Android 4.0 - 4.3].
+Though, I'm sure they have something that's a lot newer than that now...
+
+It provides a [redirector function] for [SMS messaging] that could be used by a number of [IOC tools] that
+use [SMS messages] for [communication] between [implants] and [(listening posts/LP's)]. 
+
+[High Rise] acts as an [SMS proxy] that provides [greater separation] between [targets] in the field, and
+the [LP] by proxying [INCOMING] and [OUTGOING SMS] messages to the [internet LP]. 
+
+[High Rise] provides a [communications channel] between the [High Rise (field operator)], and the 
+(LP) with a [TLS/SSL secured internet communication].
+
+01:58:32
+[Raytheon], it's not even- it's basically just targeting a fuckin' uh- uh-
+Or no, [Raytheon] uh- [Raytheon Blackbird Technologies].
+
+Proof of concept, basically ideas.
+It's like, uh- [Raytheon] is basically an idea, that like, some guy like [Michael Cook], that's makin' 
+this audio recording, if I wanna steal somebody's fuckin' [YouTube] channel content...?
+
+Or at least like, stop the traffic completely...?
+Shut down all of the traffic to that channel...?
+And then like, commandeer like, uh- like, the- basically, just take his entire life's work away from him,
+what I would use, is a company like [Raytheon], to fuckin' uh- [research] and [develop] a way to skull fuck
+somebody.
+
+[Imperial]: Suite of tools for Unix based OSs (and Apple stuff), not gonna cover that.
+[Dumbo]: NMAP for WiFi/Bluetooth cameras, can ALSO [corrupt footage]...?
+Right...?
+And uh-
+
+[Couch Potato]: Hijacks RTSP-
+I can't remember what RTSP stands for, uh- Real-Time Streaming Protocol maybe...?
+Uh- H.264 video streams.
+[Couch Potato] is a REMOTE TOOL for COLLECTION against (RTSP/H.264) video streams (security cameras, NVR/DVR). 
+
+So, if I wanna skull fuck somebody, like uh- [Captain Jeff Brown] or uh [County Sheriff Michael Zurlo], at
+the [Saratoga County Sheriffs Office], what I could use, is a program like [Couch Potato], to hack into uh-
+[Center for Security], and then uh- corrupt the footage of me dialing 911 on uh- [May 26th, 2020], when uh-
+(2) guys were following me from uh- the [Computer Answers] shop all the way to [Key Bank], and they tried
+to run me over with their car that they had parked ahead of me...?
+
+Right...? They were following me, and they were chasing me toward a vehicle that they had parked all the way
+over in the fuckin' Lowes Home Improvement parking lot, where Tati Cleveland and Sam Caine used to park
+their car. Basically, in the same fuckin' spot.
+
+02:00:29
+And I took pictures of these dudes...?
+I took a video of these dudes...?
+
+But- guess what...?
+Like, they had the ability to like disable my fucking [Apple iPhone].
+So...
+
+[Express Lane]: A biometrics nightmare.
+[Express Lane] is basically like, it collects all the fuckin' fingerprints for everybody.
+
+[Angel Fire]: Various Windows exploitation.
+And then [Protego], is basically a tool for missile control systems.
+
+These are all the things that are in [Vault 7], and I'm done covering that for now, I'm not gonna...
+I wrote an entire book around the concept of like, uh- ya know, like uh- these sneaky little attacks
+that occur against [Linus Sebastian], or like uh- [John Hammond], or like [David Bombal]...?
+
+02:01:16
+They're just gonna get worse.
+Right...?
+
+And the only way around, like uh- being [subjected] to [attacks] by some of these fuckin' people...?
+Is to like, [educate other people].
+
+And to cause, to like- to [educate people] to the point where they stop being so hopelessly naive about
+what's goin' on around them.
+
+02:01:36
+And with that being said, I'm gonna close out this audio recording.
+
+02:01:43
+End log.
 #>
