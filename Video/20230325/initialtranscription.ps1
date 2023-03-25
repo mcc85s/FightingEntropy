@@ -649,7 +649,7 @@ Function New-TranscriptionCollection
 
 <#
 #######################################################################################
-00:00
+00:00:00
 Audio log uh- [March 20]- [Friday], [March 24th, 2023]. [Michael Cook] speaking, it's
 currently [8:21AM]. I'm makin this audio log to talk about a couple of concepts that
 I wanna cover, particularly about being [hacked].
@@ -659,7 +659,7 @@ what his actual name is, but his channel name is uh- [Mental Outlaw].
 ________________________________________________________________________
 | 03/23/23 | Linus Tech Tips Got Hacked | https://youtu.be/cwKqgU_kxto |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-00:28
+00:00:28
 And uh- his coverage of uh- things uh- security related, or rather uh- a lot of his
 opinions I share.
 
@@ -668,20 +668,20 @@ Right, so uh- within the last (20)- within the last (24) hours, news has broken 
 
 Right...?
 
-00:52
+00:00:52
 But- you know, most people are gonna think:
 [People]: Wow, so like, his channel got [hacked] within the last (24) hours, 
           and somebody went through all of his content, in order to like, 
           release some of the content and stuff...?
 
-01:05
+00:01:05
 Well, look at it like this.
 Uh- somebody had access to their account for a while, in order to be able to look
 through all of that content as quickly as it- as they did.
 
 So, what I mean specifically, is this.
 
-01:20
+00:01:20
 [Linus Sebastian] and like, the people that work at [Linus Tech Tips], [they were 
 being spied on].
 
@@ -692,14 +692,14 @@ that he, or his staff may have mentioned on the [YouTube] channel, uh- it- it's 
 easy to associate these attacks with some like, ya know, [criminal underring gang of
 doom faces].
 
-01:53
+00:01:53
 Right...?
 Uh- Being able to uh- take out like, uh- it's pretty easy to write off what uh- 
 happened, where his uh- [browser session], or an [employees browser session] was 
 [commandeered], and [all the cookies were taken], and it bypassed uh- [(2) factor
 authentication] and [passwords] and stuff.
 
-02:19
+00:02:19
 Right, and uh- I don't know why I'm holding this...
 Uh- 
 
@@ -707,7 +707,7 @@ On the other end of the spectrum, uh- there are [other ways] of [obtaining that
 information], and I'm not gonna [talk] about [that], [specifically], but- what I am
 gonna say is this...
 
-02:38
+00:02:38
 Right for uh- the last like (3) or (4) years or so, I've made [numerous mentions] that
 my [Apple iPhone 8+] had a [program] deployed to it which was [allowing some nefarious
 entity unfettered access to my device], and uh- basically [everything that I did with
@@ -715,7 +715,7 @@ that device]...?
 
 And that program was called [Phantom].
 
-03:05
+00:03:05
 Right...? 
 And that uh- the [deeper] and [deeper] I go into explaining all of that, the more that
 I know that I'm gonna be labeled by people as uh:
@@ -733,7 +733,7 @@ which means that nearly ALL targets are [totally unaware] that the [program] is 
 If you were to go to the authorities and state that this program is on your device, 
 you will be labeled as delusional and then they will tank your reputation considerably.)
 
-03:33
+00:03:33
 Well, the [reality] is that uh- a lot of times, [people will gloss over details].
 
 Right...?
@@ -747,7 +747,7 @@ like, start [swapping details around], and to like, make a [live stream] that so
 like, uh- puts uh- [Elon Musk]'s- and uh- [Jack Dorsey]'s face over [Linus] and uh-
 [Luke Lefreniere].
 
-04:27
+00:04:27
 Right...?
 
 Uh, they would talk a lot on uh- the [WAN Show].
@@ -758,7 +758,7 @@ I stopped watching it as much as I've also stopped watching a lot of stuff on
 television, and like uh- distancing myself from like [social media], and like uh- 
 [talking with a lot of people]...
 
-04:50
+00:04:50
 And uh- I started to come to the [realization] that uh- [any government], [anywhere],
 could be [responsible] for these [hack attacks], that look like, just some hacker used
 uh- a program that [stole cookies] from a [web browser].
@@ -768,7 +768,7 @@ But- in actuality, [someone] was uh- [watching them for a while], and managed to
 [mocks the original content], and then sort of pools it all together into like,
 [cryptocurrency], uh- [deposits] and stuff...
 
-05:32
+00:05:32
 Re- like, I think that the [entire goal] of that [whole charade], was to uh-
 I don't think that the [goal] was to [get as much money as they could] from uh- the
 [victims]. 
@@ -776,7 +776,7 @@ I don't think that the [goal] was to [get as much money as they could] from uh- 
 Ya know, [most people in society], they're gonna think:
 [People]: Well, OBVIOUSLY that WAS the main goal.
 
-05:54
+00:05:54
 [Nah, it wasn't].
 
 These people that are behind some of these uh- [really clever attacks], 
@@ -796,7 +796,7 @@ by [hacking] their uh- [channel], or their [account], or their uh- [data]...?
 Or what have you...?
 Right, and...
 
-06:38
+00:06:38
 The thing is, that uh- I realize that people are gonna like, [review] what I'm [saying]
 right now, and they're gonna [brand it] as [audacious], ya know, like, because...
 
@@ -814,7 +814,7 @@ this dude's uh- [channel] being taken.
 
 Uh- or uh [hacked], is like the [tip of the iceberg] that [sunk the Titanic].
 
-07:46
+00:07:46
 Ya know, below the [surface] of the [ocean], was another like, (85) percent of a
 [lurking], [hidden] thing. And [that] is what causes [people] to [act pretty fuckin'
 stupid].
@@ -835,7 +835,7 @@ platform to use...
 ...if uh- you really do have like uh- a [high level] of uh- [traffic], and [followers],
 or uh- [income], and you're [generating money] and [profit]...
 
-08:35
+00:08:35
 Right, like uh- the way I see is uh- ya know, [at some point in the future], I'm gonna
 switch it [back] to the way [everybody else thinks], where like, I'm gonna [prioritize]
 my [profits].
@@ -848,7 +848,7 @@ just, like the [United States Gov't], but like, [any gov't in particular], that 
 have [tools] that [allow them] to have [unfettered access] to an [account], or a
 [device], or an [operating system], or whatever, and...
 
-09:21
+00:09:21
 I continue to [build solutions to those problems], then [I'm always gonna be a target].
 That is the [whole entire purpose] of [why] I have uh- made the [number] of [decisions]
 that I have.
@@ -859,7 +859,7 @@ Right, [most people] are gonna be like:
           everything that you do], around the [concept] of [money].
           That's what you're [supposed to do].
 
-09:49
+00:09:49
 Well, that's what- [that's what a lot of people's opinions are].
 
 You're [supposed] to [revolve everything that you do] around the [concept] of [money],
@@ -880,7 +880,7 @@ Right...?
 
 There's uh- there's a [problem] with [humanity].
 
-10:36
+00:10:36
 If I suspect that like, a [gov't] just doesn't like [me] for a [particular reason],
 I jump into the [category] of somebody like [Julien Assange].
 
@@ -894,7 +894,7 @@ So, it could've been a [single hacker], using the [number] of [tools] that [Edwa
 Snowden], or [Julien Assange] have [exposed], or [helped build], or [leaked]...
 otherwise [provided] some level of [press coverage]...
 
-11:08
+00:11:08
 Right...?
 Could be [anybody] in the [world], using [any] of those [tools] that they [covered].
 
@@ -914,7 +914,7 @@ Ya know, how do I know, and- like, uh-
 Maybe the [CIA] had some hand in attacking [Linus Sebastian]'s, uh- [channel] on
 [YouTube]. Ya know, like uh- [here's my justification for that], right...?
 
-12:04
+00:12:04
 Most people will [immediately] start [chuckling], and [laughing their asses off], but-
 the people at the [CIA] won't be laughing, and neither will the people at [Microsoft].
 
@@ -935,7 +935,7 @@ So like, they went after like the [Tesla] channel, and then they went after like
 Ya know, l- going after the [Tesla] channel didn't like [bankrupt Tesla] or anything
 like that. No. It's like...
 
-12:57
+00:12:57
 The- the- the [YouTube] channel in, the reference of uh- [Tesla], was sort of like an
 [afterthought]. It's like "Hey, here's how cool everything is about [Tesla]."
 
@@ -957,7 +957,7 @@ And like, if somebody were to say "Yeah, it was [someone specifically] that [did
 Well, I would wanna see like, [supporting evidence].
 I wouldn't wanna just [take somebody at their word].
 
-14:00
+00:14:00
 A lot of people, they [take people at their word], and they [don't really put a whole
 lot of thought] into things, which is why like, if somebody says "Oh, don't- don't 
 like uh- [Linus] had a bunch of uh- (unlisted) videos on his [YouTube] channel", and
@@ -973,7 +973,7 @@ Ya know, [some of the videos that I upload], I just [leave them unlisted].
 Man, it is pretty uh- [windy] right now...
 I'm gonna go back to [walking], so uh- that it's [less windy].
 
-14:38
+00:14:38
 Uh- man.
 Whew. 
 It is... not warm.
@@ -987,7 +987,7 @@ So, these are the things that anyone could like, [observe] in real life, right..
 
 So, [observations] are [pretty important].
 
-15:12
+00:15:12
 And, uh- some of the [observations] that I make, they go against like, uh- the
 [conventional mold] of [society]. 
 
@@ -1004,7 +1004,7 @@ Directory] itself, and many of the [principles] over at [Microsoft], is like... 
 [Simple machines]...?
 [Complex machines], in order to, like, [eliminate the problem(s)].
 
-16:10
+00:16:10
 Right, and so like uh- things that are in [memory], are [harder] to uh- [eliminate] or
 to [bypass] or uh- to uh- [commandeer], right because typically when something is in
 [memory], it's [locked].
@@ -1024,7 +1024,7 @@ using [now].
 but at the same time, I can still [continue] to [develop] uh- [radical ideas] with uh-
 with [PowerShell].
 
-17:20
+00:17:20
 And uh- the [tools] that I [currently use] to [build] the [things] that I'm [trying to
 build]. And I guess the [real idea] is this, ya know, many years ago, after I started
 my company, I started working with a program called [DISM ++]
@@ -1041,7 +1041,7 @@ the registry], and uh- ya know, [defaults]...?
 And... ya know, it's got a lot of [really cool ideas], but- ya know...
 It is developed by uh- people over in [China].
 
-18:13
+00:18:13
 And so, like, I think it is rather relevant to talk about, right here and now, that-
 ya know, [Russians] and the [Chinese], they have been [attacking] the [United States]
 on a [daily basis].
@@ -1058,7 +1058,7 @@ trusted] and [important] becomes a [leader], and they have a [very dirty secret]
 allows them to uh- provide uh- 
 like a [trojan horse] so to speak, for [another country].
 
-19:03
+00:19:03
 So what I mean [specifically], is like when [Donald Trump] became president, right...?
 Very [likable guy]...?
 Very [trustworthy]...?
@@ -1076,7 +1076,7 @@ Cohen]...? And uh- like [during his presidential campaign]...?
 
 And then like, uh- 
 
-19:33
+00:19:33
 Ya know, it's like [both presidents] had their own [scandals] goi-
 Both [Hillary Clinton], AND [Donald Trump] had their own [scandals] going on...
 
@@ -1094,7 +1094,7 @@ insurgents there, and uh- protecting the area, and uh- it's [a trillion dollars]
 of- if not more, worth of uh- things that [America] spent, during that entire time,
 [safeguarding that country].
 
-20:37
+00:20:37
 Ya know whadda hell- what the hell does that have to do with like, why I started this
 whole uh- recording talking about...?
 
@@ -1106,7 +1106,7 @@ And, uh- [spying on people]...?
 And- people like on [YouTube], a lot of people on [YouTube] they're very like uh-
 [naive].
 
-21:04
+00:21:04
 Like, to think that it was just some like uh- [ameteur hacker] that like, uh-
 [commandeered] [Linus Sebastian]'s [YouTube] account, yeah [I don't think so].
 
@@ -1120,7 +1120,7 @@ whatever [Mental Outlaw] suggested that it was, it- basically like, [searching] 
 uh- basically a [100% identical version of a website], these are all things that 
 [HIVE] does.
 
-21:56
+00:21:56
 I'll tell you what [HIVE] is.
 [HIVE] is a [program] that was talked about within [Vault 7] which allows like uh-
 basically to create a [fake website] that's [100% real]...? And like, the [program]
@@ -1134,7 +1134,7 @@ it's [encryption], like uh- the [security certificates] and everything, right...
 Like, we've gotten to a point in uh- in history, where you're just gonna see a lot of
 things that look more and more like [DeepFakes].
 
-22:47
+00:22:47
 The [DeepFakes] are a thing that I talked about, uh- a while back, regarding how like
 [artificial intelligence] is being used to uh- [create these videos], where they [mock]
 like ya know like [celebrities] or [people] or whatever, like uh- [Jordan Peele], like,
@@ -1150,7 +1150,7 @@ side-by-side with OTHER videos...?
 
 [Most people] are NOT gonna be able to [tell the difference].
 
-23:22
+00:23:22
 Right...?
 So like, when I tell people that someone used [Pegasus], or uh- [Phantom], to like, try
 to murder me on [May 26th, 2020] outside of the [Computer Answers] shop, I know that it
@@ -1171,7 +1171,7 @@ On:
 uh- ya know, like if I try to walk around and tell this story to certain people,
 they're gonna be like, they're gonna think that [I lost my fuckin' mind].
 
-24:25
+00:24:25
 But some people at, like the, the [Central Intelligence Agency], or like the [CIA],
 they are gonna be the only ones that put [any thought] to [anything] that I'm [saying],
 and then, they're gonna be left with the [same sort of situation] where, they might be
@@ -1188,7 +1188,7 @@ And then they start to think:
 _____________________________________________________________________________
 | Charles McGonigal (FBI) | https://en.wikipedia.org/wiki/Charles_McGonigal |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-25:05
+00:25:05
 Ya know, as long as like uh- somebody [maintains], uh- [keeps up appearances] and
 things of that nature, people are gonna find it [very doubtful], [most people] are
 gonna find it [very doubtful], even the [highest ranking officers] at the [CIA] are
@@ -1198,7 +1198,7 @@ But- it's not their job to [doubt things], it's their job to [investigate things
 And, this is what caused me to believe that like, at any given moment, [any device
 could be compromised].
 
-25:35
+00:25:35
 Right, because like, the [layers] of [deception] are [rather deep].
 
 And, uh- the [only way] to get around like, the idea of [losing something], like
@@ -1216,7 +1216,7 @@ And I talked about it, like a number of fucking times, over the last [(4) years]
 But- ya know, here I am, having to like, uh- deal with uh- things that at very small
 component lay- level.
 
-26:18
+00:26:18
 Right...?
 
 I do have reasons to suspect that the [Chinese], and/or, the [Russians], or both...
@@ -1233,7 +1233,7 @@ because ya know, if someone doesn't have enough [followers] or [money], or uh- i
 like, [liked] by a lot of people... they're gonna have, it's basically [easy pickings]
 for them, to do this.
 
-26:52
+00:26:52
 However, it develo- like, when they [do] this to [someone] that [knows] what the fuck
 is goin' on, it causes [that person] to [develop] a [higher level of awareness] than
 [everybody else].
@@ -1251,7 +1251,7 @@ Let me [backpedal], a number of points that I just made.
 Ya know, it's basically doing the [same exact thing] that like [YouTube], and
 [Facebook] and [Amazon], and et cetera and so forth...?
 
-27:28
+00:27:28
 Why is it that like, when [Mark Zuckerberg] goes in front of [Congress]...
 
 [Congress] will [believe] every fuckin' thing that this dude says, but like, 
@@ -1261,7 +1261,7 @@ The representative of [TikTok]...?
 Oh, well, ya know, if it's a [different government behind stuff],
 then [they won't believe what that person is saying].
 
-28:06
+00:28:06
 Yeah, it really comes down to this...
 
 Anything within the domestic [United States]...?
@@ -1277,7 +1277,7 @@ either... they're just basically [neutral].
 
 And with [neutrality], comes [reasons] and [motivations] for [remaining neutral].
 
-28:42
+00:28:42
 Ya know, like uh- [TikTok] is allowing the [Chinese] government to get data on uh-
 people in the [United States]. But- so is [Facebook], so is [Twitter], so is like a
 bunch of other fuckin' programs...
@@ -1304,7 +1304,7 @@ Like, some people will be like:
           There's [no way] that they're [not leaking data], to the [Chinese]
           government...
 
-30:12
+00:30:12
 Ya know, on the [other end of the spectrum], take a good long look at the fuckin'
 [devices] that everybody uses, they're all like made over in [China] and [Taiwan].
 
@@ -1320,7 +1320,7 @@ I really don't know what to say.
 The [hardware] itself.
 Is being, like...
 
-30:47
+00:30:47
 It's not being like seen as uh- 
 the [threat] that it is.
 Right...?
@@ -1340,7 +1340,7 @@ I don't wanna really be [too descript] about like, [every single step] that I'm 
 [take] or [make], because I know that like, the [enemy] could be [listening to me], or
 my [recording], at [some point later], after I record this.
 
-31:44
+00:31:44
 And over- they'll [listen] to it, and they'll be like:
 [Them]: I'm gonna look for [any possible way] to [exploit] this [dude]...?
         And his [psychology]...?
@@ -1350,7 +1350,7 @@ And over- they'll [listen] to it, and they'll be like:
 
 Yeah, key word [again].
 
-32:07
+00:32:07
 Ya know I might be in the [position] that I'm in right now, but- [somebody] that I
 just rattled off, like, they under- they- [sorely underestimated me], and so has a
 lot- [so have a lot of other people].
@@ -1369,7 +1369,7 @@ Well, I think that like what happened was, like uh- [Linus Tech Tips], his fucki
 channel, being hacked, is like a case of like, what you [see] is [not always 
 necessarily] what you fuckin' [get].
 
-33:01
+00:33:01
 Oh...
 So, you're not allowed to like, [rant and rave] about like, uh- ya know, somebody
 that was [successful] with their [YouTube] venture, and like...
@@ -1389,7 +1389,7 @@ Right...?
 And what happens is throughout time, this [pole position] is constantly like,
 [shuffled around].
 
-33:56
+00:33:56
 And every once in a while...?
 Like, somebody [really important] or [famous], will wind up being [victimized], and
 then at that point, people will be like:
@@ -1404,7 +1404,7 @@ then at that point, people will be like:
           And, you're out of line to think that [Linus] would ever do, would ever like,
           uh- miss something [critical]...
 
-34:46
+00:34:46
 Yeah, no uhm...
 The fact of the matter, is that [a lot of people miss things] that are, like, right in
 plain- [hidden in plain sight]. Ya know, like uh, the things that uh- [Mental Outlaw]
@@ -1420,7 +1420,7 @@ It's like:
       And when he downloaded it...?
       It downloaded... something, [malware] onto his machine.
 
-35:31
+00:35:31
 Right, and so like, one thing to [consider] is, what if like,
 [everything is malware]...? If you treat [everything] as if it [might] be malware...?
 And you take [certain security precautions]...?
@@ -1437,7 +1437,7 @@ whatnot. Ya know, if it's [compromised] at all...?
 
 [Wipe and reload everybody's permissions].
 
-36:09
+00:36:09
 Right, and then like, also... [measurement] of how to- [how to measure] when a
 [network] is [compromised] is [pretty difficult to do], because uh- everybody's uh-
 mind, is like a [lambda box].
@@ -1453,7 +1453,7 @@ can just, [cash in on the knowledge that they have], to do something really [sin
 Ya know...?
 They're gonna t- [they're gonna cash in].
 
-37:00
+00:37:00
 And that- [that person could be anybody].
 It could be anybody...?
 It could be uh- somebody behind, uh- somebody within a [classified file]...?
@@ -1467,7 +1467,7 @@ And then, in this [classified file], [Whole Room Water-Cooling Project]...?
 Is basically like, we're gonna li- we're gonna watch [Linus Sebastian]...?
 And we're gonna just take out his [Tech Tips] channel, and really screw him over...
 
-37:46
+00:37:46
 And then like, ya know there'll only be like (2) people in that classified file.
 [Whole Room Water-Cooling Project].
 Ya know...?
@@ -1483,7 +1483,7 @@ Was totally trumped by something [very small] and [minor], right, but that [very
 and [minor] thing allowed for ALL of their [hard work] to be [taken from them],
 [forcibly], right...?
 
-38:18
+00:38:18
 Ya know, uh-
 On the other hand...?
 
@@ -1508,7 +1508,7 @@ right...?
 They were livin' life on easy street for a while, though, I really wouldn't call it
 easy street so much as uh- like, they were being pretty like, uh- short sighted.
 
-39:29
+00:39:29
 Short sighted is a way to put it.
 
 So like, if uh- if my channel, my (1) channel, or my multiple channels were like uh-
@@ -1522,7 +1522,7 @@ So, if [Linus Sebastian] isn't an idiot, [he's gonna have backups] too.
 Because, ya know, he did like, go around and like, [building servers] for uh- like
 what the hells her name... ah- I can't remember.
 
-40:06
+00:40:06
 Uh- building [backup servers] for people.
 And uh- bulding storage arrays.
 
@@ -1539,13 +1539,13 @@ Right...?
 But also, sometimes you really have to go back to the drawing board, and reinvent the
 entire thing from top to bottom.
 
-40:44
+00:40:44
 It's just basically uh- the idea that I came across a while back, uh- [Mental Outlaw]
 sounds like the type of dude that understands a lot of these things, but I'm not gonna
 make uh- [speculations] or [assumptions] about like uh- what he thinks or knows or
 whatever, right...?
 
-41:03
+00:41:03
 If anything, uh, he presents himself as a [very sophisticated individual], much like
 [Louis Rossman] does...? And uh- their uh- their [insight], is [pretty realistic],
 believe it or not.
@@ -1558,7 +1558,7 @@ that they have in their closet.
 
 What sort of [skeletons] that they have in their [closet].
 
-41:39
+00:41:39
 Ya know, when it comes to like uh- [Michael Stevens] or uh- [Adam Savage] or uh- 
 [Neil DeGrasse Tyson], or like a bunch of these other smart people on [YouTube], 
 like I'm not thinkin' that like, they went around like having [dog fights].
@@ -1567,7 +1567,7 @@ Ya know, having their [dogs] [fight to the death]... And like, ya know, they nev
 like- it'd be like a [comedic skit] in my mind, is like, [Michael Stevens] caught 
 for having an [unlawful dog fighting contest] with [Adam Savage].
 
-42:13
+00:42:13
 And then they'd be like:
 [Stevens]: Well, [Adam]...
 
@@ -1589,7 +1589,7 @@ And then, the other will be like:
 And then they're like:
 [Them]: Yeah, it is a bad thing, we shouldn't have done this...
 
-42:49
+00:42:49
 Like I'm not thinkin' that at all, but- it is a [comedic skit], that I just thought
 up on the spot. Right...?
 
@@ -1615,7 +1615,7 @@ Ya know...?
 They want [all] of their [content] that is [recorded], to be [consumed by people].
 [Of any age].
 
-43:48
+00:43:48
 But- it causes the content to feel [unrealistic], (because it sanitizes the concept
 of being [informal]) and so like, I am gonna like segue out of the [original content],
 uh- subject of uh- what I was talking about for a moment, for a shade.
@@ -1624,7 +1624,7 @@ The idea of [innocence]...?
 Has been [perpetuated by people] that want to [limit] the [first amendment] of the
 [Constitution]. And, [people's right] to [free speech].
 
-44:14
+00:44:14
 Now, I don't know how exactly I feel about like, the idea of like, people on
 [Nickelodeon] or [Cartoon Network] like, uttering off [profanities] like "Fuck this",
 "Shitbag that", and "Holy fuck".
@@ -1641,7 +1641,7 @@ He's like:
 [Careese]: I heard that [F-bomb], dude...
            Time to do a few laps.
 
-44:55
+00:44:55
 And then the person who threw the [F-bomb], would be like:
 [Person]: Fuckin' god damnit...
 
@@ -1663,7 +1663,7 @@ And then he's like:
            You're really...
            You're pushin' your luck...
 
-45:28
+00:45:28
 Right, so like, [Coach Careese] would have that conver- bleh. Wouldn't exactly have
 that [verbatim] conversation with somebody, who like, tossed around an [F-bomb] here
 or there...?
@@ -1677,7 +1677,7 @@ on like [YouTube] and stuff. And sometimes I would hear, like my son say an [exp
 and I'd be like:
 [Me]: What the hell did you just say, kid...?
 
-46:07
+00:46:07
 The thing is, is like, the [kids pick up on this] from their adul- from [adults].
 Ya know...?
 
@@ -1696,7 +1696,7 @@ Yeah, that's the [connotation] that you get.
 
 But- ya know, let me bring this all around back to the [original point].
 
-46:53
+00:46:53
 Ya know, the [original point] that I was gonna make is...?
 
 That, [you piss somebody off], they're gonna find [some way] to [screw you over]...
@@ -1723,7 +1723,7 @@ Because, the fields of study that they have studied, like, have to do with uh- [
 And- basically a lot of the concepts that they cover, it's basically [synonomous] with
 the amount of things that I cover, and I [programmatically build]...
 
-48:15
+00:48:15
 And I think a lot of people get [lost in particulars] when really, you wanna start
 thinking about like, [aggregating] uhm, making [generalizations] and stuff.
 
@@ -1739,7 +1739,7 @@ of people in uh- [bureacracy], ya know, even [politicians] do this to [some degr
 They have to do various levels of what I just said, in order to [continue] doing what
 they do.
 
-49:07
+00:49:07
 Right, and uh- are they gonna get into the nitty gritty of like, [binary] and
 [hexadecimal] and like, uh- [obfuscation] and [deobfuscation], and uh- [introducing 
 malware] and [threading], and [runspacing], and [parallelization], and like,
@@ -1749,7 +1749,7 @@ and stuff...?
 
 Nah, prolly not.
 
-49:39
+00:49:39
 Are these things that are covered on like, [Linus Tech Tips]...?
 Maybe on a [very minor scale].
 What they do, is they focus on the [hardware], typically.
@@ -1764,7 +1764,7 @@ Really, at the beginning and the end of it, is that uh- there's a [lot] of peopl
 the world that [know what the hell they're saying or doing], and [somebody] wants to
 find a [way] to [control everybody].
 
-50:13
+00:50:13
 They wanna find [some way] to [control everybody].
 But it's like a [supertask].
 
@@ -1789,7 +1789,7 @@ It's gonna sound rather [bonkers] to someone who's [not paying attention]...
 It's gonna sound like I'm uh- [bantering], or what's uh- [babbling].
 It's gonna sound like I'm [babbling].
 
-51:15
+00:51:15
 But- ya know, given enough [thought] and enough [distancing] from how people
 [typically] think...? They're gonna realize how like, [astute my observations 
 skills really are], and they're gonna start to make the [same sorts of correlations]
@@ -1811,7 +1811,7 @@ Ya know, how do you know that it wasn't a [quantum computer] that [broke] the
 
 (Apparently LTT covered this after they got their channel back up.)
 
-52:10
+00:52:10
 And like, it happened at [Google]...?
 Much less, at uh- [Linus Tech Tips]...
 Maybe the problem was at [Google]...
@@ -1828,7 +1828,7 @@ trollmeisters] out there somewhere, they're performing [high level attacks] that
 [extremely sophisticated], and, some of the [residue] that they leave behind, is just
 for [appearances], to make it, to be like a [red herring].
 
-52:56
+00:52:56
 Right...?
 So like, it very well could've been like an attack by the [Russian] government, 
 to attack [Linus Tech Tips] channel.
@@ -1861,7 +1861,7 @@ If people admit that [I'm correct]...?
 
 Then it's gonna cause their [reputation] to [tank], [considerably].
 
-54:30
+00:54:30
 Right...?
 Right.
 So, the idea of [DeepFakes].
@@ -1908,7 +1908,7 @@ And then he says:
          Because, the [T-800]...? (meant [T-1000])
          Was the person we were just talking to...
 
-56:08
+00:56:08
 Right...?
 So these are the things that were foreshadowed, as far back as like (1984)...
 Well, [Judgement Day], [Terminator 2: Judgement Day] was in like (91) I think...?
@@ -1918,7 +1918,7 @@ The idea I'm alluding to, is that uh- [mimicry].
 Being able to [mimic] one another, to the [degree] to where like,
 you really can't tell the [difference] between [one thing] or [another].
 
-56:33
+00:56:33
 And so, [Michael Stevens] talks about this in uh- like the ship of [Theudi]- it's not
 [Theudissises] [Theudiss], [Theudidisys Trap]- uh- it's not that, uh- it's basically
 like uhm, you take- you have- you start with a ship, right...?
@@ -1931,7 +1931,7 @@ Well, [no] it's [not] the [same ship].
 It [IS] the [same ship], because it has [changed]...?
 But it is [NOT] the [same ship], because it has also [changed]...
 
-57:06
+00:57:06
 This is the idea of like, [humanity].
 And the [population].
 Ya know, as uh- [people are born]...?
@@ -1947,7 +1947,7 @@ These are sort of- these are the things that I sorta covered...?
 Like in the video where I blasted [Linus Sebastian], or [Linus Tech Tips], when they
 banned me from their forum, back in like uh- [February] or [March 2019]...?
 
-57:40
+00:57:40
 Right, this is (4) fuckin' years ago, right...?
 So, here's the thick and thin of it.
 
@@ -1966,7 +1966,7 @@ Whatever thing is that they [fear], ya know, it's gotta be like uh- it's gotta s
 around, ya know...? Are they gonna be [afraid] of the [notion] of [death] in the
 [immediate vicinity]...?
 
-58:29
+00:58:29
 Well, if that's the case, then they're like [afraid] of that [person], and so like,
 that's gonna [affect] their [responses], and they're not gonna be [trusted], because
 if they're gonna be- if they're [afraid] of [dying], then [of course they're gonna
@@ -1988,7 +1988,7 @@ himself [killed], ya know cause the [T-800] (meant [T-1000]) was able to
 
 It's really [that simple].
 
-59:31
+00:59:31
 [DeepFakes].
 Ya know, [Michael Baker], talkin' with [Joe Rogan].
 
@@ -2389,7 +2389,7 @@ It's gonna come ou- it's gonna across as [sounding] like [babbling] and [psychot
 and everything, (cause some people are morons) but it is literally the [same way]
 that [artificial intelligence] goes about thinking about stuff.
 
-1:17:08
+01:17:08
 They just- they think about a whole bunch of concepts that might be somewhat
 related...? And they try to make [logical deductions] and use [mathematics] to
 come up with like, [formulas] and and uh- [probability matrixes] and things like
@@ -3433,5 +3433,4 @@ And with that being said, I'm gonna [close out] this audio recording.
 
 02:01:43
 End log.
-
 #>
