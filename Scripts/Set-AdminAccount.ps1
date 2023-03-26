@@ -1,3 +1,36 @@
+<#
+.SYNOPSIS
+.DESCRIPTION
+.LINK
+.NOTES
+
+ //==================================================================================================\\ 
+//  Script                                                                                            \\
+\\  Date       : 2023-03-26 13:20:48                                                                  //
+ \\==================================================================================================// 
+
+    FileName   : Set-AdminAccount
+    Solution   : [FightingEntropy()][2022.12.0]
+    Purpose    : For [post deployment], in reference to [PowerShell Deployment] or etc.
+    Author     : Michael C. Cook Sr.
+    Contact    : @mcc85s
+    Primary    : @mcc85s
+    Created    : 2023-03-26
+    Modified   : 2023-03-26
+    Demo       : N/A
+    Version    : 0.0.0 - () - Finalized functional version 1
+    TODO       : N/A
+
+.Example
+# Username : NETBIOS/Administrator
+# Password : [passworD1]
+
+# [Disable]
+# Set-AdminAccount -Domain NETBIOS -Name Administrator -Pass [passworD1] -State 0
+
+# [Enable]  
+# Set-AdminAccount -Domain NETBIOS -Name Administrator -Pass [passworD1] -State 1
+#>
 
 Function Set-AdminAccount
 {
@@ -111,5 +144,3 @@ Function Set-AdminAccount
     [WinLogonController]::New($Domain,$Name,$Pass).Set($State)
 
 }
-
-Set-AdminAccount -Domain NETBIOS -Name Administrator -Pass [passworD1] -State 1
