@@ -1,8 +1,8 @@
 <# 
-[03/20/23]: [Virtualization Lab - Desktop Deployment]
+[03/27/23]: [Virtualization Lab - Desktop Deployment]
 
 Create a standard [Windows 10] installation using [Hyper-V] and
-[PowerShell Direct], and then [import] user profile information
+[PowerShell Direct], and then [import] user profile information.
 #>
 
 Import-Module FightingEntropy
@@ -558,6 +558,16 @@ Function SecurityOption
             $Temp.SetAnswer($Answer)
             $This.Output += $Temp
         }
+        Reindex()
+        {
+            $This.Output = $this.Output | ? Name -ne $This.Output[0].Name
+            $C = 0
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Index = $C
+                $C ++
+            }
+        }
         [String] ToString()
         {
             Return "<FEModule.SecurityOptionController>"
@@ -569,7 +579,6 @@ Function SecurityOption
 
 Function Region
 {
-    
     Class CountryItem
     {
         [UInt32] $Index
@@ -1485,6 +1494,21 @@ Class VmNetworkController
     }
 }
 
+Class VmRole
+{
+    [UInt32] $Index
+    [String] $Type
+    VmRole([UInt32]$Index)
+    {
+        $This.Index = $Index
+        $This.Type  = @("Server","Client")
+    }
+    [String] ToString()
+    {
+        Return $This.Role
+    } 
+}
+
 Class VmNodeItem
 {
     [UInt32]      $Index
@@ -1514,6 +1538,7 @@ Class VmNodeItem
 
 Class VmNodeTemplate
 {
+    [String]     $Role
     [String]     $Base
     [UInt64]   $Memory
     [UInt64]      $Hdd
@@ -1521,8 +1546,9 @@ Class VmNodeTemplate
     [UInt32]     $Core
     [String] $SwitchId
     [String]    $Image
-    VmNodeTemplate([String]$Path,[UInt64]$Ram,[UInt64]$Hdd,[UInt32]$Gen,[UInt32]$Core,[String]$Switch,[String]$Img)
+    VmNodeTemplate([UInt32]$Type,[String]$Path,[UInt64]$Ram,[UInt64]$Hdd,[UInt32]$Gen,[UInt32]$Core,[String]$Switch,[String]$Img)
     {
+        $This.Role     = $This.VmRole($Type)
         $This.Base     = $Path
         $This.Memory   = $Ram
         $This.Hdd      = $Hdd
@@ -1530,6 +1556,10 @@ Class VmNodeTemplate
         $This.Core     = $Core
         $This.SwitchId = $Switch
         $This.Image    = $Img
+    }
+    [Object] VmRole([UInt32]$Type)
+    {
+        Return [VmRole]::New($Type)
     }
     [String] ToString()
     {
@@ -1632,13 +1662,13 @@ Class VmNodeController
     {
         Return [VmNetworkController]::New($IpAddress,$Prefix,$Gateway,$Dns,$Domain,$NetBios)
     }
-    [Object] NewVmTemplate([String]$Base,[UInt64]$Ram,[UInt64]$Hdd,[Uint32]$Generation,[UInt32]$Core,[String]$VMSwitch,[String]$Path)
+    [Object] NewVmTemplate([UInt32]$Type,[String]$Base,[UInt64]$Ram,[UInt64]$Hdd,[Uint32]$Generation,[UInt32]$Core,[String]$VMSwitch,[String]$Path)
     {
-        Return [VmNodeTemplate]::New($Base,$Ram,$Hdd,$Generation,$Core,$VmSwitch,$Path)
+        Return [VmNodeTemplate]::New($Type,$Base,$Ram,$Hdd,$Generation,$Core,$VmSwitch,$Path)
     }
-    SetTemplate([String]$Base,[UInt64]$Ram,[UInt64]$Hdd,[Uint32]$Generation,[UInt32]$Core,[String]$VMSwitch,[String]$Path)
+    SetTemplate([UInt32]$Type,[String]$Base,[UInt64]$Ram,[UInt64]$Hdd,[Uint32]$Generation,[UInt32]$Core,[String]$VMSwitch,[String]$Path)
     {
-        $This.Template = $This.NewVmTemplate($Base,$Ram,$Hdd,$Generation,$Core,$VmSwitch,$Path)
+        $This.Template = $This.NewVmTemplate($Type,$Base,$Ram,$Hdd,$Generation,$Core,$VmSwitch,$Path)
     }
     [Object] NewVmObjectFile([Object]$Node)
     {
@@ -2049,6 +2079,12 @@ Class VmObject
             2       { New-VM @Object -Verbose }
         }
 
+        Switch ($This.Mode)
+        {
+            Default { Set-VMMemory -VmName $This.Name -DynamicMemoryEnabled 0 }
+            2       { Set-VMMemory -VmName $This.Name -DynamicMemoryEnabled 0 -Verbose }
+        }
+
         # Verbosity level
         Switch ($This.Mode)
         {
@@ -2343,6 +2379,22 @@ Class VmObject
         {
             $This.SetVmBootOrder(2,0,1)
         }
+    }
+    [String[]] GetMacAddress()
+    {
+        $String = $This.Get().NetworkAdapters[0].MacAddress
+        $Mac    = ForEach ($X in 0,2,4,6,8,10)
+        {
+            $String.Substring($X,2)
+        }
+
+        Return $Mac -join "-"
+    }
+    [UInt32] NetworkSetupMode()
+    {
+        $Arp = (arp -a) -match $This.GetMacAddress() -Split " " | ? Length -gt 0
+
+        Return !!$Arp
     }
     TypeChain([UInt32[]]$Array)
     {
@@ -3060,16 +3112,22 @@ $Country       = Region
 $Keyboard      = Keyboard
 
 # // Designate the account to deploy
-$Module.Write("Loading [~] cimdb (Company Information Management Database)")
-$DB            = Invoke-cimdb -Mode 1
+$Account       = [System.IO.File]::ReadAllLines("C:\FileVm\user00.txt") | ConvertFrom-Json
 
-If (!$DB.DB.Client[0])
+If (!$Account)
 {
-    Throw "Error [!] Must have a target account to designate"
+    $Module.Write("Loading [~] cimdb (Company Information Management Database)")
+    $DB            = Invoke-cimdb -Mode 1
+
+    If (!$DB.DB.Client[0])
+    {
+        Throw "Error [!] Must have a target account to designate"
+    }
+
+    $Account = $Db.Db.Client[0].Record
 }
 
 # // Select the account to deploy
-$Account       = $Db.DB.Client[0].Record
 $Module.Write("Selected [+] Account: [$($Account.DisplayName)]")
 $Security.SetAccount($Account)
 $Security.SetCredential()
@@ -3089,7 +3147,7 @@ $Hive.GetNodeController()
 
 # // Creates the virtual machine node template
 $Module.Write("Setting [~] Node Template")
-$Hive.Node.SetTemplate("C:\VDI",2048MB,64GB,2,2,"External",$Iso)
+$Hive.Node.SetTemplate(1,"C:\VDI",2048MB,64GB,2,2,"External",$Iso)
 
 # // Extract the Windows image information from the (*.iso)
 $Module.Write("Extracting [~] Iso Information")
@@ -3209,7 +3267,8 @@ $Vm.Uptime(0,5)
 $Vm.UnloadIso()
 
 # // Wait for the computer to perform inital setup, and reboot
-$Vm.Idle(5,5)
+$Vm.Timer(5)
+$Vm.Uptime(0,5)
 
 # // Wait for (OOBE/Out-of-Box Experience) screen
 $Vm.Idle(5,5)
@@ -3224,29 +3283,53 @@ $Vm.Timer(1)
 $Vm.TypeKey(13) # [Skip]
 $Vm.Timer(3)
 
-# // [Network, default = Automatic]
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Network [~]                                                                                    ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
 
-<# Non-networked
+# // [Check for connectivity]
+Switch ($Vm.NetworkSetupMode())
+{
+    0 # [Not networked]
+    {
+        $Vm.TypeChain(@(9,32))
+        $Vm.Timer(2)
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Timer(5)
 
-$Vm.TypeChain(@(9,32))
-$Vm.Timer(2)
-$Vm.TypeChain(@(9,9,9,9,32))
-$Vm.Timer(5)
+        # Must continue building
+    }
+    1 # [Network, default = Automatic]
+    {
+        $Vm.Idle(5,5)
 
-# // [Account, default = Personal Use]
-# <expand here for Active Directory/organization>
-$Vm.TypeKey(13)
-$Vm.Timer(1)
-$Vm.TypeKey(13)
-$Vm.Idle(5,2)
+        # // [Account, default = Personal Use]
+        # <expand here for Active Directory/organization>
+        $Vm.TypeKey(13)
+        $Vm.Timer(1)
+        $Vm.TypeKey(13)
+        $Vm.Idle(5,2)
 
-# // [OneDrive setup]
-$Vm.TypeChain(@(9,9,9,9,32))
-$Vm.Idle(5,2)
+        # // [OneDrive setup]
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Idle(5,2)
 
-# // [Limited Experience]
-$Vm.TypeChain(@(9,9,32))
-$Vm.Idle(5,2)
+        # // [Limited Experience]
+        $Vm.TypeChain(@(9,9,32))
+        $Vm.Idle(5,2)
+    }
+}
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Account [~]                                                                                    ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
 # // [Who's gonna use this PC...? Hm...?]
@@ -3262,17 +3345,18 @@ $Vm.Timer(1)
     $Vm.Timer(2)
 }
 
-# // [Create security questions]
+# // [Set security questions]
 ForEach ($Item in $Security.Output)
 {
-    ($Item.Index+1) | % { 
-        
+    $Span = @(1) * ($Item.Index+1)
+    ForEach ($X in $Span)
+    {     
         $Vm.TypeKey(40)
     }
     $Vm.TypeKey(9)
     $Vm.TypeText($Item.Answer)
-    $Vm.TypeKey(9)
     $Vm.TypeKey(13)
+    $Security.Reindex()
     $Vm.Timer(1)
 }
 
@@ -3283,11 +3367,9 @@ $Vm.TypeKey(13)
 $Vm.Idle(5,2)
 
 # // [Let's customize your experience]
-<#
 $Vm.TypeChain(@(9,9,9,9,9,9,9,9))
 $Vm.TypeKey(13)
 $Vm.Idle(5,2)
-#>
 
 # // [Let Cortana help you get s*** done]
 $Vm.TypeKey(13)
