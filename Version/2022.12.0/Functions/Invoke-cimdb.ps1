@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+\\  Date       : 2023-03-27 07:51:50                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
@@ -16,15 +16,22 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Modified   : 2023-03-27
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
-    TODO       : N/A
+    TODO       : Implement the newer version of the classes and GUI
 
 .Example
 #>
+
 Function Invoke-cimdb
 {
+    [CmdLetBinding()]
+    Param(
+    [Parameter()]
+    [ValidateSet(0,1)]
+    [UInt32]$Mode=0)
+
     Class DGList
     {
         [String]  $Name
@@ -3886,4 +3893,9 @@ Function Invoke-cimdb
     # Final
     $Main.Menu(0)
     $Xaml.Invoke()
+
+    If ($Mode -eq 1)
+    {
+        Return $Main
+    }
 }
