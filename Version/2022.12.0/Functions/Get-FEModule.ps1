@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-24 12:34:58                                                                  //
+\\  Date       : 2023-03-27 14:34:48                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-01-24
+   Modified   : 2023-03-27
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1620,7 +1620,7 @@ Function Get-FEModule
                     ("Install-BossMode.ps1"            , "25524DA6A44325BBFC5B4D4A863DE607B417CD4F3F57666627ECD9CB295AA07A") ,
                     ("Install-IISServer.ps1"           , "48F53BF8A3ECD087E7F395AA19F86D32849CD4F14B599F2AC6F7330F083E0D6C") ,
                     ("Install-PSD.ps1"                 , "0E0513C6BA4D98D1786E8606ABD5F6198947ADD43757E14D8138650DAB8D367F") ,
-                    ("Invoke-cimdb.ps1"                , "08ADF0105650B39381145D9018FF451FF03451F46B7FA28F0DE17208BE12E6EB") ,
+                    ("Invoke-cimdb.ps1"                , "567E8955B7D0A51569C5066AAE758E304B384592F55DF0D0A1176A8906885B56") ,
                     ("New-EnvironmentKey.ps1"          , "B2F51FA6AFCFD499DE96CFD7458E216832B36204BB542FDB416471058603D04C") ,
                     ("New-FEConsole.ps1"               , "16F320BBCCEE1F8CE5F2F6CF9352886E1C16012705318CDBE6D50B0FDB840758") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
