@@ -2660,51 +2660,49 @@ Class VmObject
         # Prepare the correct persistent information
         $List = @( ) 
 
-        $List += '$P = @( )'
+        $List += '$P = @{ }'
         ForEach ($P in @($This.Network.PSObject.Properties | ? Name -ne Dhcp))
         { 
-            $Value = Switch -Regex ($P.TypeNameOfValue)
+            $List += Switch -Regex ($P.TypeNameOfValue)
             {
                 Default
                 {
-                    $P.Value
+                    '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
                 }
                 "\[\]"
                 {
-                    "([String[]]@(`"{0}`"))" -f ($P.Value -join "`",`"")
+                    '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
                 }
             }
-
-            $List += '$P += ("{0}","{1}")' -f $P.Name, $Value
         }
         
         If ($This.Role -eq "Server")
         {
-            $List += '$P += ("Dhcp","$Dhcp")'
+            $List += '$P.Add($P.Count,("Dhcp","$Dhcp"))'
         }
         
-        $List += '$P | % { Set-ItemProperty -Path $Path -Name $_[0] -Value $_[1] }'
+        $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Path -Name $_[0] -Value $_[1] -Verbose }'
 
         If ($This.Role -eq "Server")
         {
+            $List += '$P = @{ }'
+            
             ForEach ($P in @($This.Network.Dhcp.PSObject.Properties))
             {
-                $Value = Switch -Regex ($P.TypeNameOfValue)
+                $List += Switch -Regex ($P.TypeNameOfValue)
                 {
                     Default
                     {
-                        $P.Value
+                        '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
                     }
                     "\[\]"
                     {
-                        "([String[]]@(`"{0}`"))" -f ($P.Value -join "`",`"")
+                        '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
                     }
                 }
-
-                $List += '$P += ("{0}","{1}")' -f $P.Name, $Value
             }
 
-            $List += '$P | % { Set-ItemProperty -Path $Dhcp -Name $_[0] -Value $_[1] }'
+            $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Dhcp -Name $_[0] -Value $_[1] -Verbose }'
         }
 
         Return $List
@@ -2732,7 +2730,7 @@ Class VmObject
     SetTimeZone()
     {
         # [Phase 2] Set time zone
-        $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}"' -f (Get-Timezone).Id))
+        $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}" -Verbose' -f (Get-Timezone).Id))
     }
     SetComputerInfo()
     {
@@ -2756,7 +2754,7 @@ Class VmObject
             Client
             {
                 'Get-NetFirewallRule | ? DisplayName -match "(Printer.+IcmpV4)" | Enable-NetFirewallRule -Verbose',
-                'Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private'
+                'Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private -Verbose'
             }
         }
 
@@ -2795,7 +2793,7 @@ Class VmObject
         'winrm quickconfig';
         '<Pause[2]>';
         'y';
-        '<Pause[3]>';
+        '<Pause[4]>';
         'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
         '<Pause[4]>';
         'y';
@@ -3350,6 +3348,16 @@ $Vm.Uptime(0,5)
 # // Wait for (OOBE/Out-of-Box Experience) screen
 $Vm.Idle(5,5)
 
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation [Region]                                                   ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Region]")
+
 # // [Region, default = United States]
 $Vm.TypeKey(13) # [Yes]
 $Vm.Idle(5,2)
@@ -3364,10 +3372,12 @@ $Vm.Idle(5,5)
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Network [~]                                                                                    ___//¯¯\\   
+   \\__//¯¯¯ Installation [~] System Preparation [Network]                                                  ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
+
+$Module.Write("Installation [~] System Preparation [Network]")
 
 # // [Check for connectivity]
 Switch ($Vm.NetworkSetupMode())
@@ -3403,10 +3413,12 @@ Switch ($Vm.NetworkSetupMode())
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Account [~]                                                                                    ___//¯¯\\   
+   \\__//¯¯¯ Installation [~] System Preparation                                                            ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
+
+$Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
 
 # // [Who's gonna use this PC...? Hm...?]
 $Vm.TypeText($Security.Un())
@@ -3449,34 +3461,22 @@ $Vm.Idle(5,2)
 
 # // [Let Cortana help you get s*** done]
 $Vm.TypeKey(13)
-$Vm.Idle(15,5)
+$Vm.Idle(10,10)
 
-# // [Launch PowerShell, establish OS version control]
-$Vm.LaunchPs()
-
-<# // Open Start Menu
-$Vm.PressKey(91)
-$Vm.TypeKey(88)
-$Vm.ReleaseKey(91)
-$Vm.Timer(1)
-
-# // Open [PowerShell]
-$Vm.TypeKey(65)
-$Vm.Timer(2)
-$Vm.TypeKey(37)
-$Vm.Timer(2)
-$Vm.TypeKey(13)
-$Vm.Timer(2)
-
-# // Maximize window
-$Vm.PressKey(91)
-$Vm.TypeKey(38)
-$Vm.ReleaseKey(91)
-$Vm.Timer(1)
-
-# // Wait for [PowerShell] engine to get ready for input
-$Vm.Idle(5,5)
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Configuration [~] Post-Installation                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
+
+$Module.Write("Configuration [~] Post Installation: [$Token]")
+$Vm.Timer(30)
+$Vm.Idle(5,5)
+
+# // [Launch PowerShell]
+$Vm.LaunchPs()
 
 # Loads all scripts
 $Vm.Load()
