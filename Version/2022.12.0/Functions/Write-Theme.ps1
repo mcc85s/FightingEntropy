@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+\\  Date       : 2023-03-28 19:14:27                                                                  //
  \\==================================================================================================// 
 
     FileName   : Write-Theme.ps1
@@ -18,7 +18,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Modified   : 2022-03-28
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -878,13 +878,13 @@ Function Write-Theme
                                 $Object       = $This.Template($This.Output.Count,$X)
                                 $Object.Content[ 0].String = "   /"
                                 $Object.Content[ 1].String = "/   "
-                                $Object.Content[28].String = "==_/"
+                                $Object.Content[28].String = "___/"
                                 $Object.Content[29].String = "/   "
                                 $This.Output += $Object
                             }
                             If ($I % 2 -eq 1)
                             {
-                                $This.Output[-1].Content[28].String = "==_/"
+                                $This.Output[-1].Content[28].String = "___/"
                             }
                         }
                         ElseIf ($X -eq 3)
@@ -945,15 +945,15 @@ Function Write-Theme
 
             If ($Mode -ne 0 -and $Tray.Count -lt 26)
             {
-                $Tray         += $This.Block($Tray.Count,"]==_",@(1,1,12)[$Mode],0)
+                $Tray         += $This.Block($Tray.Count,"]___",@(1,1,12)[$Mode],0)
                 If ($Tray.Count -lt 26)
                 {
                     Do
                     {
-                        $Tray += $This.Block($Tray.Count,"====",@(1,1,12)[$Mode],0)
+                        $Tray += $This.Block($Tray.Count,"____",@(1,1,12)[$Mode],0)
                     }
                     Until ($Tray.Count -eq 26)
-                    $Tray     += $This.Block($Tray.Count,"==_/",@(1,1,12)[$Mode],0)
+                    $Tray     += $This.Block($Tray.Count,"___/",@(1,1,12)[$Mode],0)
                 }
             }
 
