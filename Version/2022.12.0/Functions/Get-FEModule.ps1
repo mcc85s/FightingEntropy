@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 16:18:56                                                                  //
+\\  Date       : 2023-03-28 19:17:21                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1632,7 +1632,7 @@ Function Get-FEModule
                     ("Show-ToastNotification.ps1"      , "661B9C815FF1BAEEE4400F65126741177D6F5D122161EF0093309A9067B8344E") ,
                     ("Update-PowerShell.ps1"           , "EEA4AEEC98B7049F7273CDDCF58FCBD1702DDDEE1EB3C11B71DD76D30879F662") ,
                     ("Write-Element.ps1"               , "1AF8C0392304F9FC965ACAA1605C385FE479CC344514C2D5A532AB5DF81FC2D2") ,
-                    ("Write-Theme.ps1"                 , "DF937F03130E85B90CC22301DBDF89718F0EB7995104EC9DF443090FDDA3E8FA") 
+                    ("Write-Theme.ps1"                 , "64CDC6B7BB63816306C7A8410681DFB90B9555C08915D367F210739321250330") 
                 }
                 Graphic
                 {
