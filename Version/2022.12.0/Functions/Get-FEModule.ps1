@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-27 17:10:52                                                                  //
+\\  Date       : 2023-03-28 16:06:27                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-03-27
+   Modified   : 2023-03-28
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1605,7 +1605,7 @@ Function Get-FEModule
                     ("Get-FEModule.ps1"                , "6B2B11BCF3AFE6F6F8EBDB02E8F84CF4CF08F58083A7489BBFD58B6D53443806") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
-                    ("Get-FESystem.ps1"                , "47B1FF7BE39A95CEAFFD450336F01D3559B6E6059DA984A06D76980A391C7E2C") ,
+                    ("Get-FESystem.ps1"                , "A8A54664FCAEA3F59E387CAEF927F26009F20BC28C689417E6D840A062F166B0") ,
                     ("Get-MDTModule.ps1"               , "FC61D8D17B22A6AC2AE343A3EA7A07DBF868D918C85D302DF771862306CB824A") ,
                     ("Get-PowerShell.ps1"              , "7F5E35535A4A50D02092D8A87266F136EEBD979F9505D8D481A4F5E38E74BF02") ,
                     ("Get-PropertyItem.ps1"            , "48E4729380C40B76B13DE0FD6CAC735B05B76D78CE86636F9258D1F3D60AD6B0") ,
@@ -1614,23 +1614,24 @@ Function Get-FEModule
                     ("Get-PSDLogGUI.ps1"               , "FEBF687E9A97A413576DD515DE7184D4E71AA8EC61737A53EC39F5BDB11588FF") ,
                     ("Get-PSDModule.ps1"               , "CF59887548D790EE8B4D339450BFC1D64227F68CC4E555C877B9AFDD54CB5EBD") ,
                     ("Get-ThreadController.ps1"        , "66C2078C9CC0621CE911CCE301490BA36214CECC9415F982CC819651FD1E9E66") ,
-                    ("Get-UserProfile.ps1"             , "E9FFAA0C2C4C6A568401A139846706B2888625B57A3B077B82B6984638B87FA0") ,
+                    ("Get-UserProfile.ps1"             , "E99A9F92847CFD0754D987B67F6C31D7B724C93A5B559D1BAD453E7AF38B559D") ,
                     ("Get-ViperBomb.ps1"               , "4771549A426A4E841A7D048613D65907BF7F416CF69797A1EAF9FAC8B28D797F") ,
                     ("Get-WhoisUtility.ps1"            , "A677D8026F18FBFF78C614CD3FC71BD6BE46EDC142D66CF9402EABAB9D988DCE") ,
-                    ("Initialize-FeAdInstance.ps1"     , "D47DB4F0D2A1C69A2510ABBF5BE67E899BFDBAA07B15A2DC50FA48D226EB0072") ,
+                    ("Initialize-FeAdInstance.ps1"     , "D9D923D6919920866E905C3C710D1CD16F1A1ADBCF5952EF12CE71F54EEBEA79") ,
                     ("Install-BossMode.ps1"            , "25524DA6A44325BBFC5B4D4A863DE607B417CD4F3F57666627ECD9CB295AA07A") ,
                     ("Install-IISServer.ps1"           , "48F53BF8A3ECD087E7F395AA19F86D32849CD4F14B599F2AC6F7330F083E0D6C") ,
                     ("Install-PSD.ps1"                 , "0E0513C6BA4D98D1786E8606ABD5F6198947ADD43757E14D8138650DAB8D367F") ,
                     ("Invoke-cimdb.ps1"                , "567E8955B7D0A51569C5066AAE758E304B384592F55DF0D0A1176A8906885B56") ,
                     ("New-EnvironmentKey.ps1"          , "B2F51FA6AFCFD499DE96CFD7458E216832B36204BB542FDB416471058603D04C") ,
-                    ("New-FEConsole.ps1"               , "16F320BBCCEE1F8CE5F2F6CF9352886E1C16012705318CDBE6D50B0FDB840758") ,
+                    ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
-                    ("Set-AdminAccount.ps1"            , "8349328A5633972145A745716833DE5F69F7588BF35E20FDE4DC97E16E8E70B8") ,
+                    ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
                     ("Set-ScreenResolution.ps1"        , "60EE87AE8A1ADE31C2530BF3EC8E4BC03221692E599750265CE807648F9583E9") ,
                     ("Show-ToastNotification.ps1"      , "661B9C815FF1BAEEE4400F65126741177D6F5D122161EF0093309A9067B8344E") ,
                     ("Update-PowerShell.ps1"           , "EEA4AEEC98B7049F7273CDDCF58FCBD1702DDDEE1EB3C11B71DD76D30879F662") ,
+                    ("Write-Element.ps1"               , "1AF8C0392304F9FC965ACAA1605C385FE479CC344514C2D5A532AB5DF81FC2D2") ,
                     ("Write-Theme.ps1"                 , "DF937F03130E85B90CC22301DBDF89718F0EB7995104EC9DF443090FDDA3E8FA") 
                 }
                 Graphic
