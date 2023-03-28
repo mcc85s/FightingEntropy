@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-03-27 17:11:44                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-03-28 16:09:14                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -675,7 +675,31 @@ Function FightingEntropy.Module
         {
             Try
             {
-                $This.Content = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
+                $xContent = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
+
+                If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+                {
+                    $This.Content = $xContent
+                }
+                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
+                {
+                    $Array = $xContent -Split "`n"
+                    $Ct    = $Array.Count
+                    Do
+                    {
+                        If ($Array[$Ct] -notmatch "\w")
+                        {
+                            $Ct --
+                        }
+                    }
+                    Until ($Array[$Ct] -match "\w")
+
+                    $This.Content = $Array[0..($Ct)] -join "`n"
+                }
+                Else
+                {
+                    $This.Content = $xContent
+                }
             }
             Catch
             {
@@ -699,6 +723,10 @@ Function FightingEntropy.Module
                 If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
                 {
                     [System.IO.File]::WriteAllBytes($This.Fullname,[Byte[]]$This.Content)
+                }
+                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
+                {
+                    [System.IO.File]::WriteAllText($This.Fullname,$This.Content)
                 }
                 Else
                 {
@@ -724,6 +752,11 @@ Function FightingEntropy.Module
                 If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
                 {
                     $This.Content = [System.IO.File]::ReadAllBytes($This.Fullname)
+                }
+                ElseIf ($This.Name -match "\.+(xml|txt|cs)")
+                {
+                    $This.Content = [System.IO.File]::ReadAllText($This.Fullname,
+                                                                  [System.Text.UTF8Encoding]$False)
                 }
                 Else
                 {
@@ -1290,53 +1323,29 @@ Function FightingEntropy.Module
     # // ________________________________________________________
     # // | Specifically used for file hash validation/integrity |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
     Class ValidateFile
     {
-        [String] $Type
-        [String] $Name
+        [UInt32]           $Index
+        [String]            $Type
+        [String]            $Name
+        [String]            $Hash
+        [String]         $Current
         Hidden [String] $Fullname
-        Hidden [String] $Source
-        [String] $Hash
-        [UInt32] $Match
-        [String] $Compare
-        ValidateFile([String]$Leaf,[Object]$File)
+        Hidden [String]   $Source
+        [UInt32]          $Exists
+        [UInt32]           $Match
+        ValidateFile([Object]$File)
         {
+            $This.Index    = $File.Index
             $This.Type     = $File.Type
             $This.Name     = $File.Name
-            $This.Fullname = $File.Fullname
             $This.Hash     = $File.Hash
+            $This.Current  = $This.GetFileHash($File.Fullname)
+            $This.Exists   = $File.Exists
+            $This.Fullname = $File.Fullname
             $This.Source   = $File.Source
-            
-            # // _______________________
-            # // | Temporary variables |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $Content       = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
-            $Target        = "{0}\{1}" -f $Env:Temp, $This.Name
-
-            If ([System.IO.File]::Exists($Target))
-            {
-                [System.IO.File]::Delete($Target)
-            }
-
-            If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
-            {
-                [System.IO.File]::WriteAllBytes($Target,[Byte[]]$Content)
-            }
-            Else
-            {
-                [System.IO.File]::WriteAllText($Target,$Content,[System.Text.UTF8Encoding]$False)
-            }
-
-            # // ________________________________________
-            # // | Get target hash and final comparison |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $This.Compare  = $This.GetFileHash($Target)
-            $This.Match    = $This.Hash -eq $This.Compare
-
-            [System.IO.File]::Delete($Target)
+            $This.Match    = [UInt32]($This.Hash -eq $This.Current)
+            $File.Match    = $This.Match
         }
         [String] GetFileHash([String]$Path)
         {
@@ -1346,45 +1355,6 @@ Function FightingEntropy.Module
             }
 
             Return Get-FileHash $Path | % Hash
-        }
-    }
-
-    # // __________________________________________________
-    # // | Container class for (manifest/file) validation |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Validate
-    {
-        [Object] $Output
-        Validate([Object]$Module)
-        {
-            $Hash     = @{ }
-            ForEach ($Branch in $Module.Manifest.Output)
-            {
-                Write-Host ("Path [~] [{0}]" -f $Branch.Fullname)
-                ForEach ($File in $Branch.Item)
-                {
-                    Write-Host "File [~] [$($File.Fullname)]"
-                    $Hash.Add($Hash.Count,$This.ValidateFile($Branch.Name,$File))
-                }
-            }
-
-            $This.Output = $Hash[0..($Hash.Count-1)]
-        }
-        [Object] ValidateFile([String]$Name,[Object]$File)
-        {
-            Return [ValidateFile]::New($Name,$File)
-        }
-        [String] BuildManifest()
-        {
-            $MaxName = ($This.Output.Name | Sort-Object Length)[-1]
-            Return @( $This.Output | % { 
-
-                "            (`"{0}`"{1}, `"{2}`") ," -f $_.Name,
-                (@(" ") * ($MaxName.Length - $_.Name.Length + 1) -join ''), 
-                $_.Hash
-
-            }) -join "`n"
         }
     }
 
@@ -1620,20 +1590,20 @@ Function FightingEntropy.Module
                 Control
                 {
                     ("Computer.png"                    , "87EAB4F74B38494A960BEBF69E472AB0764C3C7E782A3F74111F993EA31D1075") ,
-                    ("DefaultApps.xml"                 , "939CE697246AAC96C6F6A4A285C8EE285D7C5090523DB77831FF76D5D4A31539") ,
+                    ("DefaultApps.xml"                 , "EEC0F0DFEAC1B4172880C9094E997C8A5C5507237EB70A241195D7F16B06B035") ,
                     ("failure.png"                     , "59D479A0277CFFDD57AD8B9733912EE1F3095404D65AB630F4638FA1F40D4E99") ,
-                    ("FEClientMod.xml"                 , "B3EB870C6B4206D11C921E70C6D058777A5F69FD1D9DEA8B6071759CAFCD2593") ,
-                    ("FEServerMod.xml"                 , "55A881BFE436EF18C104BFA51ECF6D12583076D576BA3276F53A682E056ACA5C") ,
+                    ("FEClientMod.xml"                 , "326C8D3852895A3135144ACCBB4715D2AE49101DCE9E64CA6C44D62BD4F33D02") ,
+                    ("FEServerMod.xml"                 , "3EA9AF3FFFB5812A3D3D42E5164A58EF2FC744509F2C799CE7ED6D0B0FF9016D") ,
                     ("header-image.png"                , "38F1E2D061218D31555F35C729197A32C9190999EF548BF98A2E2C2217BBCB88") ,
                     ("MDTClientMod.xml"                , "C22C53DAAB87AAC06DC3AC64F66C8F6DF4B7EAE259EC5D80D60E51AF82055231") ,
                     ("MDTServerMod.xml"                , "3724FE189D8D2CFBA17BC2A576469735B1DAAA18A83D1115169EFF0AF5D42A2F") ,
-                    ("MDT_LanguageUI.xml"              , "100B5CA10BCF99E2A8680C394266042DEA5ECA300FBDA33289F6E4A17E44CBCF") ,
-                    ("PSDClientMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
-                    ("PSDServerMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
+                    ("MDT_LanguageUI.xml"              , "8968A07D56B4B2A56F15C07FC556432430CB1600B8B6BBB13C332495DEE95503") ,
+                    ("PSDClientMod.xml"                , "C90146EECF2696539ACFDE5C2E08CFD97548E639ED7B1340A650C27F749AC9CE") ,
+                    ("PSDServerMod.xml"                , "C90146EECF2696539ACFDE5C2E08CFD97548E639ED7B1340A650C27F749AC9CE") ,
                     ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
-                    ("vendorlist.txt"                  , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
-                    ("Wifi.cs"                         , "698AA48C98F500C6ED98305BCCA3C59C52784A664E01526D965A07AB24E47A2A") ,
-                    ("zipcode.txt"                     , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") 
+                    ("vendorlist.txt"                  , "A37B6652014467A149AC6277D086B4EEE7580DDB548F81B0B2AA7AC78C240874") ,
+                    ("Wifi.cs"                         , "405226234D7726180C0F9C97DF3C663CA0028A36CBCD00806D6517575A6F549F") ,
+                    ("zipcode.txt"                     , "E471E887F537FA295A070AB41E21DEE978181A92CB204CA1080C6DC32CBBE0D8") 
                 }
                 Function
                 {
@@ -1650,10 +1620,10 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
                     ("Get-FEDCPromo.ps1"               , "0B682031192C18EC2F9135A664DADD254E45CDDAF36D863EB2E6760CB1379323") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-                    ("Get-FEModule.ps1"                , "3C55059B53C2912EB9E6E26D6624DA338C46C91AE7E97F9563EB5E5C7F27BCC1") ,
+                    ("Get-FEModule.ps1"                , "A8A54664FCAEA3F59E387CAEF927F26009F20BC28C689417E6D840A062F166B0") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
-                    ("Get-FESystem.ps1"                , "47B1FF7BE39A95CEAFFD450336F01D3559B6E6059DA984A06D76980A391C7E2C") ,
+                    ("Get-FESystem.ps1"                , "A8A54664FCAEA3F59E387CAEF927F26009F20BC28C689417E6D840A062F166B0") ,
                     ("Get-MDTModule.ps1"               , "FC61D8D17B22A6AC2AE343A3EA7A07DBF868D918C85D302DF771862306CB824A") ,
                     ("Get-PowerShell.ps1"              , "7F5E35535A4A50D02092D8A87266F136EEBD979F9505D8D481A4F5E38E74BF02") ,
                     ("Get-PropertyItem.ps1"            , "48E4729380C40B76B13DE0FD6CAC735B05B76D78CE86636F9258D1F3D60AD6B0") ,
@@ -1662,24 +1632,24 @@ Function FightingEntropy.Module
                     ("Get-PSDLogGUI.ps1"               , "FEBF687E9A97A413576DD515DE7184D4E71AA8EC61737A53EC39F5BDB11588FF") ,
                     ("Get-PSDModule.ps1"               , "CF59887548D790EE8B4D339450BFC1D64227F68CC4E555C877B9AFDD54CB5EBD") ,
                     ("Get-ThreadController.ps1"        , "66C2078C9CC0621CE911CCE301490BA36214CECC9415F982CC819651FD1E9E66") ,
-                    ("Get-UserProfile.ps1"             , "E9FFAA0C2C4C6A568401A139846706B2888625B57A3B077B82B6984638B87FA0") ,
+                    ("Get-UserProfile.ps1"             , "E99A9F92847CFD0754D987B67F6C31D7B724C93A5B559D1BAD453E7AF38B559D") ,
                     ("Get-ViperBomb.ps1"               , "4771549A426A4E841A7D048613D65907BF7F416CF69797A1EAF9FAC8B28D797F") ,
                     ("Get-WhoisUtility.ps1"            , "A677D8026F18FBFF78C614CD3FC71BD6BE46EDC142D66CF9402EABAB9D988DCE") ,
-                    ("Initialize-FeAdInstance.ps1"     , "D47DB4F0D2A1C69A2510ABBF5BE67E899BFDBAA07B15A2DC50FA48D226EB0072") ,
+                    ("Initialize-FeAdInstance.ps1"     , "D9D923D6919920866E905C3C710D1CD16F1A1ADBCF5952EF12CE71F54EEBEA79") ,
                     ("Install-BossMode.ps1"            , "25524DA6A44325BBFC5B4D4A863DE607B417CD4F3F57666627ECD9CB295AA07A") ,
                     ("Install-IISServer.ps1"           , "48F53BF8A3ECD087E7F395AA19F86D32849CD4F14B599F2AC6F7330F083E0D6C") ,
                     ("Install-PSD.ps1"                 , "0E0513C6BA4D98D1786E8606ABD5F6198947ADD43757E14D8138650DAB8D367F") ,
                     ("Invoke-cimdb.ps1"                , "567E8955B7D0A51569C5066AAE758E304B384592F55DF0D0A1176A8906885B56") ,
                     ("New-EnvironmentKey.ps1"          , "B2F51FA6AFCFD499DE96CFD7458E216832B36204BB542FDB416471058603D04C") ,
-                    ("New-FEConsole.ps1"               , "16F320BBCCEE1F8CE5F2F6CF9352886E1C16012705318CDBE6D50B0FDB840758") ,
+                    ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
-                    ("Set-AdminAccount.ps1"            , "8349328A5633972145A745716833DE5F69F7588BF35E20FDE4DC97E16E8E70B8") ,
+                    ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
                     ("Set-ScreenResolution.ps1"        , "60EE87AE8A1ADE31C2530BF3EC8E4BC03221692E599750265CE807648F9583E9") ,
                     ("Show-ToastNotification.ps1"      , "661B9C815FF1BAEEE4400F65126741177D6F5D122161EF0093309A9067B8344E") ,
                     ("Update-PowerShell.ps1"           , "EEA4AEEC98B7049F7273CDDCF58FCBD1702DDDEE1EB3C11B71DD76D30879F662") ,
-                    ("Write-Element.ps1"               , "65C2F16A1E2E1F419A4A24180EDC11CFAF042C3CAB8DEC6A3627A28CE3B2482C") ,
+                    ("Write-Element.ps1"               , "1AF8C0392304F9FC965ACAA1605C385FE479CC344514C2D5A532AB5DF81FC2D2") ,
                     ("Write-Theme.ps1"                 , "DF937F03130E85B90CC22301DBDF89718F0EB7995104EC9DF443090FDDA3E8FA") 
                 }
                 Graphic
@@ -2249,12 +2219,20 @@ Function FightingEntropy.Module
                 RequiredAssemblies   = $This.Binaries()
             }
         }
-        [Object] Validation()
+        [Object] ValidateFile([Object]$File)
+        {
+            Return [ValidateFile]::New($File)
+        }
+        Validation()
         {
             $This.Write(3,"Validation [~] Module manifest")
 
-            $Validate = [Validate]::New($This)
-            $Ct       = $Validate.Output | ? Match -eq 0
+            ForEach ($Item in $This.Manifest.Full())
+            {
+                $This.ValidateFile($Item)
+            }
+
+            $Ct       = $This.Manifest.Full() | ? Match -eq 0
 
             Switch ($Ct.Count)
             {
@@ -2265,11 +2243,8 @@ Function FightingEntropy.Module
                 {$_ -gt 0}
                 {
                     $This.Write(1,"Validation [!] ($($Ct.Count)) files failed validation")
-                    $Ct
                 }
             }
-
-            Return $Validate
         }
         [String] ToString()
         {
@@ -2321,8 +2296,13 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-03-27 17:11:44 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-03-28 16:09:14 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+#>
+
+<# 
+    $List = $Module.Manifest.Full() | % { $Module.ValidateFile($_) }
+
 #>
