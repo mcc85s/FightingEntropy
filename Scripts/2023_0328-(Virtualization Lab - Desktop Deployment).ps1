@@ -3551,13 +3551,13 @@ $Vm.Uptime(0,5)
 $Vm.Uptime(1,40)
 $Vm.Idle(5,5)
 
-# // Wait for (reboot/idle)
-$Vm.Uptime(0,5)
-$Vm.Idle(5,10)
-
 # // [Login]
 $Vm.TypeCtrlAltDel()
 $Vm.Timer(1)
 $Vm.TypeText($Security.Pw())
 $Vm.TypeKey(13)
 $Vm.Timer(1)
+
+# // [Continue]
+$Vm.Idle(5,5)
+
