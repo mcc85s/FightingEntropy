@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-03-29 09:32:01                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-03-29 19:15:38                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1325,6 +1325,7 @@ Function FightingEntropy.Module
     # // ________________________________________________________
     # // | Specifically used for file hash validation/integrity |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
     Class ValidateFile
     {
         [UInt32]           $Index
@@ -1622,7 +1623,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
                     ("Get-FEDCPromo.ps1"               , "0B682031192C18EC2F9135A664DADD254E45CDDAF36D863EB2E6760CB1379323") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-                    ("Get-FEModule.ps1"                , "E31BFD5E539D4E74A7F3A1718DDDD50E8D95A874B41A403F9A5EA92BDA13E7A2") ,
+                    ("Get-FEModule.ps1"                , "867B3E1946BAC126EE4DF9657D50DADA07E6B603EDFEF9558BB2717FF43E9F42") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
                     ("Get-FESystem.ps1"                , "A8A54664FCAEA3F59E387CAEF927F26009F20BC28C689417E6D840A062F166B0") ,
@@ -1634,7 +1635,7 @@ Function FightingEntropy.Module
                     ("Get-PSDLogGUI.ps1"               , "FEBF687E9A97A413576DD515DE7184D4E71AA8EC61737A53EC39F5BDB11588FF") ,
                     ("Get-PSDModule.ps1"               , "CF59887548D790EE8B4D339450BFC1D64227F68CC4E555C877B9AFDD54CB5EBD") ,
                     ("Get-ThreadController.ps1"        , "66C2078C9CC0621CE911CCE301490BA36214CECC9415F982CC819651FD1E9E66") ,
-                    ("Get-UserProfile.ps1"             , "E99A9F92847CFD0754D987B67F6C31D7B724C93A5B559D1BAD453E7AF38B559D") ,
+                    ("Get-UserProfile.ps1"             , "F9A6B23DCE348E5627F62F1C7A53A1D7A73BB417AA8927E6A95CEE25142A648F") ,
                     ("Get-ViperBomb.ps1"               , "4771549A426A4E841A7D048613D65907BF7F416CF69797A1EAF9FAC8B28D797F") ,
                     ("Get-WhoisUtility.ps1"            , "A677D8026F18FBFF78C614CD3FC71BD6BE46EDC142D66CF9402EABAB9D988DCE") ,
                     ("Initialize-FeAdInstance.ps1"     , "D9D923D6919920866E905C3C710D1CD16F1A1ADBCF5952EF12CE71F54EEBEA79") ,
@@ -2298,7 +2299,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-03-29 09:32:01 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-03-29 19:15:38 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
