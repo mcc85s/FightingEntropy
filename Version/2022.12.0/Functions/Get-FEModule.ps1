@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-29 09:30:23                                                                  //
+\\  Date       : 2023-03-29 19:07:05                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1616,7 +1616,7 @@ Function Get-FEModule
                     ("Get-PSDLogGUI.ps1"               , "FEBF687E9A97A413576DD515DE7184D4E71AA8EC61737A53EC39F5BDB11588FF") ,
                     ("Get-PSDModule.ps1"               , "CF59887548D790EE8B4D339450BFC1D64227F68CC4E555C877B9AFDD54CB5EBD") ,
                     ("Get-ThreadController.ps1"        , "66C2078C9CC0621CE911CCE301490BA36214CECC9415F982CC819651FD1E9E66") ,
-                    ("Get-UserProfile.ps1"             , "E99A9F92847CFD0754D987B67F6C31D7B724C93A5B559D1BAD453E7AF38B559D") ,
+                    ("Get-UserProfile.ps1"             , "F9A6B23DCE348E5627F62F1C7A53A1D7A73BB417AA8927E6A95CEE25142A648F") ,
                     ("Get-ViperBomb.ps1"               , "4771549A426A4E841A7D048613D65907BF7F416CF69797A1EAF9FAC8B28D797F") ,
                     ("Get-WhoisUtility.ps1"            , "A677D8026F18FBFF78C614CD3FC71BD6BE46EDC142D66CF9402EABAB9D988DCE") ,
                     ("Initialize-FeAdInstance.ps1"     , "D9D923D6919920866E905C3C710D1CD16F1A1ADBCF5952EF12CE71F54EEBEA79") ,
