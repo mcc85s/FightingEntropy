@@ -3506,7 +3506,7 @@ $Vm.Timer(5)
 
 # // [Chose privacy settings]
 $Vm.TypeKey(13)
-$Vm.Idle(5,5)
+$Vm.Idle(5,10)
 
 # // [Let's customize your experience]
 $Vm.TypeChain(@(9,9,9,9,9,9,9,9))
@@ -3516,7 +3516,7 @@ $Vm.Idle(5,5)
 # // [Let Cortana help you get s*** done]
 $Vm.TypeKey(13)
 $Vm.Timer(90)
-$Vm.Idle(10,10)
+$Vm.Idle(10,15)
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -3610,3 +3610,5 @@ $Vm.Timer(1)
 
 # // [Continue]
 $Vm.Idle(5,5)
+
+$Vm.Update(100,"Complete [+] Installation")
