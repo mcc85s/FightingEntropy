@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-29 19:07:05                                                                  //
+\\  Date       : 2023-03-29 19:14:12                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1244,53 +1244,29 @@ Function Get-FEModule
     # // ________________________________________________________
     # // | Specifically used for file hash validation/integrity |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
     Class ValidateFile
     {
-        [String] $Type
-        [String] $Name
+        [UInt32]           $Index
+        [String]            $Type
+        [String]            $Name
+        [String]            $Hash
+        [String]         $Current
         Hidden [String] $Fullname
-        Hidden [String] $Source
-        [String] $Hash
-        [UInt32] $Match
-        [String] $Compare
-        ValidateFile([String]$Leaf,[Object]$File)
+        Hidden [String]   $Source
+        [UInt32]          $Exists
+        [UInt32]           $Match
+        ValidateFile([Object]$File)
         {
+            $This.Index    = $File.Index
             $This.Type     = $File.Type
             $This.Name     = $File.Name
-            $This.Fullname = $File.Fullname
             $This.Hash     = $File.Hash
+            $This.Current  = $This.GetFileHash($File.Fullname)
+            $This.Exists   = $File.Exists
+            $This.Fullname = $File.Fullname
             $This.Source   = $File.Source
-            
-            # // _______________________
-            # // | Temporary variables |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $Content       = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
-            $Target        = "{0}\{1}" -f $Env:Temp, $This.Name
-
-            If ([System.IO.File]::Exists($Target))
-            {
-                [System.IO.File]::Delete($Target)
-            }
-
-            If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
-            {
-                [System.IO.File]::WriteAllBytes($Target,[Byte[]]$Content)
-            }
-            Else
-            {
-                [System.IO.File]::WriteAllText($Target,$Content,[System.Text.UTF8Encoding]$False)
-            }
-
-            # // ________________________________________
-            # // | Get target hash and final comparison |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $This.Compare  = $This.GetFileHash($Target)
-            $This.Match    = $This.Hash -eq $This.Compare
-
-            [System.IO.File]::Delete($Target)
+            $This.Match    = [UInt32]($This.Hash -eq $This.Current)
+            $File.Match    = $This.Match
         }
         [String] GetFileHash([String]$Path)
         {
@@ -1300,45 +1276,6 @@ Function Get-FEModule
             }
 
             Return Get-FileHash $Path | % Hash
-        }
-    }
-
-    # // __________________________________________________
-    # // | Container class for (manifest/file) validation |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Validate
-    {
-        [Object] $Output
-        Validate([Object]$Module)
-        {
-            $Hash     = @{ }
-            ForEach ($Branch in $Module.Manifest.Output)
-            {
-                Write-Host ("Path [~] [{0}]" -f $Branch.Fullname)
-                ForEach ($File in $Branch.Item)
-                {
-                    Write-Host "File [~] [$($File.Fullname)]"
-                    $Hash.Add($Hash.Count,$This.ValidateFile($Branch.Name,$File))
-                }
-            }
-
-            $This.Output = $Hash[0..($Hash.Count-1)]
-        }
-        [Object] ValidateFile([String]$Name,[Object]$File)
-        {
-            Return [ValidateFile]::New($Name,$File)
-        }
-        [String] BuildManifest()
-        {
-            $MaxName = ($This.Output.Name | Sort-Object Length)[-1]
-            Return @( $This.Output | % { 
-
-                "            (`"{0}`"{1}, `"{2}`") ," -f $_.Name,
-                (@(" ") * ($MaxName.Length - $_.Name.Length + 1) -join ''), 
-                $_.Hash
-
-            }) -join "`n"
         }
     }
 
@@ -2204,12 +2141,20 @@ Function Get-FEModule
                 RequiredAssemblies   = $This.Binaries()
             }
         }
-        [Object] Validation()
+        [Object] ValidateFile([Object]$File)
+        {
+            Return [ValidateFile]::New($File)
+        }
+        Validation()
         {
             $This.Write(3,"Validation [~] Module manifest")
 
-            $Validate = [Validate]::New($This)
-            $Ct       = $Validate.Output | ? Match -eq 0
+            ForEach ($Item in $This.Manifest.Full())
+            {
+                $This.ValidateFile($Item)
+            }
+
+            $Ct       = $This.Manifest.Full() | ? Match -eq 0
 
             Switch ($Ct.Count)
             {
@@ -2220,11 +2165,8 @@ Function Get-FEModule
                 {$_ -gt 0}
                 {
                     $This.Write(1,"Validation [!] ($($Ct.Count)) files failed validation")
-                    $Ct
                 }
             }
-
-            Return $Validate
         }
         [String] ToString()
         {
