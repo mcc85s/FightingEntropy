@@ -40,7 +40,7 @@
 | 14    | `02-04-2023` | `00:27:53` | [[Why William Moak is stupid](https://youtu.be/aejBB77d_oA)]                                      |
 | 15    | `02-04-2023` | `03:04:48` | [[Write-Element (Demonstration)](https://youtu.be/j58BO1p_EJ8)]                                   |
 | 16    | `02-01-2023` | `02:01:57` | [[New-VmController [Flight Test v2.0] Part I](https://youtu.be/nqTOmNIilxw)]                      |
-| 17    | `01-12-2023` | `01:14:43` | [[PowerShell | Virtualization Lab + FEDCPromo](https://youtu.be/9v7uJHF-cGQ)]                     |
+| 17    | `01-12-2023` | `01:14:43` | [[PowerShell - Virtualization Lab + FEDCPromo](https://youtu.be/9v7uJHF-cGQ)]                     |
 | 18    | `11-22-2022` | `01:15:56` | [[Search-WirelessNetwork](https://youtu.be/Y7wEiuNJhN0)]                                          |
 | 19    | `10-28-2022` | `01:22:26` | [[[FightingEntropy()][2022.10.1]](https://youtu.be/S7k4lZdPE-I)]                                  |
 | 20    | `10-15-2022` | `00:13:33` | [[Intellectual Property Theft](https://youtu.be/-GScIS_PlOo)]                                     |
