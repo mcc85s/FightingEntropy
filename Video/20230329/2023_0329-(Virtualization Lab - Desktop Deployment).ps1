@@ -1,11 +1,49 @@
-<# 
+<#
 [03/29/23]: [Virtualization Lab - Desktop Deployment]
 
 Create a standard [Windows 10] installation using [Hyper-V] and
-[PowerShell Direct], and then [import] user profile information
+[PowerShell Direct], and then [import] user profile information.
 #>
 
+# Step 0  | Terminate the currently running console, and open a new one
+
+# Step 1  | Go to where this [current script] is on github
+
+$Base     = "https://github.com/mcc85s/FightingEntropy"
+$Trunk    = "blob/main/Version/2022.12.0"
+$Script   = "FightingEntropy.ps1"
+$Raw      = "?raw=true"
+$Full     = "{0}/{1}/{2}{3}" -f $Base, $Trunk, $Script, $Raw
+       
+# Step 2  | Flush the module
+
+Invoke-RestMethod $Full | Invoke-Expression
+$Module.Remove()
+$Module.Install()
+
+# Step 3 | Show all files as validated
+
+$List     = $Module.Manifest.Full() | % { $Module.ValidateFile($_) }
+$Check    = $List | ? Match -eq 0
+
+# Step 4  | Import the module
+
 Import-Module FightingEntropy
+
+# Step 5  | Launch the Invoke-cimdb utility, and create a record
+
+$DB       = Invoke-cimdb -Mode 1
+
+# Step 6  | Retrieve the record, and save it to file
+
+$Path     = "C:\FileVm\user00.txt"
+$Content  = $DB.DB.Client[0].Record | ConvertTo-Json
+[System.IO.File]::WriteAllLines($Path,$Content)
+
+# Step 7  | Load the following classes and types
+# Step 8  | Begin demonstration around line 3200
+# Step 9  | As the machine is installing Windows, refer to the markdown file
+# Step 10 | Save the information referenced in the markdown file to github
 
 Function ImageController
 {
