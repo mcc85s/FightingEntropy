@@ -2793,7 +2793,12 @@ Class VmObject
         'winrm quickconfig';
         '<Pause[2]>';
         'y';
-        '<Pause[4]>';
+        '<Pause[3]>';
+        If ($This.Role -eq "Client")
+        {
+            'y';
+            '<Pause[3]>';
+        }
         'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
         '<Pause[4]>';
         'y';
@@ -3145,6 +3150,14 @@ Class VmController
             }
             $Vm.Remove()
         }
+        If (!$Item)
+        {
+            $xPath = $This.Current().Object | % { "{0}\{1}" -f $_.Base, $_.Name } 
+            If (Test-Path $xPath)
+            {
+                Remove-Item $xPath -Recurse -Force -Verbose
+            }
+        }
     }
     [String] ToString()
     {
@@ -3452,16 +3465,17 @@ $Vm.Timer(5)
 
 # // [Chose privacy settings]
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Let's customize your experience]
 $Vm.TypeChain(@(9,9,9,9,9,9,9,9))
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Let Cortana help you get s*** done]
 $Vm.TypeKey(13)
 $Vm.Idle(10,10)
+$Vm.Timer(30)
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -3472,8 +3486,7 @@ $Vm.Idle(10,10)
 #>
 
 $Module.Write("Configuration [~] Post Installation: [$Token]")
-$Vm.Timer(30)
-$Vm.Idle(5,5)
+$Vm.Idle(5,10)
 
 # // [Launch PowerShell]
 $Vm.LaunchPs()
@@ -3560,4 +3573,3 @@ $Vm.Timer(1)
 
 # // [Continue]
 $Vm.Idle(5,5)
-
