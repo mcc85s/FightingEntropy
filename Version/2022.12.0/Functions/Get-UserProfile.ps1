@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 15:43:48                                                                  //
+\\  Date       : 2023-03-29 19:05:12                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-UserProfile.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s 
     Primary    : @mcc85s 
     Created    : 2023-03-26 
-    Modified   : 2023-03-28
+    Modified   : 2023-03-29
     Demo       : N/A 
     Version    : 0.0.0 - () - Finalized functional version 1.
     TODO       : 
@@ -27,155 +27,109 @@
 
 Function Get-UserProfile
 {
-    Class SystemProfile
-    {
-        [String]             $Name
-        [UInt32]            $Flags
-        [String] $ProfileImagePath
-        [UInt32]         $RefCount
-        [Byte[]]              $Sid
-        [UInt32]            $State
-        SystemProfile([Object]$Object)
-        {
-            $This.Flags            = $Object.GetProperty("Flags")
-            $This.ProfileImagePath = $Object.GetProperty("ProfileImagePath")
-            $This.RefCount         = $Object.GetProperty("RefCount")
-            $This.Sid              = $Object.GetProperty("Sid")
-            $This.State            = $Object.GetProperty("State")
+    [CmdLetBinding()]Param([Parameter()][UInt32]$Mode=0)
 
-            $This.Name             = Split-Path $This.ProfileImagePath -Leaf
+    Class ProfileProperty
+    {
+        [UInt32]       $Index
+        Hidden [String] $Type
+        [String]        $Name
+        [Object]       $Value
+        ProfileProperty([UInt32]$Index,[Object]$Property)
+        {
+            $This.Index = $Index
+            $This.Type  = $Property.TypeNameOfValue
+            $This.Name  = $Property.Name
+            $This.Value = $Property.Value
+        }
+        [String] ToString()
+        {
+            Return $This.Name
         }
     }
 
-    Class ServiceProfile
+    Class ProfileKey
     {
-        [String]             $Name
-        [UInt32]            $Flags
-        [String] $ProfileImagePath
-        [UInt32]            $State
-        ServiceProfile([Object]$Object)
-        {
-            $This.Flags            = $Object.GetProperty("Flags")
-            $This.ProfileImagePath = $Object.GetProperty("ProfileImagePath")
-            $This.State            = $Object.GetProperty("State")
-
-            $This.Name             = Split-Path $This.ProfileImagePath -Leaf
-        }
-    }
-
-    Enum UserProfileExtensionType
-    {
-        LocalProfileLoadTimeLow
-        LocalProfileLoadTimeHigh
-        ProfileAttemptedProfileDownloadTimeLow
-        ProfileAttemptedProfileDownloadTimeHigh
-        ProfileLoadTimeLow
-        ProfileLoadTimeHigh
-        NextLogonCacheable
-        RunLogonScriptSync
-        LocalProfileUnloadTimeLow
-        LocalProfileUnloadTimeHigh
-    }
-
-    Class UserProfileExtensionItem
-    {
-        [String] $Name
-        [Object] $Value
-        UserProfileExtensionItem([String]$Name,[Object]$Value)
-        {
-            $This.Name  = $Name
-            $This.Value = $Value
-        }
-    }
-
-    Class UserProfile
-    {
-        [String]             $Name
-        [String] $ProfileImagePath
-        [UInt32]            $Flags
-        [UInt32]      $FullProfile
-        [UInt32]            $State
-        [Byte[]]              $Sid
-        [String]             $Guid
-        [Object]        $Extension
-        UserProfile([Object]$Object)
-        {
-            $This.ProfileImagePath = $Object.GetProperty("ProfileImagePath")
-            $This.Flags            = $Object.GetProperty("Flags")
-            $This.FullProfile      = $Object.GetProperty("FullProfile")
-            $This.State            = $Object.GetProperty("State")
-            $This.Sid              = $Object.GetProperty("Sid")
-
-            # Check Guid
-            If ("Guid" -in $Object.Property.Name)
-            {
-                $This.Guid         = $Object.GetProperty("Guid")
-            }
-
-            # Check Extended Variables
-            $This.GetExtension($Object)
-
-            $This.Name             = Split-Path $This.ProfileImagePath -Leaf
-        }
-        [Object] UserProfileExtensionItem([String]$Name,[Object]$Value)
-        {
-            Return [UserProfileExtensionItem]::New($Name,$Value)
-        }
-        GetExtension([Object]$Object)
-        {
-            $This.Extension = @( )
-
-            ForEach ($Item in [System.Enum]::GetNames([UserProfileExtensionType]))
-            {
-                $This.Extension += $this.UserProfileExtensionItem($Item,$Object.GetProperty($Item))
-            }
-        }
-    }
-
-    Class UserProfileProperty
-    {
-        [UInt32] $Index
-        [String] $Name
+        [String]     $Name
+        [String]     $Type
+        [String] $Fullname
         [Object] $Property
-        UserProfileProperty([UInt32]$Index,[String]$Name,[Object]$Property)
+        ProfileKey([Object]$Item)
         {
-            $This.Index    = $Index
-            $This.Name     = $Name
-            $This.Property = $Property
-        }
-    }
-
-    Class UserProfileObject
-    {
-        Hidden [Object] $Profile
-        [UInt32]          $Index
-        [String]           $Name
-        [String]       $Fullname
-        [Object]       $Property
-        UserProfileObject([UInt32]$Index,[Object]$xProfile)
-        {
-            $This.Profile  = $xProfile
-            $This.Index    = $Index
-            $This.Name     = $xProfile.PSChildName
-            $This.Fullname = $xProfile.Name -Replace "HKEY_LOCAL_MACHINE", "HKLM:"
+            $This.Name     = $Item.Name.Split("\")[-1]
+            $This.Fullname = $Item.Name -Replace "HKEY_LOCAL_MACHINE", "HKLM:"
             $This.Refresh()
         }
-        Clear()
+        [Object] ProfileProperty([UInt32]$Index,[Object]$Property)
         {
-            $This.Property = @() 
+            Return [ProfileProperty]::New($Index,$Property)
         }
-        [Object] UserProfileProperty([UInt32]$Index,[String]$Name,[Object]$Property)
-        {
-            Return [UserProfileProperty]::New($Index,$Name,$Property)
-        }
-        [Object[]] GetPropertyList()
+        [Object[]] Properties()
         {
             Return (Get-ItemProperty $This.Fullname).PSObject.Properties | ? Name -notmatch ^PS
         }
+        Clear()
+        {
+            $This.Property = @( )
+        }
+        Refresh()
+        {
+            $This.Clear() 
+
+            ForEach ($Property in $This.Properties())
+            {
+                $This.Add($Property)
+            }
+
+            $This.Type = Switch ($This.Property.Count)
+            {
+                3 { "Service" } 5 { "System" } Default { "User" }
+            }
+        }
+        Add([Object]$Property)
+        {
+            $This.Property += $This.ProfileProperty($This.Property.Count,$Property)
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class Profile
+    {
+        [UInt32]       $Index
+        Hidden [Object]  $Key
+        [String]        $Type
+        [String]        $Name
+        [Object]         $Sid
+        [Object]     $Account
+        [String]        $Path
+        [Object]     $Content
+        [String]        $Size
+        Profile([UInt32]$Index,[Object]$Item)
+        {
+            $This.Index       = $Index
+            $This.Key         = $This.GetProfileKey($Item)
+            $This.Type        = $This.Key.Type
+            $This.Name        = $This.GetProfileName()
+            $xSid             = $This.GetProperty("Sid")
+
+            If ($xSid)
+            {
+                $This.Sid     = $This.GetSid($xSid)
+                $This.Account = $This.GetAccount()
+            }
+
+            $This.Path        = $This.GetProperty("ProfileImagePath")
+        }
+        [Object] GetProfileKey([Object]$Item)
+        {
+            Return [ProfileKey]::New($Item)
+        }
         [Object] GetProperty([String]$Name)
         {
-            $Item = $This.Property | ? Name -eq $Name | % Property
-
+            $Item = $This.Key.Property | ? Name -eq $Name | % Value
             If ($Item)
             {
                 Return $Item
@@ -185,166 +139,111 @@ Function Get-UserProfile
                 Return $Null
             }
         }
-        Add([String]$Name,[Object]$Property)
+        [String] GetProfileName()
         {
-            $This.Property += $This.UserProfileProperty($This.Property.Count,$Name,$Property)
-        }
-        Refresh()
-        {
-            $This.Clear()
-
-            ForEach ($Property in $This.GetPropertyList())
-            {
-                $This.Add($Property.Name,$Property.Value)
-            }
-        }
-    }
-
-    Class UserProfileFile
-    {
-        [UInt32] $Index
-        [String] $Name
-        [String] $Fullname
-        [UInt64] $Length
-        UserProfileFile([UInt32]$Index,[Object]$File)
-        {
-            $This.Index    = $Index
-            $This.Name     = $File.Name
-            $This.Fullname = $File.Fullname
-            $This.Length   = $File.Length
-        }
-        [String] ToString()
-        {
-            Return $This.Name
-        }
-    }
-
-    Class UserProfileOutput
-    {
-        [String]    $Name
-        [String]    $Path
-        [Object]     $Sid
-        [Object]    $Guid
-        [Object] $Content
-        [String]    $Size
-        UserProfileOutput([Object]$Object)
-        {
-            $This.Name    = $Object.Name
-            $This.Path    = $Object.ProfileImagePath
-            $This.Sid     = $This.GetSid($Object.Sid)
-            $This.Guid    = $Object.Guid
-            $This.Content = $This.GetContent()
-            $This.GetSize()
+            Return $This.GetProperty("ProfileImagePath") | Split-Path -Leaf
         }
         [Object] GetSid([Byte[]]$Sid)
         {
             Return [System.Security.Principal.SecurityIdentifier]::new($Sid,0)
         }
-        [Object] UserProfileFile([UInt32]$Index,[Object]$File)
+        [Object] GetAccount()
         {
-            Return [UserProfileFile]::New($Index,$File)
-        }
-        [Object[]] GetContent()
-        {
-            Return Get-ChildItem $This.Path -Recurse
-        }
-        GetSize()
-        {
-            $Bytes = 0
-
-            ForEach ($File in $This.Content)
+            $Item = Try
             {
-                $Bytes = $Bytes + $File.Length
+                ($This.Sid.Translate([System.Security.Principal.NTAccount])).Value
+            }
+            Catch
+            {
+                $Null
             }
 
-            $This.Size = "{0:n2} GB" -f ($Bytes/1GB)
+            Return $Item
+        }
+        GetContent()
+        {
+            If (Get-Item $This.Path)
+            {
+                $Hash         = @{ }
+                $Bytes        = 0
+
+                ForEach ($File in Get-ChildItem $This.Path -Recurse)
+                {
+                    $Hash.Add($Hash.Count,$File)
+                    $Bytes    = $Bytes + $File.Length
+                }
+
+                $This.Size    = "{0:n2} GB" -f ($Bytes/1GB)
+                $This.Content = $Hash[0..($Hash.Count-1)]
+            }
         }
     }
 
-    Class UserProfileController
+    Class ProfileController
     {
-        [String]    $Name
-        [String]    $Path
-        [Object] $Profile
-        [Object]  $System
-        [Object] $Service
-        [Object]    $User
-        UserProfileController()
+        Hidden [UInt32] $Mode
+        [String]        $Root
+        [Object]     $Profile
+        [Object]        $User
+        ProfileController([UInt32]$Mode)
         {
-            $This.Name   = "UserProfileController"
-            $This.Path   = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\ProfileList"
+            $This.Mode = $Mode
+            $This.Root = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\ProfileList"
             $This.Refresh()
         }
-        [Object] UserProfileObject([UInt32]$Index,[Object]$Object)
+        [Object] ProfileItem([UInt32]$Index,[Object]$Item)
         {
-            Return [UserProfileObject]::New($Index,$Object)
+            Return [Profile]::New($Index,$Item)
         }
         [Object[]] GetProfile()
         {
-            Return Get-ChildItem $This.Path   
-        }
-        [Object] ServiceProfile([Object]$Object)
-        {
-            Return [ServiceProfile]::New($Object)
-        }
-        [Object] SystemProfile([Object]$Object)
-        {
-            Return [SystemProfile]::New($Object)
-        }
-        [Object] UserProfile([Object]$Object)
-        {
-            Return [UserProfile]::New($Object)
-        }
-        [Object] UserProfileOutput([Object]$Object)
-        {
-            Return [UserProfileOutput]::New($Object)
+            Return Get-ChildItem $This.Root
         }
         Clear()
         {
             $This.Profile = @( )
-            $This.System  = @( )
-            $This.Service = @( )
             $This.User    = @( )
-        }
-        Add([UInt32]$Slot,[Object]$Object)
-        {
-            Switch ($Slot)
-            {
-                0 { $This.Profile += $This.UserProfileObject($This.Profile.Count,$Object) }
-                1 { $This.Service += $This.ServiceProfile($Object)                        }
-                2 { $This.System  += $This.SystemProfile($Object)                         }
-                3 { $This.User    += $This.UserProfile($Object)                           }
-            }
         }
         Refresh()
         {
             $This.Clear()
 
-            ForEach ($Object in $This.GetProfile())
+            # Initial profiles [System/Service/User]
+            ForEach ($Profile in $This.GetProfile())
             {
-                $This.Add(0,$Object)
+                $This.Add($Profile)
             }
 
-            ForEach ($Object in $This.Profile)
-            {
-                $Token = Switch ($Object.Property.Count)
-                {
-                    3 { 1 } 5 { 2 } Default { 3 }
-                }
+            # Filter out user profiles
+            $This.User          = $This.Profile | ? Type -eq User
+            $This.Profile       = $This.Profile | ? Type -ne User
 
-                $This.Add($Token,$Object)
+            # Rerank/classify profiles
+            ForEach ($Object in $This.Profile, $This.User)
+            {
+                $C              = 0
+                ForEach ($Item in $Object)
+                {
+                    $Item.Index = $C
+                    $C          ++
+                }
+            }
+
+            If ($This.Mode -ne 0)
+            {
+                # Get Content of user profiles
+                ForEach ($Item in $This.User)
+                {
+                    [Console]::WriteLine("Collecting [~] [User: $($Item.Name)]")
+                    $Item.GetContent()
+                }
             }
         }
-        [Object] Prepare([UInt32]$Index)
+        Add([Object]$xProfile)
         {
-            If ($Index -gt $This.User.Count)
-            {
-                Throw "Invalid user index"
-            }
-
-            Return $This.UserProfileOutput($This.User[$Index])
+            $This.Profile += $This.ProfileItem($This.Profile.Count,$xProfile)
         }
     }
 
-    [UserProfileController]::New()
+    [ProfileController]::New($Mode)
 }
