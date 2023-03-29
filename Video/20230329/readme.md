@@ -2,9 +2,9 @@
 
 | Description |
 |:------------|
-| This is a [test demonstration], I'm in a [library] right now, so I can't speak loudly, or at all really.<br>
-<br>
-What I'm going to do, is to allow the script to [execute itself], and then [tape] an [additional video], or [record] a [brand new video] where I [begin] to [explain] the [details] of the [script] as well as the [components] of the [script] in [greater detail]. |
+| This is a [test demonstration], I'm in a [library] right now, so I can't speak loudly, or at all really.<br> |
+| <br> |
+| What I'm going to do, is to allow the script to [execute itself], and then [tape] an [additional video], or [record] a [brand new video] where I [begin] to [explain] the [details] of the [script] as well as the [components] of the [script] in [greater detail]. |
 
 [[Video](#video)] - [[Script](#script)] - [[Link](#link)]
 
