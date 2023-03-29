@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 19:17:21                                                                  //
+\\  Date       : 2023-03-29 09:30:23                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-03-28
+   Modified   : 2023-03-29
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -845,6 +845,7 @@ Function Get-FEModule
         [String]   $Copyright
         [Guid]          $Guid
         [DateTime]      $Date
+        [String]     $Version
         [String]     $Caption
         [String]    $Platform
         [String]        $Type
@@ -863,6 +864,7 @@ Function Get-FEModule
             $This.Copyright   = $Module.Copyright
             $This.Guid        = $Module.Guid
             $This.Date        = $Module.Date
+            $This.Version     = $Module.Version
             $This.Caption     = $Module.OS.Caption
             $This.Platform    = $Module.OS.Platform
             $This.Type        = $Module.OS.Type
