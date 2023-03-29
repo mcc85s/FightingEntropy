@@ -8,9 +8,9 @@
 
 ## Video
 
-| Index | Date         | Name/Link                                                            | Duration      |
-|:------|:-------------|:---------------------------------------------------------------------|:--------------|
-| 0     | `03/29/2023` | **[Virtualization Lab - Desktop Deployment](https://youtu.be/hash)** | `00h 00m 00s` |
+| Index | Date         | Name/Link                                                                   | Duration      |
+|:------|:-------------|:----------------------------------------------------------------------------|:--------------|
+| 0     | `03/29/2023` | **[Virtualization Lab - Desktop Deployment](https://youtu.be/QR5rFm2IQe4)** | `01h 19m 47s` |
 
 ## Script
 
