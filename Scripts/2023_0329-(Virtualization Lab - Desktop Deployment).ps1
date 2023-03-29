@@ -510,7 +510,7 @@ Function SecurityOption
         {
             Return [PSCredential]::New($Username,$SecureString)
         }
-        [String] PW()
+        [String] Password()
         {
             If (!$This.Credential)
             {
@@ -519,7 +519,7 @@ Function SecurityOption
 
             Return $This.Credential.GetNetworkCredential().Password
         }
-        [String] UN()
+        [String] Username()
         {
             If (!$This.Credential)
             {
@@ -2421,10 +2421,10 @@ Class VmObject
         $This.Keyboard.TypeText($String)
         Start-Sleep -Milliseconds 125
     }
-    TypePassword([String]$Pass)
+    TypePassword([Object]$Account)
     {
         $This.Update(0,"[+] Typing password : [ActualPassword]")
-        $This.Keyboard.TypeText($Pass)
+        $This.Keyboard.TypeText($Account.Password())
         Start-Sleep -Milliseconds 125
     }
     PressKey([UInt32]$Index)
@@ -2510,12 +2510,12 @@ Class VmObject
 
         $This.Update(1,"[+] Connection")
     }
-    SetAdmin([Object]$Admin)
+    SetAdmin([Object]$Account)
     {
         $This.Update(0,"[~] Setting : Administrator password")
         ForEach ($X in 0..1)
         {
-            $This.TypePassword($Admin.Password())
+            $This.TypePassword($Account)
             $This.TypeKey(9)
             Start-Sleep -Milliseconds 125
         }
@@ -2524,17 +2524,17 @@ Class VmObject
         Start-Sleep -Milliseconds 125
         $This.TypeKey(13)
     }
-    Login([Object]$Admin)
+    Login([Object]$Account)
     {
-        If ($Admin.GetType().Name -ne "VmAdminCredential")
+        If ($Account.GetType().Name -notmatch "(VmAdminCredential|SecurityOptionController)")
         {
             $This.Error("[!] Invalid input object")
         }
 
-        $This.Update(0,"[~] Login : Administrator")
+        $This.Update(0,"[~] Login : [Account: $($Account.Username())")
         $This.TypeCtrlAltDel()
         $This.Timer(5)
-        $This.TypePassword($Admin.Password())
+        $This.TypePassword($Account)
         Start-Sleep -Milliseconds 125
         $This.TypeKey(13)
     }
@@ -3027,15 +3027,15 @@ Class VmObject
 
         Return $xPath
     }
-    [Object] PSSession([Object]$Admin)
+    [Object] PSSession([Object]$Account)
     {
         # Attempt login
-        $This.Update(0,"[~] PSSession")
+        $This.Update(0,"[~] PSSession Token")
         $Splat = @{
 
             ComputerName  = $This.Network.IpAddress
             Port          = 5986
-            Credential    = $Admin.Credential
+            Credential    = $Account.Credential
             SessionOption = New-PSSessionOption -SkipCACheck
             UseSSL        = $True
         }
@@ -3199,6 +3199,9 @@ $Security      = SecurityOption
 $Country       = Region
 $Keyboard      = Keyboard
 
+# // Designate the computer name
+$Name          = "desktop00"
+
 # // Designate the account to deploy
 $Account       = [System.IO.File]::ReadAllLines("C:\FileVm\user00.txt") | ConvertFrom-Json
 
@@ -3273,7 +3276,7 @@ If ($Target)
 }
 
 # // Populates the factory class with (1) node
-$Hive.Node.AddNode("desktop00")
+$Hive.Node.AddNode($Name)
 
 # // Exports the file system objects
 $Hive.Node.Export()
@@ -3287,11 +3290,11 @@ $Hive.Node.WriteAdmin()
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-# // Reinstantiates the file system information
-$Token       = "desktop00.txt"
+$Module.Write("Initializing [~] Virtual Machine [Name: $Name]")
 
+# // Reinstantiates the file system information
 $Hive.GetNodeAdminCredential()
-$Hive.GetNodeInputObject($Token)
+$Hive.GetNodeInputObject("$Name.txt")
 
 # // Checks for existence of virtual machine by that name
 $Hive.Prime()
@@ -3434,14 +3437,14 @@ Switch ($Vm.NetworkSetupMode())
 $Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
 
 # // [Who's gonna use this PC...? Hm...?]
-$Vm.TypeText($Security.Un())
+$Vm.TypeText($Security.Username())
 $Vm.TypeKey(13)
 $Vm.Timer(1)
 
 # // [Create a super memorable password/Confirm]
 0..1 | % { 
 
-    $Vm.TypePassword($Security.Pw())
+    $Vm.TypePassword($Security)
     $Vm.TypeKey(13)
     $Vm.Timer(2)
 }
@@ -3564,10 +3567,7 @@ $Vm.Uptime(1,40)
 $Vm.Idle(5,5)
 
 # // [Login]
-$Vm.TypeCtrlAltDel()
-$Vm.Timer(1)
-$Vm.TypeText($Security.Pw())
-$Vm.TypeKey(13)
+$Vm.Login($Security)
 $Vm.Timer(1)
 
 # // [Continue]
