@@ -23,7 +23,7 @@
 
 | Index | Date         | Name/Link                                                                                                                                                      |
 |:------|:-------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | `03/30/23`   | **[RESTRICT Act](https://www.msn.com/en-us/news/technology/new-restrict-act-could-mean-20-years-in-prison-for-using-a-vpn-to-access-banned-apps/ar-AA19exSd)** |
+| 0     | `03/30/2023`   | **[RESTRICT Act](https://www.msn.com/en-us/news/technology/new-restrict-act-could-mean-20-years-in-prison-for-using-a-vpn-to-access-banned-apps/ar-AA19exSd)** |
 | 1     | `09/06/1949` | **[Howard Unruh](https://en.wikipedia.org/wiki/Howard_Unruh)**                                                                                                 |
 | 2     | `08/01/1966` | **[University of Texas tower shooting](https://en.wikipedia.org/wiki/University_of_Texas_tower_shooting)**                                                     |
 | 3     | `03/30/1975` | **[Easter Sunday Massacre](https://en.wikipedia.org/wiki/Easter_Sunday_Massacre)**                                                                             |
@@ -58,7 +58,7 @@
 | 32    | `05/24/2022` | **[Robb Elementary School shooting](https://en.wikipedia.org/wiki/Robb_Elementary_School_shooting)**                                                           |
 | 33    | `01/21/2023` | **[2023 Monterey Park shooting](https://en.wikipedia.org/wiki/2023_Monterey_Park_shooting)**                                                                   |
 | 34    | `03/27/2023` | **[2023 Covenant School shooting](https://en.wikipedia.org/wiki/2023_Covenant_School_shooting)**                                                               |
-| 35    | `10/04/22`   | **[God Mode Cursor (Someone remotely accessing computer)](https://youtu.be/dU_5rdVkCD8)**                                                                      |
-| 36    | `09/26/22`   | **[God Mode Cursor (someone remotely accessing computer)](https://youtu.be/tW80Zj_H6Fw)**                                                                      |
-| 37    | `02/15/22`   | **[A Matter of National Security](https://youtu.be/e4VnZObiez8)**                                                                                              |
-| 38    | `03/15/23`   | **[Observe and Report](https://youtu.be/tPMwAM366go)**                                                                                                         |
+| 35    | `10/04/2022`   | **[God Mode Cursor (Someone remotely accessing computer)](https://youtu.be/dU_5rdVkCD8)**                                                                      |
+| 36    | `09/26/2022`   | **[God Mode Cursor (someone remotely accessing computer)](https://youtu.be/tW80Zj_H6Fw)**                                                                      |
+| 37    | `02/15/2022`   | **[A Matter of National Security](https://youtu.be/e4VnZObiez8)**                                                                                              |
+| 38    | `03/15/2023`   | **[Observe and Report](https://youtu.be/tPMwAM366go)**                                                                                                         |
