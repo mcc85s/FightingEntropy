@@ -2,8 +2,7 @@
 
 | Description |
 |:------------|
-| We don't live in a [communist country].
-Nah, not at all. |
+| We don't live in a [communist country].<br> Nah, not at all. |
 
 [[Document](#document)] - [[Script](#script)] - [[Link](#link)]
 
