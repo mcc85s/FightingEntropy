@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-31 11:36:31                                                                  //
+\\  Date       : 2023-03-31 17:43:41                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1531,6 +1531,7 @@ Function Get-FEModule
                     ("Copy-FileStream.ps1"             , "51D78BCE84D5EC2FABF85F87078D8E42179B19195E546371FC439E4B6171A0B9") ,
                     ("Get-AssemblyList.ps1"            , "F2D1C0AD58A91CBF432A2AC793C8CD1313EB6F1A61C50D681130322C358CDAE7") ,
                     ("Get-ControlExtension.ps1"        , "BF83DAAF1D8D53A39A5C5402A6BA9DEEA3DF32D37F38214DD93D1EBBE314942D") ,
+                    ("Get-DCOMSecurity.ps1"            , "9264A2D4DE0C75AF511F6AA5AB4D8BC6F6199706A0D8352DEDCF80682C30E403") ,
                     ("Get-EnvironmentKey.ps1"          , "96F00FD11983FF80BCB62C70826DB9B1608C84448C68E9C52857A224CA0054F6") ,
                     ("Get-EventLogArchive.ps1"         , "D0FB5197A191B28BA5ABB1577A7C27A6684373C2FCC1F4E88628E2E4FDB72925") ,
                     ("Get-EventLogConfigExtension.ps1" , "F91B1681063A5142129E40DD7F77F2D99813B6089B4D45E6F0DE5AA28FA01099") ,
