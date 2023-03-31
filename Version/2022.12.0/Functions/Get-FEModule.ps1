@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-29 19:14:12                                                                  //
+\\  Date       : 2023-03-31 11:36:31                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-03-29
+   Modified   : 2023-03-31
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1561,10 +1561,13 @@ Function Get-FEModule
                     ("Install-IISServer.ps1"           , "48F53BF8A3ECD087E7F395AA19F86D32849CD4F14B599F2AC6F7330F083E0D6C") ,
                     ("Install-PSD.ps1"                 , "0E0513C6BA4D98D1786E8606ABD5F6198947ADD43757E14D8138650DAB8D367F") ,
                     ("Invoke-cimdb.ps1"                , "567E8955B7D0A51569C5066AAE758E304B384592F55DF0D0A1176A8906885B56") ,
+                    ("New-Document.ps1"                , "179E16DD20C3FA2B69BEEC7CE3A7B16CA44FC6137789EC323BFB6E8B233C9841") ,
                     ("New-EnvironmentKey.ps1"          , "B2F51FA6AFCFD499DE96CFD7458E216832B36204BB542FDB416471058603D04C") ,
                     ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
+                    ("New-MarkdownFile.ps1"            , "6B0AD97E962C2AF262DB42BACE93398BE36813B2BBDA2323B1FE88D80EFA3CA4") ,
+                    ("New-TranscriptionCollection.ps1" , "243DD882DCAE3035E32BCDC0731DFDEFC75BD9AF0A7A11AE731BBCAC55C9FAD2") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
                     ("Set-ScreenResolution.ps1"        , "60EE87AE8A1ADE31C2530BF3EC8E4BC03221692E599750265CE807648F9583E9") ,
