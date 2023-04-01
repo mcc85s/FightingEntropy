@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-04-01 14:45:34                                                                  //
+\\  Date       : 2023-04-01 16:03:14                                                                  //
  \\==================================================================================================// 
 
     FileName   : Start-TCPSession.ps1
@@ -37,6 +37,7 @@ Function Start-TCPSession
 
     Class SocketTcpMessage
     {
+        [UInt32]   $Index
         [String]    $Type
         [Byte[]]    $Byte
         [UInt32]  $Length
@@ -47,22 +48,6 @@ Function Start-TCPSession
             $This.Byte    = [Byte[]][Char[]]$Message
             $This.Length  = $This.Byte.Length
             $This.Message = $Message
-        }
-        SocketTcpMessage([String]$Type,[Object]$Stream)
-        {
-            $This.Type         = $Type
-            $This.Byte         = [Byte[]]::New($Stream.Length)
-            $This.Length       = $Stream.Length
-            $X                 = -1
-            Do
-            {
-                $xByte         = $Stream.ReadByte()
-                $This.Byte[$X] = $xByte
-                $X            ++
-            }
-            Until ($X -eq $This.Length)
-
-            $This.Message      = $This.GetString()
         }
         SocketTcpMessage([Bool]$Flags,[Byte[]]$Byte)
         {
@@ -88,8 +73,8 @@ Function Start-TCPSession
         [Object]   $Stream
         [String]   $Source
         [UInt32]     $Port
+        [Object]    $Array
         [Object]  $Receive
-        [Object]     $Send
         SocketTcpServer([String]$IPAddress,[UInt32]$Port)
         {
             $This.Server    = $Null
@@ -129,28 +114,27 @@ Function Start-TCPSession
     
                 # // Get a stream object for (reading + writing)
                 $This.Stream  = $This.Client.GetStream()
+        
+                $This.Array   = @( )
+                Do
+                {
+                    $This.Array += $This.Stream.ReadByte()
+                    [Console]::WriteLine($This.Array[-1])
+                }
+                Until ($This.Array[-1] -eq 10)
     
                 # // Write receive message stream
-                $This.Receive = $This.TcpMessage("Receive",$This.Stream)
+                $This.Receive = $This.TcpMessage(1,$This.Array)
 
                 # // Show receive message in console
                 $This.Write("[Received]:")
                 ForEach ($Line in $This.Receive.Message -Split "`n")
                 {
-                    $This.Write($Line)
+                    [Console]::WriteLine($Line)
                 }
-    
-                # // Write send message stream
-                $This.Send    = $This.TcpMessage("Send",$This.Receive.Byte)
 
-                $This.Stream.Write($This.Send.Byte,0,$This.Send.Length)
-
-                # // Show sent in console
-                $This.Write("[Sent]:")
-                ForEach ($Line in $This.Message -Split "`n")
-                {
-                    $This.Write($Line)
-                }
+                $This.Stream.Close()
+                $This.Client.Close()
             }
             Catch
             {
@@ -161,17 +145,13 @@ Function Start-TCPSession
                 $This.Stop()
             }
         }
-        [Object] TcpMessage([String]$Type,[Object]$Stream)
+        [Object] TcpMessage([String]$Message)
         {
-            Return [SocketTcpMessage]::New($Type,$Stream)
+            Return [SocketTcpMessage]::New($Message)
         }
         [Object] TcpMessage([Bool]$Flags,[Byte[]]$Byte)
         {
             Return [SocketTcpMessage]::New($Flags,$Byte)
-        }
-        [Object] TcpMessage([String]$Message)
-        {
-            Return [SocketTcpMessage]::New($Message)
         }
         [Object] TcpListener([String]$IpAddress,[UInt32]$Port)
         {
@@ -206,8 +186,8 @@ Function Start-TCPSession
         [Object]   $Stream
         [String]   $Source
         [UInt32]     $Port
+        [Object]    $Array
         [Object]     $Send
-        [Object]  $Receive
         SocketTcpClient([String]$Source,[UInt32]$Port,[String]$Message)
         {
             # // Assign the source (IP address + port)
@@ -236,18 +216,8 @@ Function Start-TCPSession
             ForEach ($Line in $This.Send.Message -Split "`n")
             {
                 $This.Write($Line)
-            }                            
-        
-            # // Read receive message stream
-            $This.Receive = $This.TcpMessage("Receive",$This.Stream)
-
-            # // Show receive message in console
-            $This.Write("[Received]:")
-            ForEach ($Line in $This.Receive.Message -Split "`n")
-            {
-                $This.Write($Line)
             }
-        
+
             # // Explicitly close
             $This.Stream.Close()
             $This.Client.Close()
@@ -260,17 +230,13 @@ Function Start-TCPSession
         {
             $This.Client = $This.TcpClient($This.Source,$This.Port)
         }
-        [Object] TcpMessage([String]$Type,[Object]$Stream)
-        {
-            Return [SocketTcpMessage]::New($Type,$Stream)
-        }
         [Object] TcpMessage([Bool]$Flags,[Byte[]]$Byte)
         {
             Return [SocketTcpMessage]::New($Flags,$Byte)
         }
         [Object] TcpMessage([String]$Message)
         {
-            Return [SocketTcpMessage]::New($Message)
+            Return [SocketTcpMessage]::New("$Message`n")
         }
         [Object] TcpClient([String]$Server,[UInt32]$Port)
         {
@@ -318,6 +284,8 @@ Function Start-TCPSession
 
 <# [Client]
 
+    . C:\Users\mcook85\Documents\Start-TCPSession.ps1
+    
     $Server = "192.168.42.2"
     $Port   = 13000
 
