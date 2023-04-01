@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-04-01 11:40:10                                                                  //
+\\  Date       : 2023-04-01 14:45:34                                                                  //
  \\==================================================================================================// 
 
     FileName   : Start-TCPSession.ps1
@@ -35,25 +35,70 @@ Function Start-TCPSession
     [Parameter(ParameterSetName=1,Mandatory)][UInt32]$Port,
     [Parameter(ParameterSetName=1,Mandatory)][String]$Message)
 
+    Class SocketTcpMessage
+    {
+        [String]    $Type
+        [Byte[]]    $Byte
+        [UInt32]  $Length
+        [String] $Message
+        SocketTcpMessage([String]$Message)
+        {
+            $This.Type    = "Send"
+            $This.Byte    = [Byte[]][Char[]]$Message
+            $This.Length  = $This.Byte.Length
+            $This.Message = $Message
+        }
+        SocketTcpMessage([String]$Type,[Object]$Stream)
+        {
+            $This.Type         = $Type
+            $This.Byte         = [Byte[]]::New($Stream.Length)
+            $This.Length       = $Stream.Length
+            $X                 = -1
+            Do
+            {
+                $xByte         = $Stream.ReadByte()
+                $This.Byte[$X] = $xByte
+                $X            ++
+            }
+            Until ($X -eq $This.Length)
+
+            $This.Message      = $This.GetString()
+        }
+        SocketTcpMessage([Bool]$Flags,[Byte[]]$Byte)
+        {
+            $This.Type         = @("Send","Receive")[$Flags]
+            $This.Byte         = $Byte
+            $This.Length       = $Byte.Length
+            $This.Message      = $This.GetString()
+        }
+        [String] GetString()
+        {
+            Return [System.Text.Encoding]::UTF8.GetString($This.Byte,0,$This.Length)
+        }
+        [Byte[]] GetBytes()
+        {
+            Return [System.Text.Encoding]::UTF8.GetBytes($This.Message)
+        }
+    }
+    
     Class SocketTcpServer
     {
-        [Object]    $Server
-        [Object]    $Client
-        [String] $IPAddress
-        [UInt32]      $Port
-        [Byte[]]      $Byte
-        [String]      $Data
-        [Object]    $Stream
-        [Byte[]]   $Message
+        [Object]   $Server
+        [Object]   $Client
+        [Object]   $Stream
+        [String]   $Source
+        [UInt32]     $Port
+        [Object]  $Receive
+        [Object]     $Send
         SocketTcpServer([String]$IPAddress,[UInt32]$Port)
         {
             $This.Server    = $Null
-            $This.IPAddress = $IPAddress
+            $This.Source    = $IPAddress
             $This.Port      = $Port
         }
         SetServer()
         {
-            $This.Server    = $This.TcpListener($This.IPAddress,$This.Port)
+            $This.Server    = $This.TcpListener($This.Source,$This.Port)
         }
         Start()
         {
@@ -63,56 +108,48 @@ Function Start-TCPSession
         {
             $This.Server.Stop()
         }
-        Buffer()
-        {
-            $This.Byte      = [Byte[]]::New(256)
-            $This.Clear()
-        }
-        Clear()
-        {
-            $This.Data      = $Null
-        }
         Listen()
         {
             # // TcpListener
             $This.SetServer()
-
+    
             # // Starts listening for clients
             $This.Start()
-            
-            # // Buffer for reading data
-            $This.Buffer()
-
+    
             Try
             {
                 $This.Write("Waiting for a connection... ")
+    
+                # // Perform a blocking call to accept requests
+                $This.Client  = $This.Server.AcceptTcpClient()
+    
+                # // Show connection to remote IP endpoint
+                $Ip           = $This.RemoteIp()
+                $This.Write("Connected [$IP]")
+    
+                # // Get a stream object for (reading + writing)
+                $This.Stream  = $This.Client.GetStream()
+    
+                # // Write receive message stream
+                $This.Receive = $This.TcpMessage("Receive",$This.Stream)
 
-                # // Perform a blocking call to accept requests.
-                $This.Client = $This.Server.AcceptTcpClient()
-                $This.Write("Connected!")
-
-                # // Clears the data
-                $This.Clear()
-
-                # // Get a stream object for reading and writing
-                $This.Stream = $This.Client.GetStream()
-
-                # // Loop to receive all the data sent by the client.
-                $I = 0
-                    
-                While ($This.Read($I) -ne 0)
+                # // Show receive message in console
+                $This.Write("[Received]:")
+                ForEach ($Line in $This.Receive.Message -Split "`n")
                 {
-                    # // Translate data bytes to a ASCII string.
-                    $This.Data    = $This.GetString($This.Byte,0,$I)
-                    $This.Write("Received: $($This.Data)")
+                    $This.Write($Line)
+                }
+    
+                # // Write send message stream
+                $This.Send    = $This.TcpMessage("Send",$This.Receive.Byte)
 
-                    # // Process the data sent by the client.
-                    $This.Data    = $This.Data.ToUpper()
-                    $This.Message = $This.GetBytes($This.Data)
+                $This.Stream.Write($This.Send.Byte,0,$This.Send.Length)
 
-                    # // Send back a response
-                    $This.Stream.Write($This.Message,0,$This.Message.Length)
-                    $This.Write("Sent: $($This.Data)")
+                # // Show sent in console
+                $This.Write("[Sent]:")
+                ForEach ($Line in $This.Message -Split "`n")
+                {
+                    $This.Write($Line)
                 }
             }
             Catch
@@ -124,9 +161,25 @@ Function Start-TCPSession
                 $This.Stop()
             }
         }
+        [Object] TcpMessage([String]$Type,[Object]$Stream)
+        {
+            Return [SocketTcpMessage]::New($Type,$Stream)
+        }
+        [Object] TcpMessage([Bool]$Flags,[Byte[]]$Byte)
+        {
+            Return [SocketTcpMessage]::New($Flags,$Byte)
+        }
+        [Object] TcpMessage([String]$Message)
+        {
+            Return [SocketTcpMessage]::New($Message)
+        }
         [Object] TcpListener([String]$IpAddress,[UInt32]$Port)
         {
             Return [System.Net.Sockets.TcpListener]::New($IPAddress,$Port)
+        }
+        [String] RemoteIp()
+        {
+            Return $This.Client.Client.RemoteEndPoint.Address.ToString()
         }
         Write([String]$Line)
         {
@@ -134,78 +187,98 @@ Function Start-TCPSession
         }
         [String] GetString([Byte[]]$Bytes,[UInt32]$Index,[UInt32]$Count)
         {
-            Return [System.Text.Encoding]::ASCII.GetString($Bytes,$Index,$Count)
+            Return [System.Text.Encoding]::UTF8.GetString($Bytes,$Index,$Count)
         }
         [Byte[]] GetBytes([String]$Data)
         {
-            Return [System.Text.Encoding]::ASCII.GetBytes($Data)
-        }
-        [UInt32] Read([UInt32]$Token)
-        {
-            $Token = $This.Stream.Read($This.Byte,0,$This.Byte.Length)
-            Return $Token
+            Return [System.Text.Encoding]::UTF8.GetBytes($Data)
         }
         [String] ToString()
         {
             Return "<SocketTcpServer>"
         }
     }
-
+    
     Class SocketTcpClient
     {
-        [String]  $Server
-        [UInt32]    $Port
-        [String] $Message
-        [Object]  $Client
-        [Byte[]]    $Data
-        [Object]  $Stream
-        SocketTcpClient([String]$Server,[UInt32]$Port,[String]$Message)
+        [Object]   $Server
+        [Object]   $Client
+        [Object]   $Stream
+        [String]   $Source
+        [UInt32]     $Port
+        [Object]     $Send
+        [Object]  $Receive
+        SocketTcpClient([String]$Source,[UInt32]$Port,[String]$Message)
         {
-            $This.Server  = $Server
+            # // Assign the source (IP address + port)
+            $This.Source  = $Source
             $This.Port    = $Port
-            $This.Message = $Message
+    
+            # // Set the server endpoint
+            $This.SetServer()
+    
+            # // Convert the input to a TcpMessage object
+            $This.Send   = $This.TcpMessage($Message)
         }
         Connect()
         {
             # // Create the client object
-            $This.Client = $This.TcpClient($This.Server,$This.Port)
+            $This.Client    = $This.TcpClient($This.Source,$This.Port)
+        
+            # // Get a client stream for (reading + writing)
+            $This.Stream    = $This.Client.GetStream()
+    
+            # // Write send message stream
+            $This.Stream.Write($This.Send.Byte,0,$This.Send.Length)
+        
+            # // Show send message in console
+            $This.Write("[Sent]:") 
+            ForEach ($Line in $This.Send.Message -Split "`n")
+            {
+                $This.Write($Line)
+            }                            
+        
+            # // Read receive message stream
+            $This.Receive = $This.TcpMessage("Receive",$This.Stream)
 
-            # // Assign message to a [byte[]] array
-            $This.Data   = $This.GetBytes($This.Message)
-
-            # // Get a client stream for reading and writing.
-            $This.Stream = $This.Client.GetStream()
-
-            # // Send the message to the connected TcpServer.
-            $This.Stream.Write($This.Data,0,$This.Data.Length)
+            # // Show receive message in console
+            $This.Write("[Received]:")
+            ForEach ($Line in $This.Receive.Message -Split "`n")
+            {
+                $This.Write($Line)
+            }
         
-            $This.Write("Sent: $($This.Message)")
-        
-            # // Receive the server response.
-        
-            # // Buffer to store the response bytes.
-            $This.Data = [Byte[]]::New(256)
-        
-            # // String to store the response ASCII representation.
-            $responseData = ""
-        
-            #// Read the first batch of the TcpServer response bytes.
-            $Bytes        = $This.Stream.Read($This.Data,0,$This.Data.Length)
-            $responseData = $This.GetString($Bytes,0,$Bytes.Length)
-            $This.Write("Received: $responseData")
-        
-            # // Explicit close is not necessary since TcpClient.Dispose() will be
-            # // called automatically.
+            # // Explicitly close
             $This.Stream.Close()
             $This.Client.Close()
         }
+        SetServer()
+        {
+            $This.Server = $This.TcpEndpoint(([IPAddress]$This.Source).Address,$This.Port)
+        }
         SetClient()
         {
-            $This.Client = $This.TcpClient($This.Server,$This.Port)
+            $This.Client = $This.TcpClient($This.Source,$This.Port)
+        }
+        [Object] TcpMessage([String]$Type,[Object]$Stream)
+        {
+            Return [SocketTcpMessage]::New($Type,$Stream)
+        }
+        [Object] TcpMessage([Bool]$Flags,[Byte[]]$Byte)
+        {
+            Return [SocketTcpMessage]::New($Flags,$Byte)
+        }
+        [Object] TcpMessage([String]$Message)
+        {
+            Return [SocketTcpMessage]::New($Message)
         }
         [Object] TcpClient([String]$Server,[UInt32]$Port)
         {
             Return [System.Net.Sockets.TcpClient]::New($Server,$Port)
+        }
+        [Object] TcpEndpoint([String]$Source,[UInt32]$Port)
+        {
+            Return [System.Net.IPEndpoint]::New($Source,$Port)
         }
         Write([String]$Line)
         {
@@ -213,11 +286,11 @@ Function Start-TCPSession
         }
         [String] GetString([Byte[]]$Bytes,[UInt32]$Index,[UInt32]$Count)
         {
-            Return [System.Text.Encoding]::ASCII.GetString($Bytes,$Index,$Count)
+            Return [System.Text.Encoding]::UTF8.GetString($Bytes,$Index,$Count)
         }
         [Byte[]] GetBytes([String]$Data)
         {
-            Return [System.Text.Encoding]::ASCII.GetBytes($Data)
+            Return [System.Text.Encoding]::UTF8.GetBytes($Data)
         }
         [String] ToString()
         {
@@ -232,14 +305,22 @@ Function Start-TCPSession
     }
 }
 
-<# 
+<# [Server]
+
+    . C:\Users\mcadmin\Documents\Start-TCPSession.ps1
+
     $Server = "192.168.42.2"
     $Port   = 13000
 
-    [Server]
     $Test   = Start-TCPSession -Server -Source $Server -Port $Port
-
-    [Client]
-    $Test   = Start-TCPSession -Client -Source $Server -Port $Port -Message Testing
+    $Test.Listen()
 #>
 
+<# [Client]
+
+    $Server = "192.168.42.2"
+    $Port   = 13000
+
+    $Test   = Start-TCPSession -Client -Source $Server -Port $Port -Message Testing
+    $Test.Connect()
+#>
