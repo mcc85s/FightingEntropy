@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-01 10:41:05                                                                  //
+\\  Date       : 2023-04-01 10:57:58                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -2155,10 +2155,13 @@ Function Get-FEModule
         }
         Validate()
         {
+            $xList = $This.Validation()
+            $This.Validate($xList)
+        }
+        Validate([Object[]]$xList)
+        {
             $This.Write(3,"Validation [~] Module manifest")
-
-            $List = $This.Validation()
-            $Ct   = $List | ? Match -eq 0
+            $Ct   = $xList | ? Match -eq 0
 
             Switch ($Ct.Count)
             {
