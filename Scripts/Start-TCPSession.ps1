@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-04-01 11:28:46                                                                  //
+\\  Date       : 2023-04-01 11:40:10                                                                  //
  \\==================================================================================================// 
 
     FileName   : Start-TCPSession.ps1
@@ -191,13 +191,13 @@ Function Start-TCPSession
         
             #// Read the first batch of the TcpServer response bytes.
             $Bytes        = $This.Stream.Read($This.Data,0,$This.Data.Length)
-            $responseData = $This.GetString($This.Data,0,$Bytes)
+            $responseData = $This.GetString($Bytes,0,$Bytes.Length)
             $This.Write("Received: $responseData")
         
             # // Explicit close is not necessary since TcpClient.Dispose() will be
             # // called automatically.
-            # // stream.Close();
-            # // client.Close();
+            $This.Stream.Close()
+            $This.Client.Close()
         }
         SetClient()
         {
@@ -231,3 +231,15 @@ Function Start-TCPSession
         1 { [SocketTcpClient]::New($Source,$Port,$Message) }
     }
 }
+
+<# 
+    $Server = "192.168.42.2"
+    $Port   = 13000
+
+    [Server]
+    $Test   = Start-TCPSession -Server -Source $Server -Port $Port
+
+    [Client]
+    $Test   = Start-TCPSession -Client -Source $Server -Port $Port -Message Testing
+#>
+
