@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-01 10:29:19                                                                  //
+\\  Date       : 2023-04-01 10:41:05                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1567,7 +1567,7 @@ Function Get-FEModule
                     ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
-                    ("New-MarkdownFile.ps1"            , "074638E4D16636BE3172F6A24B6B4BA8CC180BBD5E7E4C2424F2489A9E684C72") ,
+                    ("New-MarkdownFile.ps1"            , "56208EDF2682683DBF948DDDA3F5A4F60C55BD11668035B810795C61AD8F342F") ,
                     ("New-TranscriptionCollection.ps1" , "DEB5CA810E582819BB7A86C7860BE9C14AAA1B46F59A0FB2BBE414C67321F16B") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
@@ -2149,16 +2149,16 @@ Function Get-FEModule
         {
             Return [ValidateFile]::New($File)
         }
-        Validation()
+        [Object[]] Validation()
+        {
+            Return $This.Manifest.Full() | % { $This.ValidateFile($_) }
+        }
+        Validate()
         {
             $This.Write(3,"Validation [~] Module manifest")
 
-            ForEach ($Item in $This.Manifest.Full())
-            {
-                $This.ValidateFile($Item)
-            }
-
-            $Ct       = $This.Manifest.Full() | ? Match -eq 0
+            $List = $This.Validation()
+            $Ct   = $List | ? Match -eq 0
 
             Switch ($Ct.Count)
             {
@@ -2166,7 +2166,7 @@ Function Get-FEModule
                 {
                     $This.Write(3,"Validation [+] All files passed validation")
                 }
-                {$_ -gt 0}
+                {$_ -ne 0}
                 {
                     $This.Write(1,"Validation [!] ($($Ct.Count)) files failed validation")
                 }
