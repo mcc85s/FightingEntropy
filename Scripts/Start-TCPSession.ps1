@@ -231,6 +231,3 @@ Function Start-TCPSession
         1 { [SocketTcpClient]::New($Source,$Port,$Message) }
     }
 }
-
-$Server = [SocketTcpServer]::New("192.168.42.2",13000)
-$Client = [SocketTcpClient]::New("192.168.42.2",13000,"Testing")
