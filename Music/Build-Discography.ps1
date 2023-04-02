@@ -131,10 +131,11 @@ Function Build-Discography
 
     Class Discography
     {
-        [String]  $Name
-        [String]  $Path
-        [Object] $Album
-        [Object] $Queue
+        [String]     $Name
+        [String]     $Path
+        [Object]    $Album
+        [Object]    $Queue
+        [UInt32] $Selected
         Discography([String]$Name)
         {
             $This.Name  = $Name
