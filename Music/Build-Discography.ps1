@@ -135,12 +135,31 @@ Function Build-Discography
         [String]  $Path
         [Object] $Album
         [Object] $Queue
+        [UInt32] $Selected
         Discography([String]$Name)
         {
             $This.Name  = $Name
             $This.Path  = Get-Item Variable:\Home | % Value
             $This.Album = @( )
             $This.Queue = @( )
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Album.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            If (!$This.Selected)
+            {
+                Throw "Invalid selection"
+            }
+
+            Return $This.Album[$This.Selected] 
         }
         AddAlbum([String]$Name,[UInt32]$Year)
         {
@@ -297,7 +316,7 @@ Function Build-Discography
                 }
                 $Last = $xAlbum.Index
 
-                [System.IO.File]::Move($Item.Fullname,$NewName)
+                Move-Item -LiteralPath $Item.Fullname -Destination $NewName
                 $Item.FullName = $NewName
             }
         }
