@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-02 14:30:05                                                                  //
+\\  Date       : 2023-04-02 15:29:32                                                                  //
  \\==================================================================================================// 
 
     FileName   : Start-TCPSession.ps1
@@ -60,14 +60,14 @@ Function Start-TCPSession
 
     Class SocketTcpServer
     {
-        [Object]   $Server
-        [Object]   $Client
-        [Object]   $Stream
-        [String]   $Source
-        [UInt32]     $Port
-        [UInt32]     $Mode
-        [Object]    $Total
-        [Object]  $Content
+        [Object]  $Server
+        [Object]  $Client
+        [Object]  $Stream
+        [String]  $Source
+        [UInt32]    $Port
+        [UInt32]    $Mode
+        [Object]   $Total
+        [Object] $Content
         SocketTcpServer([String]$IPAddress,[UInt32]$Port)
         {
             $This.Server    = $Null
@@ -161,9 +161,6 @@ Function Start-TCPSession
 
             # // Write send message stream
             $This.Stream.Write($Message.Byte,0,$Message.Length)
-
-            # // Show send message in console
-            $This.Write($Message.Message)
         }
         [Object] Rx([UInt32]$Index)
         {
@@ -178,12 +175,7 @@ Function Start-TCPSession
             }
             Until ($Array[-1] -eq 10)
 
-            $Message    = $This.TcpMessage($Index,$Array)
-
-            # // Show receive message in console
-            $This.Write($Message.Message)
-
-            Return $Message
+            Return $This.TcpMessage($Index,$Array)
         }
         Finalize()
         {
@@ -303,9 +295,6 @@ Function Start-TCPSession
 
             # // Write send message stream
             $This.Stream.Write($Message.Byte,0,$Message.Length)
-
-            # // Show send message in console
-            $This.Write($Message.Message)
         }
         [Object] Rx([UInt32]$Index)
         {
@@ -320,12 +309,7 @@ Function Start-TCPSession
             }
             Until ($Array[-1] -eq 10)
 
-            $Message    = $This.TcpMessage($Index,[Byte[]]$Array)
-
-            # // Show receive message in console
-            $This.Write($Message.Message)
-
-            Return $Message
+            Return $This.TcpMessage($Index,[Byte[]]$Array)
         }
         Finalize()
         {
