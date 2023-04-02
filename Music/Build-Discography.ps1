@@ -4,12 +4,12 @@ Function Build-Discography
 
     Class QueueItem
     {
-        [UInt32] $Index
-        [UInt32] $Rank
-        [String] $Type
-        [String] $Hash
-        [String] $Url
-        [UInt32] $Exists
+        [UInt32]    $Index
+        [UInt32]     $Rank
+        [String]     $Type
+        [String]     $Hash
+        [String]      $Url
+        [UInt32]   $Exists
         [String] $Fullname
         QueueItem([UInt32]$Index,[UInt32]$Rank,[String]$Type,[String]$Hash)
         {
@@ -19,44 +19,60 @@ Function Build-Discography
             $This.Hash  = $Hash
             $This.Url   = "https://youtu.be/$Hash"
         }
+        [String] ToString()
+        {
+            Return $This.Type
+        }
     }
 
-    Class PlayListItem
+    Class PlayListEntry
     {
-        [UInt32]      $Index
-        [String]       $Name
-        [String]       $Hash
-        [TimeSpan]   $Length
-        [String]   $Fullname
-        [String]    $NewName
-        PlayListItem([UInt32]$Index,[String]$Name,[String]$Hash,[String]$Length)
+        [UInt32]    $Index
+        [String]     $Name
+        [String]     $Hash
+        [TimeSpan] $Length
+        [String] $Fullname
+        [String]  $NewName
+        PlayListEntry([UInt32]$Index,[String]$Name,[String]$Hash,[String]$Length)
         {
             $This.Index  = $Index
             $This.Name   = $Name
             $This.Hash   = $Hash
             $This.Length = [Timespan]"00:$Length"
         }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
     }
 
-    Class PlayList
+    Class PlayListItem
     {
-        [UInt32] $Index
-        [String] $Name
-        [String] $Path
+        [UInt32]  $Index
+        [String]   $Name
+        [String]   $Path
         [Object] $Output
-        PlayList([Object]$Disc,[UInt32]$Index)
+        PlayListItem([Object]$Disc)
         {
-            $This.Index  = $Index
-            $Album       = $Disc.Get($This.Index)
+            $Album       = $Disc.Current()
+            $This.Index  = $Album.Index
             $This.Name   = "{0} - {1} ({2})" -f $Disc.Name, $Album.Name, $Album.Year
             $This.Path   = $Disc.Path
             $This.Output = @( )
         }
+        [Object] PlaylistEntry([UInt32]$Index,[String]$Name,[String]$Hash,[String]$Length)
+        {
+            Return [PlayListEntry]::New($Index,$Name,$Hash,$Length)
+        }
+        [String] NewName([Object]$Item)
+        {
+            Return "{0}\{1}[{2:d2}] - {3}.mp3" -f $This.Path, $This.Name, $Item.Index, $Item.Name
+        }
         Add([String]$Name,[String]$Hash,[String]$Length)
         {
-            $Item          = [PlayListItem]::New($This.Output.Count,$Name,$Hash,$Length)
+            $Item          = $This.PlayListEntry($This.Output.Count,$Name,$Hash,$Length)
             $Item.Fullname = $This.List | ? Name -match $Item.Hash | % Fullname
-            $Item.NewName  = "{0}\{1}[{2:d2}] - {3}.mp3" -f $This.Path, $This.Name, $Item.Index, $Item.Name
+            $Item.NewName  = $This.NewName($Item)
             $This.Output  += $Item
         }
         Rename()
@@ -68,23 +84,31 @@ Function Build-Discography
                 $Item.NewName  = $Null
             }
         }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
     }
 
-    Class Track
+    Class TrackItem
     {
         [UInt32]      $Index
         [TimeSpan] $Position
         [String]       $Name
         [TimeSpan]   $Length
-        Track([UInt32]$Index,[String]$Name,[String]$Length)
+        TrackItem([UInt32]$Index,[String]$Name,[String]$Length)
         {
             $This.Index   = $Index
             $This.Name    = $Name
             $This.Length  = $Length
         }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
     }
 
-    Class Album
+    Class AlbumItem
     {
         [UInt32]    $Index
         [String]     $Name
@@ -92,7 +116,7 @@ Function Build-Discography
         [String]     $Hash
         [TimeSpan] $Length
         [Object]    $Track
-        Album([UInt32]$Index,[String]$Name,[UInt32]$Year)
+        AlbumItem([UInt32]$Index,[String]$Name,[UInt32]$Year)
         {
             $This.Index  = $Index
             $This.Name   = $Name
@@ -116,12 +140,16 @@ Function Build-Discography
                 $xLength = "00:$xLength"
             }
 
-            $Item          = [Track]::New($This.Track.Count,$Name,$xLength)
+            $Item          = $This.TrackItem($This.Track.Count,$Name,$xLength)
             $Item.Position = $This.Length
             $This.Length   = $This.Length + $Item.Length
             $This.Track   += $Item
 
             Write-Host "Added [+] Track: [$Name], Length: [$xLength]"
+        }
+        [Object] TrackItem([UInt32]$Index,[String]$Name,[String]$Duration)
+        {
+            Return [TrackItem]::New($Index,$Name,$Duration)
         }
         [String] ToString()
         {
@@ -156,39 +184,48 @@ Function Build-Discography
         {
             Return $This.Album[$This.Selected] 
         }
+        [Object] AlbumItem([UInt32]$Index,[String]$Name,[UInt32]$Year)
+        {
+            Return [AlbumItem]::New($Index,$Name,$Year)
+        }
+        [Object] PlayListItem()
+        {
+            Return [PlayListItem]::New($This)
+        }
+        [Object] QueueItem([UInt32]$Index,[UInt32]$Rank,[String]$Type,[String]$Hash)
+        {
+            Return [QueueItem]::New($Index,$Rank,$Type,$Hash)
+        }
         AddAlbum([String]$Name,[UInt32]$Year)
         {
-            $This.Album += [Album]::New($This.Album.Count,$Name,$Year)
+            $This.Album += $This.AlbumItem($This.Album.Count,$Name,$Year)
+
             Write-Theme "Added [+] Album: [$Name ($Year)]"
             Start-Sleep -Milliseconds 125
         }
-        [Object] BuildPlayList([UInt32]$Index)
-        {
-            Return [PlayList]::New($This,$Index)
-        }
-        SetHash([UInt32]$Index,[String]$Hash)
-        {
-            $xAlbum = $This.Get($Index)
-            $xAlbum.SetHash($Hash)
-            $This.AddQueue($Index,"Album",$Hash)
-        }
         AddPlayList([Object]$List)
         {
-            $xAlbum      = $This.Get($List.Index)
+            $xAlbum = $This.Current()
             ForEach ($Track in $List.Output)
             {
                 $xAlbum.AddTrack($Track.Name,$Track.Length)
                 $This.AddQueue($List.Index,"Track",$Track.Hash)
             }
         }
-        AddTrack([UInt32]$Index,[String]$Name,[String]$Length)
+        AddTrack([String]$Name,[String]$Length)
         {
-            $Item       = $This.Get($Index)
-            $Item.AddTrack($Name,$Length)
+            $xAlbum = $This.Current()
+            $xAlbum.AddTrack($Name,$Length)
+        }
+        SetHash([String]$Hash)
+        {
+            $xAlbum = $This.Current()
+            $xAlbum.SetHash($Hash)
+            $This.AddQueue($xAlbum.Index,"Album",$Hash)
         }
         AddQueue([UInt32]$Rank,[String]$Type,[String]$Hash)
         {
-            $This.Queue += [QueueItem]::New($This.Queue.Count,$Rank,$Type,$Hash)
+            $This.Queue += $This.QueueItem($This.Queue.Count,$Rank,$Type,$Hash)
         }
         [Object] Get([UInt32]$Index)
         {
@@ -329,3 +366,49 @@ Function Build-Discography
 
     [Discography]::New($Name)
 }
+
+<# 
+## [Album] ##
+
+$Disc.AddAlbum("Cool album name #1",5000)
+$Disc.Select($Index)
+$Disc.SetHash("YoUtUbEhAsH")
+
+("Cool track #1" , "00:00") ,
+("Cool track #2" , "04:28") | % {
+
+    $Disc.AddTrack($_[0],$_[1])
+}
+
+## [Playlist] ##
+
+$Disc.AddAlbum("Cool album playlist",5000)
+$Disc.Select($Index)
+$Playlist = $Disc.PlayListItem()
+
+("Cool track #1","YoUtUbEhAsH","05:01") ,
+("Cool track #2","yOuTuBeHaSh","04:29") | % { 
+
+    $Playlist.Add($_[0],$_[1],$_[2])
+}
+
+$Disc.AddPlayList($PlayList)
+
+## [Validate] ##
+
+$Disc.Validate()
+
+## [Download] ##
+
+$YouTubeDL = "$Home\Downloads\youtube-dl.exe"
+
+If (($Disc.Queue | ? Exists -eq 0).Count -gt 0)
+{
+    $Disc.Download($YoutubeDL)
+}
+
+## [Rename] ##
+
+$Disc.Rename()
+
+#>
