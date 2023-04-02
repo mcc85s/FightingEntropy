@@ -135,7 +135,6 @@ Function Build-Discography
         [String]  $Path
         [Object] $Album
         [Object] $Queue
-        [UInt32] $Selected
         Discography([String]$Name)
         {
             $This.Name  = $Name
@@ -154,11 +153,6 @@ Function Build-Discography
         }
         [Object] Current()
         {
-            If (!$This.Selected)
-            {
-                Throw "Invalid selection"
-            }
-
             Return $This.Album[$This.Selected] 
         }
         AddAlbum([String]$Name,[UInt32]$Year)
@@ -316,7 +310,7 @@ Function Build-Discography
                 }
                 $Last = $xAlbum.Index
 
-                Move-Item -LiteralPath $Item.Fullname -Destination $NewName
+                [System.IO.File]::Move($Item.Fullname,$NewName)
                 $Item.FullName = $NewName
             }
         }
