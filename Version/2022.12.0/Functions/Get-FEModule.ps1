@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-01 10:57:58                                                                  //
+\\  Date       : 2023-04-02 14:36:34                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1573,6 +1573,7 @@ Function Get-FEModule
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
                     ("Set-ScreenResolution.ps1"        , "60EE87AE8A1ADE31C2530BF3EC8E4BC03221692E599750265CE807648F9583E9") ,
                     ("Show-ToastNotification.ps1"      , "661B9C815FF1BAEEE4400F65126741177D6F5D122161EF0093309A9067B8344E") ,
+                    ("Start-TCPSession.ps1"            , "D78344D9751825C352A4800EC5ACA991F596D241AE0165207E58DECE07E5F3D1") ,
                     ("Update-PowerShell.ps1"           , "EEA4AEEC98B7049F7273CDDCF58FCBD1702DDDEE1EB3C11B71DD76D30879F662") ,
                     ("Write-Element.ps1"               , "1AF8C0392304F9FC965ACAA1605C385FE479CC344514C2D5A532AB5DF81FC2D2") ,
                     ("Write-Theme.ps1"                 , "64CDC6B7BB63816306C7A8410681DFB90B9555C08915D367F210739321250330") 
