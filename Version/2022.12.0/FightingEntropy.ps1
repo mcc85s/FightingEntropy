@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-04-02 15:34:45                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-04-03 18:07:20                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1624,7 +1624,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
                     ("Get-FEDCPromo.ps1"               , "0B682031192C18EC2F9135A664DADD254E45CDDAF36D863EB2E6760CB1379323") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-                    ("Get-FEModule.ps1"                , "D90AFA1AB178FEB66677A17A2A7DA5FD58A13895384BD727F9BCEF2BD48153D6") ,
+                    ("Get-FEModule.ps1"                , "9E2CCD51F1082FC197ABCF68B8429FC62572DF3DA8AF5CAD29580F37C33C81DF") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
                     ("Get-FESystem.ps1"                , "A8A54664FCAEA3F59E387CAEF927F26009F20BC28C689417E6D840A062F166B0") ,
@@ -1649,7 +1649,7 @@ Function FightingEntropy.Module
                     ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
-                    ("New-MarkdownFile.ps1"            , "56208EDF2682683DBF948DDDA3F5A4F60C55BD11668035B810795C61AD8F342F") ,
+                    ("New-MarkdownFile.ps1"            , "7C8DDD20E192DC1AE6F75B718826B4A9766A604FC1165E929757B070AFD36F90") ,
                     ("New-TranscriptionCollection.ps1" , "DEB5CA810E582819BB7A86C7860BE9C14AAA1B46F59A0FB2BBE414C67321F16B") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
@@ -2266,7 +2266,7 @@ Function FightingEntropy.Module
     [InstallController]::New($Mode)
 }
 
-$Module = FightingEntropy.Module -Mode 0 
+$Module = FightingEntropy.Module -Mode 0
 
     # // ____________________________________________________________________________________
     # // | Note: (FightingEntropy.Module -Mode 1) loads without writing stuff to the screen |
@@ -2307,7 +2307,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-02 15:34:45 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-03 18:07:20 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
