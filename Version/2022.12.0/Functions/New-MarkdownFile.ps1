@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-31 11:31:46                                                                  //
+\\  Date       : 2023-04-03 18:02:25                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-MarkdownFile
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-03-16
-    Modified   : 2023-03-31
+    Modified   : 2023-04-03
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -38,6 +38,7 @@ Function New-MarkdownFile
         Transcription
         Document
         Script
+        Picture
         Link
         Annotation
     }
@@ -92,8 +93,9 @@ Function New-MarkdownFile
                 2 { "Audio file that has been translated to text"                                   }
                 3 { "Document that pertains to the related (post/item)"                             }
                 4 { "Programming to reproduce a document, transcription, or annotation"             }
-                5 { "External link to research, video, content, audio, annotation, document, etc."  }
-                6 { "Extended description or note for a particular markdown/document/transcription" }
+                5 { "A screenshot or graphic"                                                       }
+                6 { "External link to research, video, content, audio, annotation, document, etc."  }
+                7 { "Extended description or note for a particular markdown/document/transcription" }
             }
     
             $This.Output += $Item
@@ -156,6 +158,7 @@ Function New-MarkdownFile
                 Transcription = "Index","Date","Name","NameDoc","NamePdf"
                 Document      = "Index","Date","NameLink"
                 Script        = "Index","Date","NameLink"
+                Picture       = "Index","Image"
                 Link          = "Index","Date","NameLink"
                 Annotation    = "Index","Time","Name"
             }
@@ -483,6 +486,45 @@ Function New-MarkdownFile
             [Console]::WriteLine("Added [+] [Link: $Name]")
         }
     }
+
+    Class MarkdownPictureEntry
+    {
+        [UInt32]           $Index
+        [String]            $Date
+        [String]            $Name
+        [String]            $Link
+        [String]           $Image
+        MarkdownPictureEntry([UInt32]$Index,[String]$Date,[String]$Name,[String]$Link)
+        {
+            $This.Index    = $Index
+            $This.Date     = $Date
+            $This.Name     = $Name
+            $This.Link     = $Link
+            $This.Image    = "![{0}]({1})" -f $Link.Split("/")[-1], $Link
+        }
+        [String] ToString()
+        {
+            Return "{0}/{1}" -f $This.Date, $This.Name
+        }
+    }
+
+    Class MarkdownPictureList : MarkdownTypeList
+    {
+        MarkdownPictureList([UInt32]$Index,[String]$Name) : base($Index,$Name)
+        {
+    
+        }
+        [Object] MarkdownPictureEntry([UInt32]$Index,[String]$Date,[String]$Name,[String]$Link)
+        {
+            Return [MarkdownPictureEntry]::New($Index,$Date,$Name,$Link)
+        }
+        Add([String]$Date,[String]$Name,[String]$Link)
+        {
+            $This.Output += $This.MarkdownPictureEntry($This.Output.Count,$Date,$Name,$Link)
+    
+            [Console]::WriteLine("Added [+] [Picture: $Name]")
+        }
+    }
     
     Class MarkdownAnnotationEntryLine
     {
@@ -574,12 +616,28 @@ Function New-MarkdownFile
             [Console]::WriteLine("Added [+] [Annotation: $Name]")
         }
     }
+
+    Class MarkdownThumbnail
+    {
+        [UInt32] $Enabled
+        [String]    $Link
+        MarkdownThumbnail()
+        {
+
+        }
+        SetThumbnail([String]$Link)
+        {
+            $This.Enabled = 1
+            $This.Link    = $Link
+        }
+    }
     
     Class MarkdownFile
     {
         [String]        $Name
         [String]        $Date
         [String] $Description
+        [Object]   $Thumbnail
         Hidden [Object] $Slot
         [Int32]     $Selected
         [Object]      $Output
@@ -601,9 +659,18 @@ Function New-MarkdownFile
         {
             $This.Description = $Description
         }
+        SetThumbnail([String]$Url)
+        {
+            $This.Thumbnail.SetThumbnail($Url)
+        }
         Clear()
         {
-            $This.Output = @( )
+            $This.Thumbnail = $This.MarkdownThumbnail()
+            $This.Output    = @( )
+        }
+        [Object] MarkdownThumbnail()
+        {
+            Return [MarkdownThumbnail]::New()
         }
         [Object] MarkdownSlotList()
         {
@@ -629,6 +696,10 @@ Function New-MarkdownFile
         {
             Return [MarkdownScriptList]::New($This.Output.Count,"Script")
         }
+        [Object] MarkdownPictureList()
+        {
+            Return [MarkdownPictureList]::New($This.Output.Count,"Picture")
+        }
         [Object] MarkdownLinkList()
         {
             Return [MarkdownLinkList]::New($This.Output.Count,"Link")
@@ -651,8 +722,9 @@ Function New-MarkdownFile
                 2 { $This.MarkdownTranscriptionList() }
                 3 { $This.MarkdownDocumentList()      }
                 4 { $This.MarkdownScriptList()        }
-                5 { $This.MarkdownLinkList()          }
-                6 { $This.MarkdownAnnotationList()    }
+                5 { $This.MarkdownPictureList()       }
+                6 { $This.MarkdownLinkList()          }
+                7 { $This.MarkdownAnnotationList()    }
             }
     
             If ($Item.Name -in $This.Output.Name)
@@ -681,6 +753,7 @@ Function New-MarkdownFile
                 Transcription { $This.MarkdownTranscriptionList() }
                 Document      { $This.MarkdownDocumentList()      }
                 Script        { $This.MarkdownScriptList()        }
+                Picture       { $This.MarkdownPictureList()       }
                 Link          { $This.MarkdownLinkList()          }
                 Annotation    { $This.MarkdownAnnotationList()    }
             }
@@ -749,21 +822,30 @@ Function New-MarkdownFile
             }
     
             # Label Loop
-            If ($C -eq 1)
+            Switch ($C)
             {
-                $This.Out($H,$This.GetId($This.Output[0]))
-            }
-    
-            If ($C -gt 1)
-            {
-                $Head = ForEach ($X in 0..($C-1))
+                {$_ -eq 1}
                 {
-                    $This.GetId($This.Output[$X])
+                    $This.Out($H,$This.GetId($This.Output[0]))
                 }
-    
-                $This.Out($H,($Head -join " - "))
+                {$_ -gt 1}
+                {
+                    $Head = ForEach ($X in 0..($C-1))
+                    {
+                        $This.GetId($This.Output[$X])
+                    }
+        
+                    $This.Out($H,($Head -join " - "))
+                }
             }
             $This.Out($H,"")
+
+            # Thumbnail
+            If ($This.Thumbnail.Enabled)
+            {
+                $This.Out($H,('<img width="66%" src="{0}">' -f $This.Thumbnail.Link))
+                $This.Out($H,"")
+            }
     
             # Content Loop
             ForEach ($X in 0..($C-1))
