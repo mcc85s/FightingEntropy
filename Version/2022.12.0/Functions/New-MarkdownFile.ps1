@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-03 18:02:25                                                                  //
+\\  Date       : 2023-04-03 18:27:25                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-MarkdownFile
@@ -843,7 +843,9 @@ Function New-MarkdownFile
             # Thumbnail
             If ($This.Thumbnail.Enabled)
             {
-                $This.Out($H,('<img width="66%" src="{0}">' -f $This.Thumbnail.Link))
+                $This.Out($H,'<p align="center" width="100%">')
+                $This.Out($H,('    <img width="66%" src="{0}">' -f $This.Thumbnail.Link))
+                $This.Out($H,'</p>')
                 $This.Out($H,"")
             }
     
