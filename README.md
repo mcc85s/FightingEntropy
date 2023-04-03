@@ -1,12 +1,10 @@
-[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
-
 <p align="center" width="100%">
     <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
 </p>
 
 | Logo    | Company                        | Project                  | Objective                                           |
 |:--------|:-------------------------------|:-------------------------|:----------------------------------------------------|
-| ![logo] | **Secure Digits Plus (π) LLC** | **[FightingEntropy(π)]** | Beginning the fight against ID theft and cybercrime |
+| ![https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp] | **Secure Digits Plus (π) LLC** | **[FightingEntropy(π)]** | Beginning the fight against ID theft and cybercrime |
 
 # About
 **[FightingEntropy(π)]** is a modification for **Windows PowerShell** that is meant for various tasks related to:
@@ -57,7 +55,7 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 These various videos demonstrate some portion of [FightingEntropy(π)]
 | Index | Date    | Name                                      | Url                          |
 |:------|:--------|:------------------------------------------|:-----------------------------|
-|     0 | 01/2023 | PowerShell Virtualization Lab + FEDCPromo |  https://youtu.be/9v7uJHF-cGQ 
+|     0 | 01/2023 | PowerShell Virtualization Lab + FEDCPromo | https://youtu.be/9v7uJHF-cGQ |
 |     1 | 12/2021 | [FightingEntropy(π)][FEInfrastructure]    | https://youtu.be/6yQr06_rA4I |
 |     2 | 10/2021 | Advanced Domain Controller Promotion      | https://youtu.be/O8A2PDfQOBs |
 |     3 | 03/2021 | A Deep Dive: PowerShell and XAML          | https://youtu.be/NK4NuQrraCI |
