@@ -1,10 +1,12 @@
+[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
+
 <p align="center" width="100%">
     <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
 </p>
 
 | Logo    | Company                        | Project                  | Objective                                           |
 |:--------|:-------------------------------|:-------------------------|:----------------------------------------------------|
-| ![logo](https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp) | **Secure Digits Plus (π) LLC** | **[FightingEntropy(π)]** | Beginning the fight against ID theft and cybercrime |
+| ![logo] | **Secure Digits Plus (π) LLC** | **[FightingEntropy(π)]** | Beginning the fight against ID theft and cybercrime |
 
 # About
 **[FightingEntropy(π)]** is a modification for **Windows PowerShell** that is meant for various tasks related to:
