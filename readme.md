@@ -64,6 +64,7 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 You're rollin'.
 
 2) Once the [**module is loaded into memory**], enter the following:
+
 | Operation  | Instructions        |
 |:-----------|:--------------------|
 | Install    | `$Module.Install()` | 
