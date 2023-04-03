@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-04-03 18:07:20                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-04-03 18:47:51                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -10,40 +10,42 @@
     _____________________________________________________________________________________________
     | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2022.12.0/FightingEntropy.ps1 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    [FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to:
+    [FightingEntropy(π)] is a modification for [Windows PowerShell] that is meant for various tasks related to:
     
-    [+] system administration
-    [+] networking
-    [+] virtualization
-    [+] security
-    [+] graphic design
-    [+] system management/maintenance
+    [+] [system administration]
+    [+] [networking]
+    [+] [virtualization]
+    [+] [security]
+    [+] [graphic design]
+    [+] [system management/maintenance]
 
-    ...it'll eventually be usable on ALL platforms where PowerShell is able to be deployed.
-    _____________________________________________________________________________
-    |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | Demo                                                                      |
-    |___________________________________________________________________________|
-    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | Date     | Name                            | Url                          |
-    |__________|_________________________________|______________________________|
-    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | 10/28/22 | [FightingEntropy(π)][2022.10.1] | https://youtu.be/S7k4lZdPE-I |
-    |__________|_________________________________|______________________________|
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    This module is rather experimental and incorporates a lot of moving parts, so it has many areas of development. 
+    ...it'll eventually be usable on ALL platforms where [PowerShell] is able to be deployed.
+    ______________________________________________________________________________
+    |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    | Demo                                                                       |
+    |____________________________________________________________________________|
+    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    | Date     | Name                             | Url                          |
+    |__________|__________________________________|______________________________|
+    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    | 10/28/22 | [FightingEntropy(π)][2022.10.1]  | https://youtu.be/S7k4lZdPE-I |
+    | 04/03/23 | Virtualization Lab - TCP Session | https://youtu.be/09c-fFbEQrU |
+    |__________|__________________________________|______________________________|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    This module is rather [experimental] and incorporates [a lot of moving parts],
+    so it has [many areas of development]. 
     
-    The end goal of this module, is to provide protection against:
+    The [end goal] of this [module], is to provide [heightened security] and [protection] against:
 
-    [+] identity theft
-    [+] cybercriminals
-    [+] douchebags
-    [+] malware
-    [+] viruses
-    [+] ransomware
-    [+] hackers who have malicious intent
+    [+] [identity theft]
+    [+] [cybercriminals]
+    [+] [douchebags]
+    [+] [malware]
+    [+] [viruses]
+    [+] [ransomware]
+    [+] [hackers who have malicious intent]
 
-    Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals. 
+    Many of the tools in the wild are able to be circumvented by some of these [hackers] and [cybercriminals]. 
     If you don't believe me...? That's fine. 
     
     That's why this link to a particular website about a particular event, exists.
@@ -52,12 +54,12 @@
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     Even the experts make mistakes.
 
-    [FightingEntropy(π)] is meant to extend many of the capabilities that come with Windows.
+    [FightingEntropy(π)] is meant to extend many of the capabilities that come with [Windows].
 
-    This file acts as the installation/removal process as well as for performing validation and testing purposes.
+    This file acts as the [installation/removal] process as well as for performing [validation] and [testing] purposes.
 
-    It is effectively a shell of the entire module, and can be used to implement updates to the module itself, in a 
-    similar manner to how (Continuous Integration/Continuous Development) works (still a work in progress).
+    It is effectively a [shell] of the [entire module], and can be used to implement [updates] to the [module itself],
+    in a similar manner to how (Continuous Integration/Continuous Development) works (still a work in progress).
     __________________________________________________________________________
     | [FightingEntropy(π)][2022.12.0]                                        |
     |========================================================================|
@@ -65,6 +67,36 @@
     |-----------|---------------------|--------------------------------------|
     | 2022.12.0 | 12/14/2022 14:26:18 | 5e6c9634-1c88-49a2-8794-2970095d8793 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _________________
+    | Prerequisites |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    1) A system running [Windows PowerShell] on: 
+       - [Windows 10/11]
+       - [Windows Server 2016/2019/2021]
+
+    2) [Execution Policy] must be set to [bypass]
+
+    3) Must be running a [PowerShell] session with [administrative privileges]
+    ________________
+    | Installation |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    1) [Load the module into memory], which can be done be using this command:
+       
+    irm https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1?raw=true | iex 
+
+    ...or just (copying + pasting) the content of the file...
+    
+    https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1
+    
+    ...into the [PowerShell] session, and pressing <Enter>
+
+    2) Once the [module is loaded into memory], enter the following:
+    __________________________________
+    | Operation  | Instructions      |
+    |============|===================|
+    | Install    | $Module.Install() | 
+    | Remove     | $Module.Remove()  |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     _____________________________________________________________________________________________________
     | Todo                                                                                              |
     |---------------------------------------------------------------------------------------------------|
@@ -1649,7 +1681,7 @@ Function FightingEntropy.Module
                     ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
-                    ("New-MarkdownFile.ps1"            , "7C8DDD20E192DC1AE6F75B718826B4A9766A604FC1165E929757B070AFD36F90") ,
+                    ("New-MarkdownFile.ps1"            , "425D7B38B3E5EDB06A13704881E6911201C445E75044FE93228A6F4C41E8A497") ,
                     ("New-TranscriptionCollection.ps1" , "DEB5CA810E582819BB7A86C7860BE9C14AAA1B46F59A0FB2BBE414C67321F16B") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
@@ -2307,7 +2339,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-03 18:07:20 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-03 18:47:51 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
