@@ -42,11 +42,33 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 |:--------------|:----------------------|:---------------------------------------|
 | **2022.12.0** | `12/14/2022 14:26:18` | `5e6c9634-1c88-49a2-8794-2970095d8793` |
 
-# Instructions
-| Operation  | PowerShell Instructions
-|:-----------|:----------------------------------------------------------------------------------------------------------|
-| Install    | `Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true) ` | 
-| Remove     | `Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)  ` |
+# Prerequisites
+1) A system running [**Windows PowerShell**] on: 
+- [**Windows 10/11**]
+- [**Windows Server 2016/2019/2021**]
+   
+2) [**Execution Policy**] must be set to [**bypass**]
+
+3) Must be running a [**PowerShell**] session with [**administrative privileges**]
+
+# Installation
+1) [**Load the module into memory**], which can be done be using this command:
+   
+`irm https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1?raw=true | iex`
+
+...or just (copying + pasting) the content of the file...
+
+`https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1`
+
+...into the [**PowerShell**] session, and pressing <Enter>
+
+2) Once the [**module is loaded into memory**], enter the following:
+____________________________________
+| Operation  | Instructions        |
+|:-----------|:--------------------|
+| Install    | `$Module.Install()` | 
+| Remove     | `$Module.Remove()`  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # Author
 | Name                | Motto                                          | Contact                    | Resume           |
