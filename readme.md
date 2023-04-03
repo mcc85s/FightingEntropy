@@ -35,7 +35,7 @@ The end goal of this module, is to provide protection against:
 Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals.
 If you don't believe me...? That's fine. That's why [this link to a particular website about a particular event](https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach), exists.
 
-**[FightingEntropy(π)]** is meant to extend many of the capabilities that come with Windows.
+**[FightingEntropy(π)]** is meant to extend many of the capabilities that come with [**Windows**].
 
 # Current (Alpha)
 | Version       | Date                  | Guid                                   |
@@ -64,12 +64,11 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 You're rollin'.
 
 2) Once the [**module is loaded into memory**], enter the following:
-____________________________________
+3) 
 | Operation  | Instructions        |
 |:-----------|:--------------------|
 | Install    | `$Module.Install()` | 
 | Remove     | `$Module.Remove()`  |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # Author
 | Name                | Motto                                          | Contact                    | Resume           |
