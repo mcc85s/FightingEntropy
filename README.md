@@ -60,7 +60,8 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 
 `https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1`
 
-...into the [**PowerShell**] session, and pressing <Enter>
+...into the [**PowerShell**] session, and pressing [**&lt:Enter&gt;**]... and then [**boom**].
+You're rollin'.
 
 2) Once the [**module is loaded into memory**], enter the following:
 ____________________________________
