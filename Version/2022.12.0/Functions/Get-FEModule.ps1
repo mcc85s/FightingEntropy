@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-03 18:06:18                                                                  //
+\\  Date       : 2023-04-03 18:42:22                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1567,7 +1567,7 @@ Function Get-FEModule
                     ("New-FEConsole.ps1"               , "7B67102B7ED9856310B52FC2FAFA7A691AB75649F98C58036E1DCBF3BD7892A2") ,
                     ("New-FEFormat.ps1"                , "C4BFF5D8FBAC5ADBB79FEF848CE64A3C333C351EC1F50AC02468FCC0341AAAF4") ,
                     ("New-FEInfrastructure.ps1"        , "04C48E828FEF3DDCC6B07D914D088AB471B6C768C10F2DD38FD230A5B0566F67") ,
-                    ("New-MarkdownFile.ps1"            , "7C8DDD20E192DC1AE6F75B718826B4A9766A604FC1165E929757B070AFD36F90") ,
+                    ("New-MarkdownFile.ps1"            , "425D7B38B3E5EDB06A13704881E6911201C445E75044FE93228A6F4C41E8A497") ,
                     ("New-TranscriptionCollection.ps1" , "DEB5CA810E582819BB7A86C7860BE9C14AAA1B46F59A0FB2BBE414C67321F16B") ,
                     ("Search-WirelessNetwork.ps1"      , "614FFE3CDC091001E46CEEBAF69AC2FE8C22D517E9F97DD85CBA8B037EC890AA") ,
                     ("Set-AdminAccount.ps1"            , "D217F33EE0BC5A00543B0EB8E99CC795D0035D835F0A0A6A8DD7DEF1F85F30B8") ,
