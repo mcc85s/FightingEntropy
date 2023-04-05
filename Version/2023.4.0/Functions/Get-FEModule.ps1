@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 16:13:19                                                                  //
+\\  Date       : 2023-04-05 16:28:24                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -2240,68 +2240,82 @@ Function Get-FEModule
                 RequiredAssemblies   = $This.Binaries()
             }
         }
-                Latest()
+        Latest()
+        {
+            If (![System.IO.Directory]::Exists($This.Root.Resource))
             {
-                If (![System.IO.Directory]::Exists($This.Root.Resource))
+                $This.Root.Resource.Create()
+            }
+
+            $This.Write("Getting [~] Versions")
+            $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source,$This.Version.ToString()
+            $Content   = (Invoke-RestMethod $String).Split("`n")
+            $List      = @( )
+
+            ForEach ($Line in $Content)
+            {
+                If ($Line -match "https.+\.zip")
                 {
-                    $This.Root.Resource.Create()
+                    $List += $This.ArchiveEntry($Line)
                 }
+            }
 
-                $This.Write("Getting [~] Versions")
-                $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source,$This.Version.ToString()
-                $Content   = (Invoke-RestMethod $String).Split("`n")
-                $List      = @( )
+            $Item      = ($List | Sort-Object Real)[-1]
 
-                ForEach ($Line in $Content)
-                {
-                    If ($Line -match "https.+\.zip")
-                    {
-                        $List += $This.ArchiveEntry($Line)
-                    }
-                }
+            $This.Write("Retrieved [~] File: [$($Item.Name)]")
 
-                $Item      = ($List | Sort-Object Real)[-1]
+            Write-Output $Item | Format-List
 
-                $This.Write("Retrieved [~] File: [$($Item.Name)]")
+            $Src       = "{0}?raw=true" -f $Item.Link
+            $Target    = "{0}\{1}" -f $This.Root.Resource.Fullname, $Item.Name
 
-                Write-Output $Item | Format-List
+            $This.Write("Downloading [~] Archive: [$($Item.Date)]")
+            Start-BitsTransfer -Source $Src -Destination $Target
 
-                $Src       = "{0}?raw=true" -f $Item.Link
-                $Target    = "{0}\{1}" -f $This.Root.Resource.Fullname, $Item.Name
-
-                $This.Write("Downloading [~] Archive: [$($Item.Date)]")
-                Start-BitsTransfer -Source $Src -Destination $Target
-
-                $This.Write("Hashing [~]: [$($Item.Hash)]")
-                $Hash      = Get-FileHash $Target | % Hash
-                If ($Item.Hash -notmatch $Hash)
-                {
-                    $This.Write(1,"Error [!] Invalid hash")
-                    [System.IO.File]::Delete($Target)
-                }
-
-                $This.Write(2,"Expanding [~] [$($This.Root.Resource)]")
-                Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
-
-                $This.Write(2,"Deleting [~] [$($Item.Name)]")
+            $This.Write("Hashing [~]: [$($Item.Hash)]")
+            $Hash      = Get-FileHash $Target | % Hash
+            If ($Item.Hash -notmatch $Hash)
+            {
+                $This.Write(1,"Error [!] Invalid hash")
                 [System.IO.File]::Delete($Target)
+            }
 
-                $This.Manifest.Validate()
+            $This.Write(2,"Expanding [~] [$($This.Root.Resource)]")
+            Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
 
-                ForEach ($Object in $This.Root.List() | ? Name -ne "Resource")
+            $This.Write(2,"Deleting [~] [$($Item.Name)]")
+            [System.IO.File]::Delete($Target)
+
+            $This.Manifest.Validate()
+
+            ForEach ($Object in $This.Root.List() | ? Name -ne "Resource")
+            {
+                $ID   = $Object.Name
+                $Item = $This.Root.$ID
+                If ($Object.Exists -eq 0)
                 {
-                    $ID   = $Object.Name
-                    $Item = $This.Root.$ID
-                    If ($Object.Exists -eq 0)
-                    {
-                        $This.InstallItem($Item)
-                    }
+                    $This.InstallItem($Item)
                 }
             }
-            [Object] ArchiveEntry([String]$Line)
+
+            $This.Update()
+        }
+        Update()
+        {
+            $List = $This.Validation()
+            $Pull = $List | ? Match -eq 0
+            ForEach ($File in $Pull)
             {
-                Return [MarkdownArchiveEntry]::New($Line)
+                $Folder = $This.Manifest.Output | ? Type -eq $File.Type
+                $Item   = $Folder.Item | ? Name -eq $File.Name
+                $Item.Download()
+                $Item.Write()
             }
+        }
+        [Object] ArchiveEntry([String]$Line)
+        {
+            Return [MarkdownArchiveEntry]::New($Line)
+        }
         [Object] ValidateFile([Object]$File)
         {
             Return [ValidateFile]::New($File)
