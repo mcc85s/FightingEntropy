@@ -1,9 +1,9 @@
-
+# [FightingEntropy(π)][2023.4.0]
 ![label](https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg)
 
-| Version   | Date                | Guid                                 |
-|-----------|---------------------|--------------------------------------|
-| 2023.4.0  | 04/03/2023 18:53:49 | 75f64b43-3b02-46b1-b6a2-9e86cccf4811 |
+| Version    | Date                  | Guid                                 |
+|:-----------|:----------------------|:-------------------------------------|
+| `2023.4.0` | `04/03/2023 18:53:49` | 75f64b43-3b02-46b1-b6a2-9e86cccf4811 |
 
 # Archive
 | Date                | Name/Link                                                                                                                   | Hash                                                             |
