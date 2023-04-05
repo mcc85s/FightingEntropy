@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:34:23                                                                  //
+\\  Date       : 2023-04-05 16:13:19                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -186,9 +186,9 @@ Function Get-FEModule
         }
     }
 
-    # // _____________________________________________________________________
+    # // =====================================================================
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================
 
     Class ThemeBlock
     {
@@ -223,9 +223,9 @@ Function Get-FEModule
         }
     }
 
-    # // _______________________________________________
+    # // ===============================================
     # // | Represents a 1x[track] in a stack of tracks |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===============================================
 
     Class ThemeTrack
     {
@@ -242,9 +242,9 @@ Function Get-FEModule
         }
     }
 
-    # // _____________________________________________
+    # // =============================================
     # // | Generates an actionable write-host object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =============================================
 
     Class ThemeStack
     {
@@ -390,9 +390,9 @@ Function Get-FEModule
         }
     }
     
-    # // ____________________________________________________
-    # // | Property object which includes source and index  |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===================================================
+    # // | Property object which includes source and index |
+    # // ===================================================
 
     Class OSProperty
     {
@@ -413,9 +413,9 @@ Function Get-FEModule
         }
     }
 
-    # // __________________________________________________________
+    # // ==========================================================
     # // | Container object for indexed OS (property/value) pairs |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==========================================================
     
     Class OSPropertySet
     {
@@ -439,10 +439,9 @@ Function Get-FEModule
         }
     }
 
-    # // _______________________________________________________
-    # // | Collects various details about the operating system |
-    # // | specifically for cross-platform compatibility       |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================================================
+    # // | Collects various details about the operating system specifically for cross-platform compatibility |
+    # // =====================================================================================================
 
     Class OS
     {
@@ -553,9 +552,9 @@ Function Get-FEModule
         }
     }
 
-    # // ____________________________________________________________
+    # // ============================================================
     # // | Meant to determine longest file name and provide spacing |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ============================================================
 
     Class ManifestListItem
     {
@@ -572,9 +571,9 @@ Function Get-FEModule
         }
     }
 
-    # // ______________________________________________________________
+    # // ==============================================================
     # // | Manifest file -> filesystem object (collection/validation) |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==============================================================
 
     Class ManifestFile
     {
@@ -627,7 +626,31 @@ Function Get-FEModule
         {
             Try
             {
-                $This.Content = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
+                $xContent = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
+
+                If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+                {
+                    $This.Content = $xContent
+                }
+                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
+                {
+                    $Array = $xContent -Split "`n"
+                    $Ct    = $Array.Count
+                    Do
+                    {
+                        If ($Array[$Ct] -notmatch "\w")
+                        {
+                            $Ct --
+                        }
+                    }
+                    Until ($Array[$Ct] -match "\w")
+
+                    $This.Content = $Array[0..($Ct)] -join "`n"
+                }
+                Else
+                {
+                    $This.Content = $xContent
+                }
             }
             Catch
             {
@@ -651,6 +674,10 @@ Function Get-FEModule
                 If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
                 {
                     [System.IO.File]::WriteAllBytes($This.Fullname,[Byte[]]$This.Content)
+                }
+                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
+                {
+                    [System.IO.File]::WriteAllText($This.Fullname,$This.Content)
                 }
                 Else
                 {
@@ -677,6 +704,11 @@ Function Get-FEModule
                 {
                     $This.Content = [System.IO.File]::ReadAllBytes($This.Fullname)
                 }
+                ElseIf ($This.Name -match "\.+(xml|txt|cs)")
+                {
+                    $This.Content = [System.IO.File]::ReadAllText($This.Fullname,
+                                                                  [System.Text.UTF8Encoding]$False)
+                }
                 Else
                 {
                     $This.Content = [System.IO.File]::ReadAllLines($This.Fullname,
@@ -694,9 +726,9 @@ Function Get-FEModule
         }
     }
 
-    # // ________________________________________
+    # // ========================================
     # // | Manifest folder -> filesystem object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================
 
     Class ManifestFolder
     {
@@ -774,9 +806,9 @@ Function Get-FEModule
         }
     }
 
-    # // _____________________________________________________________________
+    # // =====================================================================
     # // | File manifest container, laid out for hash (insertion+validation) |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================
 
     Class ManifestController
     {
@@ -825,15 +857,33 @@ Function Get-FEModule
             $D = "Index Type Name Hash Exists Fullname Source Match" -Split " "
             Return $This.Output | % Item | Select-Object $D
         }
+        Validate()
+        {
+            ForEach ($Folder in $This.Output)
+            {
+                $Folder.Exists = [System.IO.Directory]::Exists($Folder.Fullname)
+                If ($Folder.Exists)
+                {
+                    ForEach ($File in $Folder.Item)
+                    {
+                        $File.Exists = [System.IO.File]::Exists($File.Fullname)
+                        If ($File.Exists)
+                        {
+                            $File.GetContent()
+                        }
+                    }
+                }
+            }
+        }
         [String] ToString()
         {
             Return "<FightingEntropy.Module.ManifestController>"
         }
     }
 
-    # // ___________________________________
+    # // ===================================
     # // | Template for registry injection |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===================================
 
     Class RegistryTemplate
     {
@@ -876,10 +926,10 @@ Function Get-FEModule
         }
     }
 
-    # // __________________________________________________
+    # // ==================================================
     # // | Represents individual paths to the module root |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
+    # // ==================================================
+
     Class RootProperty
     {
         Hidden [UInt32] $Index
@@ -949,9 +999,9 @@ Function Get-FEModule
         }
     }
 
-    # // ________________________________________________________
+    # // ========================================================
     # // | Represents a collection of paths for the module root |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
 
     Class Root
     {
@@ -996,9 +1046,9 @@ Function Get-FEModule
         }
     }
 
-    # // ___________________________________________
+    # // ===========================================
     # // | Works as a PowerShell Registry provider |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================
 
     Class RegistryKeyTemp
     {
@@ -1067,9 +1117,9 @@ Function Get-FEModule
         }
     }
     
-    # // ________________________________________________________
+    # // ========================================================
     # // | Represents an individual registry key for the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
 
     Class RegistryKeyProperty
     {
@@ -1089,9 +1139,9 @@ Function Get-FEModule
         }
     }
 
-    # // ___________________________________________________________
+    # // ===========================================================
     # // | Represents a collection of registry keys for the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================================
 
     Class RegistryKey
     {
@@ -1194,9 +1244,9 @@ Function Get-FEModule
         }
     }
 
-    # // ___________________________________________
+    # // ===========================================
     # // | Collects/creates versions of the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================
 
     Class FEVersion
     {
@@ -1226,7 +1276,7 @@ Function Get-FEModule
         {
             $Pattern = Switch ($Type)
             {
-                0 { "\d{4}\.\d{2}\.\d+" }
+                0 { "\d{4}\.\d{1,}\.\d{1,}" }
                 1 { "\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}" }
                 2 { @(8,4,4,4,12 | % { "[a-f0-9]{$_}" }) -join '-' }
             }
@@ -1241,9 +1291,10 @@ Function Get-FEModule
         } 
     }
 
-    # // ________________________________________________________
+    # // ========================================================
     # // | Specifically used for file hash validation/integrity |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
+
     Class ValidateFile
     {
         [UInt32]           $Index
@@ -1276,6 +1327,49 @@ Function Get-FEModule
             }
 
             Return Get-FileHash $Path | % Hash
+        }
+    }
+
+    # // ===============================================================
+    # // | Specifically meant to categorize available version archives |
+    # // ===============================================================
+
+    Class MarkdownArchiveEntry
+    {
+        Hidden [DateTime]   $Real
+        [String]            $Date
+        [String]            $Name
+        [String]            $Link
+        Hidden [String] $NameLink
+        [String]            $Hash
+        MarkdownArchiveEntry([String]$Date,[String]$Name,[String]$Hash,[String]$Link)
+        {
+            $This.Date     = $Date
+            $This.Real     = [DateTime]$This.Date
+            $This.Name     = $Name
+            $This.Link     = $Link
+            $This.NameLink = "[**{0}**]({1})" -f $This.Name,$This.Link
+            $This.Hash     = $Hash
+        }
+        MarkdownArchiveEntry([String]$Line)
+        {
+            $This.Date     = [Regex]::Matches($Line,"\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2}").Value
+            $This.Real     = [DateTime]$This.Date
+            $This.Name     = [Regex]::Matches($Line,"\*\*\d{4}\-\d{2}\-\d{2}_\d{6}.zip\*\*").Value.Trim("*")
+            $This.Link     = [Regex]::Matches($Line,"https.+.zip").Value
+            $This.NameLink = "[**{0}**]({1})" -f $This.Name,$This.Link
+            $This.Hash     = [Regex]::Matches($Line,"[A-F0-9]{64}").Value
+        }
+        [String] Prop([String]$Property,[String]$Char)
+        {
+            $Prop = $This.$Property
+            Return $Prop.PadRight($Prop.Length,$Char)
+        }
+        [String[]] GetOutput()
+        {
+            Return "| {0} | {1} | {2} |" -f $This.Prop("Date"," "),
+                                            $This.Prop("NameLink"," "),
+                                            $This.Prop("Hash"," ")
         }
     }
 
@@ -1811,7 +1905,7 @@ Function Get-FEModule
                         {
                             $This.Update(1,"[@] Registry : $($Item.Fullname) ")
                             $This.Update(0,"                                                                                                       ")
-    
+
                             $Key = $This.Registry.KeyTemp($Item.Fullname)
                             $Key.Open()
                             $Key.Create()
@@ -1859,7 +1953,7 @@ Function Get-FEModule
                             $Object.Description  = $This.Description
                             $Object.IconLocation = $This._Graphic("icon.ico").Fullname
                             $Object.Save()
-    
+
                             $Bytes               = [System.IO.File]::ReadAllBytes($Item.Fullname)
                             $Bytes[0x15]         = $Bytes[0x15] -bor 0x20
 
@@ -1907,7 +2001,7 @@ Function Get-FEModule
             $This.Write(2,"Installing [~] $($This.Label())")
 
             $Setting = [System.Net.ServicePointManager]::SecurityProtocol
-                       [System.Net.ServicePointManager]::SecurityProtocol = 3072
+                    [System.Net.ServicePointManager]::SecurityProtocol = 3072
 
             $This.Update(0,"====================================================================================================== ")
             $This.InstallItem($This.Root.Resource)
@@ -1999,7 +2093,7 @@ Function Get-FEModule
                                 $This.Update(0,"                                                                                                       ")
                                 $Section.Remove()
                             }
-    
+
                             $Item.Remove()
                         }
                         Registry
@@ -2146,6 +2240,68 @@ Function Get-FEModule
                 RequiredAssemblies   = $This.Binaries()
             }
         }
+                Latest()
+            {
+                If (![System.IO.Directory]::Exists($This.Root.Resource))
+                {
+                    $This.Root.Resource.Create()
+                }
+
+                $This.Write("Getting [~] Versions")
+                $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source,$This.Version.ToString()
+                $Content   = (Invoke-RestMethod $String).Split("`n")
+                $List      = @( )
+
+                ForEach ($Line in $Content)
+                {
+                    If ($Line -match "https.+\.zip")
+                    {
+                        $List += $This.ArchiveEntry($Line)
+                    }
+                }
+
+                $Item      = ($List | Sort-Object Real)[-1]
+
+                $This.Write("Retrieved [~] File: [$($Item.Name)]")
+
+                Write-Output $Item | Format-List
+
+                $Src       = "{0}?raw=true" -f $Item.Link
+                $Target    = "{0}\{1}" -f $This.Root.Resource.Fullname, $Item.Name
+
+                $This.Write("Downloading [~] Archive: [$($Item.Date)]")
+                Start-BitsTransfer -Source $Src -Destination $Target
+
+                $This.Write("Hashing [~]: [$($Item.Hash)]")
+                $Hash      = Get-FileHash $Target | % Hash
+                If ($Item.Hash -notmatch $Hash)
+                {
+                    $This.Write(1,"Error [!] Invalid hash")
+                    [System.IO.File]::Delete($Target)
+                }
+
+                $This.Write(2,"Expanding [~] [$($This.Root.Resource)]")
+                Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
+
+                $This.Write(2,"Deleting [~] [$($Item.Name)]")
+                [System.IO.File]::Delete($Target)
+
+                $This.Manifest.Validate()
+
+                ForEach ($Object in $This.Root.List() | ? Name -ne "Resource")
+                {
+                    $ID   = $Object.Name
+                    $Item = $This.Root.$ID
+                    If ($Object.Exists -eq 0)
+                    {
+                        $This.InstallItem($Item)
+                    }
+                }
+            }
+            [Object] ArchiveEntry([String]$Line)
+            {
+                Return [MarkdownArchiveEntry]::New($Line)
+            }
         [Object] ValidateFile([Object]$File)
         {
             Return [ValidateFile]::New($File)
