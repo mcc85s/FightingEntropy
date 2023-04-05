@@ -1,4 +1,4 @@
-# [FightingEntropy(π)][2023.4.0]
+# **[FightingEntropy(π)][2023.4.0]**
 ![label](https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg)
 
 | Version    | Date                  | Guid                                 |
