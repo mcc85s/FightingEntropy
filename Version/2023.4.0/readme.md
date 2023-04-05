@@ -1,4 +1,4 @@
-![label](https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg)
+[label](https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg)
 
 # Archive
 | Date                | Name/Link                                                                                                                   | Hash                                                             |
