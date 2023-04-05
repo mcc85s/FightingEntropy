@@ -5,19 +5,19 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                       \\
+\\  Date       : 2023-04-05 09:52:35                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-MDTModule.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Retrieves the location of the main MDTToolkit.psd file, and installs
                  (MDT/WinADK/WinPE) if they are not present
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A

@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 08:35:382022-12-14 14:19:11                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 09:41:15                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-AssemblyList.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : This function collects the currently loaded assemblies in the PowerShell host.
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A 

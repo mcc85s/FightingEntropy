@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 15:55:19                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 10:04:38                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-FeAdInstance.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Populate Active Directory with authorized nodes, users, and computers
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2023-01-23
-    Modified   : 2023-03-28
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Finish and test

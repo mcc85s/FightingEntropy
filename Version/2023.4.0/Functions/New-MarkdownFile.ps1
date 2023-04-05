@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-03 18:27:25                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                       \\
+\\  Date       : 2023-04-05 10:16:12                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-MarkdownFile
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For categorizing information to create a new markdown file
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2023-03-16
-    Modified   : 2023-04-03
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A

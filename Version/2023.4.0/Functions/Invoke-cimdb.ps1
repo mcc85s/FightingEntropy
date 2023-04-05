@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-27 07:51:50                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 10:09:10                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Launches the [FightingEntropy(p)] Company Inventory Management Database
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2023-03-27
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Implement the newer version of the classes and GUI
@@ -122,7 +122,7 @@ Function Invoke-cimdb
     Class cimdbXaml
     {
         Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://(Company Information Management Database)" Height="680" Width="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" FontFamily="Consolas" Background="LightYellow">',
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://(Company Information Management Database)" Height="680" Width="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" FontFamily="Consolas" Background="LightYellow">',
         '    <Window.Resources>',
         '        <Style TargetType="ToolTip">',
         '            <Setter Property="Background" Value="#000000"/>',
@@ -258,7 +258,7 @@ Function Invoke-cimdb
         '                <RowDefinition Height="40"/>',
         '            </Grid.RowDefinitions>',
         '            <Button Grid.Row="0" Name="Tab_UID">',
-        '                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\sdplogo.png"/>',
+        '                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\sdplogo.png"/>',
         '            </Button>',
         '            <Button Grid.Row="1" Name="Tab_Client"    HorizontalContentAlignment="Right" Content="Client"/>',
         '            <Button Grid.Row="2" Name="Tab_Service"   HorizontalContentAlignment="Right" Content="Service"/>',

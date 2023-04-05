@@ -6,18 +6,18 @@ https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-04-02 15:29:32                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 10:20:37                                                                  //
  \\==================================================================================================// 
 
     FileName   : Start-TCPSession.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Creates a TCP session between a (server + client)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-03-30
-    Modified   : 2023-04-02
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : 

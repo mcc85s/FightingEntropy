@@ -5,19 +5,19 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 09:51:35                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FERole.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For extended information regarding the host operating system, 
                  and hosts specialized functions
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : To be completely phased out

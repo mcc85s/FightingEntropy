@@ -77,18 +77,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 10:16:46                                                                  //
  \\==================================================================================================// 
 
     FileName   : Search-WirelessNetwork.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For scanning wireless networks (eventually for use in a PXE environment)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : https://youtu.be/35EabWfh8dQ
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -137,7 +137,7 @@ Function Search-WirelessNetwork
     Class WirelessNetworkXaml
     {
         Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" FontFamily="Consolas" WindowStartupLocation="CenterScreen">',
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico" FontFamily="Consolas" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -307,7 +307,7 @@ Function Search-WirelessNetwork
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <Grid Margin="5">',
         '            <Grid.RowDefinitions>',
@@ -563,7 +563,7 @@ Function Search-WirelessNetwork
     Class PassphraseXaml
     {
         Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Margin" Value="10"/>',
@@ -641,7 +641,7 @@ Function Search-WirelessNetwork
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <GroupBox>',
         '            <Grid>',

@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-31 11:28:15                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                       \\
+\\  Date       : 2023-04-05 10:16:46                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-TranscriptionCollection
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For categorizing transcriptions of (a single/multiple) audio recording(s)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2023-03-19
-    Modified   : 2023-03-31
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A

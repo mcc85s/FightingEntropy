@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 15:33:50                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                       \\
+\\  Date       : 2023-04-05 09:52:02                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystem.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : This function performs multiple operations in order to either collect/export,
                  or import system information from a file, or memory object
                  [+] system snapshot
@@ -28,8 +28,8 @@
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2023-03-28
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Extend the number of possibilities for Param $Level

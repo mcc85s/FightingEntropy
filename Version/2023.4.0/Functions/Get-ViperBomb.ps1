@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 09:59:47                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-ViperBomb.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For managing system details, Windows services, and controls
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : AKA "System Control Extension Utility"
@@ -42,7 +42,7 @@ Function Get-ViperBomb
         '        Width="800" ',
         '        Topmost="True" ',
         '        BorderBrush="Black" ',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" ',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico" ',
         '        ResizeMode="NoResize" ',
         '        HorizontalAlignment="Center" ',
         '        WindowStartupLocation="CenterScreen">',
@@ -231,7 +231,7 @@ Function Get-ViperBomb
         '    <Grid>',
         '        <Grid.Background>',
         '            <ImageBrush Stretch="UniformToFill" ',
-        '                        ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
+        '                        ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <TabControl Margin="5">',
         '            <TabItem Header="System">',

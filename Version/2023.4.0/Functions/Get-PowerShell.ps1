@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 09:54:03                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-PowerShell.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Gets the current releases from the official PowerShell Github repository
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
-    Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -27,10 +27,13 @@ Function Get-PowerShell
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-        [Parameter(ParameterSetName=1)][ValidateSet("Stable","Preview")][String]$Type,
-        [Parameter(ParameterSetName=1)][String]$Version,
-        [Parameter(ParameterSetName=1)][ValidateSet("Windows","RHEL","Debian","Linux","macOS")][String]$OS,
-        [Parameter(ParameterSetName=1)][ValidateSet("x86","x64","x86_64","arm64","arm32")][String]$Architecture
+    [ValidateSet("Stable","Preview")]
+    [Parameter(ParameterSetName=1)][String]$Type,
+    [Parameter(ParameterSetName=1)][String]$Version,
+    [ValidateSet("Windows","RHEL","Debian","Linux","macOS")]
+    [Parameter(ParameterSetName=1)][String]$OS,
+    [ValidateSet("x86","x64","x86_64","arm64","arm32")]
+    [Parameter(ParameterSetName=1)][String]$Architecture
     )
 
     Class Architecture

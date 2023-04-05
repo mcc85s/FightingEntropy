@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-03-28 15:57:46                                                                  //
+//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
+\\  Date       : 2023-04-05 10:21:30                                                                  //
  \\==================================================================================================// 
 
     FileName   : Write-Element.ps1
-    Solution   : [FightingEntropy()][2022.12.0]
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For creating writing components
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s 
     Primary    : @mcc85s 
-    Created    : 2022-02-02 
-    Modified   : 2022-03-28
+    Created    : 2023-04-05
+    Modified   : 2023-04-05
     Demo       : N/A 
     Version    : 0.0.0 - () - Finalized functional version 1.
     TODO       : Testing various
