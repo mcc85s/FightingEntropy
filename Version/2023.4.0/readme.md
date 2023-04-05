@@ -1,4 +1,6 @@
-# [FightingEntropy(π)][2023.4.0]
+<p align="center" width="100%">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/edit/main/Version/2023.4.0/Docs/label.jpg">
+</p>
 
 # Archive
 | Date                | Name/Link                                                                                                                   | Hash                                                             |
