@@ -1,6 +1,4 @@
-<p align="center" width="100%">
-    <img width="100%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg">
-</p>
+![label](https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Docs/label.jpg)
 
 # Archive
 | Date                | Name/Link                                                                                                                   | Hash                                                             |
