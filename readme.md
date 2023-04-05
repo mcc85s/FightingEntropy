@@ -44,8 +44,8 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 # Versions
 | Version       | Date                  | Guid                                   |
 |:--------------|:----------------------|:---------------------------------------|
-| **2023.4.0**  | `04/03/2023 18:53:49` | `75f64b43-3b02-46b1-b6a2-9e86cccf4811` |
-| **2022.12.0** | `12/14/2022 14:26:18` | `5e6c9634-1c88-49a2-8794-2970095d8793` |
+| [**2023.4.0**](https://github.com/mcc85s/FightingEntropy/tree/main/Version/2023.4.0) | `04/03/2023 18:53:49` | `75f64b43-3b02-46b1-b6a2-9e86cccf4811` |
+| [**2022.12.0**](https://github.com/mcc85s/FightingEntropy/tree/main/Version/2022.12.0) | `12/14/2022 14:26:18` | `5e6c9634-1c88-49a2-8794-2970095d8793` |
 
 # Prerequisites
 1) A system running [**Windows PowerShell**] on: 
