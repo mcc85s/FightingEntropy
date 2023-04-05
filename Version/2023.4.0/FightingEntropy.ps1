@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-04-05 10:52:44                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-04-05 16:29:40                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -270,9 +270,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // _____________________________________________________________________
+    # // =====================================================================
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================
 
     Class ThemeBlock
     {
@@ -307,9 +307,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // _______________________________________________
+    # // ===============================================
     # // | Represents a 1x[track] in a stack of tracks |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===============================================
 
     Class ThemeTrack
     {
@@ -326,9 +326,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // _____________________________________________
+    # // =============================================
     # // | Generates an actionable write-host object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =============================================
 
     Class ThemeStack
     {
@@ -474,9 +474,9 @@ Function FightingEntropy.Module
         }
     }
     
-    # // ____________________________________________________
-    # // | Property object which includes source and index  |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===================================================
+    # // | Property object which includes source and index |
+    # // ===================================================
 
     Class OSProperty
     {
@@ -497,9 +497,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // __________________________________________________________
+    # // ==========================================================
     # // | Container object for indexed OS (property/value) pairs |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==========================================================
     
     Class OSPropertySet
     {
@@ -523,10 +523,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // _______________________________________________________
-    # // | Collects various details about the operating system |
-    # // | specifically for cross-platform compatibility       |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================================================
+    # // | Collects various details about the operating system specifically for cross-platform compatibility |
+    # // =====================================================================================================
 
     Class OS
     {
@@ -637,9 +636,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ____________________________________________________________
+    # // ============================================================
     # // | Meant to determine longest file name and provide spacing |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ============================================================
 
     Class ManifestListItem
     {
@@ -656,9 +655,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ______________________________________________________________
+    # // ==============================================================
     # // | Manifest file -> filesystem object (collection/validation) |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==============================================================
 
     Class ManifestFile
     {
@@ -811,9 +810,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ________________________________________
+    # // ========================================
     # // | Manifest folder -> filesystem object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================
 
     Class ManifestFolder
     {
@@ -891,9 +890,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // _____________________________________________________________________
+    # // =====================================================================
     # // | File manifest container, laid out for hash (insertion+validation) |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // =====================================================================
 
     Class ManifestController
     {
@@ -942,15 +941,33 @@ Function FightingEntropy.Module
             $D = "Index Type Name Hash Exists Fullname Source Match" -Split " "
             Return $This.Output | % Item | Select-Object $D
         }
+        Validate()
+        {
+            ForEach ($Folder in $This.Output)
+            {
+                $Folder.Exists = [System.IO.Directory]::Exists($Folder.Fullname)
+                If ($Folder.Exists)
+                {
+                    ForEach ($File in $Folder.Item)
+                    {
+                        $File.Exists = [System.IO.File]::Exists($File.Fullname)
+                        If ($File.Exists)
+                        {
+                            $File.GetContent()
+                        }
+                    }
+                }
+            }
+        }
         [String] ToString()
         {
             Return "<FightingEntropy.Module.ManifestController>"
         }
     }
 
-    # // ___________________________________
+    # // ===================================
     # // | Template for registry injection |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===================================
 
     Class RegistryTemplate
     {
@@ -993,10 +1010,10 @@ Function FightingEntropy.Module
         }
     }
 
-    # // __________________________________________________
+    # // ==================================================
     # // | Represents individual paths to the module root |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
+    # // ==================================================
+
     Class RootProperty
     {
         Hidden [UInt32] $Index
@@ -1066,9 +1083,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ________________________________________________________
+    # // ========================================================
     # // | Represents a collection of paths for the module root |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
 
     Class Root
     {
@@ -1113,9 +1130,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ___________________________________________
+    # // ===========================================
     # // | Works as a PowerShell Registry provider |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================
 
     Class RegistryKeyTemp
     {
@@ -1184,9 +1201,9 @@ Function FightingEntropy.Module
         }
     }
     
-    # // ________________________________________________________
+    # // ========================================================
     # // | Represents an individual registry key for the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
 
     Class RegistryKeyProperty
     {
@@ -1206,9 +1223,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ___________________________________________________________
+    # // ===========================================================
     # // | Represents a collection of registry keys for the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================================
 
     Class RegistryKey
     {
@@ -1311,9 +1328,9 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ___________________________________________
+    # // ===========================================
     # // | Collects/creates versions of the module |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ===========================================
 
     Class FEVersion
     {
@@ -1343,7 +1360,7 @@ Function FightingEntropy.Module
         {
             $Pattern = Switch ($Type)
             {
-                0 { "\d{4}\.\d{2}\.\d+" }
+                0 { "\d{4}\.\d{1,}\.\d{1,}" }
                 1 { "\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}" }
                 2 { @(8,4,4,4,12 | % { "[a-f0-9]{$_}" }) -join '-' }
             }
@@ -1358,9 +1375,9 @@ Function FightingEntropy.Module
         } 
     }
 
-    # // ________________________________________________________
+    # // ========================================================
     # // | Specifically used for file hash validation/integrity |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ========================================================
 
     Class ValidateFile
     {
@@ -1397,9 +1414,52 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ______________________________________________________________
+    # // ===============================================================
+    # // | Specifically meant to categorize available version archives |
+    # // ===============================================================
+
+    Class MarkdownArchiveEntry
+    {
+        Hidden [DateTime]   $Real
+        [String]            $Date
+        [String]            $Name
+        [String]            $Link
+        Hidden [String] $NameLink
+        [String]            $Hash
+        MarkdownArchiveEntry([String]$Date,[String]$Name,[String]$Hash,[String]$Link)
+        {
+            $This.Date     = $Date
+            $This.Real     = [DateTime]$This.Date
+            $This.Name     = $Name
+            $This.Link     = $Link
+            $This.NameLink = "[**{0}**]({1})" -f $This.Name,$This.Link
+            $This.Hash     = $Hash
+        }
+        MarkdownArchiveEntry([String]$Line)
+        {
+            $This.Date     = [Regex]::Matches($Line,"\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2}").Value
+            $This.Real     = [DateTime]$This.Date
+            $This.Name     = [Regex]::Matches($Line,"\*\*\d{4}\-\d{2}\-\d{2}_\d{6}.zip\*\*").Value.Trim("*")
+            $This.Link     = [Regex]::Matches($Line,"https.+.zip").Value
+            $This.NameLink = "[**{0}**]({1})" -f $This.Name,$This.Link
+            $This.Hash     = [Regex]::Matches($Line,"[A-F0-9]{64}").Value
+        }
+        [String] Prop([String]$Property,[String]$Char)
+        {
+            $Prop = $This.$Property
+            Return $Prop.PadRight($Prop.Length,$Char)
+        }
+        [String[]] GetOutput()
+        {
+            Return "| {0} | {1} | {2} |" -f $This.Prop("Date"," "),
+                                            $This.Prop("NameLink"," "),
+                                            $This.Prop("Hash"," ")
+        }
+    }
+
+    # // ==============================================================
     # // | Factory class to control all of the aforementioned classes |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==============================================================
 
     Class InstallController
     {
@@ -1556,8 +1616,8 @@ Function FightingEntropy.Module
         [Object[]] Versions()
         {
             # Obtains the available versions from the project site
-            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
-            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{2}\.\d+\*\*" } | % { [FEVersion]$_ }
+            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/readme.md?raw=true"
+            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{1,}\.\d{1,}\*\*" } | % { [FEVersion]$_ }
         }
         [Object] Template()
         {
@@ -1660,7 +1720,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "609F6C532666C49F52515A1BAC535E16D423E6F6F2CC3CA963A0D4C7E5FE0F3E") ,
+                    ("Get-FEModule.ps1"                , "19FE0FB51A95D8259C8952C9920705F2E6A627BE1F3E8B0D7593E71C44EDA612") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
@@ -2263,6 +2323,82 @@ Function FightingEntropy.Module
                 RequiredAssemblies   = $This.Binaries()
             }
         }
+        Latest()
+        {
+            If (![System.IO.Directory]::Exists($This.Root.Resource))
+            {
+                $This.Root.Resource.Create()
+            }
+
+            $This.Write("Getting [~] Versions")
+            $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source,$This.Version.ToString()
+            $Content   = (Invoke-RestMethod $String).Split("`n")
+            $List      = @( )
+
+            ForEach ($Line in $Content)
+            {
+                If ($Line -match "https.+\.zip")
+                {
+                    $List += $This.ArchiveEntry($Line)
+                }
+            }
+
+            $Item      = ($List | Sort-Object Real)[-1]
+
+            $This.Write("Retrieved [~] File: [$($Item.Name)]")
+
+            Write-Output $Item | Format-List
+
+            $Src       = "{0}?raw=true" -f $Item.Link
+            $Target    = "{0}\{1}" -f $This.Root.Resource.Fullname, $Item.Name
+
+            $This.Write("Downloading [~] Archive: [$($Item.Date)]")
+            Start-BitsTransfer -Source $Src -Destination $Target
+
+            $This.Write("Hashing [~]: [$($Item.Hash)]")
+            $Hash      = Get-FileHash $Target | % Hash
+            If ($Item.Hash -notmatch $Hash)
+            {
+                $This.Write(1,"Error [!] Invalid hash")
+                [System.IO.File]::Delete($Target)
+            }
+
+            $This.Write(2,"Expanding [~] [$($This.Root.Resource)]")
+            Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
+
+            $This.Write(2,"Deleting [~] [$($Item.Name)]")
+            [System.IO.File]::Delete($Target)
+
+            $This.Manifest.Validate()
+
+            ForEach ($Object in $This.Root.List() | ? Name -ne "Resource")
+            {
+                $ID   = $Object.Name
+                $Item = $This.Root.$ID
+                If ($Object.Exists -eq 0)
+                {
+                    $This.InstallItem($Item)
+                }
+            }
+
+            $This.Update()
+        }
+        Update()
+        {
+            $List = $This.Validation()
+            $Pull = $List | ? Match -eq 0
+            ForEach ($File in $Pull)
+            {
+                $Folder = $This.Manifest.Output | ? Type -eq $File.Type
+                $Item   = $Folder.Item | ? Name -eq $File.Name
+                $Item.Download()
+                $Item.Write()
+            }
+        }
+        [Object] ArchiveEntry([String]$Line)
+        {
+            Return [MarkdownArchiveEntry]::New($Line)
+        }
         [Object] ValidateFile([Object]$File)
         {
             Return [ValidateFile]::New($File)
@@ -2304,9 +2440,9 @@ Function FightingEntropy.Module
 
 $Module = FightingEntropy.Module -Mode 0
 
-    # // ____________________________________________________________________________________
+    # // ====================================================================================
     # // | Note: (FightingEntropy.Module -Mode 1) loads without writing stuff to the screen |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ====================================================================================
 <#                                                                                                            __________/
 \____________________________________________________________________________________________________________/ Function  
   Output /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
@@ -2343,15 +2479,8 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-05 10:52:44 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-05 16:29:40 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-________________________________________________________ 
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯| 
-|                                  Michael C. Cook Sr. | 
-|                                    Security Engineer | 
-|                               Secure Digits Plus LLC | 
-|______________________________________________________| 
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 #>
