@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-06 11:01:37                                                                  //
+\\  Date       : 2023-04-06 11:10:34                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -2271,7 +2271,7 @@ Function Get-FEModule
 
             $Item      = ($List | Sort-Object Real)[-1]
 
-            $This.Update(0,"====[Downloading Latest Archive]====".PadLeft(102,"="))
+            $This.Update(0,"====[Downloading Latest Archive]====".PadRight(102,"="))
             $This.Update(0,"")
             $This.Update(0,"    Date : $($Item.Date)")
             $This.Update(0,"    Name : $($Item.Name)")
