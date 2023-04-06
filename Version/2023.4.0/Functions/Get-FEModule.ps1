@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-06 11:10:34                                                                  //
+\\  Date       : 2023-04-06 11:43:06                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1387,7 +1387,7 @@ Function Get-FEModule
         [String]         $Author = "Michael C. Cook Sr."
         [String]        $Company = "Secure Digits Plus LLC"
         [String]      $Copyright = "(c) 2023 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [Guid]             $Guid = "75f64b43-3b02-46b1-b6a2-9e86cccf48113"
+        [Guid]             $Guid = "75f64b43-3b02-46b1-b6a2-9e86cccf4811"
         [DateTime]         $Date = "04/03/2023 18:53:49"
         [Version]       $Version = "2023.4.0"
         [Object]             $OS
