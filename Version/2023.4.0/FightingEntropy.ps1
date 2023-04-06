@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-04-05 16:36:33                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-04-06 11:02:20                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -11,7 +11,7 @@
     | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/FightingEntropy.ps1 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     [FightingEntropy(π)] is a modification for [Windows PowerShell] that is meant for various tasks related to:
-    
+
     [+] [system administration]
     [+] [networking]
     [+] [virtualization]
@@ -37,7 +37,7 @@
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     This module is rather [experimental] and incorporates [a lot of moving parts],
     so it has [many areas of development]. 
-    
+
     The [end goal] of this [module], is to provide [heightened security] and [protection] against:
 
     [+] [identity theft]
@@ -50,7 +50,7 @@
 
     Many of the tools in the wild are able to be circumvented by some of these [hackers] and [cybercriminals]. 
     If you don't believe me...? That's fine. 
-    
+
     That's why this link to a particular website about a particular event, exists.
     ___________________________________________________________________________________
     | https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach |
@@ -89,14 +89,14 @@
     irm https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1?raw=true | iex 
 
     ...or just (copying + pasting) the content of the file...
-    
+
     https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1
-    
+
     ...into the [PowerShell] session, and pressing <Enter>
 
     2) Once the [module is loaded into memory], enter the following:
     __________________________________________________________________________________________________________________________
-    | Operation  | Instructions      | Description                                                                           |                                         
+    | Operation  | Instructions      | Description                                                                           |
     |============|===================|=======================================================================================|
     | Latest     | $Module.Latest()  | Retrieves the latest zip archive and updates any outstanding files (fastest)          |
     | Install    | $Module.Install() | Installs the module by retrieving individual files in the manifest (thorough)         |
@@ -172,11 +172,11 @@ Function FightingEntropy.Module
 
     Class ConsoleController
     {
-        [Object]    $Start
-        [Object]      $End
-        [String]     $Span
-        [Object]   $Status
-        [Object]   $Output
+        [Object]  $Start
+        [Object]    $End
+        [String]   $Span
+        [Object] $Status
+        [Object] $Output
         ConsoleController()
         {
             $This.Reset()
@@ -452,7 +452,7 @@ Function FightingEntropy.Module
                 }
                 $Block += $Array[$X]
             }
-            
+
             ForEach ($X in 0..($Hash.Count-1))
             {
                 $This.Track[2].Content[$X+3].String = $Hash[$X]
@@ -474,7 +474,7 @@ Function FightingEntropy.Module
             Return "<FightingEntropy.Module.ThemeStack>"
         }
     }
-    
+
     # // ===================================================
     # // | Property object which includes source and index |
     # // ===================================================
@@ -501,7 +501,7 @@ Function FightingEntropy.Module
     # // ==========================================================
     # // | Container object for indexed OS (property/value) pairs |
     # // ==========================================================
-    
+
     Class OSPropertySet
     {
         Hidden [UInt32] $Index
@@ -1514,7 +1514,7 @@ Function FightingEntropy.Module
             # Registry
             $This.Registry = $This.New("Registry")
 
-            $This.Update(0,"                                                                                                       ")
+            $This.Update(0," ".PadLeft(102," "))
 
             # Load the manifest
             $This.LoadManifest()
@@ -1721,7 +1721,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "19FE0FB51A95D8259C8952C9920705F2E6A627BE1F3E8B0D7593E71C44EDA612") ,
+                    ("Get-FEModule.ps1"                , "CAB58B9A2BFDA63A5529377ADAFB5E5AE0B199CDA7DD18D15CD340E39E8AB49A") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
@@ -1799,7 +1799,7 @@ Function FightingEntropy.Module
                     $This.LoadFile($Folder,$Max.Length,$File)
                 }
 
-                $This.Update(0,"                                                                                                       ")
+                $This.Update(0," ".PadLeft(102," "))
             }
         }
         LoadFolder([String]$Type)
@@ -1815,18 +1815,18 @@ Function FightingEntropy.Module
             {
                 0
                 {
-                    $This.Update( 0,"------------------------------------------------------------------------------------------------------ ")
+                    $This.Update( 0,"-".PadLeft(102,"-"))
                     $This.Update( 0,("[!] {0} : {1}" -f $Item.Type.PadLeft(8," "), $Item.Fullname))
-                    $This.Update( 0,"------------------------------------------------------------------------------------------------------ ")
-                    $This.Update( 0,"                                                                                                       ")
+                    $This.Update( 0,"-".PadLeft(102,"-"))
+                    $This.Update( 0," ".PadLeft(102," "))
                 }
                 1
                 {
                     $This.Manifest.Output += $Item
-                    $This.Update( 0,"------------------------------------------------------------------------------------------------------ ")
+                    $This.Update( 0,"-".PadLeft(102,"-"))
                     $This.Update( 0,("[+] {0} : {1}" -f $Item.Type.PadLeft(8," "), $Item.Fullname))
-                    $This.Update( 0,"------------------------------------------------------------------------------------------------------ ")
-                    $This.Update( 0,"                                                                                                       ")
+                    $This.Update( 0,"-".PadLeft(102,"-"))
+                    $This.Update( 0," ".PadLeft(102," "))
                 }
             }
         }
@@ -1945,26 +1945,26 @@ Function FightingEntropy.Module
                             $This.Update(1,"[@] Resource : $($Item.Fullname) ")
                             $This.Update(1,"               ($C) [directories/files] ")
             
-                            ForEach ($Section in $This.Manifest.Output)
+                            ForEach ($Sx in $This.Manifest.Output)
                             {
-                                $Section.TestPath()
-                                If (!$Section.Exists)
+                                $Sx.TestPath()
+                                If (!$Sx.Exists)
                                 {
                                     $I ++
-                                    $Status = "{0:p}" -f ($I/$C)
+                                    $St = "{0:p}" -f ($I/$C)
 
-                                    $Section.Create()
+                                    $Sx.Create()
                                     
-                                    $This.Update( 1,"------------------------------------------------------------------------------------------------------ ")
-                                    $This.Update( 1,("[~] {0} : {1} [$Status] " -f $Section.Type.PadRight(9," "), $Section.FullName))
-                                    $This.Update( 1,"------------------------------------------------------------------------------------------------------ ")
-                                    $This.Update( 0,"                                                                                                       ")
+                                    $This.Update( 1,"-".PadLeft(102,"-"))
+                                    $This.Update( 1,("[~] {0} : {1} [$St] " -f $Sx.Type.PadRight(9," "), $Sx.FullName))
+                                    $This.Update( 1,"-".PadLeft(102,"-"))
+                                    $This.Update( 0," ".PadLeft(102," "))
                                 }
 
-                                ForEach ($File in $Section.Item)
+                                ForEach ($File in $Sx.Item)
                                 { 
                                     $I ++
-                                    $Status = "{0:p}" -f ($I/$C)
+                                    $St = "{0:p}" -f ($I/$C)
 
                                     Switch ($File.Exists)
                                     {
@@ -1973,45 +1973,49 @@ Function FightingEntropy.Module
                                             $File.Create()
                                             $File.Download()
                                             $File.Write()
-                                            $This.Update(1,("[+] {0} [$Status] " -f $File.Name.PadRight($Max.Length," ")))
+                                            $This.Update(1,("[+] {0} [$St] " -f $File.Name.PadRight($Max.Length," ")))
                                         }
 
                                         1
                                         {
-                                            $This.Update(0,("[!] {0} [$Status] " -f $File.Name.PadRight($Max.Length," ")))
+                                            $This.Update(0,("[!] {0} [$St] " -f $File.Name.PadRight($Max.Length," ")))
                                         }
                                     }
                                 }
 
-                                $This.Update(0,"                                                                                                       ")
+                                $This.Update(0," ".PadLeft(102," "))
                             }
                         }
                         Registry
                         {
                             $This.Update(1,"[@] Registry : $($Item.Fullname) ")
-                            $This.Update(0,"                                                                                                       ")
+                            $This.Update(0," ".PadLeft(102," "))
     
                             $Key = $This.Registry.KeyTemp($Item.Fullname)
                             $Key.Open()
                             $Key.Create()
             
+                            $Max = @{ 
+                                
+                                Name = ($This.Registry.Property.Name | Sort-Object Length)[-1].Length
+                            }
+
                             ForEach ($X in 0..($This.Registry.Property.Count-1))
                             {
                                 $Prop        = $This.Registry.Property[$X]
                                 $Key.Add($Prop.Name,$Prop.Value)
             
-                                $This.Update(1,"[~] Property : [$($Prop.Name)], Value : [$($Prop.Value)]")
+                                $This.Update(1,"[+] $($Prop.Name.PadRight($Max.Name," ")) : $($Prop.Value)")
                                 $Item.Exists = 1
                             }
             
                             $Key.Dispose()
                             $Item.TestPath()
-                            $This.Update(0,"                                                                                                       ")
+                            $This.Update(0," ".PadLeft(102," "))
                         }
                         Module
                         {
                             $Item.Create()
-                            $Item.TestPath()
 
                             $This.Update(1,"[+] PSModule : $($Item.Fullname) ")
                         }
@@ -2088,17 +2092,17 @@ Function FightingEntropy.Module
             $Setting = [System.Net.ServicePointManager]::SecurityProtocol
                        [System.Net.ServicePointManager]::SecurityProtocol = 3072
 
-            $This.Update(0,"====================================================================================================== ")
+            $This.Update(0,"=".PadLeft(102,"="))
             $This.InstallItem($This.Root.Resource)
-            $This.Update(0,"------------------------------------------------------------------------------------------------------ ")
+            $This.Update(0,"-".PadLeft(102,"-"))
 
             $This.InstallItem($This.Root.Registry)
-            $This.Update(0,"------------------------------------------------------------------------------------------------------ ")
+            $This.Update(0,"-".PadLeft(102,"-"))
             $This.InstallItem($This.Root.Module)
             $This.InstallItem($This.Root.File)
             $This.InstallItem($This.Root.Manifest)
             $This.InstallItem($This.Root.Shortcut)
-            $This.Update(0,"====================================================================================================== ")
+            $This.Update(0,"=".PadLeft(102,"="))
 
             [System.Net.ServicePointManager]::SecurityProtocol = $Setting
 
@@ -2156,27 +2160,27 @@ Function FightingEntropy.Module
                             $This.Update(1,"[_] Resource : $($Item.Fullname) ")
                             $This.Update(1,"               ($C) [directories/files] ")
             
-                            ForEach ($Section in $This.Manifest.Output)
+                            ForEach ($Sx in $This.Manifest.Output)
                             {
                                 $I ++
-                                $Status = "{0:p}" -f ($I/$C)
+                                $St = "{0:p}" -f ($I/$C)
 
-                                $This.Update(1,"------------------------------------------------------------------------------------------------------ ")
-                                $This.Update(1,("[_] {0} : {1} [$Status] " -f $Section.Type.PadRight(9," "), $Section.FullName))
-                                $This.Update(1,"------------------------------------------------------------------------------------------------------ ")
-                                $This.Update(0,"                                                                                                       ")
+                                $This.Update(1,"-".PadLeft(102,"-"))
+                                $This.Update(1,("[_] {0} : {1} [$St] " -f $Sx.Type.PadRight(9," "), $Sx.FullName))
+                                $This.Update(1,"-".PadLeft(102,"-"))
+                                $This.Update(0," ".PadLeft(102," "))
 
-                                ForEach ($File in $Section.Item)
+                                ForEach ($File in $Sx.Item)
                                 {
                                     $I ++
-                                    $Status = "{0:p}" -f ($I/$C)
+                                    $St = "{0:p}" -f ($I/$C)
                                     
                                     $File.Remove()
-                                    $This.Update($File.Exists,("[_] {0} [$Status] " -f $File.Name.PadRight($Max.Length," ")))
+                                    $This.Update($File.Exists,("[_] {0} [$St] " -f $File.Name.PadRight($Max.Length," ")))
                                 }
                                 
-                                $This.Update(0,"                                                                                                       ")
-                                $Section.Remove()
+                                $This.Update(0," ".PadLeft(102," "))
+                                $Sx.Remove()
                             }
     
                             $Item.Remove()
@@ -2186,16 +2190,21 @@ Function FightingEntropy.Module
                             $Object         = $This.Registry
 
                             $This.Update(1,"[ ] Registry : $($Item.Fullname) ")
-                            $This.Update(0,"                                                                                                       ")
+                            $This.Update(0," ".PadLeft(102," "))
 
                             $Key            = $This.Registry.KeyTemp($Object.Path)
                             $Key.Open()
                             $Key.Create()
                             $Key.Remove()
+
+                            $Max = @{ 
+                                
+                                Name = ($This.Registry.Property.Name | Sort-Object Length)[-1].Length
+                            }
                             
                             ForEach ($Property in $Object.Property)
                             {
-                                $This.Update(1,"[ ] Property : [$($Property.Name)]")
+                                $This.Update(1,"[ ] $($Property.Name.PadRight($Max.Name," ")) : $($Property.Value)")
                                 $Property.Exists = 0
                             }
         
@@ -2203,7 +2212,7 @@ Function FightingEntropy.Module
                             $Key.Dispose()
                             $Item.Remove()
 
-                            $This.Update(0,"                                                                                                       ")
+                            $This.Update(0," ".PadLeft(102," "))
 
                         }
                         Module
@@ -2235,16 +2244,16 @@ Function FightingEntropy.Module
             $This.Update(0,"Removing [~] $($This.Label())")
             $This.Write(1,$This.Console.Last().Status)
             
-            $This.Update(0,"====================================================================================================== ")
-            $This.RemoveItem($This.Root.Shortcut)
-            $This.RemoveItem($This.Root.Manifest)
-            $This.RemoveItem($This.Root.File)
-            $This.RemoveItem($This.Root.Module)
-            $This.Update(0,"------------------------------------------------------------------------------------------------------ ")
+            $This.Update(0,"=".PadLeft(102,"="))
+            ForEach ($Item in "Shortcut","Manifest","File","Module")
+            {
+                $This.RemoveItem($This.Root.$Item)
+            }
+            $This.Update(0,"-".PadLeft(102,"-"))
             $This.RemoveItem($This.Root.Registry)
-            $This.Update(0,"------------------------------------------------------------------------------------------------------ ")
+            $This.Update(0,"-".PadLeft(102,"-"))
             $This.RemoveItem($This.Root.Resource)
-            $This.Update(0,"====================================================================================================== ")
+            $This.Update(0,"=".PadLeft(102,"="))
 
             $This.Write(1,"Removed [+] $($This.Label())")
         }
@@ -2326,13 +2335,14 @@ Function FightingEntropy.Module
         }
         Latest()
         {
+            $This.Write(2,"Installing [~] $($This.Label())")
+
             If (![System.IO.Directory]::Exists($This.Root.Resource))
             {
                 $This.Root.Resource.Create()
             }
 
-            $This.Write("Getting [~] Versions")
-            $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source,$This.Version.ToString()
+            $String    = "{0}/blob/main/Version/{1}/readme.md?raw=true" -f $This.Source, $This.Version.ToString()
             $Content   = (Invoke-RestMethod $String).Split("`n")
             $List      = @( )
 
@@ -2346,54 +2356,92 @@ Function FightingEntropy.Module
 
             $Item      = ($List | Sort-Object Real)[-1]
 
-            $This.Write("Retrieved [~] File: [$($Item.Name)]")
-
-            Write-Output $Item | Format-List
+            $This.Update(0,"====[Downloading Latest Archive]====".PadLeft(102,"="))
+            $This.Update(0,"")
+            $This.Update(0,"    Date : $($Item.Date)")
+            $This.Update(0,"    Name : $($Item.Name)")
+            $This.Update(0,"    Link : $($Item.Link)")
+            $This.Update(0,"    Hash : $($Item.Hash)")
+            $This.Update(0,"")
 
             $Src       = "{0}?raw=true" -f $Item.Link
             $Target    = "{0}\{1}" -f $This.Root.Resource.Fullname, $Item.Name
 
-            $This.Write("Downloading [~] Archive: [$($Item.Date)]")
             Start-BitsTransfer -Source $Src -Destination $Target
 
-            $This.Write("Hashing [~]: [$($Item.Hash)]")
             $Hash      = Get-FileHash $Target | % Hash
             If ($Item.Hash -notmatch $Hash)
             {
-                $This.Write(1,"Error [!] Invalid hash")
+                $This.Update(-1,"Error       [!] Invalid hash")
                 [System.IO.File]::Delete($Target)
+                Throw $This.Console.Status
             }
 
-            $This.Write(2,"Expanding [~] [$($This.Root.Resource)]")
             Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
-
-            $This.Write(2,"Deleting [~] [$($Item.Name)]")
             [System.IO.File]::Delete($Target)
-
             $This.Manifest.Validate()
 
-            ForEach ($Object in $This.Root.List() | ? Name -ne "Resource")
+            $This.Update(0,"=".PadLeft(102,"="))
+            $This.Update(0,"[@] Resource : $($This.Root.Resource)")
+            $Ct = $This.Manifest | % { $_.Output.Count + $_.Full().Count }
+            $This.Update(0,"               ($Ct) [directories/files]")
+            ForEach ($Folder in $This.Manifest.Output)
             {
-                $ID   = $Object.Name
-                $Item = $This.Root.$ID
-                If ($Object.Exists -eq 0)
+                $This.Update(0,"-".PadLeft(102,"-"))
+                $This.Update(0,("[~] {0} : {1}" -f $Folder.Type.PadRight(9," "), $Folder.Fullname))
+                $This.Update(0,"-".PadLeft(102,"-"))
+                $This.Update(0," ".PadLeft(102," "))
+
+                ForEach ($File in $Folder.Item)
                 {
-                    $This.InstallItem($Item)
+                    $This.Update(0,"[+] $($File.Name)")
                 }
+
+                $This.Update(0," ".PadLeft(102," "))
             }
 
-            $This.Update()
+            $This.Update(0,"-".PadLeft(102,"-"))
+
+            If ($This.Root.Registry.Exists -eq 0)
+            {
+                $This.InstallItem($This.Root.Registry)
+            }
+
+            $This.Update(0,"-".PadLeft(102,"-"))
+
+            $This.UpdateManifest()
+
+            $This.Update(0,"=".PadLeft(102,"="))
+            $This.Write(2,"Installed [+] $($This.Label())")
         }
-        Update()
+        UpdateManifest()
         {
             $List = $This.Validation()
             $Pull = $List | ? Match -eq 0
-            ForEach ($File in $Pull)
+
+            If ($Pull.Count -ne 0)
             {
-                $Folder = $This.Manifest.Output | ? Type -eq $File.Type
-                $Item   = $Folder.Item | ? Name -eq $File.Name
-                $Item.Download()
-                $Item.Write()
+                ForEach ($ID in "Shortcut","Manifest","File","Module")
+                {
+                    $Item = $This.Root.$ID
+                    If ($Item.Exists)
+                    {
+                        $This.RemoveItem($Item)
+                    }
+                }
+
+                ForEach ($File in $Pull)
+                {
+                    $Folder = $This.Manifest.Output | ? Type -eq $File.Type
+                    $Item   = $Folder.Item | ? Name -eq $File.Name
+                    $Item.Download()
+                    $Item.Write()
+                }
+
+                ForEach ($Item in "Module","File","Manifest","Shortcut")
+                {
+                    $This.InstallItem($This.Root.$Item)
+                }
             }
         }
         [Object] ArchiveEntry([String]$Line)
@@ -2480,7 +2528,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-05 16:36:33 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-04-06 11:02:20 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
