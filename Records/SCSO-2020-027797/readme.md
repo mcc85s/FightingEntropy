@@ -16,11 +16,15 @@
           of [<b>something</b>] that [<b>sounded</b>] a lot like [<b>an actual bird</b>].
         </p>
       </td>
+    </tr>
+    <tr>
       <td>
         <a href="https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU">
           https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU
         </a>
       </td>
+    </tr>
+    <tr>
       <td>
         <p>
           They [<b>misinterpreted</b>] what I [<b>said</b>], and [<b>assumed</b>] that I said [<b>drones disguised as birds</b>].
@@ -33,6 +37,8 @@
           flies around, and [<b>mimics the sound of an actual bird, or a mockingbird</b>].
         </p>
       </td>
+    </tr>
+    <tr>
       <td>
         <p>
           When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something 
@@ -56,6 +62,8 @@
           And then that is what they did.
         </p>
       </td>
+    </tr>
+    <tr>
       <td>
         <p>
           They couldn't find me even though I walked there on foot... Maybe it is extremely difficult to check the (1) road that they could've found me on,
