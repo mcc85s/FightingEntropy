@@ -6,17 +6,17 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                       \\
-\\  Date       : 2023-04-05 10:16:46                                                                  //
+\\  Date       : 2023-04-07 10:45:35                                                                  //
  \\==================================================================================================// 
 
-    FileName   : New-TranscriptionCollection
+    FileName   : New-TranscriptionCollection.ps1
     Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : For categorizing transcriptions of (a single/multiple) audio recording(s)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-04-07
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -420,11 +420,9 @@ Function New-TranscriptionCollection
 
             $This.Write("Entry [+] [$($Current.Output[-1].Position)] added")
         }
-        AddContext([String]$Note)
+        AddContext([String]$Position,[String]$Note)
         {
             $Current  = $This.Current()
-            $Position = $Current.Output[-1].Position
-
             $Current.Output += $This.TranscriptionEntry($Current.Output.Count,
                                                         $This.TranscriptionParty(-1,"T X T"),
                                                         $Current.GetPosition($Position),
