@@ -19,8 +19,7 @@
    Modified   : 2023-04-07
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
-   TODO       : Have the hash values restore themselves from registry
-                Now includes the console logger by default
+   TODO       : 
 
 .Example
 #>
