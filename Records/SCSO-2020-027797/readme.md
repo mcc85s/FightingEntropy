@@ -12,30 +12,30 @@
     <tr>
       <td>
         <p>
-          I walked to [<b>Stratton Air National Guard</b>] because I had [<b>recorded multiple audio recordings</b>] 
+          I walked to [<b>Stratton Air National Guard</b>] because I had [<b>recorded multiple audio recordings</b>]<br>
           of [<b>something</b>] that [<b>sounded</b>] a lot like [<b>an actual bird</b>].
         </p>
         <p>
           (1) https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU
         </p>
         <p>
-          They [<b>misinterpreted</b>] what I [<b>said</b>], and [<b>assumed</b>] that I said [<b>drones disguised as birds</b>].
+          They [<b>misinterpreted</b>] what I [<b>said</b>], and [<b>assumed</b>] that I said [<b>drones disguised as birds</b>].<br>
           Because they're [<b>professionals</b>].
         </p>
         <p>
-          They would know, if the [<b>Defense Advanced Research Projects Agency</b>] would have a [<b>drone</b>] that
+          They would know, if the [<b>Defense Advanced Research Projects Agency</b>] would have a [<b>drone</b>] that<br>
           flies around, and [<b>mimics the sound of an actual bird, or a mockingbird</b>].
         </p>
         <p>
-          When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something
+          When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something<br>
           that I believed was a [<b>drone</b>].
         </p>
         <p>
-          The [<b>soldiers</b>] that [<b>came</b>] to the [<b>gate</b>] were rather [<b>dubious</b>] that what 
+          The [<b>soldiers</b>] that [<b>came</b>] to the [<b>gate</b>] were rather [<b>dubious</b>] that what<br>
           I [<b>recorded</b>] was [<b>something rather advanced</b>].
         </p>
         <p>
-          They [<b>never collected</b>] the [<b>audio recording</b>], but they [<b>did</b>] ask me for my
+          They [<b>never collected</b>] the [<b>audio recording</b>], but they [<b>did</b>] ask me for my<br>
           [<b>identification</b>], and then they told me to go to [<b>Washington D.C.</b>]
         </p>
         <p>
@@ -43,21 +43,20 @@
           <i>"Thanks a lot you guys, you're doing the country a wonderful service. Go get those bad guys. Take care."</i>
         </p>
         <p>
-          In response, [<b>Stratton Air National Guard</b>] contacted the [<b>Rotterdam Police Department</b>] because
-          they didn't feel like contacting the [<b>Glenville Police Department</b>], which was the [<b>jurisdiction</b>]
-          that I was actually in, at the time that this event took place... nor did they contact the [<b>Schenectady Police
-          Department</b>], which was the jurisdiction I was in about a half hour later when I recorded these (2) exhibits...
+          In response, [<b>Stratton Air National Guard</b>] contacted the [<b>Glenville Police Department</b>], who
+          was like "Hey guys, let's check the area. By the way, have Saratoga County check the home for whatever reason."
+          And then that is what they did.
+        </p>
+        <p>
+          They couldn't find me even though I walked there on foot... Maybe it is extremely difficult to check the (1) road that they could've found me on,
+          that leads to the base. About a half hour later I recorded these (2) exhibits...
         </p>
         <p>
           (1) https://drive.google.com/file/d/1J6b5AiIt8p5vswuzLflpzslK4N3DFrC7<br>
           (2) https://youtu.be/V-_YqedKZb8
         </p>
         <p>
-          When they contacted the [<b>Rotterdam Police Department</b>], they made an [<b>executive decision</b>] to 
-          contact the [<b>Saratoga County Sheriffs Office</b>], because who the hell knows...?
-        </p>
-        <p>
-          Maybe when you're a [<b>police department</b>], and you have to pretend to be constantly busy, you find ways
+          Maybe when you're a [<b>police department</b>], and you have to find ways to appear busy at 1AM, you find ways
           to [<b>pass the buck around</b>] rather than to [<b>review the evidence</b>], and so, [<b>each police station</b>]
           acts as the [<b>bumpers</b>] in a [<b>pinball machine</b>], and hopefully the ball makes its way over to a guy
           like [<b>Scott Schelling</b>], where he can perform a [<b>welfare check</b>].
