@@ -6,16 +6,26 @@
 # Synopsis
 | Summary |
 |:--------|
-| I walked to [**Stratton Air National Guard**] because I had recorded multiple audio recordings of something that [**sounded**] a lot like [**an actual bird**].<br>
-<br>
-<br>When I was at the base, I suggested to (3) guards that I had an [**audio recording**] of something that I believed was a [**drone**].
-<br>
-<br>The soldiers that came to the gate were rather dubious that what I recorded was something rather advanced.
-<br>They never collected the audio recording, but they did ask me for my identification, and then they told me to go to [**Washington D.C.**]
-<br>
-<br>I then said "Thanks a lot you guys, you're doing the country a wonderful service. Go get those bad guys. Take care."
-<br>
-<br>In response, [**Stratton Air National Guard**] contacted the [**Rotterdam Police Department**] because they didn't feel like contacting the [Glenville] police, nor the [Schenectady] police, which was the jurisdiction that I was actually in, at the time that this event took place. |
+| <p>
+  I walked to [<b>Stratton Air National Guard</b>] because I had recorded multiple audio recordings of something that [<b>sounded</b>] a lot like [<b>an actual bird</b>].
+</p>
+<p>
+  When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something that I believed was a [<b>drone</b>].
+</p>
+<p>
+  The soldiers that came to the gate were rather dubious that what I recorded was something rather advanced.
+</p>
+<p>
+  They never collected the audio recording, but they did ask me for my [<b>identification</b>], and then they told me to go to [<b>Washington D.C.</b>]
+</p>
+<p>
+  I then said:<br>
+  "Thanks a lot you guys, you're doing the country a wonderful service.<br>
+  Go get those bad guys.<br>
+  Take care."
+</p>
+<p>
+  In response, [<b>Stratton Air National Guard</b>] contacted the [<b>Rotterdam Police Department</b>] because they didn't feel like contacting the [<b>Glenville</b>] police, nor the [<b>Schenectady</b>] police, which was the [<b>jurisdiction</b>] that I was actually in, at the time that this event took place. |
 
 # Entries
 | Index | Image                                                                                          |
