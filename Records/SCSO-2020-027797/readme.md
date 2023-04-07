@@ -1,7 +1,9 @@
+# Responder(s)
 | Index | Name                         | Unit   |
 |:------|:-----------------------------|:-------|
 | 0     | **S43460SS Scott Schelling** | SL4184 |
 
+# Entries
 | Index | Image                                                                                          |
 |:------|:-----------------------------------------------------------------------------------------------|
 | 0     | ![01.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-003173/01.jpg) |
