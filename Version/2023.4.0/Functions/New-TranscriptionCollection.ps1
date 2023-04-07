@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                       \\
-\\  Date       : 2023-04-07 10:45:35                                                                  //
+\\  Date       : 2023-04-07 10:53:19                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-TranscriptionCollection.ps1
@@ -441,9 +441,9 @@ Function New-TranscriptionCollection
         {
             $This.AddEntry($Index,$Position,$End,$Note)
         }
-        C([String]$Note)
+        C([String]$Position,[String]$Note)
         {
-            $This.AddContext($Note)
+            $This.AddContext($Position,$Note)
         }
         [String] Pad([String]$String,[UInt32]$Mode,[UInt32]$Length)
         {
