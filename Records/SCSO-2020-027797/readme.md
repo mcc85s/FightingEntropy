@@ -12,41 +12,51 @@
     <tr>
       <td>
         <p>
-          I walked to [<b>Stratton Air National Guard</b>] because I had [<b>recorded multiple audio recordings</b>]<br>
+          I walked to [<b>Stratton Air National Guard</b>] because I had [<b>recorded multiple audio recordings</b>]
           of [<b>something</b>] that [<b>sounded</b>] a lot like [<b>an actual bird</b>].
         </p>
+      </td>
+      <td>
+        <a href="https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU">
+          https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU
+        </a>
+      </td>
+      <td>
         <p>
-          (1) https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU
+          They [<b>misinterpreted</b>] what I [<b>said</b>], and [<b>assumed</b>] that I said [<b>drones disguised as birds</b>].
         </p>
         <p>
-          They [<b>misinterpreted</b>] what I [<b>said</b>], and [<b>assumed</b>] that I said [<b>drones disguised as birds</b>].<br>
           Because they're [<b>professionals</b>].
         </p>
         <p>
-          They would know, if the [<b>Defense Advanced Research Projects Agency</b>] would have a [<b>drone</b>] that<br>
+          They would know, if the [<b>Defense Advanced Research Projects Agency</b>] would have a [<b>drone</b>] that
           flies around, and [<b>mimics the sound of an actual bird, or a mockingbird</b>].
         </p>
+      </td>
+      <td>
         <p>
-          When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something<br>
+          When I was at the base, I suggested to (3) guards that I had an [<b>audio recording</b>] of something 
           that I believed was a [<b>drone</b>].
         </p>
         <p>
-          The [<b>soldiers</b>] that [<b>came</b>] to the [<b>gate</b>] were rather [<b>dubious</b>] that what<br>
+          The [<b>soldiers</b>] that [<b>came</b>] to the [<b>gate</b>] were rather [<b>dubious</b>] that what
           I [<b>recorded</b>] was [<b>something rather advanced</b>].
         </p>
         <p>
-          They [<b>never collected</b>] the [<b>audio recording</b>], but they [<b>did</b>] ask me for my<br>
-          [<b>identification</b>], and then they told me to go to [<b>Washington D.C.</b>]
+          They [<b>never collected</b>] the [<b>audio recording</b>], but they [<b>did</b>] ask me for my [<b>identification</b>],
+          and then they told me to go to [<b>Washington D.C.</b>]
         </p>
         <p>
-          I then said:<br>
-          <i>"Thanks a lot you guys, you're doing the country a wonderful service. Go get those bad guys. Take care."</i>
+          I then said:
+          <i>"Thanks a lot you guys, you're doing the country a wonderful service. Go get those bad guys, and make sure you stay hydrated. Take care."</i>
         </p>
         <p>
-          In response, [<b>Stratton Air National Guard</b>] contacted the [<b>Glenville Police Department</b>], who
-          was like "Hey guys, let's check the area. By the way, have Saratoga County check the home for whatever reason."
+          In response, [<b>Stratton Air National Guard</b>] contacted the [<b>Glenville Police Department</b>], who was like
+          "Hey guys, let's check the area. By the way, have Saratoga County check the home for whatever reason."
           And then that is what they did.
         </p>
+      </td>
+      <td>
         <p>
           They couldn't find me even though I walked there on foot... Maybe it is extremely difficult to check the (1) road that they could've found me on,
           that leads to the base. About a half hour later I recorded these (2) exhibits...
