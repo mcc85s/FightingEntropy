@@ -81,45 +81,53 @@
 | 5     | ![06.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-027797/06.jpg) |
 
 # Narrative
-```
-Here's what I actually went to [Stratton Air National Guard] for.
-________________________________________________________________________________________
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| 05/21/20 2358 [Originally recorded]                                                  |
-|______________________________________________________________________________________|
-|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| Index | Info     | Hyperlink                                                         |
-|_______|__________|___________________________________________________________________|
-|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-|     1 | Original | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
-|     2 | Treble+  | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
-|_______|__________|___________________________________________________________________|
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-They took the [reason] I went there, [out of context].
+Here's what I actually went to [**Stratton Air National Guard**] for.
 
-I'm making a big deal about all of this, because [they're making decisions] that they
-believe are [informed], as in, [they would know ahead of time], that what I'm [attempting]
-to [show them], is fucking stupid.
+| Index | Date/Time       | Name/Link                                                                     |
+|:------|:----------------|:------------------------------------------------------------------------------|
+| 0     | `05/21/20 2358` | [Original](https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx) |
+| 1     | `05/21/20 2358` | [Treble+](https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU)  |
 
-And that is the reason why things like this wind up happening:
-https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach
+They took the [**reason**] I went there, **[out of context**].
 
-So, if someone from another country like [CHINA] or [RUSSIA] is using this thing to spy
-on US Citizens, they're [too fucking ignorant] to [investigate that].
+I'm making a big deal about all of this, because [**they're making decisions**] that they believe are [**informed**].
 
-They may think that it's a matter of importance, or that I'm just some fuckboy that
-doesn't know what the hell I'm talking about when I say stuff, or whatever, but then
-check these out...
+As in, [**they would know ahead of time**], that what I'm [**attempting**] to [**show them**], is fucking [**stupid**].
 
-10/04/22 | God Mode Cursor | https://youtu.be/dU_5rdVkCD8
-09/26/22 | God Mode Cursor | https://youtu.be/tW80Zj_H6Fw
+And, that is the reason why things like this [**can't be prevented**]:
+[2020 Federal Data Breach](https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach)
 
-I mean, allow me to use the stupid fallacious logic that they use, to illustrate
-how it's pretty dangerous to write stuff off immediately, without investigating a
-fucking claim.
+I mean, theoretically, they probably could prevent stuff like that from happening in the future...?
+But, in reality, that would require them to have to stop acting like [**careless fucking morons**].
 
-I may be the most intelligent person that ever lived, because I gotta be, in order
-to have (2) video links of a thing that shows up called the "god mode cursor".
+From what I can tell, they love to do that.
+They'll say it a lot too, like "Nah, I'm not a careless fucking moron."
+
+But- [**actions speak louder than words**].
+And that is [**exactly**] what this [**whole entire incident**] revolves around.
+
+The best case I can make, is this.
+
+[**IF**]... someone from [**another country**] like [**CHINA**] or [**RUSSIA**] is using a [**very advanced drone**] to spy on [**US Citizens**], they will only accept leads if you're [**important enough**].
+
+If you're [**not important enough**](https://youtu.be/dU_5rdVkCD8), they're gonna do [**exactly**] what [**Stratton Air National Guard**] did in this incident.
+
+So will [**every other police agency**](https://youtu.be/tW80Zj_H6Fw).
+
+If you're [**not important enough**], [**Vladimir Putin**] or [**Xi Xinping**] could [**literally**] send a video of themselves writing a letter to a [**US citizen**], that says the 1) date, 2) time, and 3) location where they are going to invade the United States of America...? And, oh my god.
+
+[**Stratton Air National Guard**] would be the [**first ones to blame**] if that [**did**] indeed happen, and they ignored the video or audio recording or whatever evidence existed.
+
+They may think that it's a matter of [**importance**], or that I'm just some [**fuckboy**] that doesn't know what the hell I'm talking about when I say stuff, or whatever, but then check these out...
+
+| Date       | Name            | Link                                                         |
+|:-----------|:----------------|:-------------------------------------------------------------|
+| `10/04/22` | God Mode Cursor | [https://youtu.be/dU_5rdVkCD8](https://youtu.be/dU_5rdVkCD8) |
+| `09/26/22` | God Mode Cursor | [https://youtu.be/tW80Zj_H6Fw](https://youtu.be/tW80Zj_H6Fw) |
+
+I mean, [**allow me to use the stupid fallacious logic that they use**], to illustrate how it's [**pretty dangerous**] to write stuff off [**immediately**], without [**investigating**] a fucking claim.
+
+I may be the most intelligent person that ever lived, because I gotta be, in order to have (2) video links of a thing that shows up called the "god mode cursor".
 
 Gotta be.
 It couldn't possibly be the case, that I'm NOT the most intelligent person that ever
@@ -150,7 +158,9 @@ I can tell them:
 
 And they'll be CONFUSED, and somehow think that I said [DRONES DISGUISED AS BIRDS].
 
-That's how stupid people actually are, when I talk to them, on a daily fucking basis.
+That's how ignorant many people actually are...
+...when I talk to them about stuff like this...
+...on a rather consistent basis.
 
 To make matters even more compelling...?
 I was able to collect ADDITIONAL EVIDENCE THAT THEY DIDN'T REALLY TAKE A GOOD LOOK AT,
