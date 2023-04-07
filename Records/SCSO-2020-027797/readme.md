@@ -81,71 +81,123 @@
 | 5     | ![06.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-027797/06.jpg) |
 
 # Narrative
-`Here's what I actually went to STRATTON AIR NATIONAL GUARD for.
-            ________________________________________________________________________________________
-            |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | 05/21/20 2358 [Originally recorded]                                                  |
-            |______________________________________________________________________________________|
-            |¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | Index | Info     | Hyperlink                                                         |
-            |_______|__________|___________________________________________________________________|
-            |¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            |     1 | Original | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
-            |     2 | Treble+  | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
-            |_______|__________|___________________________________________________________________|
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            Not only did these people think I was insane...? But they took the reason I went there, out of context.
-            That's because, of how stupid people actually are when I talk to them.
+``
+Here's what I actually went to [Stratton Air National Guard] for.
+________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| 05/21/20 2358 [Originally recorded]                                                  |
+|______________________________________________________________________________________|
+|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Index | Info     | Hyperlink                                                         |
+|_______|__________|___________________________________________________________________|
+|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+|     1 | Original | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx |
+|     2 | Treble+  | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU |
+|_______|__________|___________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+They took the [reason] I went there, [out of context].
 
-            I can tell them "HEY, CHECK OUT THIS AUDIO RECORDING", and they'll be CONFUSED, and somehow
-            think that I said DRONES DISGUISED AS BIRDS.
-            That's how stupid people actually are, when I talk to them, on a daily fucking basis.
+I'm making a big deal about all of this, because [they're making decisions] that they
+believe are [informed], as in, [they would know ahead of time], that what I'm [attempting]
+to [show them], is fucking stupid.
 
-            To make matters even more compelling...?
-            I was able to collect ADDITIONAL EVIDENCE THAT THEY DIDN'T REALLY TAKE A GOOD LOOK AT, after I made it
-            to Schenectady.
+And that is the reason why things like this wind up happening:
+https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach
 
-            It truly is such a RECURRING THEME...
-            ______________________________________________________________________________________________________________
-            |¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | Who is who | What is what                                                                                  |
-            |____________|_______________________________________________________________________________________________|
-            |¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | Me      -> | Being more intelligent than most people                                                       |
-            | Them    -> | Thinking I'm insane, because they've been lied to so many times their entire life             |
-            | Me      -> | Not (lying/insane)... just being a LOT more (intelligent + observant + informed)...           |
-            | Them    -> | Failing to admit that's what it is, because my intelligence constantly bruises people's egos  |
-            |____________|_______________________________________________________________________________________________|
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            "Never underestimate the power of stupid people in large groups." -George Carlin
+So, if someone from another country like [CHINA] or [RUSSIA] is using this thing to spy
+on US Citizens, they're [too fucking ignorant] to [investigate that].
 
-            How many dozens of ways should I slice this...? I'm not insane...
-            I'm just a lot more intelligent than most people. That's ALL it is.
-            Am I the SMARTEST DUDE THAT EVER LIVED...? Nah.
-            Do I go around saying "HEY, SMARTEST DUDE YOU'LL EVER MEET IN YOUR LIFE, BRO~!"
-            Nope. I don't do that at all.
-            I just say "HEY, CHECK OUT THIS EVIDENCE I HAVE OF SOMETHING REALLY STRANGE~!"
-            And people immediately CONFUSE what the fuck I just said, like on a constant, every-day basis.
-            ______________________________________________________________________________________________________________
-            |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | Them : OoooOoOoHhHHhhhHHh Michael Cook said "Check out this audio recording of a bird."                    |
-            | Me   : Yeah, so what...?                                                                                   |
-            | Them : WOW BRO, THAT'S A REAL BIRD RIGHT THERE, DUDE.                                                      |
-            |        YOU'RE A FUCKIN' WHACK JOB~!                                                                        |
-            | Me   : I'm pretty sure it's not a real bird at all, because it sounds like it's ARTIFICIAL INTELLIGENCE.   |
-            | Them : YEA RIGHT BRO, IT'S NOT ARTIFICIAL INTELLIGENCE, GO EAT A DICK~!                                    |
-            | Me   : Whatever you fuckin' moron.                                                                         |
-            |        I'd be willing to bet money on it, that DARPA made a project that does that.                        |
-            |        And, that they were interested in my activities because of these (3) audio logs...                  |
-            |____________________________________________________________________________________________________________|
-            |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | Date/Time     | # | Info            | Hyperlink                                                            |
-            |_______________|___|_________________|______________________________________________________________________|
-            |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-            | 05/19/20 1400 | 1 | Live Redaction  | https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw    |
-            | 05/20/20 1655 | 2 | Audio Log       | https://drive.google.com/file/d/13aIAjzp37cdiOmCljgsCFwdyfOLVcYi_    |
-            | 05/21/20 1044 | 3 | Audio Log       | https://drive.google.com/file/d/1-gbfcvZROeF0T-Z0-FWCzWBBLGdJPc6z    |
-            | 05/21/20 2358 | 4 | Bird 1 Original | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx    |
-            | 05/21/20 2358 | 5 | Bird 1 Treble   | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU    |
-            |_______________|___|_________________|______________________________________________________________________|
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯`
+They may think that it's a matter of importance, or that I'm just some fuckboy that
+doesn't know what the hell I'm talking about when I say stuff, or whatever, but then
+check these out...
+
+10/04/22 | God Mode Cursor | https://youtu.be/dU_5rdVkCD8
+09/26/22 | God Mode Cursor | https://youtu.be/tW80Zj_H6Fw
+
+I mean, allow me to use the stupid fallacious logic that they use, to illustrate
+how it's pretty dangerous to write stuff off immediately, without investigating a
+fucking claim.
+
+I may be the most intelligent person that ever lived, because I gotta be, in order
+to have (2) video links of a thing that shows up called the "god mode cursor".
+
+Gotta be.
+It couldn't possibly be the case, that I'm NOT the most intelligent person that ever
+lived, otherwise, why would I have (2) of these videos as well as other videos that
+show other various glitches and exploits on operating systems that have been made
+by the [Microsoft Corporation]...?
+
+You see...?
+I'm using [the same sort of logic that these people use], in order to [justify my claim].
+
+The claim is...
+I GOTTA be the most intelligent person that has ever lived, in order to have (2) videos
+of this glitch. And because they are already aware of the fact that I'm the most intelligent
+person that ever lived, that's why they don't have to [investigate] anything that I have 
+on hand, because of how jealous they are, of how intelligent I am, and that's it.
+
+Sounds fuckin' stupid, right...?
+Right.
+
+That's the [beginning] and the [end] of my claim here.
+They can't investigate a god damn thing if their hands constantly go limp, when I say
+"Check out this audio recording."
+
+However, that is [exactly] what so many people do.
+
+I can tell them:
+[Me]: HEY, CHECK OUT THIS AUDIO RECORDING...
+
+And they'll be CONFUSED, and somehow think that I said [DRONES DISGUISED AS BIRDS].
+
+That's how stupid people actually are, when I talk to them, on a daily fucking basis.
+
+To make matters even more compelling...?
+I was able to collect ADDITIONAL EVIDENCE THAT THEY DIDN'T REALLY TAKE A GOOD LOOK AT,
+after I made it to [Schenectady].
+
+It truly is such a RECURRING THEME...
+______________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Who is who | What is what                                                                                  |
+|____________|_______________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Me      -> | Being more intelligent than most people                                                       |
+| Them    -> | Thinking I'm insane, because they've been lied to so many times their entire life             |
+| Me      -> | Not (lying/insane)... just being a LOT more (intelligent + observant + informed)...           |
+| Them    -> | Failing to admit that's what it is, because my intelligence constantly bruises people's egos  |
+|____________|_______________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"Never underestimate the power of stupid people in large groups." -George Carlin
+
+How many dozens of ways should I slice this...? I'm not insane...
+I'm just a lot more intelligent than most people. That's ALL it is.
+Am I the SMARTEST DUDE THAT EVER LIVED...? Nah.
+Do I go around saying "HEY, SMARTEST DUDE YOU'LL EVER MEET IN YOUR LIFE, BRO~!"
+Nope. I don't do that at all.
+I just say "HEY, CHECK OUT THIS EVIDENCE I HAVE OF SOMETHING REALLY STRANGE~!"
+And people immediately CONFUSE what the fuck I just said, like on a constant, every-day basis.
+______________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Them : OoooOoOoHhHHhhhHHh Michael Cook said "Check out this audio recording of a bird."                    |
+| Me   : Yeah, so what...?                                                                                   |
+| Them : WOW BRO, THAT'S A REAL BIRD RIGHT THERE, DUDE.                                                      |
+|        YOU'RE A FUCKIN' WHACK JOB~!                                                                        |
+| Me   : I'm pretty sure it's not a real bird at all, because it sounds like it's ARTIFICIAL INTELLIGENCE.   |
+| Them : YEA RIGHT BRO, IT'S NOT ARTIFICIAL INTELLIGENCE, GO EAT A DICK~!                                    |
+| Me   : Whatever you fuckin' moron.                                                                         |
+|        I'd be willing to bet money on it, that DARPA made a project that does that.                        |
+|        And, that they were interested in my activities because of these (3) audio logs...                  |
+|____________________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Date/Time     | # | Info            | Hyperlink                                                            |
+|_______________|___|_________________|______________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| 05/19/20 1400 | 1 | Live Redaction  | https://drive.google.com/file/d/186dv0z0YLfafQT_tlJYYy9AhorERuSPw    |
+| 05/20/20 1655 | 2 | Audio Log       | https://drive.google.com/file/d/13aIAjzp37cdiOmCljgsCFwdyfOLVcYi_    |
+| 05/21/20 1044 | 3 | Audio Log       | https://drive.google.com/file/d/1-gbfcvZROeF0T-Z0-FWCzWBBLGdJPc6z    |
+| 05/21/20 2358 | 4 | Bird 1 Original | https://drive.google.com/file/d/1kl_zBSSEqGKk3ri3WKuiF9ISVZoyxErx    |
+| 05/21/20 2358 | 5 | Bird 1 Treble   | https://drive.google.com/file/d/13NPoJyRENfdy7_kwMVCjfrJccoU3MxUU    |
+|_______________|___|_________________|______________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+``
