@@ -974,7 +974,7 @@ Class VmObject
         $This.Console.Initialize()
         $This.Status()
     }
-    [Void] Status()
+    Status()
     {
         # If enabled, shows the last item added to the console
         If ($This.Mode -gt 0)
@@ -982,7 +982,7 @@ Class VmObject
             [Console]::WriteLine($This.Console.Last())
         }
     }
-    [Void] Update([Int32]$State,[String]$Status)
+    Update([Int32]$State,[String]$Status)
     {
         # Updates the console
         $This.Console.Update($State,$Status)
@@ -993,13 +993,50 @@ Class VmObject
         $This.Console.Update($State,$Status)
         Throw $This.Console.Last().Status
     }
+    DumpConsole()
+    {
+        $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
+        $This.Update(100,"[+] Dumping console: [$xPath]")
+        $This.Console.Finalize()
+        
+        $Value = $This.Console.Output | % ToString
+
+        [System.IO.File]::WriteAllLines($xPath,$Value)
+    }
+    [String] LogPath()
+    {
+        $xPath = $This.ProgramData()
+
+        ForEach ($Folder in $This.Author(), "Logs")
+        {
+            $xPath = $xPath, $Folder -join "\"
+            If (![System.IO.Directory]::Exists($xPath))
+            {
+                [System.IO.Directory]::CreateDirectory($xPath)
+            }
+        }
+
+        Return $xPath
+    }
+    [String] Now()
+    {
+        Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+    }
     [Object] Get()
     {
-        $Virtual           = Get-VM -Name $This.Name -EA 0
-        $This.Exists       = $Virtual.Count -gt 0
-        $This.Guid         = @($Null,$Virtual.Id)[$This.Exists]
+        $Virtual     = Get-VM -Name $This.Name -EA 0
+        $This.Exists = $Virtual.Count -gt 0
+        $This.Guid   = @($Null,$Virtual.Id)[$This.Exists]
 
         Return @($Null,$Virtual)[$This.Exists]
+    }
+    [String] ProgramData()
+    {
+        Return [Environment]::GetEnvironmentVariable("ProgramData")
+    }
+    [String] Author()
+    {
+        Return "Secure Digits Plus LLC"
     }
     [Object] Size([String]$Name,[UInt64]$SizeBytes)
     {
@@ -1012,10 +1049,6 @@ Class VmObject
     [String] GuestName()
     {
         Return $This.Network.Hostname()
-    }
-    [UInt32[]] UnixGuestName()
-    {
-        Return [UInt32[]][Char[]]$This.GuestName().ToUpper()
     }
     Connect()
     {
@@ -1238,6 +1271,14 @@ Class VmObject
     {
         Return Get-WmiObject $Type -NS Root\Virtualization\V2
     }
+    [Object] GetNetworkNode([Object]$File)
+    {
+        Return [VmNetworkNode]::New($File)
+    }
+    [String] GetRegistryPath()
+    {
+        Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+    }
     [Object] NewVmPropertyList()
     {
         Return [VmPropertyList]::New()
@@ -1251,7 +1292,7 @@ Class VmObject
         $This.Update(0,"[~] Getting VmFirmware : $($This.Name)")
         $Item = Switch ($This.Generation) 
         { 
-            1 
+            1
             {
                 # Verbosity level
                 Switch ($This.Mode)
@@ -1259,7 +1300,7 @@ Class VmObject
                     Default { Get-VmBios -VmName $This.Name } 
                     2       { Get-VmBios -VmName $This.Name -Verbose } 
                 }
-            } 
+            }
             2 
             {
                 # Verbosity level
@@ -1381,12 +1422,6 @@ Class VmObject
 
         Return $Mac -join "-"
     }
-    [UInt32] NetworkSetupMode()
-    {
-        $Arp = (arp -a) -match $This.GetMacAddress() -Split " " | ? Length -gt 0
-
-        Return !!$Arp
-    }
     TypeChain([UInt32[]]$Array)
     {
         ForEach ($Key in $Array)
@@ -1447,60 +1482,6 @@ Class VmObject
         $This.Update(0,"[+] Typing (CTRL + ALT + DEL)")
         $This.Keyboard.TypeCtrlAltDel()
     }
-    LinuxType([String]$Entry)
-    {
-        ForEach ($Char in [Char[]]$Entry)
-        {
-            If ($Char -cmatch "[a-z]")
-            {
-                $This.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
-            }
-            ElseIf ($Char -cmatch "[A-Z]")
-            {
-                $This.ShiftKey([UInt32][Char]([String]$Char).ToUpper()) 
-            }
-            ElseIf ($Char -match "[0-9]")
-            {
-                $This.TypeKey([UInt32][Char]$Char)
-            }
-            ElseIf ($Char -match "(!|@|#|\$|%|\^|&|\*|\(|\))")
-            {
-                $Char = Switch ($Char)
-                {
-                    "!"  { "1" }
-                    "@"  { "2" }
-                    "#"  { "3" }
-                    "\$" { "4" }
-                    "%"  { "5" }
-                    "\^" { "6" }
-                    "&"  { "7" }
-                    "\*" { "8" }
-                    "\(" { "9" }
-                    "\)" { "0" }
-                }
-
-                $This.ShiftKey([UInt32][Char]$Char)
-            }
-            Else
-            {
-                Switch -Regex ($Char)
-                {
-                    "\;" { $This.TypeKey(186)  }
-                    "\:" { $This.ShiftKey(186) }
-                    "\=" { $This.TypeKey(187)  }
-                    "\+" { $This.ShiftKey(187) }
-                    ","  { $This.TypeKey(188)  } 
-                    "\<" { $This.ShiftKey(188) }
-                    "\-" { $This.TypeKey(189)  }
-                    "_"  { $This.ShiftKey(189) }
-                    "\." { $This.TypeKey(190)  }
-                    "\>" { $This.ShiftKey(190) }
-                }
-            }
-
-            Start-Sleep -Milliseconds 125
-        }
-    }
     Idle([UInt32]$Percent,[UInt32]$Seconds)
     {
         $This.Update(0,"[~] Idle : $($This.Name) [CPU <= $Percent% for $Seconds second(s)]")
@@ -1558,82 +1539,6 @@ Class VmObject
         Until (Test-Connection $This.Network.IpAddress -EA 0)
 
         $This.Update(1,"[+] Connection")
-    }
-    SetAdmin([Object]$Account)
-    {
-        $This.Update(0,"[~] Setting : Administrator password")
-        ForEach ($X in 0..1)
-        {
-            $This.TypePassword($Account)
-            $This.TypeKey(9)
-            Start-Sleep -Milliseconds 125
-        }
-
-        $This.TypeKey(9)
-        Start-Sleep -Milliseconds 125
-        $This.TypeKey(13)
-    }
-    Login([Object]$Account)
-    {
-        If ($Account.GetType().Name -notmatch "(VmAdminCredential|SecurityOptionController)")
-        {
-            $This.Error("[!] Invalid input object")
-        }
-
-        $This.Update(0,"[~] Login : [Account: $($Account.Username())")
-        $This.TypeCtrlAltDel()
-        $This.Timer(5)
-        $This.TypePassword($Account)
-        Start-Sleep -Milliseconds 125
-        $This.TypeKey(13)
-    }
-    LaunchPs()
-    {
-        # Open Start Menu
-        $This.PressKey(91)
-        $This.TypeKey(88)
-        $This.ReleaseKey(91)
-        $This.Timer(1)
-
-        Switch ($This.Role)
-        {
-            Server
-            {
-                # Open Command Prompt
-                $This.TypeKey(65)
-                $This.Timer(2)
-
-                # Maximize window
-                $This.PressKey(91)
-                $This.TypeKey(38)
-                $This.ReleaseKey(91)
-                $This.Timer(1)
-
-                # Start PowerShell
-                $This.TypeText("PowerShell")
-                $This.TypeKey(13)
-                $This.Timer(1)
-            }
-            Client
-            {
-                # // Open [PowerShell]
-                $This.TypeKey(65)
-                $This.Timer(2)
-                $This.TypeKey(37)
-                $This.Timer(2)
-                $This.TypeKey(13)
-                $This.Timer(2)
-
-                # // Maximize window
-                $This.PressKey(91)
-                $This.TypeKey(38)
-                $This.ReleaseKey(91)
-                $This.Timer(1)
-            }
-        }
-
-        # Wait for PowerShell engine to get ready for input
-        $This.Idle(5,5)
     }
     [Void] AddScript([UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
     {
@@ -1696,16 +1601,169 @@ Class VmObject
         $Item.Complete = 1
         $This.Script.Selected ++
     }
-    [Object] GetNetworkNode([Object]$File)
+    [UInt32[]] UnixGuestName()
     {
-        Return [VmNetworkNode]::New($File)
+        # [Linux]
+        Return [UInt32[]][Char[]]$This.GuestName().ToUpper()
     }
-    [String] GetRegistryPath()
+    LinuxType([String]$Entry)
     {
-        Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+        # [Linux]
+        ForEach ($Char in [Char[]]$Entry)
+        {
+            If ($Char -cmatch "[a-z]")
+            {
+                $This.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
+            }
+            ElseIf ($Char -cmatch "[A-Z]")
+            {
+                $This.ShiftKey([UInt32][Char]([String]$Char).ToUpper()) 
+            }
+            ElseIf ($Char -match "[0-9]")
+            {
+                $This.TypeKey([UInt32][Char]$Char)
+            }
+            ElseIf ($Char -match "(!|@|#|\$|%|\^|&|\*|\(|\))")
+            {
+                $Char = Switch ($Char)
+                {
+                    "!"  { "1" }
+                    "@"  { "2" }
+                    "#"  { "3" }
+                    "\$" { "4" }
+                    "%"  { "5" }
+                    "\^" { "6" }
+                    "&"  { "7" }
+                    "\*" { "8" }
+                    "("  { "9" }
+                    ")"  { "0" }
+                }
+
+                $This.ShiftKey([UInt32][Char]$Char)
+            }
+            Else
+            {
+                Switch -Regex ($Char)
+                {
+                    "\;"  { $This.TypeKey(186)  }
+                    "\:"  { $This.ShiftKey(186) }
+                    "\="  { $This.TypeKey(187)  }
+                    "\+"  { $This.ShiftKey(187) }
+                    ","   { $This.TypeKey(188)  } 
+                    "\<"  { $This.ShiftKey(188) }
+                    "\-"  { $This.TypeKey(189)  }
+                    "_"   { $This.ShiftKey(189) }
+                    "\."  { $This.TypeKey(190)  }
+                    "\>"  { $This.ShiftKey(190) }
+                    "\/"  { $This.TypeKey(191)  }
+                    "\?"  { $This.ShiftKey(191) }
+                    "\``" { $This.TypeKey(192)  }
+                    "\~"  { $This.ShiftKey(192) }
+                    "\["  { $This.TypeKey(219)  }
+                    "{"   { $This.ShiftKey(219) }
+                    "\\"  { $This.TypeKey(220)  }
+                    "\|"  { $This.ShiftKey(220) }
+                    "\]"  { $This.TypeKey(221)  }
+                    "}"   { $This.ShiftKey(221) }
+                    "\'"  { $This.TypeKey(222)  }
+                    "\`"" { $This.ShiftKey(222) }
+                }
+            }
+
+            Start-Sleep -Milliseconds 50
+        }
+    }
+    [UInt32] NetworkSetupMode()
+    {
+        # [Windows (Server/Client)]
+        $Arp = (arp -a) -match $This.GetMacAddress() -Split " " | ? Length -gt 0
+
+        Return !!$Arp
+    }
+    SetAdmin([Object]$Account)
+    {
+        # [Windows (Server)]
+        $This.Update(0,"[~] Setting : Administrator password")
+        ForEach ($X in 0..1)
+        {
+            $This.TypePassword($Account)
+            $This.TypeKey(9)
+            Start-Sleep -Milliseconds 125
+        }
+
+        $This.TypeKey(9)
+        Start-Sleep -Milliseconds 125
+        $This.TypeKey(13)
+    }
+    Login([Object]$Account)
+    {
+        # [Windows (Server/Client)]
+        If ($Account.GetType().Name -notmatch "(VmAdminCredential|SecurityOptionController)")
+        {
+            $This.Error("[!] Invalid input object")
+        }
+
+        $This.Update(0,"[~] Login : [Account: $($Account.Username())")
+        $This.TypeCtrlAltDel()
+        $This.Timer(5)
+        $This.TypePassword($Account)
+        Start-Sleep -Milliseconds 125
+        $This.TypeKey(13)
+    }
+    LaunchPs()
+    {
+        # [Windows (Server/Client)]
+
+        # Open Start Menu
+        $This.PressKey(91)
+        $This.TypeKey(88)
+        $This.ReleaseKey(91)
+        $This.Timer(1)
+
+        Switch ($This.Role)
+        {
+            Server
+            {
+                # Open Command Prompt
+                $This.TypeKey(65)
+                $This.Timer(2)
+
+                # Maximize window
+                $This.PressKey(91)
+                $This.TypeKey(38)
+                $This.ReleaseKey(91)
+                $This.Timer(1)
+
+                # Start PowerShell
+                $This.TypeText("PowerShell")
+                $This.TypeKey(13)
+                $This.Timer(1)
+            }
+            Client
+            {
+                # // Open [PowerShell]
+                $This.TypeKey(65)
+                $This.Timer(2)
+                $This.TypeKey(37)
+                $This.Timer(2)
+                $This.TypeKey(13)
+                $This.Timer(2)
+
+                # // Maximize window
+                $This.PressKey(91)
+                $This.TypeKey(38)
+                $This.ReleaseKey(91)
+                $This.Timer(1)
+            }
+        }
+
+        # Wait for PowerShell engine to get ready for input
+        $This.Idle(5,5)
     }
     [String[]] PrepPersistentInfo()
     {
+        # [Windows (Server/Client)]
+
         # Prepare the correct persistent information
         $List = @( ) 
 
@@ -1758,6 +1816,8 @@ Class VmObject
     }
     SetPersistentInfo()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 1] Set persistent information
         $This.Script.Add(1,"SetPersistentInfo","Set persistent information",@(
         '$Root      = "{0}"' -f $This.GetRegistryPath();
@@ -1778,11 +1838,15 @@ Class VmObject
     }
     SetTimeZone()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 2] Set time zone
         $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}" -Verbose' -f (Get-Timezone).Id))
     }
     SetComputerInfo()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 3] Set computer info
         $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
         '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath() 
@@ -1794,6 +1858,8 @@ Class VmObject
     }
     SetIcmpFirewall()
     {
+        # [Windows (Server/Client)]
+
         $Content = Switch ($This.Role)
         {
             Server
@@ -1812,6 +1878,8 @@ Class VmObject
     }
     SetInterfaceNull()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 5] Get InterfaceIndex, get/remove current (IP address + Net Route)
         $This.Script.Add(5,"SetInterfaceNull","Get InterfaceIndex, get/remove current (IP address + Net Route)",@(
         '$Index              = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
@@ -1821,6 +1889,8 @@ Class VmObject
     }
     SetStaticIp()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 6] Set static IP Address
         $This.Script.Add(6,"SetStaticIp","Set (static IP Address + Dns server)",@(
         '$Splat              = @{';
@@ -1837,6 +1907,8 @@ Class VmObject
     }
     SetWinRm()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 7] Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)
         $This.Script.Add(7,"SetWinRm","Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)",@(
         'winrm quickconfig';
@@ -1859,6 +1931,8 @@ Class VmObject
     }
     SetWinRmFirewall()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 8] Set WinRm Firewall
         $This.Script.Add(8,"SetWinRmFirewall",'Set WinRm Firewall',@(
         '$Splat          = @{';
@@ -1874,6 +1948,8 @@ Class VmObject
     }
     SetRemoteDesktop()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 9] Set Remote Desktop
         $This.Script.Add(9,"SetRemoteDesktop",'Set Remote Desktop',@(
         'Set-ItemProperty "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -Value 0';
@@ -1881,6 +1957,8 @@ Class VmObject
     }
     InstallFeModule()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 10] Install [FightingEntropy()]
         $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
         '[Net.ServicePointManager]::SecurityProtocol = 3072'
@@ -1893,22 +1971,30 @@ Class VmObject
     }
     InstallChoco()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 11] Install Chocolatey
         $This.Script.Add(11,"InstallChoco","Install Chocolatey",@(
         "Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression"))
     }
     InstallVsCode()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 12] Install Visual Studio Code
         $This.Script.Add(12,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
     }
     InstallBossMode()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 13] Install BossMode (vscode color theme)
         $This.Script.Add(13,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
     }
     InstallPsExtension()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 14] Install Visual Studio Code (PowerShell Extension)
         $This.Script.Add(14,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
         '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
@@ -1917,11 +2003,15 @@ Class VmObject
     }
     RestartComputer()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 15] Restart computer
         $This.Script.Add(15,'Restart','Restart computer',@('Restart-Computer'))
     }
     ConfigureDhcp()
     {
+        # [Windows (Server/Client)]
+
         # [Phase 16] Configure Dhcp
         $This.Script.Add(16,'ConfigureDhcp','Configure Dhcp',@(
         '$Root           = "{0}"' -f $This.GetRegistryPath()
@@ -1973,6 +2063,8 @@ Class VmObject
     }
     InitializeFeAd([String]$Pass)
     {
+        # [Windows (Server)]
+
         $This.Script.Add(17,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
         '$Password = Read-Host "Enter password" -AsSecureString';
         '<Pause[2]>';
@@ -2032,6 +2124,8 @@ Class VmObject
     }
     Load()
     {
+        # [Windows (Server/Client)]
+
         $This.SetPersistentInfo()
         $This.SetTimeZone()
         $This.SetComputerInfo()
@@ -2049,35 +2143,10 @@ Class VmObject
         $This.RestartComputer()
         $This.ConfigureDhcp()
     }
-    [String] ProgramData()
-    {
-        Return [Environment]::GetEnvironmentVariable("ProgramData")
-    }
-    [String] Author()
-    {
-        Return "Secure Digits Plus LLC"
-    }
-    [Object] Now()
-    {
-        Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
-    }
-    [String] LogPath()
-    {
-        $xPath = $This.ProgramData()
-
-        ForEach ($Folder in $This.Author(), "Logs")
-        {
-            $xPath = $xPath, $Folder -join "\"
-            If (![System.IO.Directory]::Exists($xPath))
-            {
-                [System.IO.Directory]::CreateDirectory($xPath)
-            }
-        }
-
-        Return $xPath
-    }
     [Object] PSSession([Object]$Account)
     {
+        # [Windows (Server/Client)]
+
         # Attempt login
         $This.Update(0,"[~] PSSession Token")
         $Splat = @{
@@ -2090,16 +2159,6 @@ Class VmObject
         }
 
         Return $Splat
-    }
-    DumpConsole()
-    {
-        $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
-        $This.Update(100,"[+] Dumping console: [$xPath]")
-        $This.Console.Finalize()
-        
-        $Value = $This.Console.Output | % ToString
-
-        [System.IO.File]::WriteAllLines($xPath,$Value)
     }
     [String] ToString()
     {
@@ -2323,172 +2382,44 @@ $Vm.PressKey(16)
 $Vm.TypeKey(9)
 $Vm.TypeKey(9)
 $Vm.ReleaseKey(16)
-ForEach ($Char in [Char[]]$Vm.GuestName().ToUpper())
-{
-    Switch ($Char)
-    {
-        Default
-        {
-            $Vm.TypeKey([UInt32][Char]$Char)
-        }
-        .
-        {
-            $Vm.TypeKey(190)
-        }
-    }
-}
+$Vm.LinuxType($Vm.GuestName())
 $Vm.TypeChain(@(9,32))
 $Vm.Timer(2)
 
-# Configure static IP address
+# // Configure static IP address
 $Vm.SpecialKey([UInt32][Char]"C")
 $Vm.Timer(2)
 
-# [IPV4 Settings]
-$Vm.TypeKey(9)
-$Vm.TypeKey(39)
-$Vm.TypeKey(39)
-$Vm.TypeKey(39)
-$Vm.TypeKey(39)
+# // IPV4 Settings
+$Vm.TypeChain(@(9,39,39,39,39,9,32,40,40,32,9,9,32))
 
-# [IPV4 Method]
-$Vm.TypeKey(9)
-$Vm.TypeKey(32)
-$Vm.Timer(1)
-$Vm.TypeKey(40)
-$Vm.TypeKey(40)
-$Vm.TypeKey(32)
-$Vm.Timer(1)
-
-# [Add IP Address]
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(32)
-
-# [Set static IP address]
-
-ForEach ($Char in [Char[]]$Vm.Network.IPAddress)
-{
-    Switch ($Char)
-    {
-        Default
-        {
-            $Vm.TypeKey([UInt32][Char]$Char)
-        }
-        .
-        {
-            $Vm.TypeKey(190)
-        }
-    }
-}
+# // IP Address
+$Vm.LinuxType($Vm.Network.IPAddress)
 $Vm.TypeKey(9)
 
-# [Set prefix]
-ForEach ($Char in [Char[]]$Vm.Network.Prefix.ToString())
-{
-    $Vm.TypeKey([UInt32][Char]$Char)
-}
+# // Prefix
+$Vm.LinuxType($Vm.Network.Prefix)
 $Vm.TypeKey(9)
 
-# [Set gateway]
-ForEach ($Char in [Char[]]$Vm.Network.Gateway)
-{
-    Switch ($Char)
-    {
-        Default
-        {
-            $Vm.TypeKey([UInt32][Char]$Char)
-        }
-        .
-        {
-            $Vm.TypeKey(190)
-        }
-    }
-}
+# // Gateway
+$Vm.LinuxType($Vm.Network.Gateway)
 $Vm.TypeKey(13)
 
-# [DNS Server(s)]
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Ct = $Vm.Network.Dns.Count
-If ($Ct -eq 1)
-{
-    ForEach ($Char in [Char[]]$Vm.Network.Dns[0])
-    {
-        Switch ($Char)
-        {
-            Default
-            {
-                $Vm.TypeKey([UInt32][Char]$Char)
-            }
-            .
-            {
-                $Vm.TypeKey(190)
-            }
-        }
-    }
-}
-
-If ($Ct -gt 1)
-{
-    ForEach ($X in 0..($Ct-1))
-    {
-        ForEach ($Char in [Char[]]$Vm.Network.Dns[$X])
-        {
-            Switch ($Char)
-            {
-                Default
-                {
-                    $Vm.TypeKey([UInt32][Char]$Char)
-                }
-                .
-                {
-                    $Vm.TypeKey(190)
-                }
-            }
-        }
-
-        If ($X -ne ($Ct-1))
-        {
-            $Vm.TypeKey(188)
-        }
-    }
-}
-
+# // DNS Server(s)
+$Vm.TypeChain(@(9,9,9))
+$Vm.LinuxType($Vm.Network.Dns -join ",")
 $Vm.TypeKey(9)
 
 # // Search domains
-ForEach ($Char in [Char[]]$Vm.Network.Domain.ToUpper())
-{
-    Switch ($Char)
-    {
-        Default
-        {
-            $Vm.TypeKey([UInt32][Char]$Char)
-        }
-        .
-        {
-            $Vm.TypeKey(190)
-        }
-    }
-}
+$Vm.LinuxType($Vm.Network.Domain)
 
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-# [Save]
-$Vm.TypeKey(32)
+# // Save
+$Vm.TypeChain(@(9,9,9,9,32))
+$Vm.Timer(1)
 
-# Done
-$Vm.TypeKey(32)
-
-
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-
-
+# // Done
+$Vm.SpecialKey([UInt32][Char]"D")
+$Vm.Timer(1)
 
 # // Menu -> Root
 $Vm.SpecialKey([UInt32][Char]"R")
@@ -2496,23 +2427,29 @@ $Vm.TypeKey(13)
 $Vm.Timer(2)
 
 # Set Root
-$Date = [DateTime]::Now.ToString("yyyyMMdd")
-$Vm.TypeChain(@([UInt32[]][Char[]]$Date))
+$Vm.LinuxType($Hive.Admin.Password())
 $Vm.TypeKey(9)
-$Vm.TypeChain(@([UInt32[]][Char[]]$Date))
-$Vm.PressKey(16)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.ReleaseKey(16)
-$Vm.TypeKey(32)
+$Vm.LinuxType($Hive.Admin.Password())
+$Vm.SpecialKey([UInt32][Char]"D")
 $Vm.Timer(1)
-$Vm.TypeKey(32)
-$Vm.Timer(2)
+
+# Set User
+$Vm.SpecialKey([UInt32][Char]"U")
+$Vm.TypeKey(13)
+$Vm.Timer(1)
+
+# User
+$Vm.TypeKey(9)
+$Vm.LinuxType($Hive.Admin.Username)
+$Vm.TypeChain(@(9,13,9,9))
+$Vm.LinuxType($Hive.Admin.Password())
+$Vm.TypeKey(9)
+$Vm.LinuxType($Hive.Admin.Password())
+$Vm.SpecialKey([UInt32][Char]"D")
+$Vm.Timer(1)
 
 # // Begin Installation
 $Vm.SpecialKey([UInt32][Char]"B")
-$Vm.TypeKey(13)
 
 # // Process installation, await completion
 $Vm.Idle(0,10)
@@ -2526,9 +2463,14 @@ $Vm.Idle(5,5)
 
 # // Welcome to Red Hat Enterprise Linux
 $Vm.TypeKey(9)
+$Vm.Timer(5)
 $Vm.TypeKey(13)
-$Vm.Timer(1)
+$Vm.Timer(2)
+$Vm.LinuxType($Hive.Admin.Password())
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
 
+<#
 # // Privacy
 $Vm.TypeKey(13)
 $Vm.Timer(1)
@@ -2538,33 +2480,32 @@ $Vm.TypeKey(9)
 $Vm.TypeKey(13)
 
 # About you
-$Vm.TypeChain(@([UInt32[]][Char[]]"ADMIN"))
-$Vm.PressKey(16)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.ReleaseKey(16)
-$Vm.TypeKey(32)
+$Vm.LinuxType("admin")
+$Vm.SpecialKey([UInt32][Char]"N")
 $Vm.Timer(1)
 
 # Set a password
 $Vm.TypeChain(@([UInt32[]][Char[]]$Date))
 $Vm.TypeKey(9)
 $Vm.TypeChain(@([UInt32[]][Char[]]$Date))
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(32)
+$Vm.SpecialKey([UInt32][Char]"N")
 $Vm.Timer(1)
 
 # Setup complete
-$Vm.TypeKey(32)
+$Vm.SpecialKey([UInt32][Char]"S")
+$Vm.Timer(1)
 $Vm.Idle(5,5)
+#>
 
 # Learn your way around...?
 $Vm.TypeKey(32)
+$Vm.Timer(2)
+$Vm.TypeKey(27)
+$Vm.Idle(5,5)
 
 # // Open terminal
 $Vm.TypeKey(91)
-$Vm.TypeChain(@([UInt32[]][Char[]]"TERMINAL"))
+$Vm.LinuxType("terminal")
 $Vm.TypeKey(13)
 $Vm.Timer(2)
 
@@ -2573,16 +2514,6 @@ $Vm.PressKey(91)
 $Vm.TypeKey(38)
 $Vm.ReleaseKey(91)
 
-# [RHEL]
-# 122: <fullscreen>
-# 123: ~ `
-# 128: <insert> or <escape>...?
-# 132: <insert> or <escape>...? (delay)
-# 186: ; :
-# 187: = +
-# 188: , <
-# 189: - _
-# 190: . >
-
+# // Continue configuration
 $Vm.Update(100,"Complete [+] Installation")
 $Vm.DumpConsole()
