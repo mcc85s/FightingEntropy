@@ -1621,95 +1621,21 @@ Class VmObject
         $Item.Complete = 1
         $This.Script.Selected ++
     }
-    LinuxType([String]$Entry)
+    [String] ToString()
     {
-        # [Linux]
-        $This.Update(0,"[+] Type entry : [$Entry]")
-        ForEach ($Char in [Char[]]$Entry)
-        {
-            $This.Update(0,"[+] Typing key : [$Char]")
-            $This.LinuxKey($Char)
-
-            Start-Sleep -Milliseconds 10
-        }
+        Return $This.Name
     }
-    LinuxPassword([String]$Entry)
-    {
-        # [Linux]
-        $This.Update(0,"[+] Typing password : [<ActualPassword>]")
+}
 
-        ForEach ($Char in [Char[]]$Entry)
-        {
-            $This.LinuxKey($Char)
-
-            Start-Sleep -Milliseconds 10
-        }
+Class VmWindows : VmObject
+{
+    VmWindows([Switch]$Flags,[Object]$Vm) : base($Flags,$Vm)
+    {   
+        
     }
-    LinuxKey([Char]$Char)
+    VmWindows([Object]$File) : base($File)
     {
-        # [Linux]
-        $Int = [UInt32]$Char
 
-        Switch ($Int)
-        {
-            {$_ -in 97..122}
-            {
-                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
-            }
-            {$_ -in 65..90}
-            {
-                $This.Keyboard.PressKey(16)
-                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper())
-                $This.Keyboard.ReleaseKey(16)
-            }
-            {$_ -in 48..57}
-            {
-                $This.Keyboard.TypeKey($Char)
-            }
-            {$_ -in 33,64,35,36,37,38,40,41,94,42}
-            {
-                $Char = Switch ($Int)
-                {
-                    33  { "1" } 64  { "2" } 35  { "3" }
-                    36  { "4" } 37  { "5" } 94  { "6" }
-                    38  { "7" } 42  { "8" } 40  { "9" }
-                    41  { "0" }
-                }
-
-                $This.Keyboard.PressKey(16)
-                $This.Keyboard.TypeKey([UInt32][Char]$Char)
-                $This.Keyboard.ReleaseKey(16)
-
-                Start-Sleep -Milliseconds 10
-            }
-            {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
-            {
-                $Int = Switch ($Int)
-                {
-                    32  {  32 } 59  { 186 } 61  { 187 } 
-                    44  { 188 } 45  { 189 } 46  { 190 }
-                    47  { 191 } 96  { 192 } 91  { 219 }
-                    92  { 220 } 93  { 221 } 39  { 222 }
-                }
-
-                $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 10
-            }
-            {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
-            {
-                $Int = Switch ($Int)
-                {
-                    58  { 186 } 43  { 187 } 60  { 188 } 
-                    95  { 189 } 62  { 190 } 63  { 191 } 
-                    126 { 192 } 123 { 219 } 124 { 220 } 
-                    125 { 221 } 34  { 222 }
-                }
-
-                $This.Keyboard.PressKey(16)
-                $This.Keyboard.TypeKey($Int)
-                $This.Keyboard.ReleaseKey(16)
-            }
-        }
     }
     [UInt32] NetworkSetupMode()
     {
@@ -2198,9 +2124,117 @@ Class VmObject
 
         Return $Splat
     }
-    [String] ToString()
+}
+
+Class VmLinux : VmObject
+{
+    VmLinux([Switch]$Flags,[Object]$Vm) : base($Flags,$Vm)
+    {   
+        
+    }
+    VmLinux([Object]$File) : base($File)
     {
-        Return $This.Name
+
+    }
+    Login([Object]$Account)
+    {
+        # Login
+        $This.Update(0,"Login [+] [$($This.Name): $([DateTime]::Now)]")
+        $This.TypeKey(9)
+        $This.TypeKey(13)
+        $This.LinuxPassword($Account.Password())
+        $This.TypeKey(13)
+        $This.Idle(0,5)
+    }
+    LinuxType([String]$Entry)
+    {
+        # [Linux]
+        $This.Update(0,"[+] Type entry : [$Entry]")
+        ForEach ($Char in [Char[]]$Entry)
+        {
+            $This.Update(0,"[+] Typing key : [$Char]")
+            $This.LinuxKey($Char)
+
+            Start-Sleep -Milliseconds 10
+        }
+    }
+    LinuxPassword([String]$Entry)
+    {
+        # [Linux]
+        $This.Update(0,"[+] Typing password : [<ActualPassword>]")
+
+        ForEach ($Char in [Char[]]$Entry)
+        {
+            $This.LinuxKey($Char)
+
+            Start-Sleep -Milliseconds 10
+        }
+    }
+    LinuxKey([Char]$Char)
+    {
+        # [Linux]
+        $Int = [UInt32]$Char
+
+        Switch ($Int)
+        {
+            {$_ -in 97..122}
+            {
+                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
+            }
+            {$_ -in 65..90}
+            {
+                $This.Keyboard.PressKey(16)
+                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper())
+                $This.Keyboard.ReleaseKey(16)
+            }
+            {$_ -in 48..57}
+            {
+                $This.Keyboard.TypeKey($Char)
+            }
+            {$_ -in 33,64,35,36,37,38,40,41,94,42}
+            {
+                $Char = Switch ($Int)
+                {
+                    33  { "1" } 64  { "2" } 35  { "3" }
+                    36  { "4" } 37  { "5" } 94  { "6" }
+                    38  { "7" } 42  { "8" } 40  { "9" }
+                    41  { "0" }
+                }
+
+                $This.Keyboard.PressKey(16)
+                $This.Keyboard.TypeKey([UInt32][Char]$Char)
+                $This.Keyboard.ReleaseKey(16)
+
+                Start-Sleep -Milliseconds 10
+            }
+            {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
+            {
+                $Int = Switch ($Int)
+                {
+                    32  {  32 } 59  { 186 } 61  { 187 } 
+                    44  { 188 } 45  { 189 } 46  { 190 }
+                    47  { 191 } 96  { 192 } 91  { 219 }
+                    92  { 220 } 93  { 221 } 39  { 222 }
+                }
+
+                $This.Keyboard.TypeKey($Int)
+                Start-Sleep -Milliseconds 10
+            }
+            {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
+            {
+                $Int = Switch ($Int)
+                {
+                    58  { 186 } 43  { 187 } 60  { 188 } 
+                    95  { 189 } 62  { 190 } 63  { 191 } 
+                    126 { 192 } 123 { 219 } 124 { 220 } 
+                    125 { 221 } 34  { 222 }
+                }
+
+                $This.Keyboard.PressKey(16)
+                $This.Keyboard.TypeKey($Int)
+                $This.Keyboard.ReleaseKey(16)
+            }
+        }
     }
 }
 
@@ -2253,7 +2287,20 @@ Class VmController
     }
     [Object] VmObject()
     {
-        Return [VmObject]::New($This.Current().Object)
+        $Object = $This.Current().Object
+        $Object = Switch ($Object.Role)
+        {
+            Default
+            {
+                [VmWindows]::New($Object)
+            }
+            Unix
+            {
+                [VmLinux]::New($Object)
+            }
+        }
+
+        Return $Object
     }
     [Object] VmObject([Switch]$Flags,[Object]$Item)
     {
@@ -2311,6 +2358,7 @@ Class VmController
         Return "<FEVirtual.VmController>"
     }
 }
+
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -2545,25 +2593,10 @@ $Vm.TypeKey(13)
 $Vm.Timer(1)
 $Vm.LinuxPassword($User.Password())
 $Vm.TypeKey(13)
-$Vm.Idle(5,5)
-
-# // Set [PowerShell] repo
-$Vm.LinuxType("curl https://packages.microsoft.com/config/rhel/8/prod.repo | tee /etc/yum.repos.d/microsoft.repo")
-$Vm.TypeKey(13)
-$Vm.Idle(5,5)
-
-# // Install [PowerShell]
-$Vm.LinuxType("dnf install powershell -y")
-$Vm.TypeKey(13)
 $Vm.Idle(0,5)
 
 # // Install groupinstall workgroup
 $Vm.LinuxType("dnf groupinstall workstation -y")
-$Vm.TypeKey(13)
-$Vm.Idle(0,5)
-
-# // Install tigervnc
-$Vm.LinuxType("dnf install tigervnc-server tigervnc -y")
 $Vm.TypeKey(13)
 $Vm.Idle(0,5)
 
@@ -2575,95 +2608,130 @@ $Vm.Idle(0,5)
 # // Install epel-release repository
 $Vm.LinuxType("dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y")
 $Vm.TypeKey(13)
+$Vm.Idle(0,10)
+
+# // Set [PowerShell] repo
+$Vm.LinuxType("curl https://packages.microsoft.com/config/rhel/8/prod.repo | tee /etc/yum.repos.d/microsoft.repo")
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // Install [PowerShell]
+$Vm.LinuxType("dnf install powershell -y")
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# // Install tigervnc
+$Vm.LinuxType("dnf install tigervnc-server tigervnc -y")
+$Vm.TypeKey(13)
 $Vm.Idle(0,5)
 
 # // Install xrdp
 $Vm.LinuxType("yum --enablerepo=epel install xrdp -y")
 $Vm.TypeKey(13)
+$Vm.Idle(0,5)
 
 # // Start xrdp
 $Vm.LinuxType("systemctl start xrdp.service")
 $Vm.TypeKey(13)
+$Vm.Idle(0,5)
 
 # // Enable xrdp
 $Vm.LinuxType("systemctl enable xrdp.service")
 $Vm.TypeKey(13)
+$Vm.Idle(0,5)
 
 # // Enable firewall entry
-$Vm.LinuxType("firewall-cmd --new-zone=remote --add-source=$($Vm.Network.IPAddress)/$($Vm.Network.Prefix) -–-permanent")
+$Line  = "firewall-cmd --permanent --zone=public --add-rich-rule='"
+$Line += 'rule family="ipv4" '
+$Line += 'source address="{0}/{1}" ' -f $Vm.Network.Ipaddress, $Vm.Network.Prefix
+$Line += 'port port="3389" '
+$Line += "protocol=`"tcp`" accept'"
+
+$Vm.LinuxType($Line)
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# // Firewall reload
+$Vm.LinuxType("firewall-cmd --reload")
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# // Using [PowerShell]
+$Vm.LinuxType("pwsh -i")
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# // Set repo for [Visual Studio Code]
+$Vm.LinuxType('$Link = "https://packages.microsoft.com"')
 $Vm.TypeKey(13)
 
-
-<#
-$Vm.LinuxType("netstat -antp | grep xrdp")
+$Vm.LinuxType('$Keys = "$Link/keys/microsoft.asc"')
 $Vm.TypeKey(13)
 
-
-firewall-cmd --new-zone=special --permanent
-firewall-cmd --reload
-firewall-cmd --zone=special --add-source=192.0.2.4/32
-firewall-cmd --zone=special --add-port=4567/tcp
-
-systemctl status firewalld.service
-systemctl enable firewalld.service
-systemctl start firewalld.service
-
-# sudo firewall-cmd –reload
-
-# // vncpassword
-$Vm.LinuxType("vncpasswd")
-$Vm.TypeKey(13)
-$Vm.LinuxPassword($Hive.Admin.Password())
-$Vm.TypeKey(13)
-$Vm.LinuxPassword($Hive.Admin.Password())
-$Vm.TypeKey(13)
-$Vm.Timer(1)
-$Vm.LinuxType("n")
+$Vm.LinuxType('$Repo = "$Link/yumrepos/vscode"')
 $Vm.TypeKey(13)
 
-$Vm.LinuxType("yum install epel-release -y")
+$Vm.LinuxType('$Path = "/etc/yum.repos.d/vscode.repo"')
 $Vm.TypeKey(13)
 
+$Vm.LinuxType('rpm --import $Keys')
+$Vm.TypeKey(13)
+
+$Vm.LinuxType("`$Content = `"[code]|name=Visual Studio Code|baseurl=`$Repo|enabled=1|gpgcheck=1|gpgkey=`$Keys`".Split('|')")
+$Vm.TypeKey(13)
+
+$Vm.LinuxType('[System.IO.File]::WriteAllLines($Path,$Content)')
+$Vm.TypeKey(13)
+
+# // Install [Visual Studio Code]
+$Vm.LinuxType('yum install code -y')
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# // Install [Microsoft Edge]
+$Vm.LinuxType("dnf install microsoft-edge-stable -y")
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# Exit [PowerShell]
+$Vm.LinuxType('exit')
+$Vm.TypeKey(13)
+
+# Exit [Root]
+$Vm.LinuxType('exit')
+$Vm.TypeKey(13)
+
+# Install [VSCode/PowerShell Extension]
+$Vm.LinuxType('code --install-extension ms-vscode.powershell')
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+# Enter [PowerShell]
 $Vm.LinuxType("pwsh")
 $Vm.TypeKey(13)
-$Vm.Idle(5,5)
+$Vm.Idle(0,5)
 
-$Content = @"
-[Unit]
-Description=Remote desktop service (VNC)
-After=syslog.target network.target
-
-[Service]
-Type=forking
-WorkingDirectory=/home/{0}
-User={0}
-Group={0}
-
-ExecStartPre=/bin/sh -c '/usr/bin/vncserver -kill %i > /dev/null 2>&1 || :'
-ExecStart=/usr/bin/vncserver -autokill %i
-ExecStop=/usr/bin/vncserver -kill %i
-
-Restart=on-success
-RestartSec=15
-[Install]
-WantedBy=multi-user.target
-"@ -f $User.UserName -Split "`n"
-
-$Vm.LinuxType("`$Content = @'")
-$Vm.TypeKey(13)
-ForEach ($Line in $Content)
-{
-    $Vm.LinuxType($Line)
-    $Vm.TypeKey(13)
-}
-$Vm.LinuxType("'@")
+# Download BossMode
+$Vm.LinuxType("Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/Functions/Install-BossMode.ps1?raw=true | Invoke-Expression")
 $Vm.TypeKey(13)
 
-<#
-$Vm.LinuxType("yum install tigervnc-server xrdp -y")
+$Vm.LinuxType("Install-BossMode")
 $Vm.TypeKey(13)
-$
-#>
+$Vm.Idle(0,5)
+
+# Reboot
+$Vm.LinuxType("reboot")
+$Vm.TypeKey(13)
+$Vm.Idle(0,10)
+
+# Login
+$Vm.TypeKey(9)
+$Vm.TypeKey(13)
+$Vm.LinuxPassword($Hive.Admin.Password())
+$Vm.TypeKey(13)
+$Vm.Idle(0,5)
+
+
 
 # // Continue configuration
 $Vm.Update(100,"Complete [+] Installation")
