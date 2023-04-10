@@ -2156,8 +2156,6 @@ Class VmLinux : VmObject
         {
             $This.Update(0,"[+] Typing key : [$Char]")
             $This.LinuxKey($Char)
-
-            Start-Sleep -Milliseconds 10
         }
     }
     LinuxPassword([String]$Entry)
@@ -2168,8 +2166,6 @@ Class VmLinux : VmObject
         ForEach ($Char in [Char[]]$Entry)
         {
             $This.LinuxKey($Char)
-
-            Start-Sleep -Milliseconds 10
         }
     }
     LinuxKey([Char]$Char)
@@ -2182,16 +2178,21 @@ Class VmLinux : VmObject
             {$_ -in 97..122}
             {
                 $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
+                Start-Sleep -Milliseconds 15
             }
             {$_ -in 65..90}
             {
                 $This.Keyboard.PressKey(16)
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper())
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.ReleaseKey(16)
+                Start-Sleep -Milliseconds 5
             }
             {$_ -in 48..57}
             {
                 $This.Keyboard.TypeKey($Char)
+                Start-Sleep -Milliseconds 15
             }
             {$_ -in 33,64,35,36,37,38,40,41,94,42}
             {
@@ -2204,10 +2205,10 @@ Class VmLinux : VmObject
                 }
 
                 $This.Keyboard.PressKey(16)
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.TypeKey([UInt32][Char]$Char)
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.ReleaseKey(16)
-
-                Start-Sleep -Milliseconds 10
             }
             {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
             {
@@ -2220,7 +2221,7 @@ Class VmLinux : VmObject
                 }
 
                 $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 10
+                Start-Sleep -Milliseconds 15
             }
             {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
             {
@@ -2233,8 +2234,11 @@ Class VmLinux : VmObject
                 }
 
                 $This.Keyboard.PressKey(16)
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.TypeKey($Int)
+                Start-Sleep -Milliseconds 5
                 $This.Keyboard.ReleaseKey(16)
+                Start-Sleep -Milliseconds 5
             }
         }
     }
@@ -2296,7 +2300,7 @@ Class VmLinux : VmObject
 
         # // Launch terminal
         $This.TypeKey(91)
-        $This.Timer(1)
+        $This.Timer(2)
         $This.LinuxType("terminal")
         $This.TypeKey(13)
         $This.Timer(2)
@@ -2312,7 +2316,12 @@ Class VmLinux : VmObject
         $This.Update(0,"Super User [~]")
 
         # // Accessing super user
-        $This.LinuxType("su -")
+        ForEach ($Key in [Char[]]"su -")
+        {
+            $This.LinuxKey($Key)
+            Start-Sleep -Milliseconds 25
+        }
+
         $This.TypeKey(13)
         $This.Timer(1)
         $This.LinuxPassword($Account.Password())
@@ -2351,8 +2360,9 @@ Class VmLinux : VmObject
         # [Phase 3] (Set/Install) epel-release
         $This.Script.Add(3,"EpelRelease","Set EPEL Release Repo",@(
         'subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms';
+        "<Pause[30]>";
         "";
-        "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y"
+        "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y";
         "";
         ))
     }
@@ -2370,8 +2380,10 @@ Class VmLinux : VmObject
         # [Phase 5] Install [Remote Desktop] Tools
         $This.Script.Add(5,"InstallRdp","(Set/Install) [Remote Desktop] Tools",@(
         "dnf install tigervnc-server tigervnc -y";
+        "<Pause[5]>";
         "";
         "yum --enablerepo=epel install xrdp -y";
+        "<Pause[5]>";
         "";
         "systemctl start xrdp.service";
         "";
@@ -2550,7 +2562,6 @@ Class VmController
         Return "<FEVirtual.VmController>"
     }
 }
-
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -2757,6 +2768,7 @@ $Vm.Load($User)
 
 # // Learn your way around...?
 $Vm.Initial()
+$Vm.Timer(1)
 
 # // Launch Terminal
 $Vm.LaunchTerminal()
