@@ -1,8 +1,26 @@
 <#
 [04/11/23]: [Virtualization Lab - RHEL Deployment]
 
-Create a standard [Red Hat Enterprise Linux] installation using 
-[Hyper-V] and [PowerShell Direct]
+[Information]: [Red Hat Enterprise Linux] and [CentOS] are effectively the
+same operating system, however, [CentOS] has been designated as no longer
+being developed. Performing this lab requires having a [Red Hat Account],
+as developers are able to obtain the image from their website for free.
+
+It is required to set up an account, in order to enable software updates
+using the [RPM, DNF and YUM methods] (I believe...)
+
+[Objective]: Create a standard [Red Hat Enterprise Linux] installation using
+[Hyper-V], then configure and remotely connect using [Remote Desktop/xrdp]
+
+[Known issues]: 
+[+] keyboard interop does occasionally drop here and there
+[+] sometimes the caps lock is enabled at first login
+
+[New classes]:
+[+] [VmRhelCredential] for registration
+[+] [VmWindows] (uses base class VmObject, not used here)
+[+] [VmLinux]   (uses base class VmObject)
+[+] [VmCheckpoint] simplifies the I/O for [Hyper-V checkpoints/snapshots]
 #>
 
 Import-Module FightingEntropy
@@ -2496,14 +2514,15 @@ Class VmLinux : VmObject
     {
         # [Phase 2] Install groupinstall workgroup
         $This.Script.Add(2,"GroupInstall","Install groupinstall workgroup",@(
-        "dnf groupinstall workstation -y"
+        "dnf groupinstall workstation -y";
+        ""
         ))
     }
     InstallEpel()
     {
         # [Phase 3] (Set/Install) epel-release
         $This.Script.Add(3,"EpelRelease","Set EPEL Release Repo",@(
-        'subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms';
+        'subscription-manager repos --enable codeready-builder-for-rhel-9-x86_64-rpms';
         "<Pause[30]>";
         "";
         "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y";
@@ -2920,7 +2939,7 @@ $Vm.NewCheckpoint()
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-# // Welcome to Red Hat Enterprise Linux (Not working...)
+# // Welcome to Red Hat Enterprise Linux
 $Vm.Login($Hive.Admin)
 
 # // Load all scripts
