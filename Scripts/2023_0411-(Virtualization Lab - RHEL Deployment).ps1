@@ -2345,7 +2345,7 @@ Class VmLinux : VmObject
                         33  { 49 } 64  { 50 } 35  { 51 }
                         36  { 52 } 37  { 53 } 94  { 54 }
                         38  { 55 } 42  { 56 } 40  { 57 }
-                        41  { 58 }
+                        41  { 48 }
                     }
                 }
                 {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
@@ -2507,7 +2507,7 @@ Class VmLinux : VmObject
         "<Pause[1]>";
         $User.Username;
         "<Pause[1]>";
-        "<Pass[$($User.Password())]>"
+        "<Pass[$($User.Password())]>";
         ))
     }
     GroupInstall()
@@ -2515,7 +2515,7 @@ Class VmLinux : VmObject
         # [Phase 2] Install groupinstall workgroup
         $This.Script.Add(2,"GroupInstall","Install groupinstall workgroup",@(
         "dnf groupinstall workstation -y";
-        ""
+        "";
         ))
     }
     InstallEpel()
@@ -2931,6 +2931,10 @@ $Vm.Idle(5,5)
 # // Set new checkpoint
 $Vm.NewCheckpoint()
 
+# // Load all scripts
+$Vm.Load($User)
+$Vm.Timer(1)
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -2941,10 +2945,6 @@ $Vm.NewCheckpoint()
 
 # // Welcome to Red Hat Enterprise Linux
 $Vm.Login($Hive.Admin)
-
-# // Load all scripts
-$Vm.Load($User)
-$Vm.Timer(1)
 
 # // Learn your way around...?
 $Vm.Initial()
