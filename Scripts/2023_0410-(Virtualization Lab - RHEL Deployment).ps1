@@ -2301,7 +2301,11 @@ Class VmLinux : VmObject
         # // Launch terminal
         $This.TypeKey(91)
         $This.Timer(2)
-        $This.LinuxType("terminal")
+        ForEach ($Key in [Char[]]"terminal")
+        {
+            $This.LinuxKey($Key)
+            Start-Sleep -Milliseconds 25
+        }
         $This.TypeKey(13)
         $This.Timer(2)
         
@@ -2757,18 +2761,16 @@ $Vm.UnloadIso()
 # // Await idle state
 $Vm.Idle(5,5)
 
-# // Alert 
-$Hive.BeepBeep()
-
 # // Welcome to Red Hat Enterprise Linux (Not working...)
 $Vm.Login($Hive.Admin)
 
 # // Load all scripts
 $Vm.Load($User)
+$Vm.Timer(1)
 
 # // Learn your way around...?
 $Vm.Initial()
-$Vm.Timer(1)
+$Vm.Timer(3)
 
 # // Launch Terminal
 $Vm.LaunchTerminal()
