@@ -2300,74 +2300,75 @@ Class VmLinux : VmObject
     {
         # [Linux]
         $Int = [UInt32]$Char
-
-        Switch ($Int)
+        
+        If ($Int -in @(33..38+40..43+58+60+62..90+94+95+123..126))
         {
-            {$_ -in 97..122}
+            Switch ($Int)
             {
-                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper()) 
-                Start-Sleep -Milliseconds 15
-            }
-            {$_ -in 65..90}
-            {
-                $This.Keyboard.PressKey(16)
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.TypeKey([UInt32][Char]([String]$Char).ToUpper())
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.ReleaseKey(16)
-                Start-Sleep -Milliseconds 5
-            }
-            {$_ -in 48..57}
-            {
-                $This.Keyboard.TypeKey($Char)
-                Start-Sleep -Milliseconds 15
-            }
-            {$_ -in 33,64,35,36,37,38,40,41,94,42}
-            {
-                $Char = Switch ($Int)
+                {$_ -in 65..90}
                 {
-                    33  { "1" } 64  { "2" } 35  { "3" }
-                    36  { "4" } 37  { "5" } 94  { "6" }
-                    38  { "7" } 42  { "8" } 40  { "9" }
-                    41  { "0" }
+                    # Lowercase
+                    $Int = [UInt32][Char]([String]$Char).ToUpper()
                 }
-
-                $This.Keyboard.PressKey(16)
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.TypeKey([UInt32][Char]$Char)
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.ReleaseKey(16)
-            }
-            {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
-            {
-                $Int = Switch ($Int)
+                {$_ -in 33,64,35,36,37,38,40,41,94,42}
                 {
-                    32  {  32 } 59  { 186 } 61  { 187 } 
-                    44  { 188 } 45  { 189 } 46  { 190 }
-                    47  { 191 } 96  { 192 } 91  { 219 }
-                    92  { 220 } 93  { 221 } 39  { 222 }
+                    # Shift+number symbols
+                    $Int = Switch ($Int)
+                    {
+                        33  { 49 } 64  { 50 } 35  { 51 }
+                        36  { 52 } 37  { 53 } 94  { 54 }
+                        38  { 55 } 42  { 56 } 40  { 57 }
+                        41  { 58 }
+                    }
                 }
-
-                $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 15
-            }
-            {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
-            {
-                $Int = Switch ($Int)
+                {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
                 {
-                    58  { 186 } 43  { 187 } 60  { 188 } 
-                    95  { 189 } 62  { 190 } 63  { 191 } 
-                    126 { 192 } 123 { 219 } 124 { 220 } 
-                    125 { 221 } 34  { 222 }
+                    # Non-number symbols
+                    $Int = Switch ($Int)
+                    {
+                        58  { 186 } 43  { 187 } 60  { 188 } 
+                        95  { 189 } 62  { 190 } 63  { 191 } 
+                        126 { 192 } 123 { 219 } 124 { 220 } 
+                        125 { 221 } 34  { 222 }
+                    }
                 }
-
-                $This.Keyboard.PressKey(16)
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 5
-                $This.Keyboard.ReleaseKey(16)
-                Start-Sleep -Milliseconds 5
             }
+
+            $This.Keyboard.PressKey(16)
+            Start-Sleep -Milliseconds 10
+            
+            $This.Keyboard.TypeKey($Int)
+            Start-Sleep -Milliseconds 10
+
+            $This.Keyboard.ReleaseKey(16)
+            Start-Sleep -Milliseconds 10
+        }
+        Else
+        {
+            Switch ($Int)
+            {
+                {$_ -in 97..122} # Lowercase
+                {
+                    $Int = [UInt32][Char]([String]$Char).ToUpper()
+                }
+                {$_ -in 48..57} # Numbers
+                {
+                    $Int = [UInt32][Char]$Char
+                }
+                {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
+                {
+                    $Int = Switch ($Int)
+                    {
+                        32  {  32 } 59  { 186 } 61  { 187 } 
+                        44  { 188 } 45  { 189 } 46  { 190 }
+                        47  { 191 } 96  { 192 } 91  { 219 }
+                        92  { 220 } 93  { 221 } 39  { 222 }
+                    }
+                }
+            }
+
+            $This.Keyboard.TypeKey($Int)
+            Start-Sleep -Milliseconds 30
         }
     }
     [Void] RunScript()
@@ -2889,6 +2890,9 @@ $Vm.UnloadIso()
 
 # // Await idle state
 $Vm.Idle(5,5)
+
+# // Set new checkpoint
+$Vm.NewCheckpoint()
 
 # // Welcome to Red Hat Enterprise Linux (Not working...)
 $Vm.Login($Hive.Admin)
