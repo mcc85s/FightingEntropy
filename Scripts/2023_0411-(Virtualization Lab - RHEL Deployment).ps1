@@ -840,6 +840,15 @@ Class VmScriptBlockController
         $This.Output = @( )
         $This.Count  = 0
     }
+    Reset()
+    {
+        ForEach ($Item in $This.Output)
+        {
+            $Item.Complete = 0
+        }
+
+        $This.Selected = 0
+    }
     [Object] VmScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
     {
         Return [VmScriptBlockItem]::New($Index,$Phase,$Name,$DisplayName,$Content)
@@ -2435,6 +2444,7 @@ Class VmLinux : VmObject
             $This.LinuxKey($Key)
             Start-Sleep -Milliseconds 25
         }
+        $This.Timer(2)
         $This.TypeKey(13)
         $This.Timer(2)
         
@@ -2782,6 +2792,14 @@ $Vm.Start()
 $Vm.Control  = $Vm.Wmi("Msvm_ComputerSystem") | ? ElementName -eq $Vm.Name
 $Vm.Keyboard = $Vm.Wmi("Msvm_Keyboard") | ? Path -match $Vm.Control.Name
 
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] Operating System                                                              ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
 # // Do not test the installation media
 $Vm.Timer(2)
 $Vm.TypeChain(@(38,13))
@@ -2893,6 +2911,14 @@ $Vm.Idle(5,5)
 
 # // Set new checkpoint
 $Vm.NewCheckpoint()
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Configuration [~] Operating System                                                             ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
 
 # // Welcome to Red Hat Enterprise Linux (Not working...)
 $Vm.Login($Hive.Admin)
