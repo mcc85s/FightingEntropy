@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In this video, I demonstrate how to use [**PowerShell**] to install [**Red Hat Enterprise Linux**]. [**RHEL**] and [**CentOS**] are effectively the same operating system, to which I have demonstrated numerous times in the past, how to manage [**CentOS**]. |
+| In this video, I demonstrate how to use [**PowerShell**] to install [**Red Hat Enterprise Linux**] on a [**Hyper-V**] guest virtual machine. [**RHEL**] and [**CentOS**] are effectively the same operating system, to which I have demonstrated numerous times in the past, how to manage [**CentOS**]. |
 
 [[Video](#video)] - [[Script](#script)]
 
