@@ -115,7 +115,7 @@
 | 21    | `08/21/2022` | **[Scribbles](https://youtu.be/q0twJUzef9U)**                                                                                                                            |
 | 22    | `05/27/2020` | **[SCSO-2020-003173](https://github.com/mcc85s/FightingEntropy/tree/main/Records/SCSO-2020-003173)**                                                                     |
 | 23    | `05/27/2020` | **[SCSO-2020-003177](https://github.com/mcc85s/FightingEntropy/tree/main/Records/SCSO-2020-003177)**                                                                     |
-| 24    | `03/01/2022` | **[SCSO Margan/Pecor/Nelson | https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL]()**                                                                     |
+| 24    | `03/01/2022` | **[SCSO Margan/Pecor/Nelson](https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL)**                                                                     |
 | 25    | `02/15/2022` | **[A Matter of National Security](https://youtu.be/e4VnZObiez8)**                                                                                                        |
 | 26    | `02/25/2022` | **[Censorship on Facebook](https://youtu.be/Jmq4yBqGhTs)**                                                                                                               |
 | 27    | `02/26/2022` | **[During Blue Screen of Death (Smartphone Angle)](https://youtu.be/40sQXpVh_8Y)**                                                                                       |
