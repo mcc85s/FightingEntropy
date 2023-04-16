@@ -487,7 +487,7 @@ Function VmXaml
         '                                <ColumnDefinition Width="90"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <Label   Grid.Column="0" Content="Path"/>',
-        '                            <TextBox Grid.Column="1" Name="TemplatePath"/>',
+        '                        <TextBox Grid.Column="1" Name="TemplatePath"  Text="&lt;Select a path&gt;"/>',
         '                            <Image   Grid.Column="2" Name="TemplatePathIcon"/>',
         '                            <Button  Grid.Column="3" Name="TemplatePathBrowse" Content="Browse"/>',
         '                        </Grid>',
@@ -545,7 +545,7 @@ Function VmXaml
         '                                <ColumnDefinition Width="90"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <Label Grid.Column="0" Content="Image/Iso"/>',
-        '                            <TextBox Grid.Column="1" Name="TemplateImagePath"/>',
+        '                        <TextBox Grid.Column="1" Name="TemplateImagePath"  Text="&lt;Select an image&gt;"/>',
         '                            <Image   Grid.Column="2" Name="TemplateImagePathIcon"/>',
         '                            <Button  Grid.Column="3" Name="TemplateImagePathBrowse" Content="Browse"/>',
         '                        </Grid>',
@@ -559,8 +559,12 @@ Function VmXaml
         '                        <Button Grid.Column="1" Content="Remove" Name="TemplateRemove"/>',
         '                        <Button Grid.Column="2" Content="Export" Name="TemplateExport"/>',
         '                    </Grid>',
-        '                    <DataGrid Grid.Row="6" Name="TemplateOutput">',
-        '                        <DataGrid.Columns>',
+        '                    <DataGrid Grid.Row="6"',
+        '                              Name="TemplateOutput"',
+        '                              ScrollViewer.CanContentScroll="True"',
+        '                              ScrollViewer.VerticalScrollBarVisibility="Auto"',
+        '                              ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                    <DataGrid.Columns>',
         '                            <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="40"/>',
         '                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="100"/>',
         '                            <DataGridTextColumn Header="Role"     Binding="{Binding Role}"     Width="60"/>',
@@ -4400,10 +4404,10 @@ Class VmMasterController
     {
         $Item         = $This.Xaml.Get("TemplateImagePath")
         $xFlag        = $This.Flag | ? Name -eq TemplateImagePath
-        $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+        $xFlag.Status = [UInt32][System.IO.File]::Exists($Item.Text)
         $Slot         = @("failure.png","success.png")[$xFlag.Status]
 
-        $This.Xaml.IO.TemplatePathIcon.Source = $This.Module._Control($Slot).Fullname
+        $This.Xaml.IO.TemplateImagePathIcon.Source = $This.Module._Control($Slot).Fullname
 
         $This.ToggleAdd()
     }
@@ -4532,7 +4536,7 @@ Class VmMasterController
         $Ctrl.Xaml.IO.TemplateRole.SelectedIndex = 0
         $Ctrl.Xaml.IO.TemplatePath.Add_TextChanged(
         {
-            $Ctrl.CheckPath("TemplatePath")
+            $Ctrl.CheckTemplatePath()
         })
 
         $Ctrl.Xaml.IO.TemplatePathBrowse.Add_Click(
@@ -4544,7 +4548,7 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.TemplateImagePath.Add_TextChanged(
         {
-            $Ctrl.CheckPath("TemplateImagePath")
+            $Ctrl.CheckTemplateImagePath()
         })
 
         $Ctrl.Xaml.IO.TemplateImagePathBrowse.Add_Click(
@@ -4564,6 +4568,11 @@ Class VmMasterController
                 Return [System.Windows.MessageBox]::Show("Must enter a name","Error")
             }
 
+            ElseIf ($Ctrl.Xaml.IO.TemplateName.Text -in $Ctrl.Template.Name)
+            {
+                Return [System.Windows.MessageBox]::Show("Duplicate name","Error")
+            }
+
             Else
             {
                 $Ctrl.Template.Add($Ctrl.Xaml.IO.TemplateName.Text,
@@ -4573,10 +4582,16 @@ Class VmMasterController
                                    $Ctrl.Xaml.IO.TemplateHardDrive.SelectedItem.Content,
                                    $Ctrl.Xaml.IO.TemplateGeneration.SelectedItem.Content,
                                    $Ctrl.Xaml.IO.TemplateCore.SelectedItem.Content,
-                                   $Ctrl.Xaml.IO.TemplateSwitch.SelectedItem.Content,
+                                   $Ctrl.Xaml.IO.TemplateSwitch.SelectedItem,
                                    $Ctrl.Xaml.IO.TemplateImagePath.Text)
 
                 $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Template.Output)
+
+                $Ctrl.Xaml.Get("TemplateName").Text            = ""
+                $Ctrl.Xaml.Get("TemplatePath").Text            = "<Select a path>"
+                $Ctrl.Xaml.Get("TemplatePathIcon").Source      = $Null
+                $Ctrl.Xaml.Get("TemplateImagePath").Text       = "<Select an image>"
+                $Ctrl.Xaml.Get("TemplateImagePathIcon").Source = $Null
             }
         })
 
@@ -4585,7 +4600,7 @@ Class VmMasterController
             $Ctrl.Xaml.IO.TemplateExport.IsEnabled = $Ctrl.Xaml.IO.TemplateOutput.Items.Count -gt 0
             $Ctrl.Xaml.IO.TemplateRemove.IsEnabled = $Ctrl.Xaml.IO.TemplateOutput.SelectedIndex -ne -1
         })
-
+        
         $Ctrl.Xaml.IO.TemplateRemove.Add_Click(
         {
             $Ctrl.Template.Output = $Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name
@@ -4595,9 +4610,6 @@ Class VmMasterController
         $Ctrl.Xaml.IO.TemplateExport.Add_Click(
         {
             $Ctrl.Template.Export($Ctrl.Master.Main.Path,$Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Index)
-            $Ctrl.Template.Output = $Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Index
-            $C = 0
-            $Ctrl.Template.Output | % { $_.Index = $C; $C ++ }
         })
 
         <#
@@ -4632,13 +4644,14 @@ Class VmMasterController
             42 CredentialGenerate Button   System.Windows.Controls.Button: Generate
             43 CredentialOutput   DataGrid System.Windows.Controls.DataGrid Items.Count:0
         #>
-
-        
     }
 }
 
 $Ctrl = [VmMasterController]::New()
 $Ctrl.StageXaml()
+$Ctrl.Xaml.Get("MasterPath").Text = "C:\FileVm"
+$Ctrl.Xaml.Get("MasterDomain").Text = "securedigitsplus.com"
+$Ctrl.Xaml.Get("MasterNetBios").Text = "secured"
 $Ctrl.Xaml.Invoke()
 
 # $Ctrl.Template.Add("rhel00",2,"C:\VDI",2,64,2,2,"External","C:\Images\rhel-baseos-9.1-x86_64-dvd.iso")
