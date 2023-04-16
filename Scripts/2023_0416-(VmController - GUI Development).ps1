@@ -453,17 +453,17 @@ Function VmXaml
         '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="Template">',
-        '                <Grid Margin="10">',
-        '                        <Grid.RowDefinitions>',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="*"/>',
-        '                        </Grid.RowDefinitions>',
-        '                        <Grid Grid.Row="0">',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                        <Grid Grid.Row="2">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="150"/>',
@@ -479,7 +479,7 @@ Function VmXaml
         '                                <ComboBoxItem Content="Unix"/>',
         '                            </ComboBox>',
         '                        </Grid>',
-        '                        <Grid Grid.Row="1">',
+        '                        <Grid Grid.Row="3">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="*"/>',
@@ -491,7 +491,7 @@ Function VmXaml
         '                            <Image   Grid.Column="2" Name="TemplatePathIcon"/>',
         '                            <Button  Grid.Column="3" Name="TemplatePathBrowse" Content="Browse"/>',
         '                        </Grid>',
-        '                        <Grid Grid.Row="2">',
+        '                        <Grid Grid.Row="4">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="*"/>',
@@ -527,7 +527,7 @@ Function VmXaml
         '                                <ComboBoxItem Content="4"/>',
         '                            </ComboBox>',
         '                        </Grid>',
-        '                        <Grid Grid.Row="3">',
+        '                        <Grid Grid.Row="5">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="150"/>',
@@ -537,7 +537,7 @@ Function VmXaml
         '                            <ComboBox Grid.Column="1" Name="TemplateSwitch"/>',
         '                            <TextBlock Grid.Column="2" Foreground="Black" VerticalAlignment="Center" Text="[Virtual switch to use]"/>',
         '                        </Grid>',
-        '                        <Grid Grid.Row="4">',
+        '                        <Grid Grid.Row="6">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="*"/>',
@@ -549,7 +549,7 @@ Function VmXaml
         '                            <Image   Grid.Column="2" Name="TemplateImagePathIcon"/>',
         '                            <Button  Grid.Column="3" Name="TemplateImagePathBrowse" Content="Browse"/>',
         '                        </Grid>',
-        '                    <Grid Grid.Row="5">',
+        '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
@@ -559,7 +559,7 @@ Function VmXaml
         '                        <Button Grid.Column="1" Content="Remove" Name="TemplateRemove"/>',
         '                        <Button Grid.Column="2" Content="Export" Name="TemplateExport"/>',
         '                    </Grid>',
-        '                    <DataGrid Grid.Row="6"',
+        '                    <DataGrid Grid.Row="0"',
         '                              Name="TemplateOutput"',
         '                              ScrollViewer.CanContentScroll="True"',
         '                              ScrollViewer.VerticalScrollBarVisibility="Auto"',
@@ -580,63 +580,25 @@ Function VmXaml
         '            </TabItem>',
         '            <TabItem Header="Node" Height="32" VerticalAlignment="Top">',
         '                <TabControl>',
-        '                    <TabItem Header="Current">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Grid Grid.Row="0">',
-        '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                    <ColumnDefinition Width="100"/>',
-        '                                </Grid.ColumnDefinitions>',
-        '                                <Label Grid.Column="0" Content="Virtual Switch(es)"/>',
-        '                                <Button Grid.Column="1" Content="Refresh" Name="NodeSwitchRefresh"/>',
-        '                            </Grid>',
-        '                            <DataGrid Grid.Row="1" Name="NodeSwitch">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Index"       Binding="{Binding Index}" Width="50"/>',
-        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}"  Width="125"/>',
-        '                                    <DataGridTextColumn Header="Type"        Binding="{Binding Type}"  Width="100"/>',
-        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                            <Grid Grid.Row="2">',
-        '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                    <ColumnDefinition Width="100"/>',
-        '                                </Grid.ColumnDefinitions>',
-        '                                <Label Grid.Column="0" Content="Virtual Host(s)"/>',
-        '                                <Button Grid.Column="1" Content="Refresh" Name="NodeHostRefresh"/>',
-        '                            </Grid>',
-        '                            <DataGrid Grid.Row="3" Name="NodeHost">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Index"       Binding="{Binding Index}" Width="50"/>',
-        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}"  Width="125"/>',
-        '                                    <DataGridTextColumn Header="SwitchName"  Binding="{Binding SwitchName}" Width="*"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Import">',
+        '                    <TabItem Header="Template(s)">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
+        '                            ',
         '                            <Grid Grid.Row="0">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="100"/>',
         '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="25"/>',
         '                                    <ColumnDefinition Width="100"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Label Grid.Column="0" Content="Template(s)"/>',
+        '                                <Button  Grid.Column="0" Content="Import" Name="NodeTemplateImport"/>',
         '                                <TextBox Grid.Column="1" Name="NodeTemplatePath"/>',
-        '                                <Button Grid.Column="2" Content="Import" Name="NodeTemplateImport"/>',
+        '                                <Image   Grid.Column="2" Name="NodeTemplatePathIcon"/>',
+        '                                <Button  Grid.Column="3" Content="Browse"/>',
         '                            </Grid>',
         '                            <DataGrid Grid.Row="1" Name="NodeTemplate">',
         '                                <DataGrid.Columns>',
@@ -657,6 +619,77 @@ Function VmXaml
         '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="150"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
+        '                        </Grid>',
+        '                    </TabItem>',
+        '                    <TabItem Header="Control">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Grid Grid.Row="0">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Grid.Column="0" Content="Virtual Switch(es)"/>',
+        '                                <Button Grid.Column="1" Content="Refresh" Name="NodeSwitchRefresh"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Row="1" Name="NodeSwitch">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Index"       Binding="{Binding Index}" Width="50"/>',
+        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}"  Width="125"/>',
+        '                                    <DataGridTextColumn Header="Type"        Binding="{Binding Type}"  Width="100"/>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="60"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label    Grid.Column="0" Content="Name"/>',
+        '                                <TextBox  Grid.Column="1" Name="NodeSwitchName"/>',
+        '                                <ComboBox Grid.Column="2" Name="NodeSwitchType"/>',
+        '                                <Button   Grid.Column="3" Content="Add"    Name="NodeSwitchAdd"/>',
+        '                                <Button   Grid.Column="4" Content="Remove" Name="NodeSwitchRemove"/>',
+        '                            </Grid>',
+        '                            <Grid Grid.Row="3">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Grid.Column="0" Content="Virtual Host(s)"/>',
+        '                                <Button Grid.Column="1" Content="Refresh" Name="NodeHostRefresh"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Row="4" Name="NodeHost">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Index"       Binding="{Binding Index}" Width="50"/>',
+        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}"  Width="125"/>',
+        '                                    <DataGridTextColumn Header="SwitchName"  Binding="{Binding SwitchName}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="5">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="60"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label    Grid.Column="0" Content="Name"/>',
+        '                                <TextBox  Grid.Column="1" Name="NodeHostName"/>',
+        '                                <ComboBox Grid.Column="2" Name="NodeHostType"/>',
+        '                                <Button   Grid.Column="3" Content="Add"    Name="NodeHostAdd"/>',
+        '                                <Button   Grid.Column="4" Content="Remove" Name="NodeHostRemove"/>',
+        '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
         '                </TabControl>',
@@ -4609,7 +4642,7 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.TemplateExport.Add_Click(
         {
-            $Ctrl.Template.Export($Ctrl.Master.Main.Path,$Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Index)
+            $Ctrl.Template.Export($Ctrl.Master.Main.Path,$Ctrl.Master.Network,$Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
         })
 
         <#
@@ -4632,6 +4665,29 @@ Class VmMasterController
         $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
         $Ctrl.Reset($Ctrl.Xaml.IO.TemplateSwitch,$Ctrl.Node.Switch.Name)
 
+        $Ctrl.Xaml.IO.NodeSwitchRefresh.Add_Click(
+        {
+            $Ctrl.Node.Switch = @( )
+            ForEach ($VmSwitch in $Ctrl.Node.GetVmSwitch())
+            {
+                $Ctrl.Node.AddSwitch($VmSwitch)
+            }
+
+            $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Node.Switch)
+        })
+
+        $Ctrl.Xaml.IO.NodeHostRefresh.Add_Click(
+        {
+            $Ctrl.Node.Host = @( )
+            ForEach ($VmHost in $Ctrl.Node.GetVm())
+            {
+                $Ctrl.Node.AddHost($VmHost)
+            }
+    
+            $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
+        })
+
+
         <#
             ____    ____________________________________________________________________________________________________        
            //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -4644,14 +4700,17 @@ Class VmMasterController
             42 CredentialGenerate Button   System.Windows.Controls.Button: Generate
             43 CredentialOutput   DataGrid System.Windows.Controls.DataGrid Items.Count:0
         #>
+
+        
     }
 }
 
 $Ctrl = [VmMasterController]::New()
 $Ctrl.StageXaml()
-$Ctrl.Xaml.Get("MasterPath").Text = "C:\FileVm"
-$Ctrl.Xaml.Get("MasterDomain").Text = "securedigitsplus.com"
-$Ctrl.Xaml.Get("MasterNetBios").Text = "secured"
+$Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
+$Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
+$Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
+$Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
 $Ctrl.Xaml.Invoke()
 
 # $Ctrl.Template.Add("rhel00",2,"C:\VDI",2,64,2,2,"External","C:\Images\rhel-baseos-9.1-x86_64-dvd.iso")
