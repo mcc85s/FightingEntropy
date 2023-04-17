@@ -529,7 +529,7 @@ Function VmXaml
         '                                            Binding="{Binding Username}"',
         '                                            Width="*"/>',
         '                        <DataGridTextColumn Header="Password"',
-        '                                            Binding="{Binding Password}"',
+        '                                            Binding="{Binding Pass}"',
         '                                            Width="150"/>',
         '                    </DataGrid.Columns>',
         '                </DataGrid>',
