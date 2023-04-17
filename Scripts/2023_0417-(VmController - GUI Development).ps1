@@ -315,7 +315,6 @@ Function VmXaml
         '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '        </Style>',
-        '',
         '        <Style TargetType="Label">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="FontWeight" Value="Bold"/>',
@@ -605,7 +604,6 @@ Function VmXaml
         '                        <Label Grid.Column="1" Content="[Confirm]:"/>',
         '                        <PasswordBox Grid.Column="2"',
         '                                 Name="CredentialConfirm"/>',
-        '',
         '                    </Grid>',
         '                </Grid>',
         '            </Grid>',
@@ -1628,6 +1626,15 @@ Function VmCredential
             }
     
             $This.Add(0,"Administrator",$This.Generate())
+        }
+        Rerank()
+        {
+            $C = 0
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Index = $C
+                $C ++
+            }
         }
         Add([UInt32]$Type,[String]$Username,[String]$Pass)
         {
@@ -4629,10 +4636,10 @@ Class VmMasterController
     }
     CheckConfirm()
     {
-        $Password    = $This.Xaml.IO.CredentialPassword.Password
-        $Confirm     = $This.Xaml.IO.CredentialConfirm.Password
+        $Password    = [Regex]::Escape($This.Xaml.IO.CredentialPassword.Password)
+        $Confirm     = [Regex]::Escape($This.Xaml.IO.CredentialConfirm.Password)
         $Item        = $This.Flag | ? Name -eq CredentialConfirm
-        $Item.Status = [UInt32]($Password -ne "" -and $Password -match $Confirm)
+        $Item.Status = [UInt32]($Password -ne "" -and $Password -eq $Confirm)
     }
     ToggleCredentialCreate()
     {
@@ -4934,11 +4941,6 @@ Class VmMasterController
             $Ctrl.Reset($Ctrl.Xaml.IO.CredentialDescription,$Ctrl.Credential.Slot[$Ctrl.Xaml.IO.CredentialType.SelectedIndex])
         })
 
-        $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
-        })
-
         $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
         {
             $Ctrl.ToggleCredentialCreate()
@@ -4963,33 +4965,30 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
         {
-            $Ctrl.Xaml.IO.CredentialRemove.IsEnabled   = $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex -ne -1
-            $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
-            If ($Ctrl.Xaml.IO.CredentialOutput.Items.Count -ne $Ctrl.Credential.Output.Count)
-            {
-                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
-            }
+            $Ctrl.Xaml.IO.CredentialRemove.IsEnabled  = $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex -ne -1
         })
 
         $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
         {
-            If ($Ctrl.Credential.Output.Count -eq 1)
+            Switch ($Ctrl.Xaml.IO.CredentialOutput.Items.Count)
             {
-                Return [System.Windows.MessageBox]::Show("Must have at least (1) account")
-            }
-
-            Else
-            {
-                $Ctrl.Credential.Output = $Ctrl.Credential.Output | ? Index -ne $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex
-                $C = 0
-                ForEach ($Item in $Ctrl.Credential.Output)
+                {$_ -eq 0}
                 {
-                    $Item.Index = $C
-                    $C ++
+                    $Ctrl.Credential.Setup()
                 }
-
-                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+                {$_ -eq 1}
+                {
+                    Return [System.Windows.MessageBox]::Show("Must have at least (1) account")
+                }
+                {$_ -gt 1}
+                {
+                    $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Index -ne $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex)
+                    $Ctrl.Credential.Rerank()
+                }
             }
+
+            $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+            $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
         })
 
         $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
@@ -4997,12 +4996,14 @@ Class VmMasterController
             $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
                                  $Ctrl.Xaml.IO.CredentialUsername.Text,
                                  $Ctrl.Xaml.IO.CredentialPassword.Password)
-            
-            $Ctrl.Xaml.IO.CredentialUsername.Text     = ""
-            $Ctrl.Xaml.IO.CredentialPassword.Password = ""
-            $Ctrl.Xaml.IO.CredentialConfirm.Password  = ""
 
+            $Ctrl.Credential.Rerank()
             $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+
+            $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
+            $Ctrl.Xaml.IO.CredentialUsername.Text      = ""
+            $Ctrl.Xaml.IO.CredentialPassword.Password  = ""
+            $Ctrl.Xaml.IO.CredentialConfirm.Password   = ""
         })
 
         $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
@@ -5100,7 +5101,7 @@ Class VmMasterController
         
         $Ctrl.Xaml.IO.TemplateRemove.Add_Click(
         {
-            $Ctrl.Template.Output = $Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name
+            $Ctrl.Template.Output = @($Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name)
             $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Template.Output)
         })
 
