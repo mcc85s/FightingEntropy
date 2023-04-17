@@ -129,7 +129,6 @@ Function VmXaml
             Return "<FEModule.XamlWindow[VmControllerXaml]>"
         }
     }
-
     Class VmControllerXaml
     {
         Static [String] $Content = @(
@@ -874,7 +873,7 @@ Function VmXaml
         '                        </Grid>',
         '                    </Grid>',
         '                </Grid>',
-        '                <Grid Grid.Row="1" Name="NodeHostPanel" Visibility="Collapsed">',
+        '                <Grid Grid.Row="1" Name="NodeHostPanel" Visibility="Visible">',
         '                    <Grid>',
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="110"/>',
@@ -959,7 +958,7 @@ Function VmXaml
         '                                         Name="NodeTemplateImport"/>',
         '                            <TextBox Grid.Column="1" Name="NodeTemplatePath"/>',
         '                            <Image   Grid.Column="2" Name="NodeTemplatePathIcon"/>',
-        '                            <Button  Grid.Column="3" Content="Browse"/>',
+        '                            <Button  Grid.Column="3" Name="NodeTemplatePathBrowse" Content="Browse"/>',
         '                        </Grid>',
         '                    </Grid>',
         '                </Grid>',
@@ -4816,11 +4815,28 @@ Class VmMasterController
         $This.Xaml.IO.MasterPath.Text              = "<Select a path>"
         $This.Xaml.IO.MasterCreate.IsEnabled       = 0
 
+        # Credential panel
         $This.Xaml.IO.CredentialType.SelectedIndex = 0
+        $This.Reset($This.Xaml.IO.CredentialDescription,$This.Credential.Slot[0])
+
+        $This.Xaml.IO.CredentialRemove.IsEnabled   = 0
+        $This.Xaml.IO.CredentialCreate.IsEnabled   = 0
+
+        # Template panel
+        $This.Xaml.IO.TemplateCreate.IsEnabled     = 0
+        $This.Xaml.IO.TemplateRemove.IsEnabled     = 0
+        $This.Xaml.IO.TemplateExport.IsEnabled     = 0
+        $This.Xaml.IO.TemplateCredentialCount.Text = $This.Credential.Output.Count
 
         $This.Xaml.IO.TemplateRole.SelectedIndex   = 0
         $This.Xaml.IO.TemplateSwitch.SelectedIndex = 0
-        
+
+        # Node panel
+        $This.Xaml.IO.NodeSwitchCreate.IsEnabled   = 0
+        $This.Xaml.IO.NodeSwitchRemove.IsEnabled   = 0
+
+        $This.Xaml.IO.NodeHostCreate.IsEnabled     = 0
+        $This.Xaml.IO.NodeHostRemove.IsEnabled     = 0
 
         $This.Xaml.IO.NodeSlot.SelectedIndex       = 1
     }
@@ -4834,20 +4850,20 @@ Class VmMasterController
            \\__//¯¯¯ Master [~] Panel                                                                               ___//¯¯\\   
             ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
                 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-             0 MasterConfig            DataGrid  System.Windows.Controls.DataGrid Items.Count:1
-             1 MasterPath              TextBox   System.Windows.Controls.TextBox: C:\FileVm
-             2 MasterPathIcon          Image     System.Windows.Controls.Image
-             3 MasterPathBrowse        Button    System.Windows.Controls.Button: Browse
-             4 MasterDomain            TextBox   System.Windows.Controls.TextBox: securedigitsplus.com
-             5 MasterDomainIcon        Image     System.Windows.Controls.Image
-             6 MasterNetBios           TextBox   System.Windows.Controls.TextBox: secured
-             7 MasterNetBiosIcon       Image     System.Windows.Controls.Image
-             8 MasterCreate            Button    System.Windows.Controls.Button: Create
-             9 MasterConfigOutput      DataGrid  System.Windows.Controls.DataGrid Items.Count:22
-            10 MasterBase              DataGrid  System.Windows.Controls.DataGrid Items.Count:10
-            11 MasterRange             DataGrid  System.Windows.Controls.DataGrid Items.Count:1
-            12 MasterHosts             DataGrid  System.Windows.Controls.DataGrid Items.Count:256     
-            13 MasterDhcp              DataGrid  System.Windows.Controls.DataGrid Items.Count:7
+             0 MasterConfig       DataGrid System.Windows.Controls.DataGrid Items.Count:1
+             1 MasterPath         TextBox  System.Windows.Controls.TextBox: C:\FileVm
+             2 MasterPathIcon     Image    System.Windows.Controls.Image
+             3 MasterPathBrowse   Button   System.Windows.Controls.Button: Browse
+             4 MasterDomain       TextBox  System.Windows.Controls.TextBox: securedigitsplus.com
+             5 MasterDomainIcon   Image    System.Windows.Controls.Image
+             6 MasterNetBios      TextBox  System.Windows.Controls.TextBox: secured
+             7 MasterNetBiosIcon  Image    System.Windows.Controls.Image
+             8 MasterCreate       Button   System.Windows.Controls.Button: Create
+             9 MasterConfigOutput DataGrid System.Windows.Controls.DataGrid Items.Count:22
+            10 MasterBase         DataGrid System.Windows.Controls.DataGrid Items.Count:10
+            11 MasterRange        DataGrid System.Windows.Controls.DataGrid Items.Count:1
+            12 MasterHosts        DataGrid System.Windows.Controls.DataGrid Items.Count:256
+            13 MasterDhcp         DataGrid System.Windows.Controls.DataGrid Items.Count:7
         #>
 
         $Ctrl.Reset($Ctrl.Xaml.IO.MasterConfig,$Ctrl.Master.Config)
@@ -4902,13 +4918,15 @@ Class VmMasterController
            \\__//¯¯¯ Credential [~] Panel                                                                           ___//¯¯\\   
             ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
                 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            14 CredentialOutput        DataGrid System.Windows.Controls.DataGrid Items.Count:0
-            15 CredentialCreate        Button   System.Windows.Controls.Button: Create
-            16 CredentialRemove        Button   System.Windows.Controls.Button: Remove
-            17 CredentialType          ComboBox System.Windows.Controls.ComboBox Items.Count:4    
-            18 CredentialUsername      TextBox  System.Windows.Controls.TextBox
-            19 CredentialPassword      TextBox  System.Windows.Controls.TextBox
-            20 CredentialGenerate      Button   System.Windows.Controls.Button: Generate
+            14 CredentialOutput      DataGrid    System.Windows.Controls.DataGrid Items.Count:2
+            15 CredentialCreate      Button      System.Windows.Controls.Button: Create
+            16 CredentialRemove      Button      System.Windows.Controls.Button: Remove
+            17 CredentialType        ComboBox    System.Windows.Controls.ComboBox Items.Count:4
+            18 CredentialDescription DataGrid    System.Windows.Controls.DataGrid Items.Count:0
+            19 CredentialUsername    TextBox     System.Windows.Controls.TextBox: T
+            20 CredentialPassword    PasswordBox System.Windows.Controls.PasswordBox
+            21 CredentialGenerate    Button      System.Windows.Controls.Button: Generate
+            22 CredentialConfirm     PasswordBox System.Windows.Controls.PasswordBox
         #>
 
         $Ctrl.Xaml.IO.CredentialType.Add_SelectionChanged(
@@ -4923,7 +4941,7 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
         {
-            $Ctrl.ToggleCredenitalCreate()
+            $Ctrl.ToggleCredentialCreate()
         })
 
         $Ctrl.Xaml.IO.CredentialPassword.Add_PasswordChanged(
@@ -4945,7 +4963,12 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
         {
-            $Ctrl.Xaml.IO.CredentialRemove.IsEnabled = $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex -ne -1   
+            $Ctrl.Xaml.IO.CredentialRemove.IsEnabled   = $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex -ne -1
+            $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
+            If ($Ctrl.Xaml.IO.CredentialOutput.Items.Count -ne $Ctrl.Credential.Output.Count)
+            {
+                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+            }
         })
 
         $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
@@ -4969,6 +4992,19 @@ Class VmMasterController
             }
         })
 
+        $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
+        {
+            $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                                 $Ctrl.Xaml.IO.CredentialUsername.Text,
+                                 $Ctrl.Xaml.IO.CredentialPassword.Password)
+            
+            $Ctrl.Xaml.IO.CredentialUsername.Text     = ""
+            $Ctrl.Xaml.IO.CredentialPassword.Password = ""
+            $Ctrl.Xaml.IO.CredentialConfirm.Password  = ""
+
+            $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+        })
+
         $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
 
         <#
@@ -4977,24 +5013,24 @@ Class VmMasterController
            \\__//¯¯¯ Template [~] Panel                                                                             ___//¯¯\\   
             ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
                 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            14 TemplateName            TextBox  System.Windows.Controls.TextBox
-            15 TemplateRole            ComboBox System.Windows.Controls.ComboBox Items.Count:3
-            16 TemplatePath            TextBox  System.Windows.Controls.TextBox
-            17 TemplatePathIcon        Image    System.Windows.Controls.Image
-            18 TemplatePathBrowse      Button   System.Windows.Controls.Button: Browse
-            19 TemplateMemory          ComboBox System.Windows.Controls.ComboBox Items.Count:2
-            20 TemplateHardDrive       ComboBox System.Windows.Controls.ComboBox Items.Count:4
-            21 TemplateGeneration      ComboBox System.Windows.Controls.ComboBox Items.Count:2
-            22 TemplateCore            ComboBox System.Windows.Controls.ComboBox Items.Count:4
-            23 TemplateSwitch          ComboBox System.Windows.Controls.ComboBox Items.Count:2
-            24 TemplateImagePath       TextBox  System.Windows.Controls.TextBox
-            25 TemplateImagePathIcon   Image    System.Windows.Controls.Image
-            26 TemplateImagePathBrowse Button   System.Windows.Controls.Button: Browse
-
-            27 TemplateAdd             Button   System.Windows.Controls.Button: Add
-            28 TemplateRemove          Button   System.Windows.Controls.Button: Remove
-            29 TemplateExport          Button   System.Windows.Controls.Button: Export
-            30 TemplateOutput          DataGrid System.Windows.Controls.DataGrid Items.Count:0
+            23 TemplateOutput          DataGrid System.Windows.Controls.DataGrid Items.Count:0    
+            24 TemplateCreate          Button   System.Windows.Controls.Button: Create
+            25 TemplateRemove          Button   System.Windows.Controls.Button: Remove
+            26 TemplateExport          Button   System.Windows.Controls.Button: Export
+            27 TemplateName            TextBox  System.Windows.Controls.TextBox
+            28 TemplateRole            ComboBox System.Windows.Controls.ComboBox Items.Count:3
+            29 TemplateCredentialCount TextBox  System.Windows.Controls.TextBox
+            30 TemplatePath            TextBox  System.Windows.Controls.TextBox: <Select a path>
+            31 TemplatePathIcon        Image    System.Windows.Controls.Image
+            32 TemplatePathBrowse      Button   System.Windows.Controls.Button: Browse
+            33 TemplateMemory          ComboBox System.Windows.Controls.ComboBox Items.Count:2
+            34 TemplateHardDrive       ComboBox System.Windows.Controls.ComboBox Items.Count:4
+            35 TemplateGeneration      ComboBox System.Windows.Controls.ComboBox Items.Count:2    
+            36 TemplateCore            ComboBox System.Windows.Controls.ComboBox Items.Count:4
+            37 TemplateSwitch          ComboBox System.Windows.Controls.ComboBox Items.Count:2
+            38 TemplateImagePath       TextBox  System.Windows.Controls.TextBox: <Select an image>
+            39 TemplateImagePathIcon   Image    System.Windows.Controls.Image
+            40 TemplateImagePathBrowse Button   System.Windows.Controls.Button: Browse
         #>
 
         $Ctrl.Xaml.IO.TemplatePath.Add_TextChanged(
@@ -5070,7 +5106,7 @@ Class VmMasterController
 
         $Ctrl.Xaml.IO.TemplateExport.Add_Click(
         {
-            $Ctrl.Template.Export($Ctrl.Master.Main.Path,$Ctrl.Master.Network,$Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
+            $Ctrl.Template.Export($Ctrl.Master.Main.Path,$Ctrl.Master.Network,$Ctrl.Credential.Output,$Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
         })
 
         <#
@@ -5079,14 +5115,23 @@ Class VmMasterController
            \\__//¯¯¯ Node [~] Panel                                                                                 ___//¯¯\\   
             ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
                 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            31 NodeSwitchRefresh     Button   System.Windows.Controls.Button: Refresh       
-            32 NodeSwitch            DataGrid System.Windows.Controls.DataGrid Items.Count:2
-            33 NodeHostRefresh       Button   System.Windows.Controls.Button: Refresh       
-            34 NodeHost              DataGrid System.Windows.Controls.DataGrid Items.Count:2
-            35 NodeTemplatePath      TextBox  System.Windows.Controls.TextBox
-            36 NodeTemplateImport    Button   System.Windows.Controls.Button: Import        
-            37 NodeTemplate          DataGrid System.Windows.Controls.DataGrid Items.Count:0
-            38 NodeTemplateExtension DataGrid System.Windows.Controls.DataGrid Items.Count:0
+            41 NodeSlot             ComboBox System.Windows.Controls.ComboBox Items.Count:2
+            42 NodeSwitchPanel      Grid     System.Windows.Controls.Grid
+            43 NodeSwitch           DataGrid System.Windows.Controls.DataGrid Items.Count:2
+            44 NodeSwitchCreate     Button   System.Windows.Controls.Button: Create
+            45 NodeSwitchRemove     Button   System.Windows.Controls.Button: Remove
+            46 NodeSwitchUpdate     Button   System.Windows.Controls.Button: Update
+            47 NodeSwitchName       TextBox  System.Windows.Controls.TextBox
+            48 NodeSwitchType       ComboBox System.Windows.Controls.ComboBox Items.Count:0
+            49 NodeHostPanel        Grid     System.Windows.Controls.Grid
+            50 NodeHost             DataGrid System.Windows.Controls.DataGrid Items.Count:2
+            51 NodeHostCreate       Button   System.Windows.Controls.Button: Create
+            52 NodeHostRemove       Button   System.Windows.Controls.Button: Remove
+            53 NodeHostUpdate       Button   System.Windows.Controls.Button: Update
+            54 NodeTemplate         DataGrid System.Windows.Controls.DataGrid Items.Count:0
+            55 NodeTemplateImport   Button   System.Windows.Controls.Button: Import
+            56 NodeTemplatePath     TextBox  System.Windows.Controls.TextBox
+            57 NodeTemplatePathIcon Image    System.Windows.Controls.Image
         #>
 
         $Ctrl.Xaml.IO.NodeSlot.Add_SelectionChanged(
@@ -5099,17 +5144,21 @@ Class VmMasterController
         $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
         $Ctrl.Reset($Ctrl.Xaml.IO.TemplateSwitch,$Ctrl.Node.Switch.Name)
 
-        $Ctrl.Xaml.IO.NodeSwitchRefresh.Add_Click(
+        $Ctrl.Xaml.IO.NodeSwitchUpdate.Add_Click(
         {
             $Ctrl.Node.Refresh("Switch")
             $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Node.Switch)
         })
 
-        $Ctrl.Xaml.IO.NodeHostRefresh.Add_Click(
+        $Ctrl.Xaml.IO.NodeHostUpdate.Add_Click(
         {
             $Ctrl.Node.Refresh("Host")
             $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
         })
+
+        $Ctrl.Xaml.IO.
+
+        $Ctrl.SetInitialState()
     }
 }
 
@@ -5120,13 +5169,3 @@ $Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
 $Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
 $Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
 $Ctrl.Xaml.Invoke()
-
-# $Ctrl.Template.Add("rhel00",2,"C:\VDI",2,64,2,2,"External","C:\Images\rhel-baseos-9.1-x86_64-dvd.iso")
-
-<#
-    $master = @{ }
-    "Master",
-    "Template",
-    "Node",
-    "Credential" | % { $Master.Add($Master.Count,(Write-Theme "$_ [~] Panel" -Text))}
-#>
