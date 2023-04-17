@@ -5156,8 +5156,6 @@ Class VmMasterController
             $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
         })
 
-        $Ctrl.Xaml.IO.
-
         $Ctrl.SetInitialState()
     }
 }
