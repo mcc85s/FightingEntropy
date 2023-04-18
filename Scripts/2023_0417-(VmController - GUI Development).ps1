@@ -129,6 +129,7 @@ Function VmXaml
             Return "<FEModule.XamlWindow[VmControllerXaml]>"
         }
     }
+
     Class VmControllerXaml
     {
         Static [String] $Content = @(
@@ -315,6 +316,7 @@ Function VmXaml
         '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '        </Style>',
+        '',
         '        <Style TargetType="Label">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="FontWeight" Value="Bold"/>',
@@ -572,7 +574,8 @@ Function VmXaml
         '                                  Name="CredentialDescription"',
         '                                  Margin="10">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Description"',
+        '                                                    Binding="{Binding Description}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                    </Grid>',
@@ -603,7 +606,7 @@ Function VmXaml
         '                        </Grid.ColumnDefinitions>',
         '                        <Label Grid.Column="1" Content="[Confirm]:"/>',
         '                        <PasswordBox Grid.Column="2"',
-        '                                 Name="CredentialConfirm"/>',
+        '                                     Name="CredentialConfirm"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </Grid>',
@@ -954,9 +957,13 @@ Function VmXaml
         '                            <Button  Grid.Column="0"',
         '                                         Content="Import"',
         '                                         Name="NodeTemplateImport"/>',
-        '                            <TextBox Grid.Column="1" Name="NodeTemplatePath"/>',
-        '                            <Image   Grid.Column="2" Name="NodeTemplatePathIcon"/>',
-        '                            <Button  Grid.Column="3" Name="NodeTemplatePathBrowse" Content="Browse"/>',
+        '                            <TextBox Grid.Column="1"',
+        '                                     Name="NodeTemplatePath"/>',
+        '                            <Image   Grid.Column="2"',
+        '                                     Name="NodeTemplatePathIcon"/>',
+        '                            <Button  Grid.Column="3"',
+        '                                     Name="NodeTemplatePathBrowse" ',
+        '                                     Content="Browse"/>',
         '                        </Grid>',
         '                    </Grid>',
         '                </Grid>',
