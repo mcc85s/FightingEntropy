@@ -2215,9 +2215,9 @@ Function VmNode
         {
             Return [VmNodeHost]::New($Index,$VmNode)
         }
-        [Object] VmNodeTemplate([Object]$File)
+        [Object] VmNodeTemplate([UInt32]$Index,[Object]$File)
         {
-            Return [VmNodeTemplate]::New($File)
+            Return [VmNodeTemplate]::New($Index,$File)
         }
         [Object[]] GetVmSwitch()
         {
