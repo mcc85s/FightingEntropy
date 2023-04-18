@@ -1929,9 +1929,9 @@ Function VmTemplate
             $Node          = $This.VmTemplateNetwork($Network)
             $Item          = $Network.Hosts | ? IPAddress -eq $Node.IPAddress
             $Item.Hostname = $Template.Name
-            $Value         = $This.VmTemplateFile($Template,$Account,$Node) | ConvertTo-Json
+            $Value         = $This.VmTemplateFile($Template,$Account,$Node)
     
-            [System.IO.File]::WriteAllLines($FilePath,$Value)
+            Export-CliXml -Path $FilePath -InputObject $Value
     
             If ([System.IO.File]::Exists($FilePath))
             {
@@ -2036,6 +2036,7 @@ Function VmNode
 
     Class VmNodeTemplate
     {
+        [UInt32]     $Index
         [String]      $Name
         [Object]      $Role
         [Object]   $Account
@@ -2055,9 +2056,10 @@ Function VmNode
         [Uint32]      $Core
         [String]  $SwitchId
         [String]     $Image
-        VmNodeObject([Object]$File)
+        VmNodeTemplate([UInt32]$Index,[Object]$File)
         {
             $Item           = Import-CliXml -Path $File.Fullname
+            $This.Index     = $Index
             $This.Name      = $Item.Name
             $This.Role      = $Item.Role
             $This.Account   = $Item.Account
@@ -2069,7 +2071,7 @@ Function VmNode
             $This.Netmask   = $Item.Netmask
             $This.Gateway   = $Item.Gateway
             $This.Dns       = $Item.Dns
-            $This.Dhcp      = $Item.VmNodeDhcp($Item.Dhcp)
+            $This.Dhcp      = $This.VmNodeDhcp($Item.Dhcp)
             $This.Base      = $Item.Base
             $This.Memory    = $Item.Memory
             $This.Hdd       = $Item.Hdd
@@ -2728,61 +2730,6 @@ Function VmOldController
             $This.Network    = $This.GetNetworkNode($File)
             $This.Iso        = $File.Image
         }
-        StartConsole()
-        {
-            # Instantiates and initializes the console
-            $This.Console = New-FEConsole
-            $This.Console.Initialize()
-            $This.Status()
-        }
-        Status()
-        {
-            # If enabled, shows the last item added to the console
-            If ($This.Mode -gt 0)
-            {
-                [Console]::WriteLine($This.Console.Last())
-            }
-        }
-        Update([Int32]$State,[String]$Status)
-        {
-            # Updates the console
-            $This.Console.Update($State,$Status)
-            $This.Status()
-        }
-        Error([UInt32]$State,[String]$Status)
-        {
-            $This.Console.Update($State,$Status)
-            Throw $This.Console.Last().Status
-        }
-        DumpConsole()
-        {
-            $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
-            $This.Update(100,"[+] Dumping console: [$xPath]")
-            $This.Console.Finalize()
-            
-            $Value = $This.Console.Output | % ToString
-
-            [System.IO.File]::WriteAllLines($xPath,$Value)
-        }
-        [String] LogPath()
-        {
-            $xPath = $This.ProgramData()
-
-            ForEach ($Folder in $This.Author(), "Logs")
-            {
-                $xPath = $xPath, $Folder -join "\"
-                If (![System.IO.Directory]::Exists($xPath))
-                {
-                    [System.IO.Directory]::CreateDirectory($xPath)
-                }
-            }
-
-            Return $xPath
-        }
-        [String] Now()
-        {
-            Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
-        }
         [Object] VmCheckPoint([UInt32]$Index,[Object]$Checkpoint)
         {
             Return [VmCheckPoint]::New($Index,$Checkpoint)
@@ -2794,14 +2741,6 @@ Function VmOldController
             $This.Guid   = @($Null,$Virtual.Id)[$This.Exists]
 
             Return @($Null,$Virtual)[$This.Exists]
-        }
-        [String] ProgramData()
-        {
-            Return [Environment]::GetEnvironmentVariable("ProgramData")
-        }
-        [String] Author()
-        {
-            Return "Secure Digits Plus LLC"
         }
         [Object] Size([String]$Name,[UInt64]$SizeBytes)
         {
@@ -4455,6 +4394,7 @@ Class ValidateFlag
 Class VmMasterController
 {
     [Object]     $Module
+    [Object]    $Console
     [Object]       $Xaml
     [Object]     $Master
     [Object] $Credential
@@ -4463,13 +4403,14 @@ Class VmMasterController
     [Object]       $Flag
     VmMasterController()
     {
-        $This.Module     = $This.GetFEModule()
-        $This.Xaml       = $This.VmXaml()
-        $This.Master     = $This.VmMaster()
-        $This.Credential = $This.VmCredential()
-        $This.Template   = $This.VmTemplate()
-        $This.Node       = $This.VmNode()
-        $This.Flag       = @( )
+        $This.Module      = $This.GetFEModule()
+        $This.Module.Mode = 0
+        $This.Xaml        = $This.VmXaml()
+        $This.Master      = $This.VmMaster()
+        $This.Credential  = $This.VmCredential()
+        $This.Template    = $This.VmTemplate()
+        $This.Node        = $This.VmNode()
+        $This.Flag        = @( )
 
         ForEach ($Name in "MasterPath",
                           "MasterDomain",
@@ -4484,28 +4425,80 @@ Class VmMasterController
             $This.Flag += $This.ValidateFlag($This.Flag.Count,$Name)
         }
     }
+    Update([Int32]$State,[String]$Status)
+    {
+        # Updates the console
+        $This.Module.Update($State,$Status)
+    }
+    Error([UInt32]$State,[String]$Status)
+    {
+        $This.Module.Update($State,$Status)
+        Throw $This.Module.Console.Last().Status
+    }
+    DumpConsole()
+    {
+        $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
+        $This.Update(100,"[+] Dumping console: [$xPath]")
+        $This.Console.Finalize()
+        
+        $Value = $This.Console.Output | % ToString
+
+        [System.IO.File]::WriteAllLines($xPath,$Value)
+    }
+    [String] LogPath()
+    {
+        $xPath = $This.ProgramData()
+
+        ForEach ($Folder in $This.Author(), "Logs")
+        {
+            $xPath = $xPath, $Folder -join "\"
+            If (![System.IO.Directory]::Exists($xPath))
+            {
+                [System.IO.Directory]::CreateDirectory($xPath)
+            }
+        }
+
+        Return $xPath
+    }
+    [String] Now()
+    {
+        Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+    }
+    [String] ProgramData()
+    {
+        Return [Environment]::GetEnvironmentVariable("ProgramData")
+    }
+    [String] Author()
+    {
+        Return "Secure Digits Plus LLC"
+    }
     [Object] GetFEModule()
     {
         Return Get-FEModule -Mode 1
     }
     [Object] VmXaml()
     {
+        $This.Update(0,"Getting [~] VmXaml")
         Return VmXaml
     }
     [Object] VmMaster()
     {
+        $This.Update(0,"Getting [~] VmMaster")
         Return VmMaster
     }
     [Object] VmCredential()
     {
+        $This.Update(0,"Getting [~] VmCredential")
         Return VmCredential
     }
     [Object] VmTemplate()
     {
+        $This.Update(0,"Getting [~] VmTemplate")
         Return VmTemplate
     }
     [Object] VmNode()
     {
+        $This.Update(0,"Getting [~] VmNode")
         Return VmNode
     }
     [Object] ValidateFlag([UInt32]$Index,[String]$Name)
@@ -4518,12 +4511,17 @@ Class VmMasterController
     }
     SetNetwork([UInt32]$Index)
     {
+        $This.Update(0,"Setting [~] Network")
         $This.Master.SetNetwork($Index)
+
         $This.PingSweep($This.Master.Network.Hosts)
+
+        $This.Update(0,"Setting [~] Dhcp")
         $This.Master.Network.SetDhcp()
     }
     PingSweep([Object[]]$Range)
     {
+        $This.Update(0,"Scanning [~] Network host(s)")
         $Hosts        = $Range.IpAddress
         $RS           = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
         $PS           = [PowerShell]::Create()
@@ -4551,6 +4549,7 @@ Class VmMasterController
         $PS.Dispose()
         $RS.Dispose()
 
+        $This.Update(0,"Scanned [+] Network host(s), resolving hostnames")
         ForEach ($X in 0..($Output.Count-1))
         {
             $Status           = [UInt32]($Output[$X].Result.Status -eq "Success")
@@ -4563,6 +4562,7 @@ Class VmMasterController
     }
     FolderBrowse([String]$Name)
     {
+        $This.Update(0,"Browsing [~] Folder: [$Name]")
         $Object      = $This.Xaml.Get($Name)
         $Item        = New-Object System.Windows.Forms.FolderBrowserDialog
         $Item.ShowDialog()
@@ -4571,10 +4571,10 @@ Class VmMasterController
     }
     FileBrowse([String]$Name)
     {
+        $This.Update(0,"Browsing [~] File: [$Name]")
         $Object      = $This.Xaml.Get($Name)
         $Item                   = New-Object System.Windows.Forms.OpenFileDialog
         $Item.InitialDirectory  = $Env:SystemDrive
-        $Item.Filter            = 'Image File (*.iso)| *.iso'
         $Item.ShowDialog()
         
         If (!$Item.Filename)
@@ -4602,6 +4602,10 @@ Class VmMasterController
         Return "AN;AO;AU;BA;BG;BO;BU;CA;CD;CG;CO;DA;DC;DD;DG;DU;EA;ED;HI;IU;"+
         "LA;LG;LS;LW;ME;MU;NO;NS;NU;PA;PO;PS;PU;RC;RD;RE;RO;RS;RU;SA;SI;SO;S"+
         "U;SY;WD" -Split ";"
+    }
+    [String] IconStatus([UInt32]$Flag)
+    {
+        Return $This.Module._Control(@("failure.png","success.png")[$Flag]).Fullname
     }
     ToggleMasterCreate()
     {
@@ -4679,8 +4683,7 @@ Class VmMasterController
         $xFlag       = $This.Flag | ? Name -eq $Name
         $xFlag.SetStatus([UInt32][System.IO.Directory]::Exists($Item.Text))
 
-        $Slot        = @("failure.png","success.png")[$xFlag.Status]
-        $Icon.Source = $This.Module._Control($Slot).Fullname
+        $Icon.Source = $This.IconStatus($xFlag.Status)
 
         $This.ToggleMasterCreate()
     }
@@ -4723,8 +4726,8 @@ Class VmMasterController
 
         $xFlag = $This.Flag | ? Name -eq MasterDomain
         $xFlag.SetStatus([UInt32]($X -eq "[+] Passed"))
-        $Slot = @("failure.png","success.png")[$xFlag.Status]
-        $This.Xaml.IO.MasterDomainIcon.Source = $This.Module._Control($Slot).Fullname
+
+        $This.Xaml.IO.MasterDomainIcon.Source = $This.IconStatus($xFlag.Status)
 
         $This.ToggleMasterCreate()
     }
@@ -4767,9 +4770,8 @@ Class VmMasterController
 
         $xFlag = $This.Flag | ? Name -eq MasterNetBios
         $xFlag.SetStatus([UInt32]($X -eq "[+] Passed"))
-        $Slot = @("failure.png","success.png")[$xFlag.Status]
 
-        $This.Xaml.IO.MasterNetBiosIcon.Source = $This.Module._Control($Slot).Fullname
+        $This.Xaml.IO.MasterNetBiosIcon.Source = $This.IconStatus($xFlag.Status)
 
         $This.ToggleMasterCreate()
     }
@@ -4778,9 +4780,8 @@ Class VmMasterController
         $Item         = $This.Xaml.Get("TemplatePath")
         $xFlag        = $This.Flag | ? Name -eq TemplatePath
         $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
-        $Slot         = @("failure.png","success.png")[$xFlag.Status]
 
-        $This.Xaml.IO.TemplatePathIcon.Source = $This.Module._Control($Slot).Fullname
+        $This.Xaml.IO.TemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
 
         $This.ToggleTemplateCreate()
     }
@@ -4789,11 +4790,18 @@ Class VmMasterController
         $Item         = $This.Xaml.Get("TemplateImagePath")
         $xFlag        = $This.Flag | ? Name -eq TemplateImagePath
         $xFlag.Status = [UInt32][System.IO.File]::Exists($Item.Text)
-        $Slot         = @("failure.png","success.png")[$xFlag.Status]
 
-        $This.Xaml.IO.TemplateImagePathIcon.Source = $This.Module._Control($Slot).Fullname
+        $This.Xaml.IO.TemplateImagePathIcon.Source = $This.IconStatus($xFlag.Status)
 
         $This.ToggleTemplateCreate()
+    }
+    CheckNodeTemplatePath()
+    {
+        $Item         = $This.Xaml.Get("NodeTemplatePath")
+        $xFlag        = $This.Flag | ? Name -eq "NodeTemplatePath"
+        $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+        
+        $This.Xaml.IO.NodeTemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
     }
     Reset([Object]$xSender,[Object]$Object)
     {
@@ -4846,6 +4854,20 @@ Class VmMasterController
         $This.Xaml.IO.NodeHostRemove.IsEnabled     = 0
 
         $This.Xaml.IO.NodeSlot.SelectedIndex       = 1
+        $This.Xaml.IO.NodeTemplateImport.IsEnabled = 0
+
+        $This.Update(0,"Complete [+] Initial GUI state")
+    }
+    Invoke()
+    {
+        Try
+        {
+            $This.Xaml.Invoke()
+        }
+        Catch
+        {
+            $This.Module.Write(1,"Failed [!] Either the user cancelled or the dialog failed")
+        }
     }
     StageXaml()
     {
@@ -5157,6 +5179,26 @@ Class VmMasterController
             $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
         })
 
+        $Ctrl.Xaml.IO.NodeTemplatePath.Add_TextChanged(
+        {
+            $Ctrl.CheckNodeTemplatePath()
+            $Ctrl.Xaml.IO.NodeTemplateImport.IsEnabled = $Ctrl.Flag | ? Name -eq NodeTemplatePath | % Status
+        })
+
+        $Ctrl.Xaml.IO.NodeTemplatePathBrowse.Add_Click(
+        {
+            $Ctrl.FolderBrowse("NodeTemplatePath")
+        })
+
+        $Ctrl.Xaml.IO.NodeTemplateImport.Add_Click(
+        {
+            $Ctrl.Update(0,"Setting [~] Node template import path")
+            $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodeTemplatePath.Text)
+            $Ctrl.Node.Refresh("Template")
+
+            $Ctrl.Reset($Ctrl.Xaml.IO.NodeTemplate,$Ctrl.Node.Template)
+        })
+
         $Ctrl.SetInitialState()
     }
 }
@@ -5167,4 +5209,4 @@ $Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
 $Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
 $Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
 $Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
-$Ctrl.Xaml.Invoke()
+$Ctrl.Invoke()
