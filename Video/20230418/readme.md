@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In this [video] and the [files] in this [markdown file], I've [transcribed an audio log] that I [recorded] talking about the [upcoming court appearance] at the [Town of Halfmoon] on [04/19/2023]. |
+| In this [**video**] and the [**files**] in this [**markdown file**], I've [**transcribed an audio log**] that I [**recorded**] talking about the [**upcoming court appearance**] at the [**Town of Halfmoon**] on [**04/19/2023**]. |
 
 [[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)]
 
