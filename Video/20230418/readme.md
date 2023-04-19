@@ -1,6 +1,10 @@
 # 72 Hours [04/18/2023]
 
-[[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Link](#link)]
+| Description |
+|:------------|
+| In this [video] and the [files] in this [markdown file], I've [transcribed an audio log] that I [recorded] talking about the [upcoming court appearance] at the [Town of Halfmoon] on [04/19/2023]. I had concerns about meeting with [any court appointed doctors], because [from my mother] to the [police] to the [lawyer], to the [judge], to the [doctors], [every single person in this chain of people have aggressively ignored the audio recording] that [proves] my [mother knowingly provided false testimony] in order to [have me arrested] on [06/28/2022], and the [audio recording] existed on my [Google Drive account] BEFORE the [police responded to the (911) call] that my mother made. Imagine if you called the police, and you saw the movie [Fight Club], where the lead character beats himself up... and then he gets the boss man in trouble with the law. Apply the same exact concept to what my mother stated in the statement, and compare the words written in the statement to the audio recording and the transcription. Then, you have a really huge discrepancy with this [long chain of people] that are [absolute morons]. |
+
+[[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)]
 
 ## Video
 
@@ -27,6 +31,46 @@
 | 0     | `04/18/2023` | **[72 Hours (Document) (*.ps1)](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/2023_0418-(72Hours-Document).ps1)**                  |
 | 1     | `04/18/2023` | **[72 Hours (Raw Transcription) (*.txt)](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/2023_0418-(72Hours-RawTranscription).txt)** |
 | 2     | `04/18/2023` | **[72 Hours (Transcription) (*.ps1)](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/2023_0418-(72Hours-Transcription).ps1)**        |
+
+## Picture
+
+| Index | Image                                                                                     |
+|:------|:------------------------------------------------------------------------------------------|
+| 0     | ![01.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/01.jpg) |
+| 1     | ![02.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/02.jpg) |
+| 2     | ![03.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/03.jpg) |
+| 3     | ![04.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/04.jpg) |
+| 4     | ![05.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/05.jpg) |
+| 5     | ![06.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/06.jpg) |
+| 6     | ![07.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/07.jpg) |
+| 7     | ![08.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/08.jpg) |
+| 8     | ![09.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/09.jpg) |
+| 9     | ![10.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/10.jpg) |
+| 10    | ![11.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/11.jpg) |
+| 11    | ![12.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/12.jpg) |
+| 12    | ![13.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/13.jpg) |
+| 13    | ![14.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/14.jpg) |
+| 14    | ![15.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/15.jpg) |
+| 15    | ![16.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/16.jpg) |
+| 16    | ![17.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/17.jpg) |
+| 17    | ![18.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/18.jpg) |
+| 18    | ![19.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/19.jpg) |
+| 19    | ![20.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/20.jpg) |
+| 20    | ![21.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/21.jpg) |
+| 21    | ![22.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/22.jpg) |
+| 22    | ![23.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/23.jpg) |
+| 23    | ![24.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/24.jpg) |
+| 24    | ![25.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/25.jpg) |
+| 25    | ![26.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/26.jpg) |
+| 26    | ![27.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/27.jpg) |
+| 27    | ![28.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/28.jpg) |
+| 28    | ![29.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/29.jpg) |
+| 29    | ![30.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/30.jpg) |
+| 30    | ![31.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/31.jpg) |
+| 31    | ![32.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/32.jpg) |
+| 32    | ![33.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/33.jpg) |
+| 33    | ![34.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/34.jpg) |
+| 34    | ![35.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230418/Pics/35.jpg) |
 
 ## Link
 
