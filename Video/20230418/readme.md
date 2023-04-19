@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In this [video] and the [files] in this [markdown file], I've [transcribed an audio log] that I [recorded] talking about the [upcoming court appearance] at the [Town of Halfmoon] on [04/19/2023]. I had concerns about meeting with [any court appointed doctors], because [from my mother] to the [police] to the [lawyer], to the [judge], to the [doctors], [every single person in this chain of people have aggressively ignored the audio recording] that [proves] my [mother knowingly provided false testimony] in order to [have me arrested] on [06/28/2022], and the [audio recording] existed on my [Google Drive account] BEFORE the [police responded to the (911) call] that my mother made. Imagine if you called the police, and you saw the movie [Fight Club], where the lead character beats himself up... and then he gets the boss man in trouble with the law. Apply the same exact concept to what my mother stated in the statement, and compare the words written in the statement to the audio recording and the transcription. Then, you have a really huge discrepancy with this [long chain of people] that are [absolute morons]. |
+| In this [video] and the [files] in this [markdown file], I've [transcribed an audio log] that I [recorded] talking about the [upcoming court appearance] at the [Town of Halfmoon] on [04/19/2023]. |
 
 [[Video](#video)] - [[Audio](#audio)] - [[Transcription](#transcription)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)]
 
