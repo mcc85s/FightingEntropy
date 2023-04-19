@@ -642,10 +642,10 @@ Function VmXaml
         '                                            Binding="{Binding Role}"',
         '                                            Width="60"/>',
         '                        <DataGridTextColumn Header="Memory"',
-        '                                            Binding="{Binding Memory}"',
+        '                                            Binding="{Binding Memory.Size}"',
         '                                            Width="60"/>',
         '                        <DataGridTextColumn Header="Hdd"',
-        '                                            Binding="{Binding Hdd}"',
+        '                                            Binding="{Binding Hdd.Size}"',
         '                                            Width="60"/>',
         '                        <DataGridTextColumn Header="Gen"',
         '                                            Binding="{Binding Gen}"',
@@ -929,10 +929,10 @@ Function VmXaml
         '                                                        Binding="{Binding Role}"',
         '                                                        Width="60"/>',
         '                                <DataGridTextColumn Header="Memory"',
-        '                                                        Binding="{Binding Memory}"',
+        '                                                        Binding="{Binding Memory.Size}"',
         '                                                        Width="60"/>',
         '                                <DataGridTextColumn Header="Hdd"',
-        '                                                        Binding="{Binding Hdd}"',
+        '                                                        Binding="{Binding Hdd.Size}"',
         '                                                        Width="60"/>',
         '                                <DataGridTextColumn Header="Gen"',
         '                                                        Binding="{Binding Gen}"',
@@ -1998,7 +1998,7 @@ Function VmNode
         }
         [String] ToString()
         {
-            Return $This.Size
+            Return $This.Bytes
         }
     }
 
@@ -2272,13 +2272,13 @@ Function VmNode
 
             $This.Selected = 0
         }
-        [Object] VmScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
+        [Object] VmNodeScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
         {
-            Return [VmScriptBlockItem]::New($Index,$Phase,$Name,$DisplayName,$Content)
+            Return [VmNodeScriptBlockItem]::New($Index,$Phase,$Name,$DisplayName,$Content)
         }
         Add([String]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
         {
-            $This.Output += $This.VmScriptBlockItem($This.Output.Count,$Phase,$Name,$DisplayName,$Content)
+            $This.Output += $This.VmNodeScriptBlockItem($This.Output.Count,$Phase,$Name,$DisplayName,$Content)
             $This.Count   = $This.Output.Count
         }
         Select([UInt32]$Index)
@@ -2908,6 +2908,14 @@ Function VmNode
 
             Return $Item
         }
+        [Object] GetVmSecurity()
+        {
+            Return Get-VmSecurity $This.Name -EA 0
+        }
+        [Object] GetVmKeyProtector()
+        {
+            Return Get-VmKeyProtector -VmName $This.Name -EA 0
+        }
         SetVmProcessor()
         {
             $This.Update(0,"[~] Setting VmProcessor (Count): [$($This.Core)]")
@@ -2957,6 +2965,54 @@ Function VmNode
             {
                 Default { Set-VMFirmware -VMName $This.Name -EnableSecureBoot On -SecureBootTemplate $Template }
                 2       { Set-VMFirmware -VMName $This.Name -EnableSecureBoot On -SecureBootTemplate $Template -Verbose }
+            }
+        }
+        ToggleTpm()
+        {
+            $Security = $This.GetVmSecurity()
+            $Key      = $This.GetVmKeyProtector()
+
+            If (!$Security)
+            {
+                Throw "Virtual machine does not exist"
+            }
+
+            Switch ($Security.TpmEnabled)
+            {
+                0
+                {
+                    # Verbosity level
+                    Switch ($This.Mode)
+                    {
+                        Default 
+                        { 
+                            If ($Key.Length -le 4)
+                            {
+                                Set-VMKeyProtector -VmName $This.Name -NewLocalKeyProtector
+                            }
+
+                            Enable-VmTpm -VMName $This.Name 
+                        }
+                        2
+                        {
+                            If ($Key.Length -le 4)
+                            {
+                                Set-VMKeyProtector -VmName $This.Name -NewLocalKeyProtector -Verbose
+                            }
+
+                            Enable-VmTpm -VMName $This.Name -Verbose
+                        }
+                    }
+                }
+                1
+                {
+                    # Verbosity level
+                    Switch ($This.Mode)
+                    {
+                        Default { Disable-VmTpm -VMName $This.Name }
+                        2       { Disable-VmTpm -VMName $This.Name -Verbose }
+                    }
+                }
             }
         }
         AddVmDvdDrive()
@@ -4025,6 +4081,7 @@ Function VmNode
 
     Class VmNodeMaster
     {
+        [UInt32] $Selected
         [String]     $Path
         [Object]   $Switch
         [Object]     $Host
@@ -4033,6 +4090,7 @@ Function VmNode
         VmNodeMaster()
         {
             $This.Refresh()
+            $This.Object = @( )
         }
         SetPath([String]$Path)
         {
@@ -4042,6 +4100,19 @@ Function VmNode
             }
 
             $This.Path = $Path
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Object.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Object[$This.Selected]
         }
         Clear([String]$Slot)
         {
@@ -4068,6 +4139,14 @@ Function VmNode
         {
             Return [VmNodeObject]::New($Node)
         }
+        [Object] VmNodeWindows([Object]$Node)
+        {
+            Return [VmNodeWindows]::New($Node)
+        }
+        [Object] VmNodeLinux([Object]$Node)
+        {
+            Return [VmNodeLinux]::New($Node)
+        }
         [Object[]] GetVmSwitch()
         {
             Return Get-VmSwitch
@@ -4079,6 +4158,33 @@ Function VmNode
         [Object[]] GetTemplate()
         {
             Return Get-ChildItem $This.Path | ? Extension -eq .fex
+        }
+        Create([UInt32]$Index)
+        {
+            If (!$This.Template[$Index])
+            {
+                Throw "Invalid index"
+            }
+
+            If ($This.Template[$Index].Name -in $This.Object)
+            {
+                Throw "Item is already in the object list"
+            }
+
+            $Temp = $This.Template[$Index]
+            $Item = Switch -Regex ($Temp.Role)
+            {
+                "(^Server$|^Client$)"
+                {
+                    $This.VmNodeWindows($Temp)
+                }
+                "(^Linux$)"
+                {
+                    $This.VmNodeLinux($Temp)
+                }
+            }
+
+            $This.Object   += $Item
         }
         AddTemplate([Object]$Template)
         {
@@ -5022,6 +5128,11 @@ Function VmController
             {
                 $Ctrl.Xaml.IO.NodeHostRemove.IsEnabled = $Ctrl.Xaml.IO.NodeHost.SelectedIndex -ne -1
             })
+
+            $Ctrl.Xaml.IO.NodeHostCreate.Add_Click(
+            {
+
+            })
     
             $Ctrl.SetInitialState()
         }
@@ -5036,8 +5147,296 @@ Function VmController
 
 $Ctrl = VmController
 $Ctrl.StageXaml()
-$Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
-$Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
-$Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
-$Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
+#$Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
+#$Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
+#$Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
+#$Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
 $Ctrl.Invoke()
+
+<#
+    $Ctrl.Node.Create(0)
+    $Ctrl.Node.Select(0)
+    $Vm = $Ctrl.Node.Current()
+
+    <Continue running the script as normal from variable $Vm> ...
+#>
+
+# // Object instantiation
+$Vm.New()
+If ($Vm.GetVmKeyProtector().Count -le 4)
+{
+    Set-VMKeyProtector -VmName $Vm.Name -NewLocalKeyProtector -Verbose
+    Enable-VmTpm -VmName $Vm.Name -Verbose
+    $Vm.GetVmSecurity()
+}
+
+$Vm.AddVmDvdDrive()
+$Vm.LoadIso($Vm.Iso)
+$Vm.SetIsoBoot()
+$Vm.Connect()
+
+# // Start Machine
+$Vm.Start()
+$Vm.Control  = $Vm.Wmi("Msvm_ComputerSystem") | ? ElementName -eq $Vm.Name
+$Vm.Keyboard = $Vm.Wmi("Msvm_Keyboard") | ? Path -match $Vm.Control.Name
+
+# // Wait for "Press enter to boot from CD/DVD", then press enter, then start [64-bit]
+0..1 | % { 
+    
+    $Vm.Timer(2)
+    $Vm.TypeKey(13)
+}
+
+# // Wait for "Install Windows" menu
+$Vm.Idle(5,5)
+
+# // Hit [N]ext
+$Vm.SpecialKey(78)
+$Vm.Timer(2)
+$Vm.SpecialKey([UInt32][Char]"I")
+$Vm.Idle(5,5)
+
+# // Enter Product Key or skip.
+$Vm.SpecialKey([UInt32][Char]"I")
+$Vm.Timer(2)
+
+# // Select version of Windows
+$Vm.TypeChain(@(@(40) * $Span))
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // Accept license terms
+$Vm.TypeKey(32)
+$Vm.Timer(2)
+$Vm.SpecialKey([UInt32][Char]"N")
+$Vm.Timer(2)
+
+# // Select custom install
+$Vm.SpecialKey([UInt32][Char]"C")
+$Vm.Timer(2)
+
+# // Set partition
+$Vm.SpecialKey([UInt32][Char]"N")
+
+# // Wait until Windows installation completes
+$Vm.Idle(5,5)
+
+# // Catch and release ISO upon reboot
+$Vm.Uptime(0,5)
+$Vm.UnloadIso()
+
+# // Wait for the computer to perform inital setup, and reboot
+$Vm.Timer(5)
+$Vm.Uptime(0,5)
+
+# // Wait for (OOBE/Out-of-Box Experience) screen
+$Vm.Idle(5,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation [Region]                                                   ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Region]")
+
+# // [Region, default = United States]
+$Vm.TypeKey(13) # [Yes]
+$Vm.Idle(5,2)
+
+# // [Keyboard layout, default = US]
+$Vm.TypeKey(13) # [Yes]
+$Vm.Timer(1)
+$Vm.TypeKey(13) # [Skip]
+$Vm.Timer(3)
+$Vm.Idle(5,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation [Network]                                                  ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Network]")
+
+# // [Check for connectivity]
+Switch ($Vm.NetworkSetupMode())
+{
+    0 # [Not networked]
+    {
+        $Vm.TypeChain(@(9,32))
+        $Vm.Timer(2)
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Timer(5)
+
+        # Must continue building
+    }
+    1 # [Network, default = Automatic]
+    {
+        # // [Account, default = Personal Use]
+        # <expand here for Active Directory/organization>
+        $Vm.TypeKey(13)
+        $Vm.Timer(1)
+        $Vm.TypeKey(13)
+        $Vm.Idle(5,2)
+
+        # // [OneDrive setup]
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Idle(5,2)
+
+        # // [Limited Experience]
+        $Vm.TypeChain(@(9,9,32))
+        $Vm.Idle(5,2)
+    }
+}
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
+
+# // [Who's gonna use this PC...? Hm...?]
+$Vm.TypeText($Security.Username())
+$Vm.TypeKey(13)
+$Vm.Timer(1)
+
+# // [Create a super memorable password/Confirm]
+0..1 | % { 
+
+    $Vm.TypePassword($Security)
+    $Vm.TypeKey(13)
+    $Vm.Timer(2)
+}
+
+# // [Set security questions]
+ForEach ($Item in $Security.Output)
+{
+    $Span = @(1) * ($Item.Index+1)
+    ForEach ($X in $Span)
+    {     
+        $Vm.TypeKey(40)
+    }
+    $Vm.TypeKey(9)
+    $Vm.TypeText($Item.Answer)
+    $Vm.TypeKey(13)
+    $Security.Reindex()
+    $Vm.Timer(1)
+}
+
+$Vm.Timer(5)
+
+# // [Chose privacy settings]
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // [Let's customize your experience]
+$Vm.TypeChain(@(9,9,9,9,9,9,9,9))
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // [Let Cortana help you get s*** done]
+$Vm.TypeKey(13)
+$Vm.Timer(90)
+$Vm.Idle(10,10)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Configuration [~] Post-Installation                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Configuration [~] Post Installation: [$Token]")
+
+# // [Launch PowerShell]
+$Vm.LaunchPs()
+
+# Loads all scripts
+$Vm.Load()
+
+# // Set persistent info
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set time zone
+$Vm.RunScript()
+$Vm.Timer(1)
+
+# // Set computer info
+$Vm.RunScript()
+$Vm.Timer(3)
+
+# // Set Icmp Firewall
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set network interface to null
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set static IP
+$Vm.RunScript()
+$Vm.Connection()
+
+# // Set WinRm
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set WinRmFirewall
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set Remote Desktop
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Install FightingEntropy
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install Chocolatey
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Split [~] Work area                                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+# // Install VsCode | (Timer + Idle) Network Metering needed here...
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install BossMode
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install PsExtension
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Restart computer
+$Vm.RunScript()
+$Vm.Uptime(0,5)
+$Vm.Uptime(1,40)
+$Vm.Idle(5,5)
+
+# // [Login]
+$Vm.Login($Security)
+$Vm.Timer(1)
+
+# // [Continue]
+$Vm.Idle(5,5)
