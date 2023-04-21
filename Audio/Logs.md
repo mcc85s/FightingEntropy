@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h2>Last updated: [04/17/23]</h2>
+<h2>Last updated: [04/21/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **04/20/23** | 0h 47m 22s | **2023_04_20_20_55_55.mp3**    | [All Charges Dropped](https://drive.google.com/file/d/1b09HtaE1MAxbgdEIHn1UtmTybi_AGTdH)
 | **04/17/23** | 0h 23m 40s | **2023_04_17_23_05_43.mp3**    | [72 Hours](https://drive.google.com/file/d/1_8yH-UvorOx2zi4vbsuxegwUKDH2n9j5)
 | **03/24/23** | 2h 01m 54s | **2023_03_24_08_21_14.mp3**    | [Tipping Point](https://drive.google.com/file/d/1JSHgvTwLB8h00FJYvxbVJOGkm8eP6KrG)
 | **03/23/23** | 0h 15m 45s | **2023_03_23_20_19_21.mp3**    | [Jeff Brown](https://drive.google.com/file/d/1OXE4TcFDvd7F10mKBtINLb1T_h8vO61e)
