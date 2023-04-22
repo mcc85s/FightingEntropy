@@ -32,6 +32,10 @@ able to build the 1) graphical user interface, 2) administrate the server,
 
 ...and I want to [streamline] that process, in order to [focus] on the 
 [virtual machines] in particular.
+
+[To Do]: Implement a way to orchestrate Windows Client versus Windows Server,
+versus non-Windows initial setup information. Include stuff like the region,
+language, time zone, security options for the account, etc.
 #>
 
 Import-Module FightingEntropy
@@ -699,6 +703,472 @@ Function SecurityOption
     }
 
     [SecurityOptionController]::New()
+}
+
+Function Region
+{
+    Class CountryItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        CountryItem([UInt32]$Index,[String]$Name)
+        {
+            $This.Index = $Index
+            $This.Name  = $Name
+        }
+    }
+
+    Class CountryList
+    {
+        [UInt32] $Selected
+        [Object] $Output
+        CountryList()
+        {
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] CountryItem([UInt32]$Index,[String]$Name)
+        {
+            Return [CountryItem]::New($Index,$Name)
+        }
+        Add([String]$Name)
+        {
+            $This.Output += $This.CountryItem($This.Output.Count,$Name)
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected]
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Item in "Afghanistan",
+            "Åland Islands",
+            "Albania",
+            "Algeria",
+            "American Samoa",
+            "Andorra",
+            "Angola",
+            "Anguilla",
+            "Antarctica",
+            "Antigua and Barbuda",
+            "Argentina",
+            "Armenia",
+            "Aruba",
+            "Australia",
+            "Austrai",
+            "Azerbaijan",
+            "Bahamas, The",
+            "Bahrain",
+            "Bangladesh",
+            "Barbados",
+            "Belarus",
+            "Belgium",
+            "Belize",
+            "Benin",
+            "Bermuda",
+            "Bhutan",
+            "Bolivia",
+            "Bonaire, Sint Eustatis and Saba",
+            "Bosnia and Herzegovina",
+            "Botswana",
+            "Bouvet Island",
+            "Brazil",
+            "British Indian Ocean Territory",
+            "British Virgin Islands",
+            "Brunei",
+            "Bulgaria",
+            "Burkina Faso",
+            "Burundi",
+            "Cabo Verde",
+            "Cambodia",
+            "Cameroon",
+            "Canada",
+            "Cayman Islans",
+            "Central African Republic",
+            "Chad",
+            "Chile",
+            "China",
+            "Christmas Island",
+            "Cocos (Keeling) Islands",
+            "Colombia",
+            "Comoros",
+            "Congo",
+            "Congo (DRC)",
+            "Cook Islands",
+            "Costa Rica",
+            "Côte d'Ivoire",
+            "Croatia",
+            "Cuba",
+            "Curaçao",
+            "Cyprus",
+            "Czech Republic",
+            "Denmark",
+            "Djibouti",
+            "Dominica",
+            "Dominican Republic",
+            "Ecuador",
+            "Egypt",
+            "El Salvador",
+            "Equatorial Guinea",
+            "Eritrea",
+            "Estonia",
+            "Eswatini",
+            "Ethiopia",
+            "Falkland Islands",
+            "Faroe Islands",
+            "Fiji",
+            "Finland",
+            "France",
+            "French Guiana",
+            "French Polynesia",
+            "French Southern Territoes",
+            "Gabon",
+            "Gambia",
+            "Georgia",
+            "Germany",
+            "Ghana",
+            "Gibraltar",
+            "Greece",
+            "Greenland",
+            "Grenada",
+            "Guadeloupe",
+            "Guam",
+            "Guatemala",
+            "Guernsey",
+            "Guinea",
+            "Guinea-Bissau",
+            "Guyana",
+            "Haiti",
+            "Heard Island and McDonald Islands",
+            "Honduras",
+            "Hong Kong SAR",
+            "Hungary",
+            "Iceland",
+            "India",
+            "Indonesia",
+            "Iran",
+            "Iraq",
+            "Ireland",
+            "Isle of Man",
+            "Israel",
+            "Italy",
+            "Jamaica",
+            "Japan",
+            "Jersey",
+            "Jordan",
+            "Kazakhstan",
+            "Kenya",
+            "Kiribati",
+            "Korea",
+            "Kosovo",
+            "Kuwait",
+            "Kyrgyzstan",
+            "Laos",
+            "Latvia",
+            "Lebanon",
+            "Lesotho",
+            "Liberia",
+            "Libya",
+            "Liechtenstein",
+            "Lithuania",
+            "Luxembourg",
+            "Macao SAR",
+            "Madagascar",
+            "Malawi",
+            "Malaysia",
+            "Maldives",
+            "Mali",
+            "Malta",
+            "Marshall Islands",
+            "Martinique",
+            "Mauritania",
+            "Mauritius",
+            "Mayotte",
+            "Mexico",
+            "Micronesia",
+            "Moldova",
+            "Monaco",
+            "Mongolia",
+            "Montenegro",
+            "Montserrat",
+            "Morocco",
+            "Mozambique",
+            "Myanmar",
+            "Namibia",
+            "Nauru",
+            "Nepal",
+            "Netherlands",
+            "New Caledonia",
+            "New Zealand",
+            "Nicaragua",
+            "Niger",
+            "Nigeria",
+            "Niue",
+            "Norfolk Island",
+            "North Korea",
+            "North Macedonia",
+            "Northern Mariana Islands",
+            "Norway",
+            "Oman",
+            "Pakistan",
+            "Palau",
+            "Palestinian Authority",
+            "Panama",
+            "Papua New Guinea",
+            "Paraguay",
+            "Peru",
+            "Philippines",
+            "Pitcairn Islands",
+            "Poland",
+            "Portugal",
+            "Puerto Rico",
+            "Qatar",
+            "Reuincion",
+            "Romania",
+            "Russia",
+            "Rwanda",
+            "Saint Barthélemy",
+            "Saint Kiits and Nevis",
+            "Saint Lucia",
+            "Saint Martin",
+            "Saint Pierre and Miquelon",
+            "Saint Vincent and the Grenadines",
+            "Samoa",
+            "San Marino",
+            "São Tomé and Príncipe",
+            "Saudi Arabia",
+            "Senegal",
+            "Serbia",
+            "Seychelles",
+            "Sierra Leone",
+            "Singapore",
+            "Sint Maarten",
+            "Slovakia",
+            "Slovenia",
+            "Soloman Islands",
+            "Somalia",
+            "South Africa",
+            "South Georgia and the South Sandwich Islands",
+            "South Sudan",
+            "Spain",
+            "Sri Lankda",
+            "St Kelena, Ascension and Tristan da Cunha",
+            "Sudan",
+            "Suriname",
+            "Svalbard",
+            "Sweden",
+            "Switzerland",
+            "Syria",
+            "Taiwan",
+            "Tajikistan",
+            "Tanzania",
+            "Thailand",
+            "Timor-Leste",
+            "Togo",
+            "Tokelau",
+            "Tonga",
+            "Trinidad and Tobago",
+            "Tunisia",
+            "Turkey",
+            "Turkmenistan",
+            "Turks and Caicos Islands",
+            "Tuvalu",
+            "U.S. Minor Outlying Islands",
+            "U.S. Virgin Islands",
+            "Uganda",
+            "Ukraine",
+            "United Arab Emirates",
+            "United Kingdom",
+            "United States",
+            "Uruguay",
+            "Uzbekistan",
+            "Vanuatu",
+            "Vatican City",
+            "Venezuela",
+            "Vietnam",
+            "Wallis and Futuna",
+            "Yemen",
+            "Zambia",
+            "Zimbabwe")
+            {
+                $This.Add($Item)
+            }
+
+            $This.Selected = $This.Output | ? Name -eq "United States" | % Index
+        }
+    }
+
+    [CountryList]::New()
+}
+
+Function Keyboard
+{
+    Class KeyboardItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        KeyboardItem([UInt32]$Index,[String]$Name)
+        {
+            $This.Index = $Index
+            $This.Name  = $Name
+        }
+    }
+    
+    Class KeyboardList
+    {
+        [UInt32] $Selected
+        [Object] $Output
+        KeyboardList()
+        {
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] KeyboardItem([UInt32]$Index,[String]$Name)
+        {
+            Return [KeyboardItem]::New($Index,$Name)
+        }
+        Add([String]$Name)
+        {
+            $This.Output += $This.KeyboardItem($This.Output.Count,$Name)
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected]
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Item in 
+            "US",
+            "Canadian Multilingual Standard",
+            "English (India)",
+            "Irish",
+            "Scottish Gaelic",
+            "United Kingdom",
+            "United States-Dvorak",
+            "United States-Dvorak for left hand",
+            "United States-Dvorak for right hand",
+            "United States-International",
+            "US English Table for IBM Arabic 238_L",
+            "Albanian",
+            "Azerbaijani (Standard)",
+            "Azerbaijani Latin",
+            "Belgian (Comma)",
+            "Belgian (Period)",
+            "Belgian French",
+            "Bulgarian (Latin)",
+            "Canadian French",
+            "Canadian French (Legacy)",
+            "Central Atlas Tamazight",
+            "Czech",
+            "Czech (QWERTY)",
+            "Czech Programmers",
+            "Danish",
+            "Dutch",
+            "Estonian",
+            "Faeroese",
+            "Finnish",
+            "Finnish with Sami",
+            "French",
+            "German",
+            "German (IBM)",
+            "Greek (220) Latin",
+            "Greek (319) Latin",
+            "Greek Latin",
+            "Greenlandic",
+            "Guarani",
+            "Hausa",
+            "Hawaiian",
+            "Hungarian",
+            "Hungarian 101-key",
+            "Icelandic",
+            "Igbo",
+            "Inuktitut - Latin",
+            "Italian",
+            "Italian (142)",
+            "Japanese",
+            "Korean",
+            "Latin America",
+            "Latvian",
+            "Latvian (QWERTY)",
+            "Latvian (Standard)",
+            "Lithuanian",
+            "Lithuanian IBM",
+            "Lithuanian Standard",
+            "Luxembourgish",
+            "Maltese 47-Key",
+            "Maltese 48-Key",
+            "Norwegian",
+            "Norwegain with Sami",
+            "Polish (214)",
+            "Polish (Programmers)",
+            "Portuguese",
+            "Portugese (Brazil ABNT)",
+            "Portugese (Brazil ABNT2)",
+            "Romanian (Legacy)",
+            "Romanian (Programmers)",
+            "Romanian (Standard)",
+            "Sami Extended Finland-Sweden",
+            "Sami Extended Norway",
+            "Serbian (Latin)",
+            "Sesotho sa Leboa",
+            "Setswana",
+            "Slovak",
+            "Slovak (QWERTY)",
+            "Slovenian",
+            "Sorbian Extended",
+            "Sorbian Standard",
+            "Sorbian Standard (Legacy)",
+            "Spanish",
+            "Spanish Variation",
+            "Standard",
+            "Swedish",
+            "Swedish with Sami",
+            "Swiss French",
+            "Swiss German",
+            "Turkish F",
+            "Turkish Q",
+            "Turkmen",
+            "United Kingdom Extended",
+            "Vietnamese",
+            "Wolof",
+            "Yoruba")
+            {
+                $This.Add($Item)
+            }
+
+            $This.Selected = $This.Output | ? Name -eq "US" | % Index
+        }
+    }
+
+    [KeyboardList]::New()
 }
 
 Function VmXaml
@@ -2770,6 +3240,28 @@ Function VmNode
                 $This.Refresh()
             }
         }
+        ToggleTpm()
+        {
+            $This.Refresh()
+            If ($This.KeyProtector.Length -le 4)
+            {
+                $This.SetVmKeyProtector()
+            }
+
+            Switch ([UInt32]$This.Property.TpmEnabled)
+            {
+                0
+                {
+                    Enable-VmTpm -VmName $This.Name -EA 0
+                }
+                1
+                {
+                    Disable-VmTpm -VMName $This.Name -EA 0
+                }
+            }
+
+            $This.Refresh()
+        }
     }
 
     Class VmNodeTemplate
@@ -3782,30 +4274,91 @@ Function VmNode
 
             Return $Mac -join "-"
         }
-        TypeChain([UInt32[]]$Array)
+        KeyEntry([Char]$Char)
         {
-            ForEach ($Key in $Array)
+            $Int = [UInt32]$Char
+                
+            If ($Int -in @(33..38+40..43+58+60+62..90+94+95+123..126))
             {
-                $This.TypeKey($Key)
-                Start-Sleep -Milliseconds 125
+                Switch ($Int)
+                {
+                    {$_ -in 65..90}
+                    {
+                        # Lowercase
+                        $Int = [UInt32][Char]([String]$Char).ToUpper()
+                    }
+                    {$_ -in 33,64,35,36,37,38,40,41,94,42}
+                    {
+                        # Shift+number symbols
+                        $Int = Switch ($Int)
+                        {
+                            33  { 49 } 64  { 50 } 35  { 51 }
+                            36  { 52 } 37  { 53 } 94  { 54 }
+                            38  { 55 } 42  { 56 } 40  { 57 }
+                            41  { 48 }
+                        }
+                    }
+                    {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
+                    {
+                        # Non-number symbols
+                        $Int = Switch ($Int)
+                        {
+                            58  { 186 } 43  { 187 } 60  { 188 } 
+                            95  { 189 } 62  { 190 } 63  { 191 } 
+                            126 { 192 } 123 { 219 } 124 { 220 } 
+                            125 { 221 } 34  { 222 }
+                        }
+                    }
+                }
+
+                [Void]$This.Keyboard.PressKey(16)
+                Start-Sleep -Milliseconds 10
+                
+                [Void]$This.Keyboard.TypeKey($Int)
+                Start-Sleep -Milliseconds 10
+
+                [Void]$This.Keyboard.ReleaseKey(16)
+                Start-Sleep -Milliseconds 10
+            }
+            Else
+            {
+                Switch ($Int)
+                {
+                    {$_ -in 97..122} # Lowercase
+                    {
+                        $Int = [UInt32][Char]([String]$Char).ToUpper()
+                    }
+                    {$_ -in 48..57} # Numbers
+                    {
+                        $Int = [UInt32][Char]$Char
+                    }
+                    {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
+                    {
+                        $Int = Switch ($Int)
+                        {
+                            32  {  32 } 59  { 186 } 61  { 187 } 
+                            44  { 188 } 45  { 189 } 46  { 190 }
+                            47  { 191 } 96  { 192 } 91  { 219 }
+                            92  { 220 } 93  { 221 } 39  { 222 }
+                        }
+                    }
+                }
+
+                [Void]$This.Keyboard.TypeKey($Int)
+                Start-Sleep -Milliseconds 30
+            }
+        }
+        LineEntry([String]$String)
+        {
+            ForEach ($Char in [Char[]]$String)
+            {
+                $This.KeyEntry($Char)
             }
         }
         TypeKey([UInt32]$Index)
         {
             $This.Update(0,"[+] Typing key : [$Index]")
             $This.Keyboard.TypeKey($Index)
-            Start-Sleep -Milliseconds 125
-        }
-        TypeText([String]$String)
-        {
-            $This.Update(0,"[+] Typing text : [$String]")
-            $This.Keyboard.TypeText($String)
-            Start-Sleep -Milliseconds 125
-        }
-        TypePassword([Object]$Account)
-        {
-            $This.Update(0,"[+] Typing password : [ActualPassword]")
-            $This.Keyboard.TypeText($Account.Password())
             Start-Sleep -Milliseconds 125
         }
         PressKey([UInt32]$Index)
@@ -3824,10 +4377,6 @@ Function VmNode
             $This.Keyboard.TypeKey($Index)
             $This.Keyboard.ReleaseKey(18)
         }
-        [UInt32] GetKey([Char]$Char)
-        {
-            Return [UInt32][Char]$Char
-        }
         ShiftKey([UInt32[]]$Index)
         {
             $This.Keyboard.PressKey(16)
@@ -3841,6 +4390,35 @@ Function VmNode
         {
             $This.Update(0,"[+] Typing (CTRL + ALT + DEL)")
             $This.Keyboard.TypeCtrlAltDel()
+        }
+        TypeChain([UInt32[]]$Array)
+        {
+            ForEach ($Key in $Array)
+            {
+                $This.TypeKey($Key)
+                Start-Sleep -Milliseconds 125
+            }
+        }
+        TypeLine([String]$String)
+        {
+            $This.Update(0,"[+] Typing line")
+            $This.LineEntry($String)
+        }
+        TypeText([String]$String)
+        {
+            $This.Update(0,"[+] Typing text : [$String]")
+            $This.LineEntry($String)
+        }
+        TypeMask([String]$String)
+        {
+            $This.Update(0,"[+] Typing text : [<Masked>]")
+            $This.LineEntry($String)
+        }
+        TypePassword([Object]$Account)
+        {
+            $This.Update(0,"[+] Typing password : [<Password>]")
+            $This.LineEntry($Account.Password())
+            Start-Sleep -Milliseconds 125
         }
         Idle([UInt32]$Percent,[UInt32]$Seconds)
         {
@@ -3939,10 +4517,26 @@ Function VmNode
             {
                 Switch -Regex ($Line)
                 {
-                    "^\<Pause\[\d+\]\>$"
+                    "^\<Idle\[\d+\,\d+\]\>"
                     {
-                        $Line -match "\d+"
-                        $This.Timer($Matches[0])
+                        $X = [Regex]::Matches($Line,"\d+").Value
+                        $This.Idle($X[0],$X[1])
+                    }
+                    "^\<Uptime\[\d+\,\d+\]\>"
+                    {
+                        $X = [Regex]::Matches($Line,"\d+").Value
+                        $This.Uptime($X[0],$X[1])
+                    }
+                    "^\<Timer\[\d+\]\>"
+                    {
+                        $X = [Regex]::Matches($Line,"\d+").Value
+                        $This.Timer($X)
+                    }
+                    "^\<Pass\[.+\]\>$"
+                    {
+                        $Line = $Matches[0].Substring(6).TrimEnd(">").TrimEnd("]")
+                        $This.TypeMask($Line)
+                        $This.TypeKey(13)
                     }
                     "^$"
                     {
@@ -3950,7 +4544,7 @@ Function VmNode
                     }
                     Default
                     {
-                        $This.TypeText($Line)
+                        $This.TypeLine($Line)
                         $This.TypeKey(13)
                     }
                 }
@@ -4002,11 +4596,6 @@ Function VmNode
         Login([Object]$Account)
         {
             # [Windows (Server/Client)]
-            If ($Account.GetType().Name -notmatch "(VmAdminCredential|SecurityOptionController)")
-            {
-                $This.Error("[!] Invalid input object")
-            }
-
             $This.Update(0,"[~] Login : [Account: $($Account.Username())")
             $This.TypeCtrlAltDel()
             $This.Timer(5)
@@ -4066,8 +4655,6 @@ Function VmNode
         }
         [String[]] PrepPersistentInfo()
         {
-            # [Windows (Server/Client)]
-
             # Prepare the correct persistent information
             $List = @( ) 
 
@@ -4120,14 +4707,12 @@ Function VmNode
         }
         SetPersistentInfo()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 1] Set persistent information
             $This.Script.Add(1,"SetPersistentInfo","Set persistent information",@(
             '$Root      = "{0}"' -f $This.GetRegistryPath();
             '$Name      = "{0}"' -f $This.Name;
             '$Path      = "$Root\ComputerInfo"';
-            'Rename-Computer $Name -Force';
+            'Rename-Computer $Name -Force -EA 0';
             'If (!(Test-Path $Root))';
             '{';
             '    New-Item -Path $Root -Verbose';
@@ -4142,15 +4727,11 @@ Function VmNode
         }
         SetTimeZone()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 2] Set time zone
             $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}" -Verbose' -f (Get-Timezone).Id))
         }
         SetComputerInfo()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 3] Set computer info
             $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
             '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath() 
@@ -4162,8 +4743,6 @@ Function VmNode
         }
         SetIcmpFirewall()
         {
-            # [Windows (Server/Client)]
-
             $Content = Switch ($This.Role)
             {
                 Server
@@ -4182,8 +4761,6 @@ Function VmNode
         }
         SetInterfaceNull()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 5] Get InterfaceIndex, get/remove current (IP address + Net Route)
             $This.Script.Add(5,"SetInterfaceNull","Get InterfaceIndex, get/remove current (IP address + Net Route)",@(
             '$Index              = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
@@ -4193,8 +4770,6 @@ Function VmNode
         }
         SetStaticIp()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 6] Set static IP Address
             $This.Script.Add(6,"SetStaticIp","Set (static IP Address + Dns server)",@(
             '$Splat              = @{';
@@ -4211,21 +4786,19 @@ Function VmNode
         }
         SetWinRm()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 7] Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)
             $This.Script.Add(7,"SetWinRm","Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)",@(
             'winrm quickconfig';
-            '<Pause[2]>';
+            '<Timer[2]>';
             'y';
-            '<Pause[3]>';
+            '<Timer[3]>';
             If ($This.Role -eq "Client")
             {
                 'y';
-                '<Pause[3]>';
+                '<Timer[3]>';
             }
             'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
-            '<Pause[4]>';
+            '<Timer[4]>';
             'y';
             '$Cert       = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
             '$Thumbprint = $Cert.Thumbprint';
@@ -4235,8 +4808,6 @@ Function VmNode
         }
         SetWinRmFirewall()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 8] Set WinRm Firewall
             $This.Script.Add(8,"SetWinRmFirewall",'Set WinRm Firewall',@(
             '$Splat          = @{';
@@ -4252,8 +4823,6 @@ Function VmNode
         }
         SetRemoteDesktop()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 9] Set Remote Desktop
             $This.Script.Add(9,"SetRemoteDesktop",'Set Remote Desktop',@(
             'Set-ItemProperty "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -Value 0';
@@ -4261,44 +4830,33 @@ Function VmNode
         }
         InstallFeModule()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 10] Install [FightingEntropy()]
             $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
             '[Net.ServicePointManager]::SecurityProtocol = 3072'
             'Set-ExecutionPolicy Bypass -Scope Process -Force'
-            '$Install = "https://github.com/mcc85s/FightingEntropy"'
-            '$Full    = "$Install/blob/main/Version/2022.12.0/FightingEntropy.ps1?raw=true"'
-            'Invoke-RestMethod $Full | Invoke-Expression'
-            '$Module.Install()'
+            '$Install = "https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1"'
+            'Invoke-RestMethod $Install | Invoke-Expression'
+            '$Module.Latest()'
             'Import-Module FightingEntropy'))
         }
         InstallChoco()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 11] Install Chocolatey
             $This.Script.Add(11,"InstallChoco","Install Chocolatey",@(
             "Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression"))
         }
         InstallVsCode()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 12] Install Visual Studio Code
             $This.Script.Add(12,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
         }
         InstallBossMode()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 13] Install BossMode (vscode color theme)
             $This.Script.Add(13,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
         }
         InstallPsExtension()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 14] Install Visual Studio Code (PowerShell Extension)
             $This.Script.Add(14,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
             '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
@@ -4307,15 +4865,11 @@ Function VmNode
         }
         RestartComputer()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 15] Restart computer
             $This.Script.Add(15,'Restart','Restart computer',@('Restart-Computer'))
         }
         ConfigureDhcp()
         {
-            # [Windows (Server/Client)]
-
             # [Phase 16] Configure Dhcp
             $This.Script.Add(16,'ConfigureDhcp','Configure Dhcp',@(
             '$Root           = "{0}"' -f $This.GetRegistryPath()
@@ -4330,7 +4884,7 @@ Function VmNode
             '    Name       = $Item.Dhcp.Name';
             '    SubnetMask = $Item.Dhcp.SubnetMask';
             '}';
-            '';
+            ' ';
             'Add-DhcpServerV4Scope @Splat -Verbose';
             'Add-DhcpServerInDc -Verbose';
             ' ';
@@ -4367,11 +4921,9 @@ Function VmNode
         }
         InitializeFeAd([String]$Pass)
         {
-            # [Windows (Server)]
-
             $This.Script.Add(17,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
             '$Password = Read-Host "Enter password" -AsSecureString';
-            '<Pause[2]>';
+            '<Timer[2]>';
             '{0}' -f $Pass;
             '$Ctrl = Initialize-FeAdInstance';
             ' ';
@@ -4428,8 +4980,6 @@ Function VmNode
         }
         Load()
         {
-            # [Windows (Server/Client)]
-
             $This.SetPersistentInfo()
             $This.SetTimeZone()
             $This.SetComputerInfo()
@@ -4449,9 +4999,7 @@ Function VmNode
         }
         [Object] PSSession([Object]$Account)
         {
-            # [Windows (Server/Client)]
-
-            # Attempt login
+            # Creates session object
             $This.Update(0,"[~] PSSession Token")
             $Splat = @{
 
@@ -4483,146 +5031,9 @@ Function VmNode
             $This.TypeKey(9)
             $This.TypeKey(13)
             $This.Timer(1)
-            $This.LinuxPassword($Account.Password())
+            $This.TypePassword($Account.Password())
             $This.TypeKey(13)
             $This.Idle(0,5)
-        }
-        LinuxType([String]$Entry)
-        {
-            # [Linux]
-            $This.Update(0,"[+] Type entry : [$Entry]")
-            ForEach ($Char in [Char[]]$Entry)
-            {
-                $This.Update(0,"[+] Typing key : [$Char]")
-                $This.LinuxKey($Char)
-            }
-        }
-        LinuxPassword([String]$Entry)
-        {
-            # [Linux]
-            $This.Update(0,"[+] Typing password : [<ActualPassword>]")
-
-            ForEach ($Char in [Char[]]$Entry)
-            {
-                $This.LinuxKey($Char)
-            }
-        }
-        LinuxKey([Char]$Char)
-        {
-            # [Linux]
-            $Int = [UInt32]$Char
-            
-            If ($Int -in @(33..38+40..43+58+60+62..90+94+95+123..126))
-            {
-                Switch ($Int)
-                {
-                    {$_ -in 65..90}
-                    {
-                        # Lowercase
-                        $Int = [UInt32][Char]([String]$Char).ToUpper()
-                    }
-                    {$_ -in 33,64,35,36,37,38,40,41,94,42}
-                    {
-                        # Shift+number symbols
-                        $Int = Switch ($Int)
-                        {
-                            33  { 49 } 64  { 50 } 35  { 51 }
-                            36  { 52 } 37  { 53 } 94  { 54 }
-                            38  { 55 } 42  { 56 } 40  { 57 }
-                            41  { 48 }
-                        }
-                    }
-                    {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
-                    {
-                        # Non-number symbols
-                        $Int = Switch ($Int)
-                        {
-                            58  { 186 } 43  { 187 } 60  { 188 } 
-                            95  { 189 } 62  { 190 } 63  { 191 } 
-                            126 { 192 } 123 { 219 } 124 { 220 } 
-                            125 { 221 } 34  { 222 }
-                        }
-                    }
-                }
-
-                $This.Keyboard.PressKey(16)
-                Start-Sleep -Milliseconds 10
-                
-                $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 10
-
-                $This.Keyboard.ReleaseKey(16)
-                Start-Sleep -Milliseconds 10
-            }
-            Else
-            {
-                Switch ($Int)
-                {
-                    {$_ -in 97..122} # Lowercase
-                    {
-                        $Int = [UInt32][Char]([String]$Char).ToUpper()
-                    }
-                    {$_ -in 48..57} # Numbers
-                    {
-                        $Int = [UInt32][Char]$Char
-                    }
-                    {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
-                    {
-                        $Int = Switch ($Int)
-                        {
-                            32  {  32 } 59  { 186 } 61  { 187 } 
-                            44  { 188 } 45  { 189 } 46  { 190 }
-                            47  { 191 } 96  { 192 } 91  { 219 }
-                            92  { 220 } 93  { 221 } 39  { 222 }
-                        }
-                    }
-                }
-
-                $This.Keyboard.TypeKey($Int)
-                Start-Sleep -Milliseconds 30
-            }
-        }
-        [Void] RunScript()
-        {
-            $Item = $This.Script.Current()
-
-            If ($Item.Complete -eq 1)
-            {
-                $This.Error(-1,"[!] Exception (Script) : [$($Item.Name)] already completed")
-            }
-
-            $This.Update(0,"[~] Running (Script) : [$($Item.Name)]")
-            ForEach ($Line in $Item.Content)
-            {
-                Switch -Regex ($Line)
-                {
-                    "^\<Pause\[\d+\]\>$"
-                    {
-                        $Line -match "\d+"
-                        $This.Timer($Matches[0])
-                    }
-                    "^\<Pass\[.+\]\>$"
-                    {
-                        $Line = $Matches[0].Substring(6).TrimEnd(">").TrimEnd("]")
-                        $This.LinuxPassword($Line)
-                        $This.TypeKey(13)
-                    }
-                    "^$"
-                    {
-                        $This.Idle(5,2)
-                    }
-                    Default
-                    {
-                        $This.LinuxType($Line)
-                        $This.TypeKey(13)
-                    }
-                }
-            }
-
-            $This.Update(1,"[+] Complete (Script) : [$($Item.Name)]")
-
-            $Item.Complete = 1
-            $This.Script.Selected ++
         }
         Initial()
         {
@@ -4641,11 +5052,7 @@ Function VmNode
             # // Launch terminal
             $This.TypeKey(91)
             $This.Timer(2)
-            ForEach ($Key in [Char[]]"terminal")
-            {
-                $This.LinuxKey($Key)
-                Start-Sleep -Milliseconds 25
-            }
+            $This.TypeLine("terminal")
             $This.Timer(2)
             $This.TypeKey(13)
             $This.Timer(2)
@@ -4688,9 +5095,9 @@ Function VmNode
             # [Phase 1] Set subscription service to access (yum/rpm)
             $This.Script.Add(1,"SetSubscriptionInfo","Set subscription information",@(
             "subscription-manager register";
-            "<Pause[1]>";
+            "<Timer[1]>";
             $User.Username;
-            "<Pause[1]>";
+            "<Timer[1]>";
             "<Pass[$($User.Password())]>";
             ))
         }
@@ -4707,7 +5114,7 @@ Function VmNode
             # [Phase 3] (Set/Install) epel-release
             $This.Script.Add(3,"EpelRelease","Set EPEL Release Repo",@(
             'subscription-manager repos --enable codeready-builder-for-rhel-9-x86_64-rpms';
-            "<Pause[30]>";
+            "<Timer[30]>";
             "";
             "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y";
             "";
@@ -4727,10 +5134,10 @@ Function VmNode
             # [Phase 5] Install [Remote Desktop] Tools
             $This.Script.Add(5,"InstallRdp","(Set/Install) [Remote Desktop] Tools",@(
             "dnf install tigervnc-server tigervnc -y";
-            "<Pause[5]>";
+            "<Timer[5]>";
             "";
             "yum --enablerepo=epel install xrdp -y";
-            "<Pause[5]>";
+            "<Timer[5]>";
             "";
             "systemctl start xrdp.service";
             "";
@@ -5739,7 +6146,7 @@ Function VmController
             {
                 $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
                 $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
-                $Ctrl.Xaml.IO.ImagePath.Text = $Ctrl.Image.Current().Fullname
+                $Ctrl.Xaml.IO.TemplateImagePath.Text = $Ctrl.Image.Current().Fullname
             })
     
             <#
@@ -5940,7 +6347,7 @@ Function VmController
 $Ctrl = VmController
 
 # [GUI portion]
-#Ctrl.StageXaml()
+$Ctrl.StageXaml()
 
 # [Stage test variables]
 $Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
@@ -5962,16 +6369,16 @@ $Ctrl.Node.Select(0)
 $Vm   = $Ctrl.Node.Current()
     
 # [Prepare for <Windows 11 Pro>]
-$Item = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
-$Span = $Item.Index - 1
+#$Item = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
+$Span = 5
 
 # // Object instantiation
 $Vm.New()
 
 # // Windows 11 enable TPM w/ key protector
-If ($Vm.Security.KeyProtector.Length -le 4)
+If (!$Vm.Security.Property.TpmEnabled)
 {
-    $Vm.Security.SetVmKeyProtector()
+    $Vm.Security.ToggleTpm()
 }
 
 $Vm.AddVmDvdDrive()
@@ -6044,7 +6451,7 @@ $Vm.Idle(5,5)
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-$Module.Write("Installation [~] System Preparation [Region]")
+$Ctrl.Module.Write("Installation [~] System Preparation [Region]")
 
 # // [Region, default = United States]
 $Vm.TypeKey(13) # [Yes]
@@ -6058,6 +6465,17 @@ $Vm.Timer(3)
 $Vm.Idle(5,5)
 
 <#
+    [Windows 11]
+    - Name the device
+#>
+
+# // Name the device
+$Vm.TypeText($Vm.Name)
+$Vm.Timer(1)
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+<#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
    \\__//¯¯¯ Installation [~] System Preparation [Network]                                                  ___//¯¯\\   
@@ -6065,7 +6483,7 @@ $Vm.Idle(5,5)
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-$Module.Write("Installation [~] System Preparation [Network]")
+$Ctrl.Module.Write("Installation [~] System Preparation [Network]")
 
 # // [Check for connectivity]
 Switch ($Vm.NetworkSetupMode())
@@ -6088,6 +6506,13 @@ Switch ($Vm.NetworkSetupMode())
         $Vm.TypeKey(13)
         $Vm.Idle(5,2)
 
+        # // Unlock your Microsoft Experience
+        $Vm.TypeKey(13)
+        $Vm.Idle(5,2)
+
+        # // Apparently Microsoft jumped the shark, there's no more [local account]...
+        
+
         # // [OneDrive setup]
         $Vm.TypeChain(@(9,9,9,9,32))
         $Vm.Idle(5,2)
@@ -6106,7 +6531,9 @@ Switch ($Vm.NetworkSetupMode())
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-$Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
+<#
+$Account = ($Vm.Account | ? Type -eq User)[0]
+$Ctrl.Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
 
 # // [Who's gonna use this PC...? Hm...?]
 $Vm.TypeText($Security.Username())
@@ -6137,11 +6564,44 @@ ForEach ($Item in $Security.Output)
 }
 
 $Vm.Timer(5)
+#>
 
 # // [Chose privacy settings]
 $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# 
+$Vm.TypeChain(@(9)*6)
+$Vm.TypeKey(32)
+$Vm.Idle(5,5)
+
+# Use your Android phone from your PC
+$Vm.TypeChain(@(9)*3)
+$Vm.TypeKey(32)
+$Vm.Idle(5,5)
+
+# Access granted Office 365 trial
+$Vm.TypeChain(@(9,9,32))
+$Vm.Idle(5,5)
+
+# Get 100 GB more cloud storage
+$Vm.TypeChain(@(9,32))
+$Vm.Idle(5,5)
+
+# Get your first month of PC Game Pass
+$Vm.TypeKey(9)
+$Vm.TypeKey(9)
+$Vm.TypeKey(9)
+$Vm.TypeKey(32)
+$Vm.Idle(5,5)
+
+<#
 # // [Let's customize your experience]
 $Vm.TypeChain(@(9,9,9,9,9,9,9,9))
 $Vm.TypeKey(13)
@@ -6151,6 +6611,7 @@ $Vm.Idle(5,5)
 $Vm.TypeKey(13)
 $Vm.Timer(90)
 $Vm.Idle(10,10)
+#>
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -6160,7 +6621,13 @@ $Vm.Idle(10,10)
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-$Module.Write("Configuration [~] Post Installation: [$Token]")
+# Pretty ridiculous that Windows 11 forces people to use a Microsoft account.
+# The TPM stuff is somewhat agreeable as it provides additional security
+# features.
+# But if I want to create a demonstration that takes far less time, then I 
+# have to create a dummy Microsoft account and use that instead.
+
+$Ctrl.Module.Write("Configuration [~] Post Installation: [$($Vm.Name)]")
 
 # // [Launch PowerShell]
 $Vm.LaunchPs()
@@ -6169,6 +6636,24 @@ $Vm.LaunchPs()
 $Vm.Load()
 
 # // Set persistent info
+$Vm.Script.Output | ? Index -gt 1 | % { 
+
+    $Current = $Vm.Script.Current()
+    ForEach ($Line in $Current.Content.Line)
+    {
+        ForEach ($Char in [Char[]]$Line)
+        {
+
+        }
+
+        $Vm.Keyboard.TypeKey(13)
+    }
+
+    $Current.Complete ++
+    $Vm.Script.Selected ++
+}
+
+
 $Vm.RunScript()
 $Vm.Timer(5)
 
@@ -6244,50 +6729,3 @@ $Vm.Timer(1)
 
 # // [Continue]
 $Vm.Idle(5,5)
-
-
-
-
-
-<#
-        ToggleTpm()
-        {
-            Switch ($Security.TpmEnabled)
-            {
-                0
-                {
-                    # Verbosity level
-                    Switch ($This.Mode)
-                    {
-                        Default 
-                        { 
-                            If ($Key.Length -le 4)
-                            {
-                                Set-VMKeyProtector -VmName $This.Name -NewLocalKeyProtector
-                            }
-
-                            Enable-VmTpm -VMName $This.Name 
-                        }
-                        2
-                        {
-                            If ($Key.Length -le 4)
-                            {
-                                Set-VMKeyProtector -VmName $This.Name -NewLocalKeyProtector -Verbose
-                            }
-
-                            Enable-VmTpm -VMName $This.Name -Verbose
-                        }
-                    }
-                }
-                1
-                {
-                    # Verbosity level
-                    Switch ($This.Mode)
-                    {
-                        Default { Disable-VmTpm -VMName $This.Name }
-                        2       { Disable-VmTpm -VMName $This.Name -Verbose }
-                    }
-                }
-            }
-        }
-#>
