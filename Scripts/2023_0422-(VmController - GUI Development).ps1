@@ -5047,6 +5047,7 @@ Function VmController
                               "CredentialUsername",
                               "CredentialPassword",
                               "CredentialConfirm",
+                              "ImagePath",
                               "TemplatePath",
                               "TemplateImagePath",
                               "NodeTemplatePath")
@@ -5162,6 +5163,7 @@ Function VmController
             $This.Update(0,"Setting [~] Image source")
             $This.Image.SetSource($Path)
             $This.Image.Refresh()
+            $This.Reset($This.Xaml.IO.ImageStore,$This.Image.Store)
 
             Switch ($This.Image.Store.Count)
             {
@@ -5698,6 +5700,42 @@ Function VmController
             })
     
             $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Credential.Output)
+
+            <#
+                ____    ____________________________________________________________________________________________________        
+               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+               \\__//¯¯¯ Image [~] Panel                                                                                ___//¯¯\\   
+                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+                23 ImageStore        DataGrid System.Windows.Controls.DataGrid Items.Count:0
+                24 ImageImport       Button   System.Windows.Controls.Button: Import
+                25 ImagePath         TextBox  System.Windows.Controls.TextBox
+                26 ImagePathIcon     Image    System.Windows.Controls.Image
+                27 ImagePathBrowse   Button   System.Windows.Controls.Button: Browse
+                28 ImageStoreContent DataGrid System.Windows.Controls.DataGrid Items.Count:0
+                
+            #>
+
+            $Ctrl.Xaml.IO.ImagePathBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse("ImagePath")
+            })
+    
+            $Ctrl.Xaml.IO.ImagePath.Add_TextChanged(
+            {
+                $Ctrl.CheckPath("ImagePath")
+                $Ctrl.Xaml.IO.ImageImport.IsEnabled = [UInt32]($Ctrl.Flag | ? Name -eq ImagePath | % Status -eq 1)
+            })
+
+            $Ctrl.Xaml.IO.ImageImport.Add_Click(
+            {
+                $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
+            })
+
+            $Ctrl.Xaml.IO.ImageStore.Add_SelectionChanged(
+            {
+                $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
+            })
     
             <#
                 ____    ____________________________________________________________________________________________________        
