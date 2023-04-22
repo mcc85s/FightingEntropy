@@ -795,7 +795,6 @@ Function VmXaml
         }
     }
 
-
     Class VmControllerXaml
     {
         Static [String] $Content = @(
@@ -1289,8 +1288,8 @@ Function VmXaml
         '                <Label Grid.Row="0" Content="[Image]: Load images for templates to utilize"/>',
         '                <DataGrid Grid.Row="1" Name="ImageStore">',
         '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index"   Binding="{Binding Index}"   Width="50"/>',
-        '                        <DataGridTextColumn Header="Type"    Binding="{Binding Type}"    Width="100"/>',
+        '                        <DataGridTextColumn Header="Index"   Binding="{Binding Index}"   Width="45"/>',
+        '                        <DataGridTextColumn Header="Type"    Binding="{Binding Type}"    Width="90"/>',
         '                        <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="100"/>',
         '                        <DataGridTextColumn Header="Name"    Binding="{Binding Name}"    Width="350"/>',
         '                    </DataGrid.Columns>',
@@ -1310,10 +1309,10 @@ Function VmXaml
         '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
         '                <DataGrid Grid.Row="4" Name="ImageStoreContent">',
         '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index" Binding="{Binding Index}"            Width="50"/>',
-        '                        <DataGridTextColumn Header="Name"  Binding="{Binding DestinationName}"  Width="225"/>',
-        '                        <DataGridTextColumn Header="Size"  Binding="{Binding Size}"             Width="100"/>',
-        '                        <DataGridTextColumn Header="Label" Binding="{Binding Label}"            Width="175"/>',
+        '                        <DataGridTextColumn Header="Index" Binding="{Binding Index}"            Width="40"/>',
+        '                        <DataGridTextColumn Header="Name"  Binding="{Binding DestinationName}"  Width="250"/>',
+        '                        <DataGridTextColumn Header="Size"  Binding="{Binding Size}"             Width="60"/>',
+        '                        <DataGridTextColumn Header="Label" Binding="{Binding Label}"            Width="160"/>',
         '                    </DataGrid.Columns>',
         '                </DataGrid>',
         '            </Grid>',
@@ -5026,9 +5025,9 @@ Function VmController
         [Object]       $Xaml
         [Object]     $Master
         [Object] $Credential
+        [Object]      $Image
         [Object]   $Template
         [Object]       $Node
-        [Object]      $Image
         [Object]       $Flag
         VmControllerMaster()
         {
@@ -5036,9 +5035,9 @@ Function VmController
             $This.Xaml        = $This.VmXaml()
             $This.Master      = $This.VmMaster()
             $This.Credential  = $This.VmCredential()
+            $This.Image       = $This.ImageController()
             $This.Template    = $This.VmTemplate()
             $This.Node        = $This.VmNode()
-            $This.Image       = $This.ImageController()
             $This.Flag        = @( )
     
             ForEach ($Name in "MasterPath",
@@ -5498,6 +5497,7 @@ Function VmController
         }
         SetInitialState()
         {
+            # Master panel
             $This.Xaml.IO.MasterPath.Text              = "<Select a path>"
             $This.Xaml.IO.MasterCreate.IsEnabled       = 0
     
@@ -5507,6 +5507,9 @@ Function VmController
     
             $This.Xaml.IO.CredentialRemove.IsEnabled   = 0
             $This.Xaml.IO.CredentialCreate.IsEnabled   = 0
+
+            # Image panel
+            $This.Xaml.IO.ImageImport.IsEnabled        = 0
     
             # Template panel
             $This.Xaml.IO.TemplateCreate.IsEnabled     = 0
@@ -5724,7 +5727,7 @@ Function VmController
             $Ctrl.Xaml.IO.ImagePath.Add_TextChanged(
             {
                 $Ctrl.CheckPath("ImagePath")
-                $Ctrl.Xaml.IO.ImageImport.IsEnabled = [UInt32]($Ctrl.Flag | ? Name -eq ImagePath | % Status -eq 1)
+                $Ctrl.Xaml.IO.ImageImport.IsEnabled = $Ctrl.Flag | ? Name -eq ImagePath | % Status
             })
 
             $Ctrl.Xaml.IO.ImageImport.Add_Click(
@@ -5734,7 +5737,9 @@ Function VmController
 
             $Ctrl.Xaml.IO.ImageStore.Add_SelectionChanged(
             {
+                $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
                 $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
+                $Ctrl.Xaml.IO.ImagePath.Text = $Ctrl.Image.Current().Fullname
             })
     
             <#
@@ -5935,16 +5940,17 @@ Function VmController
 $Ctrl = VmController
 
 # [GUI portion]
+#Ctrl.StageXaml()
 
-$Ctrl.StageXaml()
+# [Stage test variables]
 $Ctrl.Xaml.Get("MasterPath").Text            = "C:\FileVm"
 $Ctrl.Xaml.Get("MasterDomain").Text          = "securedigitsplus.com"
 $Ctrl.Xaml.Get("MasterNetBios").Text         = "secured"
 $Ctrl.Xaml.Get("MasterConfig").SelectedIndex = 0
 $Ctrl.Invoke()
 
-# [Get image chart]
-$Ctrl.SetImagePath("C:\Images")
+# [Stage image chart]
+# $Ctrl.SetImagePath("C:\Images")
 
 # [Template from file]
 $Ctrl.Node.SetPath("C:\FileVm")
@@ -5956,8 +5962,7 @@ $Ctrl.Node.Select(0)
 $Vm   = $Ctrl.Node.Current()
     
 # [Prepare for <Windows 11 Pro>]
-$List = $Ctrl.Image.Store | ? Fullname -eq $Vm.Iso | % Content
-$Item = $List | ? Name -match "Pro$"
+$Item = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
 $Span = $Item.Index - 1
 
 # // Object instantiation
