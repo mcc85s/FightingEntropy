@@ -70,17 +70,16 @@ You're rollin'.
 
 2) Once the [**module is loaded into memory**], enter the following:
 
-| Operation  | Instructions        | Description
+| Operation  | Instructions        | Description                                                                           |
 |:-----------|:--------------------|:--------------------------------------------------------------------------------------|
 | Latest     | `$Module.Latest()`  | Retrieves the latest zip archive and updates any outstanding files (fastest)          |
 
 ...or...
 
-| Operation  | Instructions        | Description
+| Operation  | Instructions        | Description                                                                           |
 |:-----------|:--------------------|:--------------------------------------------------------------------------------------|
 | Install    | `$Module.Install()` | Installs the module by retrieving individual files in the manifest (thorough)         |
 | Remove     | `$Module.Remove()`  | Removes all traces of the module from the system (does not consider extraneous paths) |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # Author
 | Name                | Motto                                          | Contact                    | Resume           |
