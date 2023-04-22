@@ -4,6 +4,7 @@
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **04/22/23** | 0h 38m 54s | **2023_04_22_16_50_28.mp3**    | [Philosophy](https://drive.google.com/file/d/1bW2qo7nVLxF9DcEQDqbzL58gUHB3M7dF)
 | **04/20/23** | 0h 47m 22s | **2023_04_20_20_55_55.mp3**    | [All Charges Dropped](https://drive.google.com/file/d/1b09HtaE1MAxbgdEIHn1UtmTybi_AGTdH)
 | **04/17/23** | 0h 23m 40s | **2023_04_17_23_05_43.mp3**    | [72 Hours](https://drive.google.com/file/d/1_8yH-UvorOx2zi4vbsuxegwUKDH2n9j5)
 | **03/24/23** | 2h 01m 54s | **2023_03_24_08_21_14.mp3**    | [Tipping Point](https://drive.google.com/file/d/1JSHgvTwLB8h00FJYvxbVJOGkm8eP6KrG)
