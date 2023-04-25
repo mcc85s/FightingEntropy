@@ -6354,6 +6354,9 @@ Function VmController
                 $Item     = $This.Template.Output | ? Guid -eq $Selected.Guid
                 If (!!$Item)
                 {
+                    $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
+                    $This.Xaml.IO.TemplateRemove.IsEnabled          = 1
+                    $This.Xaml.IO.TemplateExport.IsEnabled          = 1
                     $This.Xaml.IO.TemplateName.Text                 = $Item.Name
                     $This.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
                     $This.Xaml.IO.TemplatePath.Text                 = $Item.Base
@@ -6373,6 +6376,7 @@ Function VmController
                     }
                     $This.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
                     $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Gen]
+                    $This.Xaml.IO.TemplateSwitch.SelectedIndex      = $This.Node.Switch | ? Name -eq $Item.SwitchId | % Index
                     $This.Xaml.IO.TemplateImagePath.Text            = $Item.Image
                 }
                 Else
@@ -6381,6 +6385,26 @@ Function VmController
                     $This.Xaml.IO.TemplateRole.SelectedIndex        = 1
                     $This.Xaml.IO.TemplatePath.Text                 = "<Select a path>"
                     $This.Xaml.IO.TemplateImagePath.Text            = "<Select an image>"
+                }
+            }
+        }
+        NodeSwitchPanel()
+        {
+            $This.Xaml.IO.NodeSwitchCreate.IsEnabled = 0
+            $This.Xaml.IO.NodeSwitchRemove.IsEnabled = 0
+            $This.Xaml.IO.NodeSwitchUpdate.IsEnabled = 1
+
+            If ($This.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
+            {
+                $Selected = $This.Xaml.IO.NodeSwitch.SelectedItem
+                $Item     = $This.Node.Switch | ? Guid -eq $Selected.Guid
+                If (!!$Item)
+                {
+                    
+                }
+                Else
+                {
+
                 }
             }
         }
