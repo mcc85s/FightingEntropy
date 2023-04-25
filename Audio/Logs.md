@@ -4,6 +4,7 @@
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **04/24/23** | 0h 39m 45s | **2023_04_24_20_38_41.mp3**    | [VmController](https://drive.google.com/file/d/1cLKVw73UUiAVWJ9yjX-3fc03_e5PscFH)
 | **04/23/23** | 0h 36m 05s | **2023_04_23_11_46_32[1].mp3** | [Shared Opinions](https://drive.google.com/file/d/1y9H150q0vNt4FerINNEwURlWE5rdugxe)
 | **04/22/23** | 0h 38m 54s | **2023_04_22_16_50_28.mp3**    | [Philosophy](https://drive.google.com/file/d/1bW2qo7nVLxF9DcEQDqbzL58gUHB3M7dF)
 | **04/20/23** | 0h 47m 22s | **2023_04_20_20_55_55.mp3**    | [All Charges Dropped](https://drive.google.com/file/d/1b09HtaE1MAxbgdEIHn1UtmTybi_AGTdH)
