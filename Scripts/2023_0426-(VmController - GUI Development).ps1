@@ -5992,7 +5992,7 @@ Function VmController
                 }
             }
     
-            $This.Xaml.IO.TemplateCreate.IsEnabled = $C -eq 2
+            $This.Xaml.IO.TemplateCreate.IsEnabled = $C -eq 3
         }
         CheckPath([String]$Name)
         {
@@ -6098,9 +6098,11 @@ Function VmController
         {
             $Item         = $This.Xaml.Get("TemplateName")
             $xFlag        = $This.Flag | ? Name -eq TemplateName
-            $xFlag.Status = [UInt32]($Item.Text -notin $This.Node.Host.Name)
+            $xFlag.Status = [UInt32]($Item.Text -match "[a-zA-Z]{1}[a-zA-Z0-9]{0,14}" -and $Item.Text -notin $This.Node.Host.Name)
     
             $This.Xaml.IO.TemplateNameIcon.Source = $This.IconStatus($xFlag.Status)
+
+            $This.ToggleTemplateCreate()
         }
         CheckTemplatePath()
         {
@@ -6552,11 +6554,6 @@ Function VmController
                 $Ctrl.FileBrowse("TemplateImagePath")
             })
     
-            ForEach ($Item in "TemplateCreate","TemplateRemove","TemplateExport")
-            {
-                $Ctrl.Xaml.Get($Item).IsEnabled = 0
-            }
-    
             $Ctrl.Xaml.IO.TemplateCreate.Add_Click(
             {
                 If ($Ctrl.Xaml.IO.TemplateName.Text -notmatch "(\w|\d)")
@@ -6676,11 +6673,6 @@ Function VmController
                 $Ctrl.Node.Refresh("Template")
             })
     
-            $Ctrl.Xaml.IO.NodeTemplate.Add_SelectionChanged(
-            {
-                $Ctrl.Xaml.IO.NodeHostCreate.IsEnabled = $Ctrl.Xaml.IO.NodeTemplate.SelectedIndex -ne -1
-            })
-    
             $Ctrl.Xaml.IO.NodeHost.Add_SelectionChanged(
             {
                 $Ctrl.Xaml.IO.NodeHostRemove.IsEnabled = $Ctrl.Xaml.IO.NodeHost.SelectedIndex -ne -1
@@ -6690,6 +6682,8 @@ Function VmController
             {
 
             })
+
+
     
             $Ctrl.SetInitialState()
         }
