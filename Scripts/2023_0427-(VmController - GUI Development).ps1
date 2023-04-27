@@ -1,5 +1,6 @@
 <#
     [April 2023]
+
          _____________________________
          |¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|
          | S | M | T | W | T | F | S |
@@ -2111,9 +2112,10 @@ Function VmXaml
         '                <Grid Grid.Row="1" Name="NodeHostPanel" Visibility="Visible">',
         '                    <Grid>',
         '                        <Grid.RowDefinitions>',
-        '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="110"/>',
         '                            <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="10"/>',
+        '                            <RowDefinition Height="*"/>',
         '                            <RowDefinition Height="40"/>',
         '                        </Grid.RowDefinitions>',
         '                        <DataGrid Grid.Row="0" Name="NodeHost">',
@@ -2121,30 +2123,15 @@ Function VmXaml
         '                                <DataGridTextColumn Header="Index"',
         '                                            Binding="{Binding Index}"',
         '                                            Width="40"/>',
+        '                                <DataGridTextColumn Header="Guid"',
+        '                                            Binding="{Binding Guid}"',
+        '                                            Width="350"/>',
         '                                <DataGridTextColumn Header="Name"',
         '                                            Binding="{Binding Name}"',
+        '                                            Width="*"/>',
+        '                                <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
         '                                            Width="100"/>',
-        '                                <DataGridTextColumn Header="Role"',
-        '                                            Binding="{Binding Role}"',
-        '                                            Width="60"/>',
-        '                                <DataGridTextColumn Header="Memory"',
-        '                                            Binding="{Binding Memory}"',
-        '                                            Width="60"/>',
-        '                                <DataGridTextColumn Header="Hdd"',
-        '                                            Binding="{Binding Hdd}"',
-        '                                            Width="60"/>',
-        '                                <DataGridTextColumn Header="Gen"',
-        '                                            Binding="{Binding Gen}"',
-        '                                            Width="40"/>',
-        '                                <DataGridTextColumn Header="Core"',
-        '                                            Binding="{Binding Core}"',
-        '                                            Width="40"/>',
-        '                                <DataGridTextColumn Header="SwitchId"',
-        '                                            Binding="{Binding SwitchId}"',
-        '                                            Width="100"/>',
-        '                                <DataGridTextColumn Header="Image"',
-        '                                            Binding="{Binding Image}"',
-        '                                            Width="350"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Grid Grid.Row="1">',
@@ -2164,7 +2151,17 @@ Function VmXaml
         '                                        Name="NodeHostUpdate"/>',
         '                        </Grid>',
         '                        <Border Grid.Row="2" Background="Black" Margin="4"/>',
-        '                        <Grid Grid.Row="5">',
+        '                        <DataGrid Grid.Row="3" Name="NodeHostExtension">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Name"',
+        '                                                    Binding="{Binding Name}"',
+        '                                                    Width="150"/>',
+        '                                <DataGridTextColumn Header="Value"',
+        '                                                    Binding="{Binding Value}"',
+        '                                                    Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                        <Grid Grid.Row="4">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="100"/>',
         '                                <ColumnDefinition Width="*"/>',
@@ -3033,6 +3030,7 @@ Function VmTemplate
     {
         [String]      $Name
         [String]      $Role
+        [Guid]        $Guid
         [Object]   $Account
         [String] $IpAddress
         [String]    $Domain
@@ -3054,6 +3052,7 @@ Function VmTemplate
         {
             $This.Name      = $Template.Name
             $This.Role      = $Template.Role
+            $This.Guid      = $Template.Guid
             $This.Account   = $Account
             $This.IpAddress = $Network.IPAddress
             $This.Domain    = $Network.Domain
@@ -3429,7 +3428,7 @@ Function VmNode
         VmNodeSwitch([UInt32]$Index,[Object]$Object)
         {
             $This.Index       = $Index
-            $This.Guid        = $This.NewGuid()
+            $This.Guid        = $Object.Id
             $This.Object      = $Object
             $This.Name        = $Object.Name
             $This.Type        = $Object.SwitchType
@@ -3460,19 +3459,15 @@ Function VmNode
         VmNodeHost([UInt32]$Index,[Object]$Node)
         {
             $This.Index      = $Node.Index
-            $This.Guid       = $This.NewGuid()
+            $This.Guid       = $Node.Id
             $This.Name       = $Node.Name
-            $This.Memory     = $Node.MemoryStartup
+            $This.Memory     = $This.Size("Memory",$Node.MemoryStartup)
             $This.Path       = $Node.Path
             $This.Vhd        = $Node.HardDrives[0].Path
             $This.VhdSize    = $This.Size("HDD",$This.Drive())
             $This.Generation = $Node.Generation
             $This.Core       = $Node.ProcessorCount
             $This.SwitchName = $Node.NetworkAdapters[0].SwitchName
-        }
-        [Object] NewGuid()
-        {
-            Return [Guid]::NewGuid()
         }
         [UInt64] Drive()
         {
@@ -5301,7 +5296,6 @@ Function VmNode
         VmNodeMaster()
         {
             $This.Refresh()
-            $This.Object = @( )
         }
         SetPath([String]$Path)
         {
@@ -5332,6 +5326,7 @@ Function VmNode
                 "Switch"   { $This.Switch   = @( ) }
                 "Host"     { $This.Host     = @( ) }
                 "Template" { $This.Template = @( ) }
+                "Object"   { $This.Object   = @( ) }
             }
         }
         [Object] VmNodeSwitch([UInt32]$Index,[Object]$VmSwitch)
@@ -5377,12 +5372,14 @@ Function VmNode
         NewVmSwitch([String]$Name,[String]$Type)
         {
             New-VmSwitch -Name $Name -SwitchType $Type -Verbose
+            $This.Refresh("Switch")
         }
         RemoveVmSwitch([String]$Name)
         {
             Remove-VmSwitch -Name $Name -Force -Verbose
+            $This.Refresh("Switch")
         }
-        Create([UInt32]$Index)
+        [Object] Create([UInt32]$Index)
         {
             If (!$This.Template[$Index])
             {
@@ -5407,7 +5404,7 @@ Function VmNode
                 }
             }
 
-            $This.Object   += $Item
+            Return $Item
         }
         AddTemplate([Object]$Template)
         {
@@ -5421,9 +5418,13 @@ Function VmNode
         {
             $This.Host     += $This.VmNodeHost($This.Host.Count,$Node)
         }
+        AddObject([Object]$Node)
+        {
+            $This.Object   += $This.VmNodeSlot($This.Object.Count,$Node)
+        }
         Refresh([String]$Type)
         {
-            If ($Type -notin "Switch","Host","Template")
+            If ($Type -notin "Switch","Host","Template","Object")
             {
                 Throw "Invalid type"
             }
@@ -5456,33 +5457,25 @@ Function VmNode
                         }
                     }
                 }
+                "Object"
+                {
+                    ForEach ($Item in $This.Host)
+                    {
+                        $This.Object += $This.VmNodeSlot($This.Object.Count,$Item)
+                    }
+
+                    ForEach ($Item in $This.Template)
+                    {
+                        $This.Object += $This.VmNodeSlot($This.Object.Count,$Item)
+                    }
+                }
             }
         }
         Refresh()
         {
-            $This.Clear("Switch")
-            $This.Clear("Host")
-            $This.Clear("Template")
-
-            # Switch
-            ForEach ($Item in $This.GetVmSwitch())
+            ForEach ($Item in "Switch","Host","Template","Object")
             {
-                $This.AddSwitch($Item)
-            }
-
-            # Host
-            ForEach ($Item in $This.GetVm())
-            {
-                $This.AddHost($Item)
-            }
-
-            # Templates
-            If ($This.Path)
-            {
-                ForEach ($Item in $This.GetTemplate())
-                {
-                    $This.AddTemplate($Item)
-                }
+                $This.Refresh($Item)
             }
         }
         [String] ToString()
@@ -6333,6 +6326,7 @@ Function VmController
                     $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Gen]
                     $This.Xaml.IO.TemplateSwitch.SelectedIndex      = $This.Node.Switch | ? Name -eq $Item.SwitchId | % Index
                     $This.Xaml.IO.TemplateImagePath.Text            = $Item.Image
+                    $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
                 }
                 Else
                 {
@@ -6365,7 +6359,15 @@ Function VmController
         {
             $This.Xaml.IO.NodeHostCreate.IsEnabled = 0
             $This.Xaml.IO.NodeHostRemove.IsEnabled = 0
-            $This.Xaml.IO.NodeHostUpdate.IsEnabled = 0
+            $This.Xaml.IO.NodeHostUpdate.IsEnabled = 1
+
+            If ($This.Xaml.IO.NodeHost.SelectedIndex -ne -1)
+            {
+                $Selected = $This.Xaml.IO.NodeHost.SelectedItem
+                $Slot     = @($This.Node.Host,$This.Node.Template)[$Selected.Type -eq "Template"]
+                $Item     = $Slot | ? Guid -eq $Selected.Guid
+                $This.Reset($This.Xaml.IO.NodeHostExtension,$This.Property($Item))
+            }
         }
         Invoke()
         {
@@ -6674,8 +6676,8 @@ Function VmController
     
             $Ctrl.Xaml.IO.NodeHostUpdate.Add_Click(
             {
-                $Ctrl.Node.Refresh("Host")
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
+                $Ctrl.Node.Refresh()
+                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
             })
 
             $Ctrl.Xaml.IO.NodeTemplatePath.Add_TextChanged(
@@ -6693,20 +6695,19 @@ Function VmController
             {
                 $Ctrl.Update(0,"Setting [~] Node template import path")
                 $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodeTemplatePath.Text)
-                $Ctrl.Node.Refresh("Template")
+                $Ctrl.Node.Refresh()
+                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
             })
     
             $Ctrl.Xaml.IO.NodeHost.Add_SelectionChanged(
             {
-                $Ctrl.Xaml.IO.NodeHostRemove.IsEnabled = $Ctrl.Xaml.IO.NodeHost.SelectedIndex -ne -1
+                $Ctrl.NodeHostPanel()
             })
 
             $Ctrl.Xaml.IO.NodeHostCreate.Add_Click(
             {
 
             })
-
-
     
             $Ctrl.SetInitialState()
         }
@@ -6724,3 +6725,285 @@ $Ctrl = VmController
 # [GUI portion]
 $Ctrl.StageXaml()
 $Ctrl.Invoke()
+
+$Vm = $Ctrl.Node.Create(0)
+
+# // Object instantiation
+$Vm.New()
+
+# // Windows 11 enable TPM w/ key protector
+If (!$Vm.Security.Property.TpmEnabled)
+{
+    $Vm.Security.ToggleTpm()
+}
+
+$Vm.AddVmDvdDrive()
+$Vm.LoadIso($Vm.Iso)
+$Vm.SetIsoBoot()
+$Vm.Connect()
+
+# // Start Machine
+$Vm.Start()
+$Vm.Control  = $Vm.Wmi("Msvm_ComputerSystem") | ? ElementName -eq $Vm.Name
+$Vm.Keyboard = $Vm.Wmi("Msvm_Keyboard") | ? Path -match $Vm.Control.Name
+
+# // Wait for "Press enter to boot from CD/DVD", then press enter, then start [64-bit]
+0..1 | % { 
+    
+    $Vm.Timer(2)
+    $Vm.TypeKey(13)
+}
+
+# // Wait for "Install Windows" menu
+$Vm.Idle(5,5)
+
+# // Hit [N]ext
+$Vm.SpecialKey(78)
+$Vm.Timer(2)
+$Vm.SpecialKey([UInt32][Char]"I")
+$Vm.Idle(5,5)
+
+# // Enter Product Key or skip.
+$Vm.SpecialKey([UInt32][Char]"I")
+$Vm.Timer(2)
+
+# // Select version of Windows
+$Vm.TypeChain(@(@(40) * $Span))
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // Accept license terms
+$Vm.TypeKey(32)
+$Vm.Timer(2)
+$Vm.SpecialKey([UInt32][Char]"N")
+$Vm.Timer(2)
+
+# // Select custom install
+$Vm.SpecialKey([UInt32][Char]"C")
+$Vm.Timer(2)
+
+# // Set partition
+$Vm.SpecialKey([UInt32][Char]"N")
+
+# // Wait until Windows installation completes
+$Vm.Idle(5,5)
+
+# // Catch and release ISO upon reboot
+$Vm.Uptime(0,5)
+$Vm.UnloadIso()
+
+# // Wait for the computer to perform inital setup, and reboot
+$Vm.Timer(5)
+$Vm.Uptime(0,5)
+
+# // Wait for (OOBE/Out-of-Box Experience) screen
+$Vm.Idle(5,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation [Region]                                                   ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Region]")
+
+# // [Region, default = United States]
+$Vm.TypeKey(13) # [Yes]
+$Vm.Idle(5,2)
+
+# // [Keyboard layout, default = US]
+$Vm.TypeKey(13) # [Yes]
+$Vm.Timer(1)
+$Vm.TypeKey(13) # [Skip]
+$Vm.Timer(3)
+$Vm.Idle(5,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation [Network]                                                  ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Network]")
+
+# // [Check for connectivity]
+Switch ($Vm.NetworkSetupMode())
+{
+    0 # [Not networked]
+    {
+        $Vm.TypeChain(@(9,32))
+        $Vm.Timer(2)
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Timer(5)
+
+        # Must continue building
+    }
+    1 # [Network, default = Automatic]
+    {
+        # // [Account, default = Personal Use]
+        # <expand here for Active Directory/organization>
+        $Vm.TypeKey(13)
+        $Vm.Timer(1)
+        $Vm.TypeKey(13)
+        $Vm.Idle(5,2)
+
+        # // [OneDrive setup]
+        $Vm.TypeChain(@(9,9,9,9,32))
+        $Vm.Idle(5,2)
+
+        # // [Limited Experience]
+        $Vm.TypeChain(@(9,9,32))
+        $Vm.Idle(5,2)
+    }
+}
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Installation [~] System Preparation                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Installation [~] System Preparation [Account: $($Account.DisplayName)]")
+
+# // [Who's gonna use this PC...? Hm...?]
+$Vm.TypeText($Security.Username())
+$Vm.TypeKey(13)
+$Vm.Timer(1)
+
+# // [Create a super memorable password/Confirm]
+0..1 | % { 
+
+    $Vm.TypePassword($Security)
+    $Vm.TypeKey(13)
+    $Vm.Timer(2)
+}
+
+# // [Set security questions]
+ForEach ($Item in $Security.Output)
+{
+    $Span = @(1) * ($Item.Index+1)
+    ForEach ($X in $Span)
+    {     
+        $Vm.TypeKey(40)
+    }
+    $Vm.TypeKey(9)
+    $Vm.TypeText($Item.Answer)
+    $Vm.TypeKey(13)
+    $Security.Reindex()
+    $Vm.Timer(1)
+}
+
+$Vm.Timer(5)
+
+# // [Chose privacy settings]
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // [Let's customize your experience]
+$Vm.TypeChain(@(9,9,9,9,9,9,9,9))
+$Vm.TypeKey(13)
+$Vm.Idle(5,5)
+
+# // [Let Cortana help you get s*** done]
+$Vm.TypeKey(13)
+$Vm.Timer(90)
+$Vm.Idle(10,10)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Configuration [~] Post-Installation                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+$Module.Write("Configuration [~] Post Installation: [$Token]")
+
+# // [Launch PowerShell]
+$Vm.LaunchPs()
+
+# Loads all scripts
+$Vm.Load()
+
+# // Set persistent info
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set time zone
+$Vm.RunScript()
+$Vm.Timer(1)
+
+# // Set computer info
+$Vm.RunScript()
+$Vm.Timer(3)
+
+# // Set Icmp Firewall
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set network interface to null
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set static IP
+$Vm.RunScript()
+$Vm.Connection()
+
+# // Set WinRm
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set WinRmFirewall
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Set Remote Desktop
+$Vm.RunScript()
+$Vm.Timer(5)
+
+# // Install FightingEntropy
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install Chocolatey
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Split [~] Work area                                                                            ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+# // Install VsCode | (Timer + Idle) Network Metering needed here...
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install BossMode
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Install PsExtension
+$Vm.RunScript()
+$Vm.Idle(0,5)
+
+# // Restart computer
+$Vm.RunScript()
+$Vm.Uptime(0,5)
+$Vm.Uptime(1,40)
+$Vm.Idle(5,5)
+
+# // [Login]
+$Vm.Login($Security)
+$Vm.Timer(1)
+
+# // [Continue]
+$Vm.Idle(5,5)
