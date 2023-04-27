@@ -1,9 +1,12 @@
 <h1>Audio/Logs.md</h1>
 
-<h2>Last updated: [04/24/23]</h2>
+<h2>Last updated: [04/27/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **04/26/23** | 0h 56m 14s | **2023_04_26_23_59_59.mp3**    | [Psychology + Wrong](https://drive.google.com/file/d/132GpPKJsNtmEscqd34CUS_aAAe62QZTh)
+| **04/26/23** | 0h 29m 36s | **2023_04_26_21_03_50.mp3**    | [Wrong](https://drive.google.com/file/d/1dGFY_BYhtQsPqFUF9n_XOxrBPvoB_ZFJ)
+| **04/26/23** | 0h 26m 32s | **2023_04_26_10_27_57.mp3**    | [Psychology](https://drive.google.com/file/d/1dnH0SUs4hbob543axlPY5bH5yFGKmzWD)
 | **04/24/23** | 0h 39m 45s | **2023_04_24_20_38_41.mp3**    | [VmController](https://drive.google.com/file/d/1cLKVw73UUiAVWJ9yjX-3fc03_e5PscFH)
 | **04/23/23** | 0h 36m 05s | **2023_04_23_11_46_32[1].mp3** | [Shared Opinions](https://drive.google.com/file/d/1y9H150q0vNt4FerINNEwURlWE5rdugxe)
 | **04/22/23** | 0h 38m 54s | **2023_04_22_16_50_28.mp3**    | [Philosophy](https://drive.google.com/file/d/1bW2qo7nVLxF9DcEQDqbzL58gUHB3M7dF)
