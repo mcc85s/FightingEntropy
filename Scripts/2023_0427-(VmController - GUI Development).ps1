@@ -6202,6 +6202,8 @@ Function VmController
     
             $This.Xaml.IO.TemplateRole.SelectedIndex   = 0
             $This.Xaml.IO.TemplateSwitch.SelectedIndex = 0
+
+            $This.Xaml.IO.TemplateOutput.SelectedIndex = $This.Template.Output.Count
     
             # Node panel
             $This.Xaml.IO.NodeSwitchCreate.IsEnabled   = 0
@@ -6726,7 +6728,27 @@ $Ctrl = VmController
 $Ctrl.StageXaml()
 $Ctrl.Invoke()
 
-$Vm = $Ctrl.Node.Create(0)
+# [Select Windows 11 image/edition]
+$Selected             = @{ 
+
+    Image             = $Ctrl.Xaml.IO.ImageStore.SelectedItem
+    Edition           = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
+}
+
+If (!$Selected.Image)
+{
+    $Selected.Image   = $Ctrl.Image.Store | ? Name -match ^Win11
+}
+
+If (!$Selected.Edition)
+{
+    $Selected.Edition = $Selected.Image.Content | ? Name -match Pro$
+}
+
+$Span       = $Selected.Edition.Index - 1
+
+# [Create the <VmNodeObject>]
+$Vm   = $Ctrl.Node.Create(0)
 
 # // Object instantiation
 $Vm.New()
@@ -6785,9 +6807,6 @@ $Vm.Timer(2)
 # // Set partition
 $Vm.SpecialKey([UInt32][Char]"N")
 
-# // Wait until Windows installation completes
-$Vm.Idle(5,5)
-
 # // Catch and release ISO upon reboot
 $Vm.Uptime(0,5)
 $Vm.UnloadIso()
@@ -6807,7 +6826,7 @@ $Vm.Idle(5,5)
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
 
-$Module.Write("Installation [~] System Preparation [Region]")
+$Ctrl.Module.Write("Installation [~] System Preparation [Region]")
 
 # // [Region, default = United States]
 $Vm.TypeKey(13) # [Yes]
