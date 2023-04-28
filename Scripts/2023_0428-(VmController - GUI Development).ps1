@@ -1,5 +1,6 @@
 <#
     [April 2023]
+
             _____________________________
             |¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|¯¯¯|
             | S | M | T | W | T | F | S |
@@ -1384,6 +1385,9 @@ Function VmXaml
         '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '        </Style>',
+        '        <Style TargetType="CheckBox">',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '        </Style>',
         '        <Style TargetType="DataGrid">',
         '            <Setter Property="Margin" ',
         '                    Value="5"/>',
@@ -1769,6 +1773,18 @@ Function VmXaml
         '                        <Button  Grid.Column="3"',
         '                                 Name="CredentialGenerate"',
         '                                 Content="Generate"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="4">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="300"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Pin]:"/>',
+        '                        <PasswordBox Grid.Column="1"',
+        '                                     Name="CredentialPin"/>',
+        '                        <Image Grid.Column="2" Name="CredentialPinIcon"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </Grid>',
@@ -2775,6 +2791,7 @@ Function VmCredential
             $This.Username   = $Serial.Username
             $This.Credential = $Serial.Credential
             $This.Pass       = $This.Mask()
+            $This.Pin        = $Serial.Pin
         }
         [Object] NewGuid()
         {
@@ -5696,6 +5713,7 @@ Function VmController
                               "CredentialUsername",
                               "CredentialPassword",
                               "CredentialConfirm",
+                              "CredentialPin",
                               "ImagePath",
                               "TemplateName",
                               "TemplatePath",
@@ -6005,7 +6023,7 @@ Function VmController
             $xFlag        = $This.Flag | ? Name -eq CredentialUsername
             $xFlag.Status = [UInt32]($Username -ne "" -and $Username -notin $This.Credential.Output)
 
-            $This.Xaml.IO.CredentialUsernameIcon.Source =  $This.IconStatus($xFlag.Status)
+            $This.Xaml.IO.CredentialUsernameIcon.Source = $This.IconStatus($xFlag.Status)
         }
         CheckPassword()
         {
@@ -6022,24 +6040,58 @@ Function VmController
             $xFlag        = $This.Flag | ? Name -eq CredentialConfirm
             $xFlag.Status = [UInt32]($Password -ne "" -and $Password -eq $Confirm)
 
-            $This.Xaml.IO.CredentialConfirmIcon.Source = $This.IconStatus($xFlag.Status)
+            $This.Xaml.IO.CredentialConfirmIcon.Source  = $This.IconStatus($xFlag.Status)
+        }
+        CheckPin()
+        {
+            $Pin          = $This.Xaml.IO.CredentialPin.Password
+            $xFlag        = $This.Flag | ? Name -eq CredentialPin
+            $xFlag.Status = [UInt32]($Pin.Length -ge 4)
+            
+            $This.Xaml.IO.CredentialPinIcon.Source      = $This.IconStatus($xFlag.Status)
         }
         ToggleCredentialCreate()
         {
-            $This.CheckUsername()
-            $This.CheckPassword()
-            $This.CheckConfirm()
-    
-            $C = 0
-            ForEach ($Item in $This.Flag | ? Name -match "^Credential")
+            $Mode = [UInt32]($This.Xaml.IO.CredentialType.SelectedIndex -eq 4)
+
+            Switch ($Mode)
             {
-                If ($Item.Status -eq 1)
+                0 
                 {
-                    $C ++
+                    $This.CheckUsername()
+                    $This.CheckPassword()
+                    $This.CheckConfirm()
+
+                    $C = 0
+                    ForEach ($Item in $This.Flag | ? Name -match "^Credential")
+                    {
+                        If ($Item.Status -eq 1)
+                        {
+                            $C ++
+                        }
+                    }
+
+                    $This.Xaml.IO.CredentialCreate.IsEnabled = [UInt32]($C -eq 3)
                 }
-            }
-    
-            $This.Xaml.IO.CredentialCreate.IsEnabled = [UInt32]($C -eq 3)
+                1
+                {
+                    $This.CheckUsername()
+                    $This.CheckPassword()
+                    $This.CheckConfirm()
+                    $This.CheckPin()
+
+                    $C = 0
+                    ForEach ($Item in $This.Flag | ? Name -match "^Credential")
+                    {
+                        If ($Item.Status -eq 1)
+                        {
+                            $C ++
+                        }
+                    }
+
+                    $This.Xaml.IO.CredentialCreate.IsEnabled = [UInt32]($C -eq 4)
+                }
+            }            
         }
         ToggleTemplateCreate()
         {
@@ -6270,14 +6322,17 @@ Function VmController
             $This.Xaml.IO.CredentialUsername.IsEnabled     = 0
             $This.Xaml.IO.CredentialPassword.IsEnabled     = 0
             $This.Xaml.IO.CredentialConfirm.IsEnabled      = 0
+            $This.Xaml.IO.CredentialPin.IsEnabled          = $This.Xaml.IO.CredentialType.SelectedIndex -eq 4
 
             $This.Xaml.IO.CredentialUsername.Text          = ""
             $This.Xaml.IO.CredentialPassword.Password      = ""
             $This.Xaml.IO.CredentialConfirm.Password       = ""
+            $This.Xaml.IO.CredentialPin.Password           = ""
 
             $This.Xaml.IO.CredentialUsernameIcon.Source    = $Null
             $This.Xaml.IO.CredentialPasswordIcon.Source    = $Null
             $This.Xaml.IO.CredentialConfirmIcon.Source     = $Null
+            $This.Xaml.IO.CredentialPinIcon.Source         = $Null
 
             If ($This.Xaml.IO.CredentialOutput.SelectedIndex -ne -1)
             {
@@ -6303,6 +6358,11 @@ Function VmController
                     $This.Xaml.IO.CredentialConfirm.Password      = ""
                     $This.Xaml.IO.CredentialType.IsEnabled        = 1
                     $This.Xaml.IO.CredentialDescription.IsEnabled = 1
+                }
+
+                If ($Item.Type -eq "Microsoft")
+                {
+                    $This.Xaml.IO.CredentialPin.Password          = $Item.Pin
                 }
             }
         }
@@ -6507,6 +6567,7 @@ Function VmController
             $Ctrl.Xaml.IO.CredentialType.Add_SelectionChanged(
             {
                 $Ctrl.Reset($Ctrl.Xaml.IO.CredentialDescription,$Ctrl.Credential.Slot[$Ctrl.Xaml.IO.CredentialType.SelectedIndex])
+                $Ctrl.CredentialPanel()
             })
     
             $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
@@ -6520,6 +6581,11 @@ Function VmController
             })
     
             $Ctrl.Xaml.IO.CredentialConfirm.Add_PasswordChanged(
+            {
+                $Ctrl.ToggleCredentialCreate()
+            })
+
+            $Ctrl.Xaml.IO.CredentialPin.Add_PasswordChanged(
             {
                 $Ctrl.ToggleCredentialCreate()
             })
@@ -6564,6 +6630,12 @@ Function VmController
                 $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
                                      $Ctrl.Xaml.IO.CredentialUsername.Text,
                                      $Ctrl.Xaml.IO.CredentialPassword.Password)
+
+                If ($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
+                {
+                    $Cred     = $Ctrl.Credential.Output | ? Username -eq $Ctrl.Xaml.IO.CredentialUsername.Text
+                    $Cred.Pin = $Ctrl.Xaml.IO.CredentialPin.Password
+                }
     
                 $Ctrl.Credential.Rerank()
                 $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
@@ -6785,9 +6857,9 @@ $Ctrl.StageXaml()
 $Ctrl.Invoke()
 
 # [Select Windows 11 image/edition]
-$Selected         = $Ctrl.VmControllerImage()
-$Selected.Image   = $Ctrl.Xaml.IO.ImageStore.SelectedItem
-$Selected.Edition = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
+$Selected             = $Ctrl.VmControllerImage()
+$Selected.Image       = $Ctrl.Xaml.IO.ImageStore.SelectedItem
+$Selected.Edition     = $Ctrl.Xaml.IO.ImageStoreContent.SelectedItem
 
 If (!$Selected.Image)
 {
@@ -6799,13 +6871,13 @@ If (!$Selected.Edition)
     $Selected.Edition = $Selected.Image.Content | ? Name -match Pro$
 }
 
-$Span       = $Selected.Edition.Index - 1
+$Span                 = $Selected.Edition.Index - 1
 
 # [Create the <VmNodeObject>]
-$Vm         = $Ctrl.Node.Create(0)
+$Vm                   = $Ctrl.Node.Create(0)
 
 # [Reserialize the accounts]
-$Vm.Account = $Vm.Account | % { $Ctrl.Credential.VmCredentialItem($_) }
+$Vm.Account           = $Vm.Account | % { $Ctrl.Credential.VmCredentialItem($_) }
 
 # // Object instantiation
 $Vm.New()
@@ -6936,7 +7008,7 @@ $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
 # // Set up a PIN
-If ($Account.Pin -match "[a-zA-Z]")
+If ($Account.Pin -notmatch "[0-9]+")
 {
     $Vm.TypeKey(9)
     $Vm.TypeKey(9)
