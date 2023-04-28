@@ -4720,7 +4720,7 @@ Function VmNode
         }
         Login([Object]$Account)
         {
-            $This.Update(0,"[~] Login : [Account: $($Account.Username())")
+            $This.Update(0,"[~] Login : [Account: $($Account.Username)")
             $This.TypeCtrlAltDel()
             $This.Timer(5)
             $This.TypePassword($Account)
@@ -6385,6 +6385,11 @@ Function VmController
             $This.Xaml.IO.TemplateImagePathIcon.IsEnabled       = 0
             $This.Xaml.IO.TemplateImagePathBrowse.IsEnabled     = 0
 
+            $This.Xaml.IO.TemplateMemory.SelectedIndex          = 1
+            $This.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
+            $This.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
+            $This.Xaml.IO.TemplateCore.SelectedIndex            = 1
+
             $This.Xaml.IO.TemplatePathIcon.Source               = $Null
             $This.Xaml.IO.TemplateImagePathIcon.Source          = $Null
 
@@ -6429,7 +6434,7 @@ Function VmController
                         "256.00 GB" { 3 }
                     }
                     $This.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
-                    $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Gen]
+                    $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Core]
                     $This.Xaml.IO.TemplateSwitch.SelectedIndex      = $This.Node.Switch | ? Name -eq $Item.SwitchId | % Index
                     $This.Xaml.IO.TemplateImagePath.Text            = $Item.Image
                     $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
@@ -6852,6 +6857,11 @@ Function VmController
 
 $Ctrl = VmController
 
+<# 
+    $Vm = $Ctrl.Node.Control("C:\FileVm\desktop01.fex")
+    $Vm.Remove()
+#>
+
 # [GUI portion]
 $Ctrl.StageXaml()
 $Ctrl.Invoke()
@@ -6997,9 +7007,7 @@ $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
 # // Welcome back, <Person~!>
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
+$Vm.ShiftKey(9)
 $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
@@ -7008,30 +7016,40 @@ $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
 # // Set up a PIN
-If ($Account.Pin -notmatch "[0-9]+")
+Switch ([UInt32]$Account.Pin -match "[0-9]+")
 {
-    $Vm.TypeKey(9)
-    $Vm.TypeKey(9)
-    $Vm.TypeKey(32)
-    $Vm.ShiftKey(9)
-    $Vm.ShiftKey(9)
+    0
+    {
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(32)
+        $Vm.ShiftKey(9)
+        $Vm.ShiftKey(9)
+        $Vm.TypeMask($Account.Pin)
+        $Vm.TypeKey(9)
+        $Vm.TypeMask($Account.Pin)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(13)
+        $Vm.Idle(5,5)
+
+        <# // [Something went wrong] [Skip for now]
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(9)
+        $Vm.TypeKey(32)
+        $Vm.Idle(5,5)
+        #>
+    }
+    1
+    {
+        $Vm.TypeMask($Account.Pin)
+        $Vm.TypeKey(9)
+        $Vm.TypeMask($Account.Pin)
+        $Vm.TypeKey(13)
+    }
 }
-
-$Vm.TypeMask($Account.Pin)
-$Vm.TypeKey(9)
-$Vm.TypeMask($Account.Pin)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(13)
-$Vm.Idle(5,5)
-
-# // [Something went wrong] [Skip for now]
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(9)
-$Vm.TypeKey(32)
-$Vm.Idle(5,5)
 
 # // [Chose privacy settings]
 $Vm.TypeKey(13)
@@ -7124,11 +7142,11 @@ $Vm.Timer(5)
 
 # // Install FightingEntropy
 $Vm.RunScript()
-$Vm.Idle(0,5)
+$Vm.Idle(5,5)
 
 # // Install Chocolatey
 $Vm.RunScript()
-$Vm.Idle(0,5)
+$Vm.Idle(5,5)
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -7140,15 +7158,19 @@ $Vm.Idle(0,5)
 
 # // Install VsCode | (Timer + Idle) Network Metering needed here...
 $Vm.RunScript()
-$Vm.Idle(0,5)
+$Vm.Idle(5,5)
 
 # // Install BossMode
 $Vm.RunScript()
-$Vm.Idle(0,5)
+$Vm.Idle(5,5)
 
 # // Install PsExtension
 $Vm.RunScript()
-$Vm.Idle(0,5)
+$Vm.Idle(5,5)
+
+# // Implement alternate login
+#
+# 
 
 # // Restart computer
 $Vm.RunScript()
@@ -7156,9 +7178,10 @@ $Vm.Uptime(0,5)
 $Vm.Uptime(1,40)
 $Vm.Idle(5,5)
 
-# // [Login]
-$Vm.Login($Security)
-$Vm.Timer(1)
+# [04/28/23 17:50]
 
-# // [Continue]
-$Vm.Idle(5,5)
+$Vm.Update(0,"[~] Login : [Account: $($Account.Username)")
+$Vm.TypeCtrlAltDel()
+$Vm.Timer(5)
+$Vm.TypeMask($Account.Pin)
+$Vm.TypeKey(13)
