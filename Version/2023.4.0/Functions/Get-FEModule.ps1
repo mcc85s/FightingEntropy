@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-07 10:54:14                                                                  //
+\\  Date       : 2023-04-29 10:45:23                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2023-04-07
+   Modified   : 2023-04-29
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1649,7 +1649,7 @@ Function Get-FEModule
                     ("Get-PSDModule.ps1"               , "CD83DA3B18F706174C9D65969938B85F730D36479A42D1D71EDE2C0CA9BE8024") ,
                     ("Get-ThreadController.ps1"        , "3DFA549D11BB239E63B1E114C4C86CFA7A92B83C95F114B5BD66DDC33778E545") ,
                     ("Get-UserProfile.ps1"             , "32D08FCA06BB655A9709D494B994D2AC28000574822406CCC6E35A058DBF58B2") ,
-                    ("Get-ViperBomb.ps1"               , "1094974058D27976E9523318CC4DE556ED034CCCF0C0C43174CDA1EE3F4722EB") ,
+                    ("Get-ViperBomb.ps1"               , "5A9244955F9649D954692193EC2F64F51BBA798A9C7C15DC14EEC2DC7A46D527") ,
                     ("Get-WhoisUtility.ps1"            , "1EEEBDF0926AEB7E7D45477454D5E009BB67237B434349979B18B7A1EFF339D0") ,
                     ("Initialize-FeAdInstance.ps1"     , "0EEF28E919AE410A405DB87C4124239C63026192E188D26B23885A23C6388477") ,
                     ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
@@ -1663,6 +1663,7 @@ Function Get-FEModule
                     ("New-FEInfrastructure.ps1"        , "3918611F5026D910A1F4D404CEA7D72A70B3DDD2B40CF2D57CFF39CF0E9F0D12") ,
                     ("New-MarkdownFile.ps1"            , "17F2298DF8523E8B9A19AA4DE512E5E8BAA0E282F714A1630283966F76AC7E27") ,
                     ("New-TranscriptionCollection.ps1" , "EB35AB9A974E1A12C00A6C150FBC0AD26E31485B1E51E912E66A62E163832A3A") ,
+                    ("New-VmController.ps1"            , "783D8FE10FC38B6E4C95A5ACD8D7EE8AE592683C641A32761A38BB99E19724AB") ,
                     ("Search-WirelessNetwork.ps1"      , "52FDA296BDB480C4248C182825545C988BE1A6A23A298A8E94507AFB42FAB032") ,
                     ("Set-AdminAccount.ps1"            , "1B18B8A399A14F85F65B8A78FF2FF5E360F69A887F980E788E99F59D908C7582") ,
                     ("Set-ScreenResolution.ps1"        , "8FA4D6D0BB1B2C0FDE8EE05C1114682AB54E7FE238F70409C45333AE0002E3C5") ,
