@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:59:47                                                                  //
+\\  Date       : 2023-04-29 10:19:51                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-ViperBomb.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-04-29
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : AKA "System Control Extension Utility"
@@ -8316,13 +8316,12 @@ Function Get-ViperBomb
             $This.Console     = $This.StatusBank()
             $This.Update(0,"Loading [~] $($This.Label())")
 
-            Import-Module FightingEntropy
             $This.Module      = Get-FEModule -Mode 1
 
             $This.Update(0,"Loading [~] AppX")
             Import-Module AppX
             
-            $This.System      = $This.GetSystemDetails()
+            $This.System      = $This.GetSystem()
 
             $This.System.ComputerSystem | % { 
                 
@@ -8368,10 +8367,10 @@ Function Get-ViperBomb
             $This.Update(0,"Gathering [~] Default/Config")
             Return [ViperBombConfig]::New()
         }
-        [Object] GetSystemDetails()
+        [Object] GetSystem()
         {
             $This.Update(0,"Gathering [~] System/Details")
-            Return Get-SystemDetails
+            Return Get-FESystem
         }
         [Object] GetHotFix()
         {
