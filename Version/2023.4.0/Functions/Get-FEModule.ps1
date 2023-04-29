@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-29 11:42:55                                                                  //
+\\  Date       : 2023-04-29 14:18:02                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1323,7 +1323,7 @@ Function Get-FEModule
         {
             If (![System.IO.File]::Exists($Path))
             {
-                Throw "Invalid path"
+                [System.IO.File]::Create($Path).Dispose()
             }
 
             Return Get-FileHash $Path | % Hash
