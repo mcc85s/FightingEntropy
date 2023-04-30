@@ -1,9 +1,10 @@
 <h1>Audio/Logs.md</h1>
 
-<h2>Last updated: [04/27/23]</h2>
+<h2>Last updated: [04/29/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **04/29/23** | 0h 32m 52s | **2023_04_29_18_50_53.mp3**    | [Laziness](https://drive.google.com/file/d/1ehvIsk7Kr6LGY4skMVt8rg7hkZdaAFFG)
 | **04/26/23** | 0h 56m 14s | **2023_04_26_23_59_59.mp3**    | [Psychology + Wrong](https://drive.google.com/file/d/132GpPKJsNtmEscqd34CUS_aAAe62QZTh)
 | **04/26/23** | 0h 29m 36s | **2023_04_26_21_03_50.mp3**    | [Wrong](https://drive.google.com/file/d/1dGFY_BYhtQsPqFUF9n_XOxrBPvoB_ZFJ)
 | **04/26/23** | 0h 26m 32s | **2023_04_26_10_27_57.mp3**    | [Psychology](https://drive.google.com/file/d/1dnH0SUs4hbob543axlPY5bH5yFGKmzWD)
