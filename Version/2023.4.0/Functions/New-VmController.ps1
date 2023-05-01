@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-01 14:41:44                                                                  //
+\\  Date       : 2023-05-01 15:25:22                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4772,7 +4772,7 @@ Function New-VmController
                 '    DefaultGateway  = "{0}"' -f $This.Network.Gateway;
                 '}';
                 'New-NetIPAddress @Splat';
-                'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses {0} -Verbose' -f $This.Network.Dns;
+                'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses {0} -Verbose' -f ($This.Network.Dns -join ',');
                 '$Splat = @{ ';
                 ' ';
                 '    DisplayName = "TCPSession"';
@@ -4793,7 +4793,7 @@ Function New-VmController
                 '    Action = "Allow"';
                 '}';
                 'New-NetFirewallRule @Splat -Verbose';
-                '$Base = "{0}/blob/main/Version/{1}"' -f $This.Module.Source, $This.Module.Version;
+                '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"'
                 '$Url = "$Base/FightingEntropy.ps1?raw=true"';
                 'Invoke-RestMethod $Url | Invoke-Expression')
 
