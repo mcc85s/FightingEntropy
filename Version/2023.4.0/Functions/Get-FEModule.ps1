@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-01 14:57:21                                                                  //
+\\  Date       : 2023-05-01 15:02:43                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -2352,6 +2352,7 @@ Function Get-FEModule
                     $Item   = $Folder.Item | ? Name -eq $File.Name
                     $Item.Download()
                     $Item.Write()
+                    $Item.Exists = 1
                 }
 
                 ForEach ($Item in "Module","File","Manifest","Shortcut")
