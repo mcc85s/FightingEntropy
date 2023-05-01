@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-01 15:25:22                                                                  //
+\\  Date       : 2023-05-01 15:48:23                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4795,7 +4795,8 @@ Function New-VmController
                 'New-NetFirewallRule @Splat -Verbose';
                 '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"'
                 '$Url = "$Base/FightingEntropy.ps1?raw=true"';
-                'Invoke-RestMethod $Url | Invoke-Expression')
+                'Invoke-RestMethod $Url | Invoke-Expression';
+                '$Module.Latest()')
 
                 Return $Content
             }
