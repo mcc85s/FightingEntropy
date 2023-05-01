@@ -6,11 +6,11 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-29 11:25:38                                                                  //
+\\  Date       : 2023-05-01 14:41:44                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
-    Solution   : [FightingEntropy()][2023.4.0] (Not yet implemented)
+    Solution   : [FightingEntropy()][2023.4.0]
     Purpose    : Creates a [PowerShell] object that can optionally initialize a 
                  (GUI/graphical user interface) to orchestrate the networking, credentials,
                  imaging, templatization, deployment and configuration of (a single/multiple)
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-04-29
+    Modified   : 2023-05-01
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -4754,6 +4754,54 @@ Function New-VmController
 
                 # Wait for PowerShell engine to get ready for input
                 $This.Idle(5,5)
+            }
+            [String[]] Initialize([UInt32]$Port)
+            {
+                # Set IP Address
+                $Content = @(
+                '$Index = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
+                '$Interface = Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $Index';
+                '$Interface | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:0 -Verbose';
+                '$Interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:0 -Verbose';
+                '$Splat = @{';
+                '    InterfaceIndex  = $Index';
+                '    AddressFamily   = "IPv4"';
+                '    PrefixLength    = {0}' -f $This.Network.Prefix;
+                '    ValidLifetime   = [Timespan]::MaxValue';
+                '    IPAddress       = "{0}"' -f $This.Network.IpAddress;
+                '    DefaultGateway  = "{0}"' -f $This.Network.Gateway;
+                '}';
+                'New-NetIPAddress @Splat';
+                'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses {0} -Verbose' -f $This.Network.Dns;
+                '$Splat = @{ ';
+                ' ';
+                '    DisplayName = "TCPSession"';
+                '    Description = "Allows content to be received over TCP/{0}"' -f $Port;
+                '    Direction = "Inbound"';
+                '    Protocol = "TCP"';
+                '    LocalPort = {0}' -f $Port;
+                '    Action = "Allow"';
+                '}';
+                'New-NetFirewallRule @Splat';
+                '$Splat = @{';
+                ' ';
+                '    DisplayName = "TCPSession"';
+                '    Description = "Allows content to be sent over TCP/{0}"' -f $Port;
+                '    Direction = "Outbound"';
+                '    Protocol = "TCP"';
+                '    RemotePort = {0}' -f $Port;
+                '    Action = "Allow"';
+                '}';
+                'New-NetFirewallRule @Splat -Verbose';
+                '$Base = "{0}/blob/main/Version/{1}"' -f $This.Module.Source, $This.Module.Version;
+                '$Url = "$Base/FightingEntropy.ps1?raw=true"';
+                'Invoke-RestMethod $Url | Invoke-Expression')
+
+                Return $Content
+            }
+            [String[]] Initialize()
+            {
+                Return $This.Initialize(13000)
             }
             [String[]] PrepPersistentInfo()
             {
