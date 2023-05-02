@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 17:24:11                                                                  //
+\\  Date       : 2023-05-02 19:05:27                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4589,14 +4589,14 @@ Function New-VmController
             '}';
             'New-NetIPAddress @Splat';
             'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses {0} -Verbose' -f ($This.Network.Dns -join ',');
-            "`$Desc = 'Allows content to be {0} over TCP/$($This.Network.Transmit)`""
+            "`$Desc = 'Allows content to be {0} over TCP/$($This.Network.Transmit)'";
             '$Splat = @{ ';
-            '    Description = $Desc -f "sent"'
+            '    Description = $Desc -f "sent"';
             '    LocalPort = {0}' -f $This.Network.Transmit;
             '}';
             'New-NetFirewallRule @Splat -Direction Inbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
             '$Splat = @{';
-            '    Description = $Desc -f "received"'
+            '    Description = $Desc -f "received"';
             '    RemotePort  = {0}' -f $This.Network.Transmit;
             '}';
             'New-NetFirewallRule @Splat Direction Outbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
