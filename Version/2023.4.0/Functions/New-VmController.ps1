@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 16:55:57                                                                  //
+\\  Date       : 2023-05-02 17:11:20                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -3564,7 +3564,6 @@ Function New-VmController
         Error([String]$Status)
         {
             $This.Console.Update(-1,$Status)
-            $This.Write(1,$This.Console.Last().Status)
         }
         DumpConsole()
         {
