@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 17:12:57                                                                  //
+\\  Date       : 2023-05-02 17:25:30                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1663,7 +1663,7 @@ Function Get-FEModule
                     ("New-FEInfrastructure.ps1"        , "3918611F5026D910A1F4D404CEA7D72A70B3DDD2B40CF2D57CFF39CF0E9F0D12") ,
                     ("New-MarkdownFile.ps1"            , "17F2298DF8523E8B9A19AA4DE512E5E8BAA0E282F714A1630283966F76AC7E27") ,
                     ("New-TranscriptionCollection.ps1" , "EB35AB9A974E1A12C00A6C150FBC0AD26E31485B1E51E912E66A62E163832A3A") ,
-                    ("New-VmController.ps1"            , "BBDD6D694B82CAABFEC8659ED2C3A1C2654ADDD26C9A6588E3467BBB4B954459") ,
+                    ("New-VmController.ps1"            , "A06E25A40FD793043A6EF805F4E3331CB535F76435DE403EA7BAA1C652E7576E") ,
                     ("Search-WirelessNetwork.ps1"      , "52FDA296BDB480C4248C182825545C988BE1A6A23A298A8E94507AFB42FAB032") ,
                     ("Set-AdminAccount.ps1"            , "1B18B8A399A14F85F65B8A78FF2FF5E360F69A887F980E788E99F59D908C7582") ,
                     ("Set-ScreenResolution.ps1"        , "8FA4D6D0BB1B2C0FDE8EE05C1114682AB54E7FE238F70409C45333AE0002E3C5") ,
