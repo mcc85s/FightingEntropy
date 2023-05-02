@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 17:11:20                                                                  //
+\\  Date       : 2023-05-02 17:21:47                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4117,12 +4117,7 @@ Function New-VmController
         }
         SetIsoBoot()
         {
-            If (!$This.Iso)
-            {
-                $This.Error("[!] No (*.iso) file loaded")
-            }
-
-            ElseIf ($This.Generation -eq 2)
+            If ($This.Generation -eq 2)
             {
                 $This.SetVmBootOrder(2,0,1)
             }
