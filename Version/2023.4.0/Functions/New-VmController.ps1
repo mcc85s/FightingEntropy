@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 19:05:27                                                                  //
+\\  Date       : 2023-05-02 20:03:58                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4603,11 +4603,13 @@ Function New-VmController
             '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"'
             '$Url = "$Base/FightingEntropy.ps1?raw=true"';
             'Invoke-RestMethod $Url | Invoke-Expression';
-            '$Module.Latest()';
-            'Set-ExecutionPolicy Bypass -Scope Process -Force';
-            'Import-Module FightingEntropy -Force -Verbose')
+            '$Module.Latest()')
 
             Return $Content
+        }
+        [String[]] ImportFeModule()
+        {
+            Return 'Set-ExecutionPolicy Bypass -Scope Process -Force', 'Import-Module FightingEntropy -Force -Verbose'
         }
         [String[]] PrepPersistentInfo()
         {
@@ -4742,7 +4744,7 @@ Function New-VmController
         }
         SetWinRm()
         {
-            # [Phase 7] Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)
+            # [Phase 7] Set WinRM (Config)
             $This.Script.Add(7,"SetWinRm","Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)",@(
             'winrm quickconfig';
             '<Timer[2]>';
@@ -4755,17 +4757,17 @@ Function New-VmController
             }
             'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
             '<Timer[4]>';
-            'y';
-            '$Cert       = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
-            '$Thumbprint = $Cert.Thumbprint';
-            '$Hash       = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
-            "`$Str         = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
-            'Invoke-Expression ($Str -f $Hash)'))
+            'y'))
         }
         SetWinRmFirewall()
         {
-            # [Phase 8] Set WinRm Firewall
+            # [Phase 8] Set WinRm (Self-Signed Certificate/HTTPS Listener/Firewall)
             $This.Script.Add(8,"SetWinRmFirewall",'Set WinRm Firewall',@(
+            '$Cert           = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
+            '$Thumbprint     = $Cert.Thumbprint';
+            '$Hash           = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
+            "`$Str            = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
+            'Invoke-Expression ($Str -f $Hash)'
             '$Splat          = @{';
             ' ';
             '    Name        = "WinRM/HTTPS"';
