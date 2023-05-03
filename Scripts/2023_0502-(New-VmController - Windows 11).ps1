@@ -54,9 +54,10 @@ $Ctrl.StageXaml()
 $Ctrl.Invoke()
 
 # [Create the <VmNodeObject>]
-# $Vm                 = $Ctrl.Node.Control("C:\FileVm\desktop01.fex")
-# This file allows for the VM to be picked up with its various controls and et cetera.
 $Vm                   = $Ctrl.Node.Create(0)
+
+# This file allows for the VM to be picked up with its various controls and et cetera.
+# $Vm                 = $Ctrl.Node.Control("C:\FileVm\desktop01.fex")
 
 # [Deserialize the accounts]
 $Vm.Account           = $Vm.Account | % { $Ctrl.Credential.VmCredentialItem($_) }
@@ -101,7 +102,7 @@ $Vm.SpecialKey([UInt32][Char]"I")
 $Vm.Timer(2)
 
 # // Select version of Windows
-$Vm.TypeChain(@(@(40) * ($Vm.Image.Edition.Index - 1))
+$Vm.TypeChain(@(@(40) * ($Vm.Image.Edition.Index - 1)))
 $Vm.TypeKey(13)
 $Vm.Idle(5,5)
 
@@ -127,7 +128,7 @@ $Vm.Timer(5)
 $Vm.Uptime(0,5)
 
 # // Wait for (OOBE/Out-of-Box Experience) screen
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 <#
     ____    ____________________________________________________________________________________________________        
@@ -141,19 +142,19 @@ $Ctrl.Module.Write("Installation [~] System Preparation [Region]")
 
 # // [Region, default = United States]
 $Vm.TypeKey(13) # [Yes]
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Keyboard layout, default = US]
 $Vm.TypeKey(13) # [Yes]
 $Vm.Timer(1)
 $Vm.TypeKey(13) # [Skip]
 $Vm.Timer(3)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [System Name] [Skip for now]
 $Vm.TypeKey(9)
 $Vm.TypeKey(32)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [How would you like to set up this device]
 9,9,32,13 | % { 
@@ -161,31 +162,31 @@ $Vm.Idle(5,2)
     $Vm.TypeKey($_)
     $Vm.Timer(1)
 }
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Unlock your Microsoft experience]
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Let's add your Microsoft account]
 $Account = $Vm.Account | ? Type -eq Microsoft
 $Vm.TypeLine($Account.Username)
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // Password
 $Vm.TypePassword($Account)
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // Welcome back, <Person~!> [If not a new account]
 $Vm.ShiftKey(9)
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // Create a PIN
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // Set up a PIN
 Switch ([UInt32]($Account.Pin -match "[0-9]+"))
@@ -204,7 +205,7 @@ Switch ([UInt32]($Account.Pin -match "[0-9]+"))
         $Vm.TypeKey(9)
         $Vm.TypeKey(9)
         $Vm.TypeKey(13)
-        $Vm.Idle(5,2)
+        $Vm.Idle(5,5)
 
         <# // [Something went wrong] [Skip for now]
         $Vm.TypeKey(9)
@@ -220,7 +221,7 @@ Switch ([UInt32]($Account.Pin -match "[0-9]+"))
         $Vm.TypeKey(9)
         $Vm.TypeMask($Account.Pin)
         $Vm.TypeKey(13)
-        $Vm.Idle(5,2)
+        $Vm.Idle(5,5)
     }
 }
 
@@ -232,25 +233,25 @@ $Vm.TypeKey(13)
 $Vm.Timer(2)
 
 $Vm.TypeKey(13)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Let's customize your experience]
 $Vm.TypeChain(@(9)*6)
 $Vm.TypeKey(32)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Use your Android phone from your PC]
-$Vm.TypeChain(@(9)*3)
+$Vm.TypeChain(@(9,9))
 $Vm.TypeKey(32)
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Access granted Office 365 trial]
 $Vm.TypeChain(@(9,9,32))
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Get 100 GB more cloud storage]
 $Vm.TypeChain(@(9,32))
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Get your first month of PC Game Pass]
 9,9,9,32 | % { 
@@ -258,7 +259,7 @@ $Vm.Idle(5,2)
     $Vm.TypeKey($_)
     $Vm.Timer(1)
 }
-$Vm.Idle(5,2)
+$Vm.Idle(5,5)
 
 # // [Checking for updates]
 
@@ -278,8 +279,16 @@ $Vm.Load()
 # // [Launch PowerShell]
 $Vm.LaunchPs()
 
-# // [Initialize Network + Module + Import]
+# // [Initialize Network + Module]
 ForEach ($Line in $Vm.Initialize())
+{
+    $Vm.TypeLine($Line)
+    $Vm.TypeKey(13)
+}
+$Vm.Idle(5,2)
+
+# // [Import FE Module]
+ForEach ($Line in $Vm.ImportFeModule())
 {
     $Vm.TypeLine($Line)
     $Vm.TypeKey(13)
