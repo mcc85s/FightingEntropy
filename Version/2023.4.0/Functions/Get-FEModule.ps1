@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 20:16:10                                                                  //
+\\  Date       : 2023-05-03 11:08:46                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1671,7 +1671,8 @@ Function Get-FEModule
                     ("Start-TCPSession.ps1"            , "6ED5305A4E239BD839B611B986DDF1701C1DB0FB4FDE18B04B2FE6812610D9F9") ,
                     ("Update-PowerShell.ps1"           , "4510EB6E34553E58393D8EDCBCFE34D8D11DFB6AF049D9C4CD4A6934DBCE779A") ,
                     ("Write-Element.ps1"               , "07D040C9749E6AAF56BD827238CF69DDFFF1A7123A4EE96D98249554FEC10610") ,
-                    ("Write-Theme.ps1"                 , "01070281F24BE58928A1146EF89B3AE56F3FAE100BE178ED11A5FEF710724C00") 
+                    ("Write-Theme.ps1"                 , "01070281F24BE58928A1146EF89B3AE56F3FAE100BE178ED11A5FEF710724C00") ,
+                    ("Write-Xaml.ps1"                  , "4B3BF7A626B918DDA6E3449C4F5B8DDA87C1C67914B9190E676D491896BBEF75")
                 }
                 Graphic
                 {
