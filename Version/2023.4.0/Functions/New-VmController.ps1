@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 20:03:58                                                                  //
+\\  Date       : 2023-05-02 20:13:58                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4599,7 +4599,7 @@ Function New-VmController
             '    Description = $Desc -f "received"';
             '    RemotePort  = {0}' -f $This.Network.Transmit;
             '}';
-            'New-NetFirewallRule @Splat Direction Outbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
+            'New-NetFirewallRule @Splat -Direction Outbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
             '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"'
             '$Url = "$Base/FightingEntropy.ps1?raw=true"';
             'Invoke-RestMethod $Url | Invoke-Expression';
