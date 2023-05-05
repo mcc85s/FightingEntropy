@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 15:27:24                                                                  //
+\\  Date       : 2023-05-05 15:47:11                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -513,5 +513,5 @@ Function Initialize-VmNode
         
     }
 
-    [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns)
+    [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns,$Transmit)
 }
