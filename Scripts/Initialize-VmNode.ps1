@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 16:43:20                                                                  //
+\\  Date       : 2023-05-05 17:20:08                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -222,11 +222,17 @@ Function Initialize-VmNode
     Class VmNodeScript
     {
         [UInt32] $Index
+        [String] $Description
         [String] $Content
         VmNodeScript([UInt32]$Index,[String]$Content)
         {
-            $This.Index   = $Index
-            $This.Content = $Content
+            $This.Index       = $Index
+            $This.Description = [Regex]::Matches($Content,"^#.+").Value
+            $This.Content     = $Content
+        }
+        Execute()
+        {
+            $This.Content | Invoke-Expression
         }
     }
 
@@ -468,22 +474,6 @@ Function Initialize-VmNode
             $This.CheckFirewall(0)
             $This.CheckFirewall(1)
         }
-        Receive()
-        {
-            $Script           = $This.SocketTcpServer()
-
-            Try
-            {
-                $Script.Initialize() 
-
-                $Content          = $Script.Content.Message -join ''
-                $This.ScriptList += $This.VmNodeScript($This.ScriptList.Count,$Content)
-            }
-            Catch
-            {
-                Throw "Exception [!] Transmission error occurred"
-            }
-        }
         Persistence()
         {
             $Root = $This.GetRegistryPath()
@@ -513,7 +503,22 @@ Function Initialize-VmNode
                 Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
             }
         }
-        
+        Receive()
+        {
+            $Script           = $This.SocketTcpServer()
+
+            Try
+            {
+                $Script.Initialize() 
+
+                $Content          = $Script.Content.Message -join ''
+                $This.ScriptList += $This.VmNodeScript($This.ScriptList.Count,$Content)
+            }
+            Catch
+            {
+                Throw "Exception [!] Transmission error occurred"
+            }
+        }
     }
 
     [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns,$Transmit)
