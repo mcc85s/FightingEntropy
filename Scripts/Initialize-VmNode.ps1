@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 15:08:29                                                                  //
+\\  Date       : 2023-05-05 15:27:24                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -328,6 +328,30 @@ Function Initialize-VmNode
         {
             Return 'Allows content to be {0} over TCP/{1}' -f @("sent","received")[$Mode], $This.Network.Transmit
         }
+        [String] Now()
+        {
+            Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+        }
+        [String] Hostname()
+        {
+            Return [Environment]::MachineName
+        }
+        [String] ProgramData()
+        {
+            Return [Environment]::GetEnvironmentVariable("ProgramData")
+        }
+        [String] Author()
+        {
+            Return "Secure Digits Plus LLC"
+        }
+        [String] GuestName()
+        {
+            Return $This.Network.Hostname()
+        }
+        [String] GetRegistryPath()
+        {
+            Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+        }
         [Object] GetNetAdapter()
         {
             Return Get-NetAdapter | ? Status -eq Up
@@ -457,291 +481,37 @@ Function Initialize-VmNode
                 Throw "Exception [!] Transmission error occurred"
             }
         }
-    }
-
-    [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns)
-
-    <#
-    $Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"
-$Url = "$Base/FightingEntropy.ps1?raw=true"
-Invoke-RestMethod $Url | Invoke-Expression
-$Module.Latest()
-
-        [String[]] ImportFeModule()
+        Persistence()
         {
-            Return 'Set-ExecutionPolicy Bypass -Scope Process -Force', 'Import-Module FightingEntropy -Force -Verbose'
-        }
-        [String[]] PrepPersistentInfo()
-        {
-            # Prepare the correct persistent information
-            $List = @( )
+            $Root = $This.GetRegistryPath()
+            $Path = "$Root\ComputerInfo"
 
-
-            $List += '$P = @{ }'
-            ForEach ($P in @($This.Network.PSObject.Properties | ? Name -ne Dhcp))
+            If (!(Test-Path $Root))
             {
-                $List += Switch -Regex ($P.TypeNameOfValue)
+                New-Item -Path $Root -Verbose
+            }
+
+            New-Item -Path $Path
+
+            ForEach ($Property in $This.Network.PSObject.Properties)
+            {
+                $Value = Switch -Regex ($Property.TypeNameOfValue)
                 {
                     Default
                     {
-                        '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
+                        $Property.Value
                     }
                     "\[\]"
                     {
-                        '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
-                    }
-                }
-            }
-           
-            If ($This.Role -eq "Server")
-            {
-                $List += '$P.Add($P.Count,("Dhcp","$Dhcp"))'
-            }
-           
-            $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Path -Name $_[0] -Value $_[1] -Verbose }'
-
-
-            If ($This.Role -eq "Server")
-            {
-                $List += '$P = @{ }'
-               
-                ForEach ($P in @($This.Network.Dhcp.PSObject.Properties))
-                {
-                    $List += Switch -Regex ($P.TypeNameOfValue)
-                    {
-                        Default
-                        {
-                            '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
-                        }
-                        "\[\]"
-                        {
-                            '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
-                        }
+                        '@([String[]]"{0}")))' -f ($Property.Value -join "`",`"")
                     }
                 }
 
-
-                $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Dhcp -Name $_[0] -Value $_[1] -Verbose }'
+                Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
             }
+        }
+        
+    }
 
-
-            Return $List
-        }
-        SetPersistentInfo()
-        {
-            # [Phase 1] Set persistent information
-            $This.Script.Add(1,"SetPersistentInfo","Set persistent information",@(
-            '$Root      = "{0}"' -f $This.GetRegistryPath();
-            '$Name      = "{0}"' -f $This.Name;
-            '$Path      = "$Root\ComputerInfo"';
-            'Rename-Computer $Name -Force -EA 0';
-            'If (!(Test-Path $Root))';
-            '{';
-            '    New-Item -Path $Root -Verbose';
-            '}';
-            'New-Item -Path $Path -Verbose';
-            If ($This.Role -eq "Server")
-            {
-                '$Dhcp = "$Path\Dhcp"';
-                'New-Item $Dhcp';
-            }
-            $This.PrepPersistentInfo()))
-        }
-        SetTimeZone()
-        {
-            # [Phase 2] Set time zone
-            $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}" -Verbose' -f (Get-Timezone).Id))
-        }
-        SetComputerInfo()
-        {
-            # [Phase 3] Set computer info
-            $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
-            '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath()
-            '$TrustedHost    = $Item.Trusted';
-            '$IPAddress      = $Item.IpAddress';
-            '$PrefixLength   = $Item.Prefix';
-            '$DefaultGateway = $Item.Gateway';
-            '$Dns            = $Item.Dns'))
-        }
-        SetIcmpFirewall()
-        {
-            $Content = Switch ($This.Role)
-            {
-                Server
-                {
-                    'Get-NetFirewallRule | ? DisplayName -match "(Printer.+IcmpV4)" | Enable-NetFirewallRule -Verbose'
-                }
-                Client
-                {
-                    'Get-NetFirewallRule | ? DisplayName -match "(Printer.+IcmpV4)" | Enable-NetFirewallRule -Verbose',
-                    'Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private -Verbose'
-                }
-            }
-
-
-            # [Phase 4] Enable IcmpV4
-            $This.Script.Add(4,"SetIcmpFirewall","Enable IcmpV4",@($Content))
-        }
-        SetInterfaceNull()
-        {
-            # [Phase 5] Get InterfaceIndex, get/remove current (IP address + Net Route)
-            $This.Script.Add(5,"SetInterfaceNull","Get InterfaceIndex, get/remove current (IP address + Net Route)",@(
-            '$Index              = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
-            '$Interface          = Get-NetIPAddress    -AddressFamily IPv4 -InterfaceIndex $Index';
-            '$Interface          | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:$False -Verbose';
-            '$Interface          | Remove-NetRoute     -AddressFamily IPv4 -Confirm:$False -Verbose'))
-        }
-        SetStaticIp()
-        {
-            # [Phase 6] Set static IP Address
-            $This.Script.Add(6,"SetStaticIp","Set (static IP Address + Dns server)",@(
-            '$Splat              = @{';
-            ' ';
-            '    InterfaceIndex  = $Index';
-            '    AddressFamily   = "IPv4"';
-            '    PrefixLength    = $Item.Prefix';
-            '    ValidLifetime   = [Timespan]::MaxValue';
-            '    IPAddress       = $Item.IPAddress';
-            '    DefaultGateway  = $Item.Gateway';
-            '}';
-            'New-NetIPAddress @Splat';
-            'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $Item.Dns'))
-        }
-        SetWinRm()
-        {
-            # [Phase 7] Set WinRM (Config)
-            $This.Script.Add(7,"SetWinRm","Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)",@(
-            'winrm quickconfig';
-            '<Timer[2]>';
-            'y';
-            '<Timer[3]>';
-            If ($This.Role -eq "Client")
-            {
-                'y';
-                '<Timer[3]>';
-            }
-            'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
-            '<Timer[4]>';
-            'y'))
-        }
-        SetWinRmFirewall()
-        {
-            # [Phase 8] Set WinRm (Self-Signed Certificate/HTTPS Listener/Firewall)
-            $This.Script.Add(8,"SetWinRmFirewall",'Set WinRm Firewall',@(
-            '$Cert           = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
-            '$Thumbprint     = $Cert.Thumbprint';
-            '$Hash           = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
-            "`$Str            = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
-            'Invoke-Expression ($Str -f $Hash)'
-            '$Splat          = @{';
-            ' ';
-            '    Name        = "WinRM/HTTPS"';
-            '    DisplayName = "Windows Remote Management (HTTPS-In)"';
-            '    Direction   = "In"';
-            '    Action      = "Allow"';
-            '    Protocol    = "TCP"';
-            '    LocalPort   = 5986';
-            '}';
-            'New-NetFirewallRule @Splat -Verbose'))
-        }
-        SetRemoteDesktop()
-        {
-            # [Phase 9] Set Remote Desktop
-            $This.Script.Add(9,"SetRemoteDesktop",'Set Remote Desktop',@(
-            'Set-ItemProperty "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -Value 0';
-            'Enable-NetFirewallRule -DisplayGroup "Remote Desktop"'))
-        }
-        InstallFeModule()
-        {
-            # [Phase 10] Install [FightingEntropy()]
-            $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
-            '[Net.ServicePointManager]::SecurityProtocol = 3072';
-            'Set-ExecutionPolicy Bypass -Scope Process -Force';
-            '$Install = "https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/FightingEntropy.ps1?raw=true"';
-            'Invoke-RestMethod $Install | Invoke-Expression';
-            '$Module.Latest()';
-            '<Idle[5,5]>';
-            'Import-Module FightingEntropy'))
-        }
-        InstallChoco()
-        {
-            # [Phase 11] Install Chocolatey
-            $This.Script.Add(11,"InstallChoco","Install Chocolatey",@(
-            "Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression"))
-        }
-        InstallVsCode()
-        {
-            # [Phase 12] Install Visual Studio Code
-            $This.Script.Add(12,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
-        }
-        InstallBossMode()
-        {
-            # [Phase 13] Install BossMode (vscode color theme)
-            $This.Script.Add(13,"InstallBossMode","Install BossMode (vscode color theme)",@("Install-BossMode"))
-        }
-        InstallPsExtension()
-        {
-            # [Phase 14] Install Visual Studio Code (PowerShell Extension)
-            $This.Script.Add(14,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
-            '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
-            '$ArgumentList = "--install-extension ms-vscode.PowerShell"';
-            'Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process'))
-        }
-        RestartComputer()
-        {
-            # [Phase 15] Restart computer
-            $This.Script.Add(15,'Restart','Restart computer',@('Restart-Computer'))
-        }
-        ConfigureDhcp()
-        {
-            # [Phase 16] Configure Dhcp
-            $This.Script.Add(16,'ConfigureDhcp','Configure Dhcp',@(
-            '$Root           = "{0}"' -f $This.GetRegistryPath()
-            '$Path           = "$Root\ComputerInfo"'
-            '$Item           = Get-ItemProperty $Path'
-            '$Item.Dhcp      = Get-ItemProperty $Item.Dhcp';
-            ' ';
-            '$Splat = @{ ';
-            '   ';
-            '    StartRange = $Item.Dhcp.StartRange';
-            '    EndRange   = $Item.Dhcp.EndRange';
-            '    Name       = $Item.Dhcp.Name';
-            '    SubnetMask = $Item.Dhcp.SubnetMask';
-            '}';
-            ' ';
-            'Add-DhcpServerV4Scope @Splat -Verbose';
-            'Add-DhcpServerInDc -Verbose';
-            ' ';
-            'ForEach ($Value in $Item.Dhcp.Exclusion)';
-            '{';
-            '    $Splat         = @{ ';
-            ' ';
-            '        ScopeId    = $Item.Dhcp.Network';
-            '        StartRange = $Value';
-            '        EndRange   = $Value';
-            '    }';
-            ' ';
-            '    Add-DhcpServerV4ExclusionRange @Splat -Verbose';
-            ' ';
-            '   (3,$Item.Gateway),';
-            '   (6,$Item.Dns),';
-            '   (15,$Item.Domain),';
-            '   (28,$Item.Dhcp.Broadcast) | % {';
-            '    ';
-            '       Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
-            '   }';
-            '}';
-            'netsh dhcp add securitygroups';
-            'Restart-Service dhcpserver';
-            ' ';
-            '$Splat    = @{ ';
-            ' ';
-            '    Path  = "HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12"';
-            '    Name  = "ConfigurationState"';
-            '    Value = 2';
-            '}';
-            ' ';
-            'Set-ItemProperty @Splat -Verbose'))
-        }
-    #>
+    [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns)
 }
