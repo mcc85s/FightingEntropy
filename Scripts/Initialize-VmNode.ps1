@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 16:18:47                                                                  //
+\\  Date       : 2023-05-05 16:43:20                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -382,12 +382,14 @@ Function Initialize-VmNode
         }
         [Hashtable] NewFirewallRule([UInt32]$Mode)
         {
+            $Dir  = @("Inbound","Outbound")[$Mode]
+
             $Item = @{ 
 
-                Name        = $This.Label()
+                Name        = "{0} ({1})" -f $This.Label(), $Dir
                 DisplayName = $This.Label()
                 Description = $This.FirewallDescription($Mode)
-                Direction   = @("Inbound","Outbound")[$Mode]
+                Direction   = $Dir
                 Protocol    = "TCP"
                 Action      = "Allow"
             }
