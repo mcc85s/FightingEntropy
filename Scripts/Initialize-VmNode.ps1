@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 15:54:01                                                                  //
+\\  Date       : 2023-05-05 16:18:47                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -384,6 +384,7 @@ Function Initialize-VmNode
         {
             $Item = @{ 
 
+                Name        = $This.Label()
                 DisplayName = $This.Label()
                 Description = $This.FirewallDescription($Mode)
                 Direction   = @("Inbound","Outbound")[$Mode]
@@ -471,9 +472,9 @@ Function Initialize-VmNode
 
             Try
             {
-                $Script.Initialize()
+                $Script.Initialize() 
 
-                $Content          = $Script.Message.Content -join ''
+                $Content          = $Script.Content.Message -join ''
                 $This.ScriptList += $This.VmNodeScript($This.ScriptList.Count,$Content)
             }
             Catch
