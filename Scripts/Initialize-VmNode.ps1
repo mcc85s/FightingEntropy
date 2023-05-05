@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 15:47:11                                                                  //
+\\  Date       : 2023-05-05 15:54:01                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -372,12 +372,12 @@ Function Initialize-VmNode
         {
             Return @{
 
-                InterfaceIndex  = $This.Index
+                InterfaceIndex  = $This.Network.Index
                 AddressFamily   = "IPv4"
-                PrefixLength    = $This.Prefix
+                PrefixLength    = $This.Network.Prefix
                 ValidLifetime   = [Timespan]::MaxValue
-                IPAddress       = $This.IpAddress
-                DefaultGateway  = $This.Gateway
+                IPAddress       = $This.Network.IpAddress
+                DefaultGateway  = $This.Network.Gateway
             }
         }
         [Hashtable] NewFirewallRule([UInt32]$Mode)
