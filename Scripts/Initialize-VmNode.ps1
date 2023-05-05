@@ -372,7 +372,7 @@ Function Initialize-VmNode
         {
             Return @{
 
-                InterfaceIndex  = $This.Network.Index
+                InterfaceIndex  = $This.Index
                 AddressFamily   = "IPv4"
                 PrefixLength    = $This.Network.Prefix
                 ValidLifetime   = [Timespan]::MaxValue
