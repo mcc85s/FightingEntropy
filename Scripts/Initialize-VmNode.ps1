@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-05 17:20:08                                                                  //
+\\  Date       : 2023-05-06 05:49:54                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2023-05-05
+    Modified   : 2023-05-06
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -517,6 +517,14 @@ Function Initialize-VmNode
             Catch
             {
                 Throw "Exception [!] Transmission error occurred"
+            }
+        }
+        Execute()
+        {
+            ForEach ($Item in $This.ScriptList)
+            {
+                [Console]::WriteLine($Item.Description)
+                $Item.Execute()
             }
         }
     }
