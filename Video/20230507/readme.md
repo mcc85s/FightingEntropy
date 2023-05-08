@@ -2,9 +2,7 @@
 
 | Description |
 |:------------|
-| @
-Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope).
-@ |
+| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope). |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)] - [[Annotation](#annotation)]
 
