@@ -14,8 +14,7 @@
 
 | Index | Date         | Name/Link                                                                               | Duration      |
 |:------|:-------------|:----------------------------------------------------------------------------------------|:--------------|
-| 0     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/5ycuQg-w3wo)** | `02h 57m 29s` |
-| 1     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/LKSd0EEUpYs)** | `02h 57m 29s` |
+| 0     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/Q6RemxSAQpE)** | `02h 57m 27s` |
 
 ## Document
 
