@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope). |
+| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope). There's (2) versions of the video, the first version has much lower volume, and it is listed second. |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)] - [[Annotation](#annotation)]
 
@@ -14,7 +14,8 @@
 
 | Index | Date         | Name/Link                                                                               | Duration      |
 |:------|:-------------|:----------------------------------------------------------------------------------------|:--------------|
-| 0     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/LKSd0EEUpYs)** | `02h 57m 29s` |
+| 0     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/5ycuQg-w3wo)** | `02h 57m 29s` |
+| 1     | `05/07/2023` | **[2023_0507-(New-VmController - Demo + Documentation)](https://youtu.be/LKSd0EEUpYs)** | `02h 57m 29s` |
 
 ## Document
 
