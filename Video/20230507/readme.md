@@ -2,9 +2,7 @@
 
 | Description |
 |:------------|
-| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope).<br>
-<br>
-I apologize for the sound quality, the fan is really loud. I didn't realize OBS was using the wrong microphone so I went back and boosted the audio because the volume was very low. The second entry is the original upload. |
+| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope).<br><br>I apologize for the sound quality, the fan is really loud. I didn't realize OBS was using the wrong microphone so I went back and boosted the audio because the volume was very low. The second entry is the original upload. |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)] - [[Annotation](#annotation)]
 
