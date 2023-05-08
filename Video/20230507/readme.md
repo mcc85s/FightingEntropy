@@ -2,7 +2,9 @@
 
 | Description |
 |:------------|
-| Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope). |
+| @
+Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode] from your cybercommando batcave of operations command center of (doom/hope).
+@ |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)] - [[Annotation](#annotation)]
 
@@ -68,40 +70,40 @@
 | `00:00:00` | Dramatic Introduction |
 
 ```
-_______________________________
-[PowerShell Virtualization Lab]
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-[Objective]: Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode]
-from your cybercommando batcave of operations command center of (doom/hope).
-______________
-[Helpful tips]
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-1) Don't be lame or anything like that, cause that's dumb.
-2) Be cool, or at least try to remain level headed if you get aggravated by people that do dumb stuff.
-3) Make sure you leave at least a (15-20)% tip your (waiters/waitresses) if you eat out at restaurants.
-4) Don't call the kettle black if you're a teapot, because that is extremely (offensive + hypocritical + dumb).
-5) Those who do not remember the past are condemned to repeat it. -[George Santanaya]
-6) Use [Char]175 a lot in [PowerShell] scripts for the (upperscore/"¯") character.
-7) Pay your respects to people like:
-_____________________________________________________________________________________
-| Person                   | Role                    | Achievement                  |
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| Paul Allen               | OG programmer/badass    | Co-founded Microsoft         |
-| Bill Gates               | OG programmer/visionary | Co-founded Microsoft         |
-| Steve Jobs               | OG programmer/visionary | Co-founded Apple             |
-| Steve Wozniak            | OG system engineer      | Co-founded Apple             |
-| Garry Kildall            | Technology enthusiast   | Founded Digital Research/CPM |
-| Linus Torvalds           | OG programmer/badass    | Created Linux                |
-| Tim Berners Lee          | Conceptualized internet | World Wide Web               |
-| Jeff Bezos               | Visionary               | Amazon                       |
-| Mark Zuckerberg          | Business magnate        | Founded Facebook/RIP'd AIM   |
-| Elon Musk                | Cybercommando 5000      | Too many to list             |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-...and other honorable mentions, cause they made it possible for people to complain about stuff 
-over the internet.
-7) That's... it.
-
-<Press any key to continue, or just keep reading>
-
-https://github.com/mcc85s/FightingEntropy/tree/main/Docs/20230503/2023_0503-(New-VmController).doc
+    _______________________________
+    [PowerShell Virtualization Lab]
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [Objective]: Perform a demonstration of the functions [New-VmController], [Script for Windows 11], [Initialize-VmNode]
+    from your cybercommando batcave of operations command center of (doom/hope).
+    ______________
+    [Helpful tips]
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    1) Don't be lame or anything like that, cause that's dumb.
+    2) Be cool, or at least try to remain level headed if you get aggravated by people that do dumb stuff.
+    3) Make sure you leave at least a (15-20)% tip your (waiters/waitresses) if you eat out at restaurants.
+    4) Don't call the kettle black if you're a teapot, because that is extremely (offensive + hypocritical + dumb).
+    5) Those who do not remember the past are condemned to repeat it. -[George Santanaya]
+    6) Use [Char]175 a lot in [PowerShell] scripts for the (upperscore/"¯") character.
+    7) Pay your respects to people like:
+    _____________________________________________________________________________________
+    | Person                   | Role                    | Achievement                  |
+    |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    | Paul Allen               | OG programmer/badass    | Co-founded Microsoft         |
+    | Bill Gates               | OG programmer/visionary | Co-founded Microsoft         |
+    | Steve Jobs               | OG programmer/visionary | Co-founded Apple             |
+    | Steve Wozniak            | OG system engineer      | Co-founded Apple             |
+    | Garry Kildall            | Technology enthusiast   | Founded Digital Research/CPM |
+    | Linus Torvalds           | OG programmer/badass    | Created Linux                |
+    | Tim Berners Lee          | Conceptualized internet | World Wide Web               |
+    | Jeff Bezos               | Visionary               | Amazon                       |
+    | Mark Zuckerberg          | Business magnate        | Founded Facebook/RIP'd AIM   |
+    | Elon Musk                | Cybercommando 5000      | Too many to list             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...and other honorable mentions, cause they made it possible for people to complain about stuff 
+    over the internet.
+    7) That's... it.
+    
+    <Press any key to continue, or just keep reading>
+    
+    https://github.com/mcc85s/FightingEntropy/tree/main/Docs/20230503/2023_0503-(New-VmController).doc
 ```
