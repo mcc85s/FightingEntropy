@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:59:06                                                                  //
+\\  Date       : 2023-05-12 01:13:29                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-UserProfile.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s 
     Primary    : @mcc85s 
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-05-12
     Demo       : N/A 
     Version    : 0.0.0 - () - Finalized functional version 1.
     TODO       : 
@@ -28,6 +28,105 @@
 Function Get-UserProfile
 {
     [CmdLetBinding()]Param([Parameter()][UInt32]$Mode=0)
+
+    Class ProfileByteSize
+    {
+        [String]   $Name
+        [UInt64]  $Bytes
+        [String]   $Unit
+        [String]   $Size
+        ProfileByteSize([String]$Name,[UInt64]$Bytes)
+        {
+            $This.Name   = $Name
+            $This.Bytes  = $Bytes
+            $This.GetUnit()
+            $This.GetSize()
+        }
+        GetUnit()
+        {
+            $This.Unit   = Switch ($This.Bytes)
+            {
+                {$_ -lt 1KB}                 {     "Byte" }
+                {$_ -ge 1KB -and $_ -lt 1MB} { "Kilobyte" }
+                {$_ -ge 1MB -and $_ -lt 1GB} { "Megabyte" }
+                {$_ -ge 1GB -and $_ -lt 1TB} { "Gigabyte" }
+                {$_ -ge 1TB}                 { "Terabyte" }
+            }
+        }
+        GetSize()
+        {
+            $This.Size   = Switch -Regex ($This.Unit)
+            {
+                ^Byte     {     "{0} B" -f  $This.Bytes      }
+                ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
+                ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
+                ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
+                ^Terabyte { "{0:n2} TB" -f ($This.Bytes/1TB) }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Size
+        }
+    }
+
+    Class ProfileFile
+    {
+        Hidden [UInt32]    $Index
+        [String]            $Type
+        Hidden [String]  $Created
+        [String]        $Accessed
+        Hidden [String] $Modified
+        [Object]            $Size
+        [String]            $Name
+        Hidden [String] $Fullname
+        ProfileFile([UInt32]$Index,[Object]$Object)
+        {
+            $This.Index    = $Index
+            $This.Type     = $This.GetType($Object.Mode)
+            $This.Created  = $This.GetDate($Object.CreationTime)
+            $This.Accessed = $This.GetDate($Object.LastAccessTime)
+            $This.Modified = $This.GetDate($Object.LastWriteTime)
+            $This.Name     = $Object.Name
+            $This.Fullname = $Object.Fullname
+            $This.Size     = $This.ProfileByteSize($Object.Length)
+        }
+        [String] GetDate([DateTime]$Date)
+        {
+            Return $Date.ToString("MM/dd/yyyy HH:mm:ss")
+        }
+        [String] GetType([String]$Mode)
+        {
+            <#
+                d----- Directory
+                d-r--- Directory
+                dar--l Directory
+                d----l Directory
+                -a---- File
+                -a---- File
+                -a---l File
+                -a---l File
+                -ar--l File
+                -a---l File
+            #>
+
+            $Item = Switch -Regex ($Mode)
+            {
+                "^d" { "Directory" } "^-a" { "File" }
+            }
+
+            Return $Item
+        }
+        [Object] ProfileByteSize([UInt64]$Bytes)
+        {
+            If ($This.Type -eq "Directory")
+            {
+                $Bytes = 0
+            }
+
+            Return [ProfileByteSize]::New($This.Type,$Bytes)
+        }
+    }
 
     Class ProfileProperty
     {
@@ -44,29 +143,47 @@ Function Get-UserProfile
         }
         [String] ToString()
         {
-            Return $This.Name
+            Return "<FEModule.Profile[Property]>"
         }
     }
 
-    Class ProfileKey
+    Class ProfileSid
     {
-        [String]     $Name
-        [String]     $Type
-        [String] $Fullname
-        [Object] $Property
-        ProfileKey([Object]$Item)
+        Hidden [Object]  $Wmi
+        Hidden [String] $Path
+        [String]        $Type
+        [String]        $Name
+        [String]    $Fullname
+        [String]     $Account
+        [String]      $Domain
+        [Byte[]]      $Binary
+        [UInt32]      $Length
+        [Object]         $Sid
+        [Object]    $Property
+        ProfileSid([String]$Path)
         {
-            $This.Name     = $Item.Name.Split("\")[-1]
-            $This.Fullname = $Item.Name -Replace "HKEY_LOCAL_MACHINE", "HKLM:"
+            $This.Path     = $Path
+            $This.Name     = Split-Path -Leaf $Path
+            $This.Fullname = $Path -Replace "HKEY_LOCAL_MACHINE", "HKLM:"
+            $This.Wmi      = $This.GetWmi()
+            $This.Name     = $This.Wmi.Sid
+            $This.Account  = $This.Wmi.AccountName
+            $This.Domain   = $This.Wmi.ReferencedDomainName
+            $This.Binary   = $This.Wmi.BinaryRepresentation
+            $This.Length   = $This.Binary.Length
+            $This.Sid      = $This.GetSid($This.Binary)
+
             $This.Refresh()
-        }
-        [Object] ProfileProperty([UInt32]$Index,[Object]$Property)
-        {
-            Return [ProfileProperty]::New($Index,$Property)
-        }
-        [Object[]] Properties()
-        {
-            Return (Get-ItemProperty $This.Fullname).PSObject.Properties | ? Name -notmatch ^PS
+
+            If (!$This.Account)
+            {
+                $This.Account = $This.GetAccount()
+            }
+
+            If (!$This.Domain)
+            {
+                $This.Domain  = $This.GetHostname()
+            }
         }
         Clear()
         {
@@ -74,9 +191,9 @@ Function Get-UserProfile
         }
         Refresh()
         {
-            $This.Clear() 
+            $This.Clear()
 
-            ForEach ($Property in $This.Properties())
+            ForEach ($Property in $This.GetProperty())
             {
                 $This.Add($Property)
             }
@@ -90,100 +207,150 @@ Function Get-UserProfile
         {
             $This.Property += $This.ProfileProperty($This.Property.Count,$Property)
         }
-        [String] ToString()
+        [String] GetWmiPath()
         {
-            Return $This.Name
+            Return "Root\CimV2:Win32_Sid.Sid='{0}'" -f $This.Name
         }
-    }
-
-    Class Profile
-    {
-        [UInt32]       $Index
-        Hidden [Object]  $Key
-        [String]        $Type
-        [String]        $Name
-        [Object]         $Sid
-        [Object]     $Account
-        [String]        $Path
-        [Object]     $Content
-        [String]        $Size
-        Profile([UInt32]$Index,[Object]$Item)
+        [Object] GetWmi()
         {
-            $This.Index       = $Index
-            $This.Key         = $This.GetProfileKey($Item)
-            $This.Type        = $This.Key.Type
-            $This.Name        = $This.GetProfileName()
-            $xSid             = $This.GetProperty("Sid")
-
-            If ($xSid)
-            {
-                $This.Sid     = $This.GetSid($xSid)
-                $This.Account = $This.GetAccount()
-            }
-
-            $This.Path        = $This.GetProperty("ProfileImagePath")
+            Return [WMI]$This.GetWmiPath()
         }
-        [Object] GetProfileKey([Object]$Item)
+        [Object] GetSid([Byte[]]$Byte)
         {
-            Return [ProfileKey]::New($Item)
+            Return [System.Security.Principal.SecurityIdentifier]::new($Byte,0)
         }
-        [Object] GetProperty([String]$Name)
+        [String] GetHostname()
         {
-            $Item = $This.Key.Property | ? Name -eq $Name | % Value
-            If ($Item)
-            {
-                Return $Item
-            }
-            Else
-            {
-                Return $Null
-            }
+            Return [Environment]::MachineName
         }
-        [String] GetProfileName()
+        [Object] GetProperty([String]$Property)
         {
-            Return $This.GetProperty("ProfileImagePath") | Split-Path -Leaf
+            Return $This.Property | ? Name -eq ProfileImagePath | % Value
         }
-        [Object] GetSid([Byte[]]$Sid)
+        [Object[]] GetProperty()
         {
-            Return [System.Security.Principal.SecurityIdentifier]::new($Sid,0)
+            Return (Get-ItemProperty $This.Fullname).PSObject.Properties | ? Name -notmatch ^PS
         }
         [Object] GetAccount()
         {
             $Item = Try
             {
-                ($This.Sid.Translate([System.Security.Principal.NTAccount])).Value
+                $This.Sid.Sid.Translate([System.Security.Principal.NTAccount]) | % Value
             }
             Catch
             {
-                $Null
+                Split-Path -Leaf $This.GetProperty("ProfileImagePath")
             }
 
             Return $Item
         }
+        [Object] ProfileProperty([UInt32]$Index,[Object]$Property)
+        {
+            Return [ProfileProperty]::New($Index,$Property)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Profile[Sid]>"
+        }
+    }
+
+    Class ProfileItem
+    {
+        [UInt32]   $Index
+        [Object]     $Sid
+        [String]    $Type
+        [String]    $Name
+        [Object] $Account
+        [String]    $Path
+        [Object] $Content
+        [Object]    $Size
+        ProfileItem([Object]$Path)
+        {
+            $This.Sid         = $This.ProfileSid($Path)
+            $This.Type        = $This.Sid.Type
+            $This.Name        = $This.Sid.Account
+            $This.Account     = "{0}\{1}" -f $This.Sid.Domain, $This.Name
+            $This.Path        = $This.Sid.GetProperty("ProfileImagePath")
+        }
+        [Object] ProfileSid([String]$Path)
+        {
+            Return [ProfileSid]::New($Path)
+        }
+        [Object] ProfileFile([UInt32]$Index,[Object]$Object)
+        {
+            Return [ProfileFile]::New($Index,$Object)
+        }
+        [Object] ProfileByteSize([UInt64]$Bytes)
+        {
+            Return [ProfileByteSize]::New("Profile",$Bytes)
+        }
         GetContent()
         {
-            If (Get-Item $This.Path)
+            If ($This.Type -ne "User")
             {
-                $Hash         = @{ }
-                $Bytes        = 0
+                Throw "Invalid profile type"
+            }
+            
+            $Root = Get-Item $This.Path
+            If ($Root)
+            {
+                $Hash  = @{ }
+                $Bytes = 0
+                $List  = Get-ChildItem $This.Path -Recurse | Sort-Object FullName
+                $Line  = "User: [{0}], Path: [{1}], ({2}) files" -f $This.Name, $This.Path, $List.Count
+                [Console]::WriteLine($Line)
 
-                ForEach ($File in Get-ChildItem $This.Path -Recurse)
+                ForEach ($File in $List)
                 {
-                    $Hash.Add($Hash.Count,$File)
-                    $Bytes    = $Bytes + $File.Length
+                    $Item  = $This.ProfileFile($Hash.Count,$File)
+                    $Hash.Add($Hash.Count,$Item)
+                    $Bytes = $Bytes + $Item.Size.Bytes
                 }
 
-                $This.Size    = "{0:n2} GB" -f ($Bytes/1GB)
+                $This.Size    = $This.ProfileByteSize($Bytes)
                 $This.Content = $Hash[0..($Hash.Count-1)]
+
+                [Console]::WriteLine($This.Size)
             }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Profile[Item]>"
+        }
+    }
+
+    Class ProfileList
+    {
+        [String] $Name
+        [UInt32] $Count
+        [Object] $Output
+        ProfileList([String]$Name)
+        {
+            $This.Name = $Name
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+            $This.Count  = 0
+        }
+        Add([Object]$Item)
+        {
+            $This.Output += $Item
+            $This.Count   = $This.Output.Count
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Profile[List]>"
         }
     }
 
     Class ProfileController
     {
         Hidden [UInt32] $Mode
-        [String]        $Root
-        [Object]     $Profile
+        Hidden [String] $Root
+        [Object]      $System
+        [Object]     $Service
         [Object]        $User
         ProfileController([UInt32]$Mode)
         {
@@ -191,9 +358,13 @@ Function Get-UserProfile
             $This.Root = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\ProfileList"
             $This.Refresh()
         }
-        [Object] ProfileItem([UInt32]$Index,[Object]$Item)
+        [Object] ProfileItem([Object]$Item)
         {
-            Return [Profile]::New($Index,$Item)
+            Return [ProfileItem]::New($Item)
+        }
+        [Object] ProfileList([String]$Type)
+        {
+            Return [ProfileList]::New($Type)
         }
         [Object[]] GetProfile()
         {
@@ -201,32 +372,27 @@ Function Get-UserProfile
         }
         Clear()
         {
-            $This.Profile = @( )
-            $This.User    = @( )
+            $This.System  = $This.ProfileList("System")
+            $This.Service = $This.ProfileList("Service")
+            $This.User    = $This.ProfileList("User")
         }
         Refresh()
         {
             $This.Clear()
 
-            # Initial profiles [System/Service/User]
+            # Get profiles for [System/Service/User]    
             ForEach ($Profile in $This.GetProfile())
             {
-                $This.Add($Profile)
-            }
-
-            # Filter out user profiles
-            $This.User          = $This.Profile | ? Type -eq User
-            $This.Profile       = $This.Profile | ? Type -ne User
-
-            # Rerank/classify profiles
-            ForEach ($Object in $This.Profile, $This.User)
-            {
-                $C              = 0
-                ForEach ($Item in $Object)
+                $Item = $This.ProfileItem($Profile)
+                $List = Switch ($Item.Type)
                 {
-                    $Item.Index = $C
-                    $C          ++
+                    System  { $This.System  }
+                    Service { $This.Service }
+                    User    { $This.User    }
                 }
+
+                $Item.Index = $List.Count
+                $List.Add($Item)
             }
 
             If ($This.Mode -ne 0)
@@ -239,11 +405,15 @@ Function Get-UserProfile
                 }
             }
         }
-        Add([Object]$xProfile)
+        [Object] List([String]$Type)
         {
-            $This.Profile += $This.ProfileItem($This.Profile.Count,$xProfile)
+            Return $This.$Type.Output
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Profile[Controller]>"
         }
     }
-
+    
     [ProfileController]::New($Mode)
 }
