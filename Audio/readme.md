@@ -1,7 +1,9 @@
 <h1>Audio/Logs.md</h1>
 
-These are audio logs that I've been recording and uploading since about [October 2022].<br>
-I've spent years making these recordings, though I do not always make them publicly available...
+These are audio logs that I've been recording and uploading since about [**October 2022**].<br>
+I've spent years making these recordings, though I have not always made them publicly available.<br>
+The idea here, is that if I profess my train of thought and rhetoric, and other people can listen to what I have to say...?<br>
+Then people will understand my motivations a lot more clearly.<br>
 
 <h2>Last updated: [05/14/23]</h2>
 
