@@ -21,8 +21,9 @@
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : AKA "System Control Extension Utility"
                  [-] Add stuff from the function [Get-FENetwork]
-                 [+] [FightingEntropy()][Development] https://youtu.be/VUkZ1YLzyn8
-
+                 [+] [FightingEntropy()][Development]      https://youtu.be/VUkZ1YLzyn8 (6h 30m 16s)
+                 [+] 2023_0511-(Get-ViperBomb Development) https://youtu.be/iCk-7IRfVqc (3h 01m 07s)
+    
 .Example
 #
 Function Get-ViperBomb
@@ -1730,7 +1731,9 @@ Function Get-ViperBomb
         '                                <ColumnDefinition Width="90"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <Label    Grid.Column="0" Content="[Profile]:"/>',
-        '                            <ComboBox Grid.Column="1" SelectedIndex="0">',
+        '                            <ComboBox Grid.Column="1"',
+        '                                      Name="ProfileType" ',
+        '                                      SelectedIndex="0">',
         '                                <ComboBoxItem Content="All"/>',
         '                                <ComboBoxItem Content="System"/>',
         '                                <ComboBoxItem Content="Service"/>',
@@ -1754,52 +1757,60 @@ Function Get-ViperBomb
         '                        </Grid>',
         '                        <DataGrid Grid.Row="1" Name="ProfileOutput">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                Binding="{Binding Name}"',
-        '                                                Width="100"/>',
-        '                                <DataGridTextColumn Header="Sid"',
-        '                                                Binding="{Binding Sid.Name}"',
-        '                                                Width="*"/>',
         '                                <DataGridTextColumn Header="Account"',
         '                                                Binding="{Binding Account}"',
         '                                                Width="200"/>',
         '                                <DataGridTextColumn Header="Path"',
         '                                                Binding="{Binding Path}"',
-        '                                                Width="*"/>',
+        '                                                Width="350"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Grid Grid.Row="2">',
         '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="125"/>',
+        '                                <ColumnDefinition Width="70"/>',
+        '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="90"/>',
-        '                                <ColumnDefinition Width="90"/>',
-        '                                <ColumnDefinition Width="10"/>',
-        '                                <ColumnDefinition Width="210"/>',
-        '                                <ColumnDefinition Width="90"/>',
-        '                                <ColumnDefinition Width="60"/>',
-        '                                <ColumnDefinition Width="90"/>',
-        '                                <ColumnDefinition Width="60"/>',
-        '                                <ColumnDefinition Width="90"/>',
+        '                                <ColumnDefinition Width="*"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <Label   Grid.Column="0" Content="[Mode]:"/>',
-        '                            <ComboBox Grid.Column="1" Name="ProfileMode" SelectedIndex="0">',
+        '                            <Label   Grid.Column="0" Content="[Mode/Process]:"/>',
+        '                            <ComboBox Grid.Column="1" Name="ProfileMode">',
         '                                <ComboBoxItem Content="View"/>',
         '                                <ComboBoxItem Content="Export"/>',
         '                                <ComboBoxItem Content="Import"/>',
         '                            </ComboBox>',
-        '                            <Border  Grid.Column="2" Background="Black" Margin="4"/>',
-        '                            <DataGrid Grid.Column="3"',
+        '                            <DataGrid Grid.Column="2"',
         '                                      HeadersVisibility="None"',
         '                                      Name="ProfileModeDescription"',
-        '                                      Height="20"/>',
-        '                            <Label   Grid.Column="4" Content="[Count]:"/>',
-        '                            <TextBox Grid.Column="5" Name="ProfileFile"/>',
-        '                            <Label   Grid.Column="6" Content="[Size]:"/>',
-        '                            <TextBox Grid.Column="7" Name="ProfileSize"/>',
-        '                            <Button  Grid.Column="8" Name="ProfileLoad" Content="Load"/>',
+        '                                      Margin="10">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <ComboBox Grid.Column="3" Name="ProfileProcess">',
+        '                                <ComboBoxItem Content="File"/>',
+        '                                <ComboBoxItem Content="Transfer"/>',
+        '                            </ComboBox>',
+        '                            <DataGrid Grid.Column="4"',
+        '                                      HeadersVisibility="None"',
+        '                                      Name="ProfileProcessDescription"',
+        '                                      Margin="10">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
         '                        </Grid>',
         '                        <TabControl Grid.Row="3">',
         '                            <TabItem Header="Sid">',
         '                                <DataGrid Name="ProfileSid">',
+        '                                    <DataGrid.Columns>',
+        '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="100"/>',
+        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                            </TabItem>',
+        '                            <TabItem Header="Property">',
+        '                                <DataGrid Name="ProfileProperty">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="100"/>',
         '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
@@ -1817,50 +1828,72 @@ Function Get-ViperBomb
         '                                        <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="90"/>',
         '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="110"/>',
+        '                                            <ColumnDefinition Width="75"/>',
+        '                                            <ColumnDefinition Width="75"/>',
+        '                                            <ColumnDefinition Width="10"/>',
+        '                                            <ColumnDefinition Width="90"/>',
         '                                            <ColumnDefinition Width="90"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Label   Grid.Column="0" Content="[Path]:"/>',
-        '                                        <TextBox Grid.Column="1" Name="ProfilePath"/>',
-        '                                        <Button  Grid.Column="5"',
+        '                                        <Label   Grid.Column="0"',
+        '                                                 Content="[Path]:"/>',
+        '                                        <TextBox Grid.Column="1"',
+        '                                                 Name="ProfilePath"/>',
+        '                                        <Label   Grid.Column="2"',
+        '                                                 Content="[Count/Size]:"/>',
+        '                                        <TextBox Grid.Column="3"',
+        '                                                 Name="ProfileCount"/>',
+        '                                        <TextBox Grid.Column="4"',
+        '                                                 Name="ProfileSize"/>',
+        '                                        <Border  Grid.Column="5"',
+        '                                                 Background="Black"',
+        '                                                 Margin="4"/>',
+        '                                        <Button  Grid.Column="6"',
+        '                                                 Name="ProfileLoad"',
+        '                                                 Content="Load"/>',
+        '                                        <Button  Grid.Column="7"',
         '                                                 Name="ProfileContentRefresh"',
         '                                                 Content="Refresh"/>',
         '                                    </Grid>',
         '                                    <DataGrid Grid.Row="1" Name="ProfileContent">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
-        '                                            <DataGridTextColumn Header="Created"  Binding="{Binding Created}"  Width="100"/>',
-        '                                            <DataGridTextColumn Header="Accessed" Binding="{Binding Accessed}" Width="100"/>',
-        '                                            <DataGridTextColumn Header="Modified" Binding="{Binding Modified}" Width="100"/>',
-        '                                            <DataGridTextColumn Header="Size"     Binding="{Binding Size}"     Width="100"/>',
-        '                                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="75"/>',
+        '                                            <DataGridTextColumn Header="Created"  Binding="{Binding Created}"  Width="120"/>',
+        '                                            <DataGridTextColumn Header="Accessed" Binding="{Binding Accessed}" Width="120"/>',
+        '                                            <DataGridTextColumn Header="Modified" Binding="{Binding Modified}" Width="120"/>',
+        '                                            <DataGridTextColumn Header="Size"     Binding="{Binding Size}"     Width="75"/>',
+        '                                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="90"/>',
-        '                                            <ColumnDefinition Width="90"/>',
-        '                                            <ColumnDefinition Width="10"/>',
-        '                                            <ColumnDefinition Width="90"/>',
         '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="40"/>',
         '                                            <ColumnDefinition Width="90"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Label   Grid.Column="0" Content="[Process]:"/>',
-        '                                        <ComboBox Grid.Column="1" Name="ProfileProcess">',
-        '                                            <ComboBoxItem Content="File"/>',
-        '                                            <ComboBoxItem Content="Transfer"/>',
-        '                                        </ComboBox>',
-        '                                        <Border  Grid.Column="2" Background="Black" Margin="4"/>',
-        '                                        <Label Grid.Column="3" Content="[Target]:"/>',
-        '                                        <TextBox Grid.Column="4" Name="ProfileTarget"/>',
-        '                                        <Image Grid.Column="5" Name="ProfileTargetIcon"/>',
-        '                                        <Button Grid.Column="6" Name="ProfileBrowse" Content="Browse"/>',
+        '                                        <Label Grid.Column="0" ',
+        '                                               Content="[Target]:"/>',
+        '                                        <TextBox Grid.Column="1"',
+        '                                                 Name="ProfileTarget"/>',
+        '                                        <Image Grid.Column="2"',
+        '                                               Name="ProfileTargetIcon"/>',
+        '                                        <Button Grid.Column="3"',
+        '                                                Name="ProfileBrowse"',
+        '                                                Content="Browse"/>',
         '                                    </Grid>',
         '                                </Grid>',
         '                            </TabItem>',
         '                        </TabControl>',
         '                    </Grid>',
         '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Console">',
+        '                <DataGrid Name="Console">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="" Binding="{Binding }" Width="*"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
         '            </TabItem>',
         '        </TabControl>',
         '    </Grid>',
@@ -8815,6 +8848,7 @@ Function Get-ViperBomb
         [Object]            $Service
         [Object]             $Filter
         [Object]            $Profile
+        [Object]            $Process
         ViperBombConfig()
         {
             $This.Preference = $This.Get("Preference")
@@ -8822,6 +8856,7 @@ Function Get-ViperBomb
             $This.Service    = $This.Get("Service")
             $This.Filter     = $This.Get("Filter")
             $This.Profile    = $This.Get("Profile")
+            $This.Process    = $This.Get("Process")
         }
         [Object] Get([String]$Name)
         {
@@ -8832,6 +8867,7 @@ Function Get-ViperBomb
                 Service    {          [ServiceProfileList]::New() }
                 Filter     {           [ServiceFilterList]::New() }
                 Profile    {             [ProfileModeList]::New() }
+                "Process"  {          [ProfileProcessList]::New() }
             }
 
             Return $Item
@@ -8848,11 +8884,11 @@ Function Get-ViperBomb
         }
         SetSlot([UInt32]$Index)
         {
-            $This.Slot = $This.Profile | ? Index -eq $Index
+            $This.Slot = $This.Service.Output | ? Index -eq $Index
         }
         [Object] GetSlot([String]$Name)
         {
-            Return $This.Profile | ? Type -eq $Name
+            Return $This.Service.Output | ? Type -eq $Name
         }
         [String] ToString()
         {
@@ -8875,6 +8911,27 @@ Function Get-ViperBomb
         }
     }
 
+    Class ViperBombFlag
+    {
+        [UInt32] $Index
+        [String] $Name
+        [UInt32] $Status
+        ViperBombFlag([UInt32]$Index,[String]$Name)
+        {
+            $This.Index  = $Index
+            $This.Name   = $Name
+            $This.SetStatus(0)
+        }
+        SetStatus([UInt32]$Status)
+        {
+            $This.Status = $Status
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb[Flag]>"
+        }
+    }
+
     Class ViperBombController
     {
         [Object] $Module
@@ -8884,6 +8941,7 @@ Function Get-ViperBomb
         [Object] $Service
         [Object] $Control
         [Object] $Profile
+        [Object] $Flag
         ViperBombController()
         {
             $This.Module      = Get-FEModule -Mode 1
@@ -8894,6 +8952,12 @@ Function Get-ViperBomb
             $This.Service     = $This.Get("Service")
             $This.Control     = $This.Get("Control")
             $This.Profile     = $This.Get("Profile")
+            $This.Flag        = @( )
+
+            ForEach ($Name in "ProfileTarget")
+            {
+                $This.Flag += $This.ViperBombFlag($This.Flag.Count,$Name)
+            }
         }
         Update([UInt32]$Mode,[String]$State)
         {
@@ -8953,6 +9017,10 @@ Function Get-ViperBomb
         {
             Return [ViperBombProperty]::New($Property)
         }
+        [Object] ViperBombFlag([UInt32]$Index,[String]$Name)
+        {
+            Return [ViperBombFlag]::New($Index,$Name)
+        }
         [String] Label()
         {
             Return "{0}[System Control Extension Utility]" -f $This.Module.Label()
@@ -8973,6 +9041,10 @@ Function Get-ViperBomb
             "f this utility, which is featured on his [GitHub] repository "+
             "above.")
         }
+        [String] IconStatus([UInt32]$Flag)
+        {
+            Return $This.Module._Control(@("failure.png","success.png")[$Flag]).Fullname
+        }
         [Object[]] Property([Object]$Object)
         {
             Return $Object.PSObject.Properties | % { $This.ViperBombProperty($_) }
@@ -8986,6 +9058,25 @@ Function Get-ViperBomb
             }
     
             Return $Item | % { $This.ViperBombProperty($_) }
+        }
+        FolderBrowse()
+        {
+            $This.Update(0,"Browsing [~] Folder: [ProfileTarget]")
+            $Object      = $This.Xaml.IO.ProfileTarget
+            $Item        = New-Object System.Windows.Forms.FolderBrowserDialog
+            $Item.ShowDialog()
+        
+            $Object.Text = @("<Select a path>",$Item.SelectedPath)[!!$Item.SelectedPath]
+        }
+        CheckPath()
+        {
+            $Item        = $This.Xaml.IO.ProfileTarget
+            $Icon        = $This.Xaml.IO.ProfileTargetIcon
+    
+            $xFlag       = $This.Flag | ? Name -eq ProfileTarget
+            $xFlag.SetStatus([UInt32][System.IO.Directory]::Exists($Item.Text))
+    
+            $Icon.Source = $This.IconStatus($xFlag.Status)
         }
         SetSlot([UInt32]$Slot)
         {
@@ -9084,6 +9175,38 @@ Function Get-ViperBomb
             }
 
             Return $Item
+        }
+        ProfilePanel()
+        {
+            $Item = $This.Xaml.IO.ProfileOutput.SelectedItem
+            If (!$Item)
+            {
+                [System.Windows.MessageBox]::Show("Not a valid selection","Account Selection Error")
+            }
+
+            Switch ($Item.Type)
+            {
+                Default
+                {
+                    $This.Xaml.IO.ProfileSize.Text        = "N/A"
+                    $This.Xaml.IO.ProfileCount.Text       = "N/A"
+                    $This.Xaml.IO.ProfileBrowse.IsEnabled = 0
+                    $This.Xaml.IO.ProfileContentRefresh.IsEnabled = 0
+                }
+                User
+                {
+                    $This.Xaml.IO.ProfileSize.Text        = $Item.Size.Size
+                    $This.Xaml.IO.ProfileCount.Text       = $Item.Content.Count
+                    $This.Xaml.IO.ProfileBrowse.IsEnabled = 1
+                    $This.Xaml.IO.ProfileContentRefresh.IsEnabled = 1
+                }
+            }
+
+            # Sid panel
+            $This.Reset($This.Xaml.IO.ProfileSid,$This.Property($Item.Sid))
+
+            # Content Panel
+            $This.Xaml.IO.ProfilePath.Text = $Item.Path
         }
         StageXaml()
         {
@@ -9188,12 +9311,12 @@ Function Get-ViperBomb
 
             ######################## Second Tab #############################
             
-            $Ctrl.Reset($Ctrl.Xaml.IO.ServiceSlot,$Ctrl.Config.Profile.Index)
+            $Ctrl.Reset($Ctrl.Xaml.IO.ServiceSlot,$Ctrl.Config.Service.Output.Index)
 
             $Ctrl.Xaml.IO.ServiceSlot.Add_SelectionChanged(
             {
                 $Index = $Ctrl.Xaml.IO.ServiceSlot.SelectedItem
-                $Ctrl.Reset($Ctrl.Xaml.IO.ServiceDisplay,$Ctrl.Config.Profile[$Index])
+                $Ctrl.Reset($Ctrl.Xaml.IO.ServiceDisplay,$Ctrl.Config.Service.Output[$Index])
                 $Ctrl.SetSlot($Index)
             })
             
@@ -9290,18 +9413,21 @@ Function Get-ViperBomb
 
             $Ctrl.Xaml.IO.ControlFilter.Add_TextChanged(
             {
-                Start-Sleep -Milliseconds 50
                 $Property = $Ctrl.Xaml.IO.ControlProperty.SelectedItem.Content
                 $Text     = $Ctrl.Xaml.IO.ControlFilter.Text
+
+                Start-Sleep -Milliseconds 25
+
+                $Item     = $Ctrl.Control.Output
                 $List     = Switch -Regex ($Text)
                 {
-                    ""
-                    {
-                        $Ctrl.Control.Output | ? $Property -match $Text
-                    }
                     Default
                     {
-                        $Ctrl.Control.Output
+                        $Item | ? $Property -match $Text
+                    }
+                    "^$"
+                    {
+                        $Item
                     }
                 }
 
@@ -9323,16 +9449,18 @@ Function Get-ViperBomb
 
             $Ctrl.Xaml.IO.ControlFeatureFilter.Add_TextChanged(
             {
-                Start-Sleep -Milliseconds 50
                 $Property = $Ctrl.Xaml.IO.ControlFeatureProperty.SelectedItem.Content
                 $Text     = $Ctrl.Xaml.IO.ControlFeatureFilter.Text
+
+                Start-Sleep -Milliseconds 25
+
                 $List     = Switch -Regex ($Text)
                 {
-                    ""
+                    Default
                     {
                         $Ctrl.Control.Feature | ? $Property -match $Text
                     }
-                    Default
+                    "^$"
                     {
                         $Ctrl.Control.Feature
                     }
@@ -9359,21 +9487,145 @@ Function Get-ViperBomb
             {
                 $Property = $Ctrl.Xaml.IO.ControlAppXProperty.SelectedItem.Content
                 $Text     = $Ctrl.Xaml.IO.ControlAppXFilter.Text
+
                 Start-Sleep -Milliseconds 25
+                
+                $Item     = $Ctrl.Control.AppX
                 $List     = Switch -Regex ($Text)
                 {
-                    ""
-                    {
-                        $Ctrl.Control.AppX | ? $Property -match $Text
-                    }
                     Default
                     {
-                        $Ctrl.Control.AppX
+                        $Item | ? $Property -match $Text
+                    }
+                    "^$"
+                    {
+                        $Item
                     }
                 }
 
                 $Ctrl.Reset($Ctrl.Xaml.IO.ControlAppX,$List)
             })
+
+            ################# Fourth Tab ########################
+            $Ctrl.Xaml.IO.ProfileType.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.ProfileType.SelectedIndex
+                $Item  = Switch ($Index)
+                {
+                    0  { $Ctrl.Profile.Output         }
+                    1  { $Ctrl.Profile.System.Output  }
+                    2  { $Ctrl.Profile.Service.Output }
+                    3  { $Ctrl.Profile.User.Output    }
+                }
+
+                $Ctrl.Reset($Ctrl.Xaml.IO.ProfileOutput,$Item)
+            })
+
+            $Ctrl.Xaml.IO.ProfileType.SelectedIndex = 0
+
+            $Ctrl.Xaml.IO.ProfileSearchFilter.Add_TextChanged(
+            {
+                $Property  = $Ctrl.Xaml.IO.ProfileSearchProperty.SelectedItem.Content
+                $Text      = $Ctrl.Xaml.IO.ProfileSearchFilter.Text
+                $Mode      = $Ctrl.Xaml.IO.ProfileType.SelectedIndex
+
+                Start-Sleep -Milliseconds 25
+
+                Switch ($Mode)
+                {
+                    0
+                    {
+                        $Item  = $Ctrl.Profile.Output
+                        $List  = Switch -Regex ($Text)
+                        {
+                            Default { $Item | ? $Property -match $Text }
+                            "^$"    { $Item }
+                        }
+                    }
+                    1
+                    {
+                        $Type  = $Ctrl.Xaml.IO.ProfileType.SelectedItem.Content
+                        $Item  = $Ctrl.Profile.$Type.Output
+                        $List  = Switch -Regex ($Text)
+                        {
+                            Default { $Item | ? $Property -match $Text }
+                            "^$"    { $Item }
+                        }
+                    }
+                }
+
+                $Ctrl.Reset($Ctrl.Xaml.IO.ProfileOutput,$List)
+            })
+
+            $Ctrl.Xaml.IO.ProfileRefresh.Add_Click(
+            {
+                $Mode  = $Ctrl.Xaml.IO.ProfileType.SelectedIndex
+                $Type  = $Ctrl.Xaml.IO.ProfileType.SelectedItem.Content
+                $List  = Switch ($Mode)
+                {
+                    0 { $Ctrl.Profile.Output }
+                    1 { $Ctrl.Profile.$Type.Output }
+                }
+
+                $Ctrl.Reset($Ctrl.Xaml.IO.ProfileOutput,$List)
+            })
+
+            $Ctrl.Xaml.IO.ProfileMode.Add_SelectionChanged(
+            {
+                $Item = $Ctrl.Config.Profile.Output | ? Index -eq $Ctrl.Xaml.IO.ProfileMode.SelectedIndex
+                $Ctrl.Reset($Ctrl.Xaml.IO.ProfileModeDescription,$Item)
+            })
+
+            $Ctrl.Xaml.IO.ProfileProcess.Add_SelectionChanged(
+            {
+                $Item = $Ctrl.Config.Process.Output | ? Index -eq $Ctrl.Xaml.IO.ProfileProcess.SelectedIndex
+                $Ctrl.Reset($Ctrl.Xaml.IO.ProfileProcessDescription,$Item)
+            })
+
+            $Ctrl.Xaml.IO.ProfileLoad.Add_Click(
+            {
+                $Item = $Ctrl.Xaml.IO.ProfileOutput.SelectedItem
+                
+                If (!$Item)
+                {
+                    [System.Windows.MessageBox]::Show("Must select a profile","Account Selection Error")
+                }
+
+                Switch ($Item.Type)
+                {
+                    Default
+                    {
+                        [System.Windows.MessageBox]::Show("Cannot load a system or service account","Account Selection Error")
+                    }
+                    User
+                    {
+                        $Ctrl.Update(0,"Loading [~] User Profile [$($Item.Account)]")
+                        $Item.GetContent()
+                        $Ctrl.Xaml.IO.ProfileCount.Text = $Item.Content.Count
+                        $Ctrl.Xaml.IO.ProfileSize.Text  = $Item.Size.Size
+                        $Ctrl.Reset($Ctrl.Xaml.IO.ProfileContent,$Item.Content)
+                    }
+                }
+            })
+
+            $Ctrl.Xaml.IO.ProfileOutput.Add_SelectionChanged(
+            {
+                $Ctrl.ProfilePanel()
+            })
+
+            $Ctrl.Xaml.IO.ProfileTarget.Add_TextChanged(
+            {
+                $Ctrl.CheckPath()
+            })
+
+            $Ctrl.Xaml.IO.ProfileBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse()
+            })
+
+            <#
+            ProfileProcess
+            #>
         }
     }
 <#
@@ -9384,11 +9636,11 @@ Function Get-ViperBomb
             [ViperBombController]::New()
         }
         1
-        {
+        {#>
             $Ctrl = [ViperBombController]::New()    
             $Ctrl.StageXaml()
             $Ctrl.Xaml.Invoke()
-        }
+        <#}
         2
         {
             $Console = New-FEConsole
