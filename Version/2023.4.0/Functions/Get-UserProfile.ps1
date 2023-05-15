@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-12 01:13:29                                                                  //
+\\  Date       : 2023-05-15 11:33:11                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-UserProfile.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s 
     Primary    : @mcc85s 
     Created    : 2023-04-05
-    Modified   : 2023-05-12
+    Modified   : 2023-05-15
     Demo       : N/A 
     Version    : 0.0.0 - () - Finalized functional version 1.
     TODO       : 
@@ -347,11 +347,12 @@ Function Get-UserProfile
 
     Class ProfileController
     {
-        Hidden [UInt32] $Mode
-        Hidden [String] $Root
-        [Object]      $System
-        [Object]     $Service
-        [Object]        $User
+        Hidden [UInt32]   $Mode
+        Hidden [String]   $Root
+        Hidden [Object] $Output
+        [Object]        $System
+        [Object]       $Service
+        [Object]          $User
         ProfileController([UInt32]$Mode)
         {
             $This.Mode = $Mode
@@ -372,6 +373,7 @@ Function Get-UserProfile
         }
         Clear()
         {
+            $This.Output  = @( )
             $This.System  = $This.ProfileList("System")
             $This.Service = $This.ProfileList("Service")
             $This.User    = $This.ProfileList("User")
@@ -383,8 +385,9 @@ Function Get-UserProfile
             # Get profiles for [System/Service/User]    
             ForEach ($Profile in $This.GetProfile())
             {
-                $Item = $This.ProfileItem($Profile)
-                $List = Switch ($Item.Type)
+                $Item         = $This.ProfileItem($Profile)
+                $This.Output += $Item
+                $List         = Switch ($Item.Type)
                 {
                     System  { $This.System  }
                     Service { $This.Service }
