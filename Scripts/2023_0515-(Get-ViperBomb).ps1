@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-15 14:29:52                                                                  //
+\\  Date       : 2023-05-15 16:28:45                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-ViperBomb.ps1
@@ -587,7 +587,7 @@ Function Get-ViperBomb
         '                        <TabItem Header="Bios Information">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="50"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="130"/>',
         '                                </Grid.RowDefinitions>',
@@ -625,7 +625,7 @@ Function Get-ViperBomb
         '                        <TabItem Header="Operating System">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="50"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
@@ -704,7 +704,7 @@ Function Get-ViperBomb
         '                        <TabItem Header="Computer System">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="50"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="90"/>',
         '                                </Grid.RowDefinitions>',
@@ -1167,33 +1167,36 @@ Function Get-ViperBomb
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
         '                                            <RowDefinition Height="*"/>',
+        '                                            <RowDefinition Height="40"/>',
         '                                        </Grid.RowDefinitions>',
         '                                        <Grid Grid.Row="0">',
         '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="125"/>',
+        '                                                <ColumnDefinition Width="70"/>',
+        '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="*"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <Label Grid.Column="0" Content="[Category]:"/>',
+        '                                            <Label Grid.Column="0" Content="[Slot]:"/>',
         '                                            <ComboBox Grid.Column="1" Name="ServicePreferenceSlot" SelectedIndex="3">',
-        '                                                <ComboBoxItem Content="Bypass"/>',
-        '                                                <ComboBoxItem Content="Display"/>',
-        '                                                <ComboBoxItem Content="Miscellaneous"/>',
-        '                                                <ComboBoxItem Content="Development"/>',
+        '                                                <ComboBoxItem Content="0"/>',
+        '                                                <ComboBoxItem Content="1"/>',
+        '                                                <ComboBoxItem Content="2"/>',
+        '                                                <ComboBoxItem Content="3"/>',
         '                                            </ComboBox>',
         '                                            <DataGrid Grid.Column="2"',
         '                                          Height="20"',
         '                                          Name="ServicePreferenceDescription"',
         '                                          HeadersVisibility="None">',
         '                                                <DataGrid.Columns>',
-        '                                                    <DataGridTextColumn Binding="{Binding Description}"/>',
+        '                                                    <DataGridTextColumn Binding="{Binding Name}"        Width="100"/>',
+        '                                                    <DataGridTextColumn Binding="{Binding Description}" Width="*"/>',
         '                                                </DataGrid.Columns>',
         '                                            </DataGrid>',
         '                                        </Grid>',
         '                                        <DataGrid Grid.Row="1" Name="ServicePreferenceList">',
         '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="40"/>',
         '                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
-        '                                                <DataGridTemplateColumn Header="Value" Width="90">',
+        '                                                <DataGridTemplateColumn Header="Value" Width="40">',
         '                                                    <DataGridTemplateColumn.CellTemplate>',
         '                                                        <DataTemplate>',
         '                                                            <CheckBox IsChecked="{Binding Value}"/>',
@@ -1202,6 +1205,7 @@ Function Get-ViperBomb
         '                                                </DataGridTemplateColumn>',
         '                                            </DataGrid.Columns>',
         '                                        </DataGrid>',
+        '                                        <Button Grid.Row="2" Name="ServicePreferenceApply" Content="Apply"/>',
         '                                    </Grid>',
         '                                    <Border Grid.Column="1" Background="Black" Margin="4"/>',
         '                                    <TabControl Grid.Column="2">',
@@ -1256,6 +1260,7 @@ Function Get-ViperBomb
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label Grid.Column="0"',
@@ -1265,9 +1270,11 @@ Function Get-ViperBomb
         '                                              Margin="5"',
         '                                              Name="ServiceLogServiceSwitch"/>',
         '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="ServiceLogServiceFile"',
+        '                                              Name="ServiceLogServicePath"',
         '                                              IsEnabled="False"/>',
-        '                                    <Button   Grid.Column="3"',
+        '                                    <Image    Grid.Column="3"',
+        '                                              Name="ServiceLogServicePathIcon"/>',
+        '                                    <Button   Grid.Column="4"',
         '                                              Name="ServiceLogServiceBrowse"',
         '                                              Content="Browse"/>',
         '                                </Grid>',
@@ -1276,6 +1283,7 @@ Function Get-ViperBomb
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label Grid.Column="0" ',
@@ -1285,9 +1293,11 @@ Function Get-ViperBomb
         '                                              Margin="5"',
         '                                              Name="ServiceLogScriptSwitch"/>',
         '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="ServiceLogScriptFile"',
+        '                                              Name="ServiceLogScriptPath"',
         '                                              IsEnabled="False"/>',
-        '                                    <Button   Grid.Column="3"',
+        '                                    <Image    Grid.Column="3"',
+        '                                              Name="ServiceLogScriptPathIcon"/>',
+        '                                    <Button   Grid.Column="4"',
         '                                              Name="ServiceLogScriptBrowse"',
         '                                              Content="Browse"/>',
         '                                </Grid>',
@@ -1298,6 +1308,7 @@ Function Get-ViperBomb
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label Grid.Column="0" ',
@@ -1306,9 +1317,11 @@ Function Get-ViperBomb
         '                                    <CheckBox Grid.Column="1"',
         '                                              Name="ServiceRegSwitch"/>',
         '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="ServiceRegFile"',
+        '                                              Name="ServiceRegPath"',
         '                                              IsEnabled="False"/>',
-        '                                    <Button   Grid.Column="3"',
+        '                                    <Image    Grid.Column="3"',
+        '                                              Name="ServiceRegPathIcon"/>',
+        '                                    <Button   Grid.Column="4"',
         '                                              Name="ServiceRegBrowse"',
         '                                              Content="Browse"/>',
         '                                </Grid>',
@@ -1317,6 +1330,7 @@ Function Get-ViperBomb
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label Grid.Column="0"',
@@ -1324,12 +1338,14 @@ Function Get-ViperBomb
         '                                           Style="{StaticResource LabelRed}"/>',
         '                                    <CheckBox Grid.Column="1"',
         '                                              Name="ServiceCsvSwitch"/>',
-        '                                    <Button   Grid.Column="3"',
+        '                                    <TextBox  Grid.Column="2"',
+        '                                              Name="ServiceCsvPath"',
+        '                                              IsEnabled="False"/>',
+        '                                    <Image    Grid.Column="3"',
+        '                                              Name="ServiceCsvPathIcon"/>',
+        '                                    <Button   Grid.Column="4"',
         '                                              Name="ServiceCsvBrowse"',
         '                                              Content="Browse"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="ServiceCsvFile"',
-        '                                              IsEnabled="False"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </TabItem>',
@@ -1572,10 +1588,10 @@ Function Get-ViperBomb
         '                                                        Width="2*"/>',
         '                                        <DataGridTextColumn Header="PublisherID"',
         '                                                        Binding="{Binding PublisherID}"',
-        '                                                        Width="*"/>',
+        '                                                        Width="125"/>',
         '                                        <DataGridTextColumn Header="Version"',
         '                                                        Binding="{Binding Version}"',
-        '                                                        Width="100"/>',
+        '                                                        Width="150"/>',
         '                                        <DataGridTemplateColumn Header="Slot" Width="60">',
         '                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                <DataTemplate>',
@@ -1732,8 +1748,7 @@ Function Get-ViperBomb
         '                            </Grid.ColumnDefinitions>',
         '                            <Label    Grid.Column="0" Content="[Profile]:"/>',
         '                            <ComboBox Grid.Column="1"',
-        '                                      Name="ProfileType" ',
-        '                                      SelectedIndex="0">',
+        '                                      Name="ProfileType">',
         '                                <ComboBoxItem Content="All"/>',
         '                                <ComboBoxItem Content="System"/>',
         '                                <ComboBoxItem Content="Service"/>',
@@ -1768,35 +1783,37 @@ Function Get-ViperBomb
         '                        <Grid Grid.Row="2">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="125"/>',
+        '                                <ColumnDefinition Width="40"/>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="250"/>',
+        '                                <ColumnDefinition Width="40"/>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="250"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <Label   Grid.Column="0" Content="[Mode/Process]:"/>',
         '                            <ComboBox Grid.Column="1" Name="ProfileMode">',
-        '                                <ComboBoxItem Content="View"/>',
-        '                                <ComboBoxItem Content="Export"/>',
-        '                                <ComboBoxItem Content="Import"/>',
+        '                                <ComboBoxItem Content="0"/>',
+        '                                <ComboBoxItem Content="1"/>',
+        '                                <ComboBoxItem Content="2"/>',
         '                            </ComboBox>',
         '                            <DataGrid Grid.Column="2"',
         '                                      HeadersVisibility="None"',
         '                                      Name="ProfileModeDescription"',
         '                                      Margin="10">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>',
+        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="80"/>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <ComboBox Grid.Column="3" Name="ProfileProcess">',
-        '                                <ComboBoxItem Content="File"/>',
-        '                                <ComboBoxItem Content="Transfer"/>',
+        '                                <ComboBoxItem Content="0"/>',
+        '                                <ComboBoxItem Content="1"/>',
         '                            </ComboBox>',
         '                            <DataGrid Grid.Column="4"',
         '                                      HeadersVisibility="None"',
         '                                      Name="ProfileProcessDescription"',
         '                                      Margin="10">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>',
+        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="80"/>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </Grid>',
@@ -1812,7 +1829,7 @@ Function Get-ViperBomb
         '                            <TabItem Header="Property">',
         '                                <DataGrid Name="ProfileProperty">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="100"/>',
+        '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="300"/>',
         '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
@@ -1860,6 +1877,7 @@ Function Get-ViperBomb
         '                                                            <Setter.Value>',
         '                                                                <TextBlock Text="{Binding Fullname}" ',
         '                                                                   TextWrapping="Wrap"',
+        '                                                                   FontFamily="Consolas"',
         '                                                                   Width="600" ',
         '                                                                   Background="#000000" ',
         '                                                                   Foreground="#00FF00"/>',
@@ -1905,6 +1923,26 @@ Function Get-ViperBomb
         '            </TabItem>',
         '            <TabItem Header="Console">',
         '                <DataGrid Name="Console">',
+        '                    <DataGrid.RowStyle>',
+        '                        <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style.Triggers>',
+        '                                <Trigger Property="IsMouseOver" Value="True">',
+        '                                    <Setter Property="ToolTip">',
+        '                                        <Setter.Value>',
+        '                                            <TextBlock Text="{Binding Fullname}" ',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Width="600" ',
+        '                                                       Background="#000000" ',
+        '                                                       Foreground="#00FF00"/>',
+        '                                        </Setter.Value>',
+        '                                    </Setter>',
+        '                                    <Setter Property="ToolTipService.ShowDuration" ',
+        '                                            Value="360000000"/>',
+        '                                </Trigger>',
+        '                            </Style.Triggers>',
+        '                        </Style>',
+        '                    </DataGrid.RowStyle>',
         '                    <DataGrid.Columns>',
         '                        <DataGridTextColumn Header="Index"   Binding="{Binding Index}"   Width="50"/>',
         '                        <DataGridTextColumn Header="Elapsed" Binding="{Binding Elapsed}" Width="125"/>',
@@ -1916,90 +1954,6 @@ Function Get-ViperBomb
         '        </TabControl>',
         '    </Grid>',
         '</Window>' -join "`n")
-    }
-
-    Class XamlProperty
-    {
-        [UInt32]   $Index
-        [String]    $Name
-        [Object]    $Type
-        [Object] $Control
-        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
-        {
-            $This.Index   = $Index
-            $This.Name    = $Name
-            $This.Type    = $Object.GetType().Name
-            $This.Control = $Object
-        }
-        [String] ToString()
-        {
-            Return $This.Name
-        }
-    }
-
-    Class XamlWindow
-    {
-        Hidden [Object]        $XAML
-        Hidden [Object]         $XML
-        [String[]]            $Names
-        [Object]              $Types
-        [Object]               $Node
-        [Object]                 $IO
-        [String]          $Exception
-        XamlWindow([String]$Xaml)
-        {           
-            If (!$Xaml)
-            {
-                Throw "Invalid XAML Input"
-            }
-
-            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-
-            $This.Xaml               = $Xaml
-            $This.Xml                = [XML]$Xaml
-            $This.Names              = $This.FindNames()
-            $This.Types              = @( )
-            $This.Node               = [System.Xml.XmlNodeReader]::New($This.Xml)
-            $This.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
-            
-            ForEach ($X in 0..($This.Names.Count-1))
-            {
-                $Name                = $This.Names[$X]
-                $Object              = $This.IO.FindName($Name)
-                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
-                If (!!$Object)
-                {
-                    $This.Types     += $This.XamlProperty($This.Types.Count,$Name,$Object)
-                }
-            }
-        }
-        [String[]] FindNames()
-        {
-            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
-        }
-        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
-        {
-            Return [XamlProperty]::New($Index,$Name,$Object)
-        }
-        [Object] Get([String]$Name)
-        {
-            Return $This.Types | ? Name -eq $Name
-        }
-        Invoke()
-        {
-            Try
-            {
-                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
-            }
-            Catch
-            {
-                $This.Exception = $PSItem
-            }
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.ViperBomb[Xaml]>"
-        }
     }
 
     # // =============================
@@ -2080,6 +2034,10 @@ Function Get-ViperBomb
             $This.Type        = $Type
             $This.Name        = $Name
             $This.Description = $Description
+        }
+        SetValue([UInt32]$Value)
+        {
+            $This.Value = $Value
         }
         [String] ToString()
         {
@@ -8658,15 +8616,15 @@ Function Get-ViperBomb
                 $Item.Description = Switch ($Name)
                 {
                     HomeMax           { "Windows (10|11) Home, Default/Maximum" }
-                    HomeMin           { "Windows (10|11) Home, Default/Minimum"}
-                    ProMax            { "Windows (10|11) Pro, Default/Maximum"}
-                    ProMin            { "Windows (10|11) Pro, Default/Minimum"}
-                    DesktopSafeMax    { "Desktop (General), Safe Maximum"}
-                    DesktopSafeMin    { "Desktop (General), Safe Minimum" }
-                    DesktopTweakedMax { "Desktop (General), Tweaked Maximum"}
-                    DesktopTweakedMin { "Desktop (General), Tweaked Minimum"}
-                    LaptopSafeMax     { "Laptop (General), Safe Maximum"}
-                    LaptopSafeMin     { "Laptop (General), Safe Minimum"}
+                    HomeMin           { "Windows (10|11) Home, Default/Minimum" }
+                    ProMax            { "Windows (10|11) Pro, Default/Maximum"  }
+                    ProMin            { "Windows (10|11) Pro, Default/Minimum"  }
+                    DesktopSafeMax    { "Desktop (General), Safe Maximum"       }
+                    DesktopSafeMin    { "Desktop (General), Safe Minimum"       }
+                    DesktopTweakedMax { "Desktop (General), Tweaked Maximum"    }
+                    DesktopTweakedMin { "Desktop (General), Tweaked Minimum"    }
+                    LaptopSafeMax     { "Laptop (General), Safe Maximum"        }
+                    LaptopSafeMin     { "Laptop (General), Safe Minimum"        }
                 }
 
                 $This.Output += $Item
@@ -8827,31 +8785,31 @@ Function Get-ViperBomb
 
     Class ViperBombConfig
     {
-        [Object]               $Slot
-        [UInt32]        $BypassBuild = 0
-        [UInt32]      $BypassEdition = 0
-        [UInt32]       $BypassLaptop = 0
-        [UInt32]      $DisplayActive = 1
-        [UInt32]    $DisplayInactive = 1
-        [UInt32]     $DisplaySkipped = 1
-        [UInt32]       $MiscSimulate = 0
-        [UInt32]           $MiscXbox = 1
-        [UInt32]         $MiscChange = 0
-        [UInt32]   $MiscStopDisabled = 0
-        [UInt32]          $DevErrors = 0
-        [UInt32]             $DevLog = 0
-        [UInt32]         $DevConsole = 0
-        [UInt32]          $DevReport = 0
-        [String]    $LogServiceLabel = "Service.log"
-        [String]     $LogScriptLabel = "Script.log"
-        [String]           $RegLabel = "Backup.reg"
-        [String]           $CsvLabel = "Backup.csv"
-        [Object]         $Preference
-        [Object]             $Option
-        [Object]            $Service
-        [Object]             $Filter
-        [Object]            $Profile
-        [Object]            $Process
+        [Object]             $Slot
+        [UInt32]        $DevErrors = 0
+        [UInt32]           $DevLog = 0
+        [UInt32]       $DevConsole = 0
+        [UInt32]        $DevReport = 0
+        [UInt32]      $BypassBuild = 0
+        [UInt32]    $BypassEdition = 0
+        [UInt32]     $BypassLaptop = 0
+        [UInt32]    $DisplayActive = 1
+        [UInt32]  $DisplayInactive = 1
+        [UInt32]   $DisplaySkipped = 1
+        [UInt32]     $MiscSimulate = 0
+        [UInt32]         $MiscXbox = 1
+        [UInt32]       $MiscChange = 0
+        [UInt32] $MiscStopDisabled = 0
+        [String]       $LogService = "Service.log"
+        [String]        $LogScript = "Script.log"
+        [String]              $Reg = "Backup.reg"
+        [String]              $Csv = "Backup.csv"
+        [Object]       $Preference
+        [Object]           $Option
+        [Object]          $Service
+        [Object]           $Filter
+        [Object]          $Profile
+        [Object]          $Process
         ViperBombConfig()
         {
             $This.Preference = $This.Get("Preference")
@@ -8874,6 +8832,11 @@ Function Get-ViperBomb
             }
 
             Return $Item
+        }
+        SetOption([String]$Name,[UInt32]$Value)
+        {
+            $Item       = $This.Option.Output | ? Name -eq $Name
+            $Item.SetValue($Value)
         }
         SetDefault([String]$Caption)
         {
@@ -8957,10 +8920,16 @@ Function Get-ViperBomb
             $This.Profile     = $This.Get("Profile")
             $This.Flag        = @( )
 
-            ForEach ($Name in "ProfileTarget")
+            ForEach ($Name in "ServiceLogScriptPath",
+                              "ServiceLogServicePath",
+                              "ServiceRegPath",
+                              "ServiceCsvPath",
+                              "ProfileTarget")
             {
                 $This.Flag += $This.ViperBombFlag($This.Flag.Count,$Name)
             }
+
+            $This.Flush()
         }
         Update([UInt32]$Mode,[String]$State)
         {
@@ -8975,6 +8944,10 @@ Function Get-ViperBomb
             {
                 [Console]::WriteLine($Last.ToString())
             }
+        }
+        Flush()
+        {
+            $This.Reset($This.Xaml.IO.Console,$This.Module.Console.Output)
         }
         [Void] Reset([Object]$xSender,[Object]$Content)
         {
@@ -9026,6 +8999,10 @@ Function Get-ViperBomb
         {
             Return [Regex]::Escape($String)
         }
+        [String] Runtime()
+        {
+            Return [DateTime]::Now.ToString("yyyyMMdd_HHmmss")
+        }
         [Object] ViperBombProperty([Object]$Property)
         {
             Return [ViperBombProperty]::New($Property)
@@ -9033,6 +9010,10 @@ Function Get-ViperBomb
         [Object] ViperBombFlag([UInt32]$Index,[String]$Name)
         {
             Return [ViperBombFlag]::New($Index,$Name)
+        }
+        [Object] Option([String]$Name)
+        {
+            Return $This.Config.Option.Output | ? Name -eq $Name
         }
         [String] Label()
         {
@@ -9072,24 +9053,27 @@ Function Get-ViperBomb
     
             Return $Item | % { $This.ViperBombProperty($_) }
         }
-        FolderBrowse()
+        FolderBrowse([String]$Name)
         {
-            $This.Update(0,"Browsing [~] Folder: [ProfileTarget]")
-            $Object      = $This.Xaml.IO.ProfileTarget
+            $This.Update(0,"Browsing [~] Folder: [$Name]")
+            $Object      = $This.Xaml.IO.$Name
             $Item        = New-Object System.Windows.Forms.FolderBrowserDialog
             $Item.ShowDialog()
         
             $Object.Text = @("<Select a path>",$Item.SelectedPath)[!!$Item.SelectedPath]
         }
-        CheckPath()
+        CheckPath([String]$Name)
         {
-            $Item        = $This.Xaml.IO.ProfileTarget
-            $Icon        = $This.Xaml.IO.ProfileTargetIcon
+            $Item        = $This.Xaml.IO.$Name
+            $Icon        = $This.Xaml.Get("$Name`Icon")
     
-            $xFlag       = $This.Flag | ? Name -eq ProfileTarget
+            $xFlag       = $This.Flag | ? Name -eq $Name
             $xFlag.SetStatus([UInt32][System.IO.Directory]::Exists($Item.Text))
     
-            $Icon.Source = $This.IconStatus($xFlag.Status)
+            If ($Icon)
+            {
+                $Icon.Source = $This.IconStatus($xFlag.Status)
+            }
         }
         SetSlot([UInt32]$Slot)
         {
@@ -9150,6 +9134,23 @@ Function Get-ViperBomb
                     "DnsServer",
                     "DhcpServer",
                     "MacAddress"
+                }
+                Option
+                {
+                    "ServiceDevErrors",
+                    "ServiceDevLog",
+                    "ServiceDevConsole",
+                    "ServiceDevReport",
+                    "ServiceBypassBuild",
+                    "ServiceBypassEdition",
+                    "ServiceBypassLaptop",
+                    "ServiceDisplayActive",
+                    "ServiceDisplayInactive",
+                    "ServiceDisplaySkipped",
+                    "ServiceMiscSimulate",
+                    "ServiceMiscXbox",
+                    "ServiceMiscChange",
+                    "ServiceMiscStopDisabled"
                 }
                 Control
                 {
@@ -9226,10 +9227,10 @@ Function Get-ViperBomb
             # [Provide alternate variable for event handlers]
             $Ctrl            = $This
 
-            ######################## First Tab #############################
             # [Module OS items]
             $Ctrl.Reset($Ctrl.Xaml.IO.OS,$Ctrl.Module.OS)
 
+            ######################## First Tab #############################
             # [Bios Information]
             $Ctrl.Reset($Ctrl.Xaml.IO.BiosInformation,$Ctrl.System.BiosInformation)
 
@@ -9352,37 +9353,104 @@ Function Get-ViperBomb
                 $Ctrl.Reset($Ctrl.Xaml.IO.ServiceOutput,$List)
             })
 
-            $Ctrl.Reset($Ctrl.Xaml.IO.ServicePreferenceList,$Ctrl.Config.Option.Output)
-            #>
+            # [Set Option Defaults]
+            ForEach ($String in $Ctrl.Grid("Option"))
+            {
+                $Item = $Ctrl.Option($String)
+                $Name = $Item.Name.Replace("^Service","")
+                $Ctrl.Config.SetOption($String,$Ctrl.Config.$Name)
+            }
 
-            <#
-            $Ctrl.Xaml.IO.ServiceBypassBuild.IsChecked       = $Ctrl.Config.BypassBuild
-            $Ctrl.Xaml.IO.ServiceBypassEdition.SelectedIndex = $Ctrl.Config.BypassEdition
-            $Ctrl.Xaml.IO.ServiceBypassLaptop.IsChecked      = $Ctrl.Config.BypassLaptop
-            $Ctrl.Xaml.IO.ServiceDisplayActive               
-            $Ctrl.Xaml.IO.ServiceDisplayInactive
-            $Ctrl.Xaml.IO.ServiceDisplaySkipped
-            $Ctrl.Xaml.IO.ServiceMiscSimulate
-            $Ctrl.Xaml.IO.ServiceMiscXbox
-            $Ctrl.Xaml.IO.ServiceMiscChange
-            $Ctrl.Xaml.IO.ServiceMiscStopDisabled
-            $Ctrl.Xaml.IO.ServiceLogServiceSwitch 
-            $Ctrl.Xaml.IO.ServiceLogServiceFile
-            $Ctrl.Xaml.IO.ServiceLogServiceBrowse
-            $Ctrl.Xaml.IO.ServiceLogScriptSwitch
-            $Ctrl.Xaml.IO.ServiceLogScriptFile
-            $Ctrl.Xaml.IO.ServiceLogScriptBrowse
-            $Ctrl.Xaml.IO.ServiceRegSwitch
-            $Ctrl.Xaml.IO.ServiceRegFile
-            $Ctrl.Xaml.IO.ServiceRegBrowse
-            $Ctrl.Xaml.IO.ServiceCsvSwitch
-            $Ctrl.Xaml.IO.ServiceCsvFile
-            $Ctrl.Xaml.IO.ServiceCsvBrowse
-            $Ctrl.Xaml.IO.ServiceDevErrors
-            $Ctrl.Xaml.IO.ServiceDevLog
-            $Ctrl.Xaml.IO.ServiceDevConsole
-            $Ctrl.Xaml.IO.ServiceDevReport
-            #>
+            $Ctrl.Xaml.IO.ServicePreferenceApply.Add_Click(
+            {
+                ForEach ($Item in $Ctrl.Xaml.IO.ServicePreferenceList.Items)
+                {
+                    $Item = $Ctrl.Option($Item.Name)
+                    $Item.SetOption($Item.Value)
+                }
+            })
+
+            # [Log Services]
+            $Ctrl.Xaml.IO.ServiceLogServiceSwitch.Add_Checked(
+            {
+                $Value = $Ctrl.Xaml.IO.ServiceLogServiceSwitch.IsChecked
+                $Ctrl.Xaml.IO.ServiceLogServiceFile.IsEnabled   = $Value
+                $Ctrl.Xaml.IO.ServiceLogServiceBrowse.IsEnabled = $Value
+            })
+
+            $Ctrl.Xaml.IO.ServiceLogServicePath.Add_TextChanged(
+            {
+                $Ctrl.CheckPath("ServiceLogServicePath")
+            })
+
+            $Ctrl.Xaml.IO.ServiceLogServiceBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse("ServiceLogServicePath")
+            })
+
+            # [Log Script]
+            $Ctrl.Xaml.IO.ServiceLogScriptSwitch.Add_Checked(
+            {
+                $Value = $Ctrl.Xaml.IO.ServiceLogScriptSwitch.IsChecked
+                $Ctrl.Xaml.IO.ServiceLogScriptFile.IsEnabled   = $Value
+                $Ctrl.Xaml.IO.ServiceLogScriptBrowse.IsEnabled = $Value
+            })
+
+            $Ctrl.Xaml.IO.ServiceLogScriptPath.Add_TextChanged(
+            {
+                $Ctrl.CheckPath("ServiceLogScriptPath")
+            })
+
+            $Ctrl.Xaml.IO.ServiceLogScriptBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse("ServiceLogScriptPath")
+            })
+
+            # [Reg Backup]
+            $Ctrl.Xaml.IO.ServiceRegSwitch.Add_Checked(
+            {
+                $Value = $Ctrl.Xaml.IO.ServiceRegSwitch.IsChecked
+                $Ctrl.Xaml.IO.ServiceRegFile.IsEnabled   = $Value
+                $Ctrl.Xaml.IO.ServiceRegBrowse.IsEnabled = $Value
+            })
+
+            $Ctrl.Xaml.IO.ServiceRegPath.Add_TextChanged(
+            {
+                $Ctrl.CheckPath("ServiceRegPath")
+            })
+
+            $Ctrl.Xaml.IO.ServiceRegBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse("ServiceRegPath")
+            })
+
+            # [Csv Backup]
+            $Ctrl.Xaml.IO.ServiceCsvSwitch.Add_Checked(
+            {
+                $Value = $Ctrl.Xaml.IO.ServiceCsvSwitch.IsChecked
+                $Ctrl.Xaml.IO.ServiceCsvFile.IsEnabled   = $Value
+                $Ctrl.Xaml.IO.ServiceCsvBrowse.IsEnabled = $Value
+            })
+    
+            $Ctrl.Xaml.IO.ServiceCsvPath.Add_TextChanged(
+            {
+                $Ctrl.CheckPath("ServiceCsvPath")
+            })
+    
+            $Ctrl.Xaml.IO.ServiceLogScriptBrowse.Add_Click(
+            {
+                $Ctrl.FolderBrowse("ServiceCsvPath")
+            })
+
+            $Ctrl.Reset($Ctrl.Xaml.IO.ServicePreferenceList,$Ctrl.Config.Option.Output)
+
+            $Ctrl.Xaml.IO.ServicePreferenceSlot.Add_SelectionChanged(
+            {
+                $Item  = $Ctrl.Config.Preference.Output[$Ctrl.Xaml.IO.ServicePreferenceSlot.SelectedIndex]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ServicePreferenceDescription,$Item)
+            })
+
+            $Ctrl.Xaml.IO.ServicePreferenceSlot.SelectedIndex = 0
 
             ################# Third Tab #########################
             # [Control Subtab]
@@ -9402,16 +9470,10 @@ Function Get-ViperBomb
             $Ctrl.Xaml.IO.ControlSlot.Add_SelectionChanged(
             {
                 $Slot = $Ctrl.Xaml.IO.ControlSlot.SelectedItem.Content
+                $Item = $Ctrl.Control.Output
                 $List = Switch ($Slot)
                 {
-                    Default
-                    {
-                        $Ctrl.Control.Output | ? Source -eq $Slot
-                    }
-                    All
-                    {
-                        $Ctrl.Control.Output
-                    }
+                    Default { $Item | ? Source -eq $Slot } All { $Item }
                 }
 
                 $Ctrl.Reset($Ctrl.Xaml.IO.ControlOutput,$List)
@@ -9421,10 +9483,10 @@ Function Get-ViperBomb
             {
                 $Property = $Ctrl.Xaml.IO.ControlProperty.SelectedItem.Content
                 $Text     = $Ctrl.Xaml.IO.ControlFilter.Text
+                $Item     = $Ctrl.Control.Output
 
                 Start-Sleep -Milliseconds 25
 
-                $Item     = $Ctrl.Control.Output
                 $List     = Switch -Regex ($Text)
                 {
                     Default
