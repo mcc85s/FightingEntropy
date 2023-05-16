@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-16 13:43:59                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-16 13:55:47                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1739,7 +1739,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "ED8E406EC79E414A730C5B9ABFED03532FEB084F85F9E3CA1DD8AF402CB1140B") ,
+                    ("Get-FEModule.ps1"                , "D293C5A7ABF59BFCCD1D13AF32184680792E4DDB2AD2855A9471E19FF0DFAF22") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
@@ -1751,9 +1751,9 @@ Function FightingEntropy.Module
                     ("Get-PSDLogGUI.ps1"               , "30A5C2B92FA6F8293A362BA870C66432FB86F9029ED2F69F1473A9D324E0A550") ,
                     ("Get-PSDModule.ps1"               , "CD83DA3B18F706174C9D65969938B85F730D36479A42D1D71EDE2C0CA9BE8024") ,
                     ("Get-ThreadController.ps1"        , "3DFA549D11BB239E63B1E114C4C86CFA7A92B83C95F114B5BD66DDC33778E545") ,
-                    ("Get-UserProfile.ps1"             , "BA5E3C078EB4BFB41BCDA4F3CCC6E2F9E5C9B4F5EF2C20AB630162DF3EAC3DA8") ,
-                    ("Get-ViperBomb.ps1"               , "10B54D0C3A27872E5A855C920E04BE666572A6672BB338478D8CF79670A29DF0") ,
-                    ("Get-WhoisUtility.ps1"            , "C333E72994A58399C281A6DA6AC68837FA21CB46B28959E72846CD65B6D396BE") ,
+                    ("Get-UserProfile.ps1"             , "97FF1186827FDE6A84B66C67036B3018F61624C92ECA37F89AC70077B717A6C6") ,
+                    ("Get-ViperBomb.ps1"               , "DBFC9FFE87E8C421C9B3A910C2F7AC2F7E4C7EE0D867619C7BB2E1E476A6B7ED") ,
+                    ("Get-WhoisUtility.ps1"            , "BFE480D46157A0A0F541A4A14E12D85F834592DA8243A5BCE4D24EDADDB4BE9A") ,
                     ("Initialize-FeAdInstance.ps1"     , "0EEF28E919AE410A405DB87C4124239C63026192E188D26B23885A23C6388477") ,
                     ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
                     ("Install-IISServer.ps1"           , "CAFE22024A7B0E398CDB9BA556EC1B5ED776F38FEACF35FBFB4C38C311E1EBE2") ,
@@ -1761,11 +1761,11 @@ Function FightingEntropy.Module
                     ("Invoke-cimdb.ps1"                , "97134F3F6918288B0AB177615F5CC7F78C5F188E8368F1CF8B597419E272C435") ,
                     ("New-Document.ps1"                , "7B21B34EB98C96A93A54639F0A05028B7B1738399EBB391B86EFB0404F851D10") ,
                     ("New-EnvironmentKey.ps1"          , "9577B80E2A2309C1A100859370B7979FBDC504F78BCD8ECF0E4A110585F9C848") ,
-                    ("New-FEConsole.ps1"               , "32DDFA71EA5F180935369B184ED2E77BB30A9BC1F293C9727591D69D175B3194") ,
+                    ("New-FEConsole.ps1"               , "6909B10D29F99EC565B714F31BBD5BE04E5FAE350DC397FE94018988E056E2F1") ,
                     ("New-FEFormat.ps1"                , "549EC35DCB88F4C48ED7C14F06FB0DA05375AF64BFF5C1344A1403E249CE24F2") ,
                     ("New-FEInfrastructure.ps1"        , "3918611F5026D910A1F4D404CEA7D72A70B3DDD2B40CF2D57CFF39CF0E9F0D12") ,
                     ("New-MarkdownFile.ps1"            , "17F2298DF8523E8B9A19AA4DE512E5E8BAA0E282F714A1630283966F76AC7E27") ,
-                    ("New-TranscriptionCollection.ps1" , "EB35AB9A974E1A12C00A6C150FBC0AD26E31485B1E51E912E66A62E163832A3A") ,
+                    ("New-TranscriptionCollection.ps1" , "D3A5F59E17A71B9D6983F5C4F1F32B88B7634FA4910B2DB4A840D97D2B459C6B") ,
                     ("New-VmController.ps1"            , "70F3DB5EE74D52DBA590D23C2EC5320316AB8EBC26F07030BE77ADA79F4137CC") ,
                     ("Search-WirelessNetwork.ps1"      , "52FDA296BDB480C4248C182825545C988BE1A6A23A298A8E94507AFB42FAB032") ,
                     ("Set-AdminAccount.ps1"            , "1B18B8A399A14F85F65B8A78FF2FF5E360F69A887F980E788E99F59D908C7582") ,
@@ -2549,7 +2549,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-16 13:43:59 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-16 13:55:47 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
