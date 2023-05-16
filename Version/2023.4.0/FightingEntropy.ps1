@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-15 20:30:08                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-16 12:03:41                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -147,18 +147,20 @@ Function FightingEntropy.Module
     # // | Single object that displays a status |
     # // ========================================
 
-    Class ConsoleItem
+    Class ConsoleEntry
     {
-        [UInt32]   $Index
-        [String] $Elapsed
-        [Int32]    $State
-        [String]  $Status
-        ConsoleItem([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
+        [UInt32]         $Index
+        [String]       $Elapsed
+        [Int32]          $State
+        [String]        $Status
+        Hidden [String] $String
+        ConsoleEntry([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
         {
             $This.Index   = $Index
             $This.Elapsed = $Time
             $This.State   = $State
             $This.Status  = $Status
+            $This.String  = $This.ToString()
         }
         [String] ToString()
         {
@@ -183,52 +185,56 @@ Function FightingEntropy.Module
         }
         [String] Elapsed()
         {
-            $Item = Switch ($This.End.Set)
+            Return @(Switch ($This.End.Set)
             {
                 0 { [Timespan]([DateTime]::Now-$This.Start.Time) }
                 1 { [Timespan]($This.End.Time-$This.Start.Time) }
-            }
-            
-            Return $Item
+            })         
         }
-        [Object] ConsoleItem([Int32]$State,[String]$Status)
+        [Object] ConsoleTime([String]$Name)
         {
-            Return [ConsoleItem]::New($This.Output.Count,$This.Elapsed(),$State,$Status)
+            Return [ConsoleTime]::New($Name)
         }
-        [Object] ConsoleTime([String]$Type)
+        [Object] ConsoleEntry([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
         {
-            Return [ConsoleTime]::New($Type)
+            Return [ConsoleEntry]::New($Index,$Time,$State,$Status)
+        }
+        [Object] Collection()
+        {
+            Return [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+        }
+        [Void] SetStatus()
+        {
+            $This.Status = $This.ConsoleEntry($This.Output.Count,
+                                              $This.Elapsed(),
+                                              $This.Status.State,
+                                              $This.Status.Status)
+        }
+        [Void] SetStatus([Int32]$State,[String]$Status)
+        {
+            $This.Status = $This.ConsoleEntry($This.Output.Count,
+                                              $This.Elapsed(),
+                                              $State,
+                                              $Status)
         }
         Initialize()
         {
-            Switch ($This.Start.Set)
+            If ($This.Start.Set -eq 1)
             {
-                0
-                {
-                    $This.Start.Toggle()
-                    $This.Update(0,"Running [~] ($($This.Start))")       
-                }
-                1
-                {
-                    $This.Update(-1,"Start [!] Error: Already initialized, try a different operation or reset.")
-                }
+                $This.Update(-1,"Start [!] Error: Already initialized, try a different operation or reset.")
             }
+            $This.Start.Toggle()
+            $This.Update(0,"Running [~] ($($This.Start))")
         }
         Finalize()
         {
-            Switch ($This.Start.Set)
+            If ($This.End.Set -eq 1)
             {
-                0
-                {
-                    $This.End.Toggle()
-                    $This.Span = $This.Elapsed()
-                    $This.Update(100,"Complete [+] ($($This.End)), Total: ($($This.Span))")     
-                }
-                1
-                {
-                    $This.Update(-1,"End [!] Error: Already initialized, try a different operation or reset.")
-                }
+                $This.Update(-1,"End [!] Error: Already initialized, try a different operation or reset.")
             }
+            $This.End.Toggle()
+            $This.Span = $This.Elapsed()
+            $This.Update(100,"Complete [+] ($($This.End)), Total: ($($This.Span))")
         }
         Reset()
         {
@@ -236,15 +242,11 @@ Function FightingEntropy.Module
             $This.End    = $This.ConsoleTime("End")
             $This.Span   = $Null
             $This.Status = $Null
-            $This.Output = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Output = $This.Collection()
         }
         Write()
         {
             $This.Output.Add($This.Status)
-        }
-        [Void] SetStatus([Int32]$State,[String]$Status)
-        {
-            $This.Status = $This.ConsoleItem($State,$Status)
         }
         [Object] Update([Int32]$State,[String]$Status)
         {
@@ -267,7 +269,14 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return @($This.Elapsed(),$This.Span)[!!$This.Span]
+            If (!$This.Span)
+            {
+                Return $This.Elapsed()
+            }
+            Else
+            {
+                Return $This.Span
+            }
         }
     }
 
@@ -1558,6 +1567,18 @@ Function FightingEntropy.Module
                 $This.Write($This.Console.Last().Status)
             }
         }
+        [String] Now()
+        {
+            Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+        }
+        [String] ProgramData()
+        {
+            Return [Environment]::GetEnvironmentVariable("ProgramData")
+        }
+        [String] Author()
+        {
+            Return "Secure Digits Plus LLC"
+        }
         [String] Label()
         {
             # Returns the module name and version as a string
@@ -1721,7 +1742,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "C8ECD904B1ECE1E9A35340A3D1BF96A7477B1CA39ECA823656CB049658EB83D7") ,
+                    ("Get-FEModule.ps1"                , "ED8E406EC79E414A730C5B9ABFED03532FEB084F85F9E3CA1DD8AF402CB1140B") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
@@ -1743,7 +1764,7 @@ Function FightingEntropy.Module
                     ("Invoke-cimdb.ps1"                , "97134F3F6918288B0AB177615F5CC7F78C5F188E8368F1CF8B597419E272C435") ,
                     ("New-Document.ps1"                , "7B21B34EB98C96A93A54639F0A05028B7B1738399EBB391B86EFB0404F851D10") ,
                     ("New-EnvironmentKey.ps1"          , "9577B80E2A2309C1A100859370B7979FBDC504F78BCD8ECF0E4A110585F9C848") ,
-                    ("New-FEConsole.ps1"               , "52E28ADC779C3AC6D756A63EE5318F0C1D01A3DB3B44B72FD006A57186CE435C") ,
+                    ("New-FEConsole.ps1"               , "32DDFA71EA5F180935369B184ED2E77BB30A9BC1F293C9727591D69D175B3194") ,
                     ("New-FEFormat.ps1"                , "549EC35DCB88F4C48ED7C14F06FB0DA05375AF64BFF5C1344A1403E249CE24F2") ,
                     ("New-FEInfrastructure.ps1"        , "3918611F5026D910A1F4D404CEA7D72A70B3DDD2B40CF2D57CFF39CF0E9F0D12") ,
                     ("New-MarkdownFile.ps1"            , "17F2298DF8523E8B9A19AA4DE512E5E8BAA0E282F714A1630283966F76AC7E27") ,
@@ -2531,7 +2552,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-15 20:30:08 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-16 12:03:41 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
