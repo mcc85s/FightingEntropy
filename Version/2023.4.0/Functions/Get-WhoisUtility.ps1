@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:01:54                                                                  //
+\\  Date       : 2023-05-15 20:26:53                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-WhoisUtility.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-05-15
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -25,77 +25,315 @@
 #>
 Function Get-WhoisUtility
 {
-    # // =================================================================
-    # // | Class for the Xaml Window (Not exactly CURRENT, but it'll do) |
-    # // =================================================================
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+    [Parameter(ParameterSetName=1,Mandatory)][String[]]$IpAddress)
 
-    Class XamlWindow 
+    Class States
     {
-        Hidden [Object]        $XAML
-        Hidden [Object]         $XML
+        Static [Hashtable] $List            = @{
+
+            "Alabama"                       = "AL" ; "Alaska"                        = "AK" ;
+            "Arizona"                       = "AZ" ; "Arkansas"                      = "AR" ;
+            "California"                    = "CA" ; "Colorado"                      = "CO" ;
+            "Connecticut"                   = "CT" ; "Delaware"                      = "DE" ;
+            "Florida"                       = "FL" ; "Georgia"                       = "GA" ;
+            "Hawaii"                        = "HI" ; "Idaho"                         = "ID" ;
+            "Illinois"                      = "IL" ; "Indiana"                       = "IN" ;
+            "Iowa"                          = "IA" ; "Kansas"                        = "KS" ;
+            "Kentucky"                      = "KY" ; "Louisiana"                     = "LA" ;
+            "Maine"                         = "ME" ; "Maryland"                      = "MD" ;
+            "Massachusetts"                 = "MA" ; "Michigan"                      = "MI" ;
+            "Minnesota"                     = "MN" ; "Mississippi"                   = "MS" ;
+            "Missouri"                      = "MO" ; "Montana"                       = "MT" ;
+            "Nebraska"                      = "NE" ; "Nevada"                        = "NV" ;
+            "New Hampshire"                 = "NH" ; "New Jersey"                    = "NJ" ;
+            "New Mexico"                    = "NM" ; "New York"                      = "NY" ;
+            "North Carolina"                = "NC" ; "North Dakota"                  = "ND" ;
+            "Ohio"                          = "OH" ; "Oklahoma"                      = "OK" ;
+            "Oregon"                        = "OR" ; "Pennsylvania"                  = "PA" ;
+            "Rhode Island"                  = "RI" ; "South Carolina"                = "SC" ;
+            "South Dakota"                  = "SD" ; "Tennessee"                     = "TN" ;
+            "Texas"                         = "TX" ; "Utah"                          = "UT" ;
+            "Vermont"                       = "VT" ; "Virginia"                      = "VA" ;
+            "Washington"                    = "WA" ; "West Virginia"                 = "WV" ;
+            "Wisconsin"                     = "WI" ; "Wyoming"                       = "WY" ;
+            "American Samoa"                = "AS" ; "District of Columbia"          = "DC" ;
+            "Guam"                          = "GU" ; "Marshall Islands"              = "MH" ;
+            "Northern Mariana Island"       = "MP" ; "Puerto Rico"                   = "PR" ;
+            "Virgin Islands"                = "VI" ; "Armed Forces Africa"           = "AE" ;
+            "Armed Forces Americas"         = "AA" ; "Armed Forces Canada"           = "AE" ;
+            "Armed Forces Europe"           = "AE" ; "Armed Forces Middle East"      = "AE" ;
+            "Armed Forces Pacific"          = "AP" ;
+
+        }
+        Static [String] GetName([String]$Code)
+        {
+            Return @( [States]::List | % GetEnumerator | ? Value -match $Code | % Name )
+        }
+        Static [String] GetCode([String]$Name)
+        {
+            Return @( [States]::List | % GetEnumerator | ? Name -eq $Name | % Value )
+        }
+        States()
+        {
+
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.States>"
+        }
+    }
+
+    Class ZipCodeItem
+    {
+        [String]       $Zip
+        [String]      $Type
+        [String]      $Name
+        [String]     $State
+        [String]   $Country
+        [String]      $Long
+        [String]       $Lat
+        ZipCodeItem([String]$Line)
+        {
+            $String         = $Line -Split "`t"
+            
+            $This.Zip       = $String[0]
+            $This.Type      = @("UNIQUE","STANDARD","PO_BOX","MILITARY")[$String[1]]
+            $This.Name      = $String[2]
+            $This.State     = $String[3]
+            $This.Country   = $String[4]
+            $This.Long      = $String[5]
+            $This.Lat       = $String[6]
+        }
+        ZipCodeItem([UInt32]$Zip)
+        {
+            $This.Zip       = $Zip
+            $This.Blank()
+        }
+        ZipCodeItem([Switch]$Flag,[String]$Zip)
+        {
+            $This.Zip       = $Zip
+            $This.Blank()
+        }
+        Blank()
+        {
+            $This.Type      = "Invalid"
+            $This.Name      = "N/A"
+            $This.State     = "N/A"
+            $This.Country   = "N/A"
+            $This.Long      = "N/A"
+            $This.Lat       = "N/A"
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ZipCode[Entry]>"
+        }
+    }
+
+    Class ZipCodeList
+    {
+        [String]      $Path
+        [Object]   $Content
+        [Object]      $Hash
+        ZipCodeList([String]$Path)
+        {
+            $This.Path    = $Path
+            $This.Content = Get-Content $Path | ? Length -gt 0
+            $This.Hash    = @{ }
+            ForEach ($Item in $This.Content)
+            {
+                $This.Hash.Add($Item.Substring(0,5),$This.Hash.Count)
+            }
+        }
+        [Object] ZipCodeItem([String]$Zip)
+        {
+            Return [ZipCodeItem]::New($Zip)
+        }
+        [Object] ZipCodeItem([UInt32]$Zip)
+        {
+            Return [ZipCodeItem]::New($Zip)
+        }
+        [Object] ZipCodeItem([Switch]$Flags,[String]$Zip)
+        {
+            Return [ZipCodeItem]::New($Flags,$Zip)
+        }
+        [Object] Zip([String]$Zip)
+        {
+            $Index = $This.Hash["$Zip"]
+            If (!$Index)
+            {
+                If ($Zip -match "[a-zA-Z]")
+                {
+                    $Item = $This.ZipCodeItem([Switch]$False,$Zip)
+                }
+                Else
+                {
+                    $Item = $This.ZipCodeItem([UInt32]$Zip)
+                }
+            }
+            Else
+            {
+                $Item = $This.ZipCodeItem($This.Content[$Index])
+            }
+
+            Return $Item
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ZipCode[List]>"
+        }
+    }
+
+    Class DateTimeZone
+    {
+        [Object]   $Date
+        [Object] $Offset
+        DateTimeZone([String]$Date)
+        {
+            $This.Offset = [Timespan]$Date.Substring(19)
+            $This.Date   = [DateTime]$Date
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.DateTimeZone>"
+        }
+    }
+
+    Class IPResultItem
+    {
+        Hidden [Object] $Object
+        [String]     $IPAddress
+        [String]        $Status
+        [Object]           $Org
+        IPResultItem([String]$IPAddress)
+        {
+            If ($IPAddress -notmatch "^(\d+\.){3}\d+$")
+            {
+                Throw "Invalid IP Address (IPV4 req'd)"
+            }
+
+            $This.IPAddress     = $IPAddress
+            $This.Object        = Invoke-RestMethod "http://whois.arin.net/rest/ip/$Ipaddress" -Headers @{ Accept = "application/xml" } -EA 0
+
+            If (!$This.Object)
+            {
+                $This.Status    = "-"
+            }
+            If ($This.Object)
+            {
+                $This.Status    = "+"
+                $This.Org       = [WhoisOrganizationReference]$This.Object.Net.OrgRef
+            }
+        }
+    }
+
+    Class XamlProperty
+    {
+        [UInt32]   $Index
+        [String]    $Name
+        [Object]    $Type
+        [Object] $Control
+        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Type    = $Object.GetType().Name
+            $This.Control = $Object
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class XamlWindow
+    {
+        Hidden [Object]        $Xaml
+        Hidden [Object]         $Xml
         [String[]]            $Names
         [Object]              $Types
         [Object]               $Node
         [Object]                 $IO
-        [String[]] FindNames()
-        {
-            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-            } | Select-Object -Unique ) 
-        }
-        XamlWindow([String]$XAML)
+        [String]          $Exception
+        XamlWindow([String]$Xaml)
         {           
-            If ( !$Xaml )
+            If (!$Xaml)
             {
                 Throw "Invalid XAML Input"
             }
+    
             [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-            $This.Xaml               = $Xaml
-            $This.XML                = [XML]$Xaml
-            $This.Names              = $This.FindNames()
-            $This.Types              = @( )
-            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
-            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-            ForEach ($I in 0..($This.Names.Count-1))
+    
+            $This.Xaml           = $Xaml
+            $This.Xml            = [XML]$Xaml
+            $This.Names          = $This.FindNames()
+            $This.Types          = @( )
+            $This.Node           = [System.Xml.XmlNodeReader]::New($This.Xml)
+            $This.IO             = [System.Windows.Markup.XamlReader]::Load($This.Node)
+            
+            ForEach ($X in 0..($This.Names.Count-1))
             {
-                $Name                = $This.Names[$I]
-                $Item                = $This.IO.FindName($Name)
-                If ($Item -notin $This.Types)
+                $Name            = $This.Names[$X]
+                $Object          = $This.IO.FindName($Name)
+                $This.IO         | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
+                If (!!$Object)
                 {
-                    $This.Types     += [DGList]::New($Name,$Item.GetType().Name)
+                    $This.Types += $This.XamlProperty($This.Types.Count,$Name,$Object)
                 }
-                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force 
+            }
+        }
+        [String[]] FindNames()
+        {
+            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
+        }
+        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            Return [XamlProperty]::New($Index,$Name,$Object)
+        }
+        [Object] Get([String]$Name)
+        {
+            $Item = $This.Types | ? Name -eq $Name
+            If ($Item)
+            {
+                Return $Item.Control
+            }
+            Else
+            {
+                Return $Null
             }
         }
         Invoke()
         {
-            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            Try
+            {
+                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            }
+            Catch
+            {
+                $This.Exception = $PSItem
+            }
         }
-    }
- 
-    # // ==================================
-    # // | Meant for splatting key/values |
-    # // ==================================
-
-    Class DGList
-    {
-        [String] $Name
-        [Object] $Value
-        DGList([String]$Name,[Object]$Value)
+        [String] ToString()
         {
-            $This.Name  = $Name
-            $This.Value = $Value 
+            Return "<FEModule.XamlWindow[VmControllerXaml]>"
         }
     }
 
-    # // ================================================================================
-    # // | This is the GUI that we'll be editing to bind with the PowerShell class data |
-    # // | What I'm about to update                                                     |
-    # // ================================================================================
-
-    Class WhoisUtilityGUI
+    Class WhoisUtilityXaml
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Log Address List" Width="800" Height="480" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico" ResizeMode="CanResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Content = @(
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
+        '        Title="[FightingEntropy]://Whois Utility"',
+        '        Width="800"',
+        '        Height="480"',
+        '        ResizeMode="NoResize"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        HorizontalAlignment="Center"',
+        '        WindowStartupLocation="CenterScreen"',
+        '        FontFamily="Consolas"',
+        '        Background="LightYellow">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -226,13 +464,13 @@ Function Get-WhoisUtility
         '                <Grid.ColumnDefinitions>',
         '                    <ColumnDefinition Width="200"/>',
         '                    <ColumnDefinition Width="10"/>',
-        '                    <ColumnDefinition Width="100"/>',
+        '                    <ColumnDefinition Width="110"/>',
         '                    <ColumnDefinition Width="*"/>',
-        '                    <ColumnDefinition Width="100"/>',
+        '                    <ColumnDefinition Width="90"/>',
         '                </Grid.ColumnDefinitions>',
-        '                <Label Grid.Column="0" Content="Address List"/>',
+        '                <Label Grid.Column="0" Content="[Address List]:"/>',
         '                <Border   Grid.Column="1" Background="Black" BorderThickness="0" Margin="4"/>',
-        '                <Label Grid.Column="2" Content="IP Address"/>',
+        '                <Label Grid.Column="2" Content="[IP Address]:"/>',
         '                <TextBox Grid.Column="3" Name="IPAddress"/>',
         '                <Button Grid.Column="4" Name="AddIpAddress" Content="Add"/>',
         '            </Grid>',
@@ -256,7 +494,7 @@ Function Get-WhoisUtility
         '                    <RowDefinition Height="40"/>',
         '                    <RowDefinition Height="*"/>',
         '                </Grid.RowDefinitions>',
-        '                <Label Grid.Row="0" Content="Location"/>',
+        '                <Label Grid.Row="0" Content="[Location]:"/>',
         '                <DataGrid Grid.Row="1" Name="LocationList">',
         '                    <DataGrid.Columns>',
         '                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="100"/>',
@@ -267,7 +505,8 @@ Function Get-WhoisUtility
         '            <Grid Grid.Column="1">',
         '                <Grid.RowDefinitions>',
         '                    <RowDefinition Height="*"/>',
-        '                    <RowDefinition Height="90"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="40"/>',
         '                </Grid.RowDefinitions>',
         '                <Grid Grid.Row="0">',
         '                    <Grid.RowDefinitions>',
@@ -276,190 +515,44 @@ Function Get-WhoisUtility
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
         '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
+        '                        <ColumnDefinition Width="120"/>',
         '                        <ColumnDefinition Width="*"/>',
         '                        <ColumnDefinition Width="125"/>',
         '                    </Grid.ColumnDefinitions>',
-        '                    <Label    Grid.Row="0" Grid.Column="1" Content="Date"/>',
-        '                    <Label    Grid.Row="0" Grid.Column="2" Content="Time Zone"/>',
-        '                    <Label    Grid.Row="1" Grid.Column="0" Content="Registration"/>',
+        '                    <Label    Grid.Row="0" Grid.Column="1" Content="[Date]"/>',
+        '                    <Label    Grid.Row="0" Grid.Column="2" Content="[Time Zone]"/>',
+        '                    <Label    Grid.Row="1" Grid.Column="0" Content="[Registration]:"/>',
         '                    <TextBox  Grid.Row="1" Grid.Column="1" Name="RegDate"/>',
         '                    <TextBox  Grid.Row="1" Grid.Column="2" Name="RegZone"/>',
-        '                    <Label    Grid.Row="2" Grid.Column="0" Content="Update"/>',
+        '                    <Label    Grid.Row="2" Grid.Column="0" Content="[Update]:"/>',
         '                    <TextBox  Grid.Row="2" Grid.Column="1" Name="UpdateDate"/>',
         '                    <TextBox  Grid.Row="2" Grid.Column="2" Name="UpdateZone"/>',
         '                </Grid>',
-        '                <GroupBox Grid.Row="1" Header="[Action]">',
-        '                    <Grid Grid.Row="2">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="2*"/>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <TextBox Grid.Column="0" Name="Coordinates"/>',
-        '                        <Button Grid.Column="1" Content="Start" Name="Start"/>',
-        '                    </Grid>',
-        '                </GroupBox>',
+        '                <Label Grid.Row="1" Content="[Action]:"/>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="2*"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <TextBox Grid.Column="0" Name="Coordinates"/>',
+        '                    <Button Grid.Column="1" Content="Start" Name="Start"/>',
+        '                </Grid>',
         '            </Grid>',
         '        </Grid>',
         '    </Grid>',
-        '</Window>')
+        '</Window>' -join "`n")
     }
 
-    # // ==================================================================
-    # // | Class to organize United States states (not international yet) |
-    # // ==================================================================
-
-    Class States
+    Class WhoisOrganizationReference
     {
-        Static [Hashtable] $List            = @{
-
-            "Alabama"                       = "AL" ; "Alaska"                        = "AK" ;
-            "Arizona"                       = "AZ" ; "Arkansas"                      = "AR" ;
-            "California"                    = "CA" ; "Colorado"                      = "CO" ;
-            "Connecticut"                   = "CT" ; "Delaware"                      = "DE" ;
-            "Florida"                       = "FL" ; "Georgia"                       = "GA" ;
-            "Hawaii"                        = "HI" ; "Idaho"                         = "ID" ;
-            "Illinois"                      = "IL" ; "Indiana"                       = "IN" ;
-            "Iowa"                          = "IA" ; "Kansas"                        = "KS" ;
-            "Kentucky"                      = "KY" ; "Louisiana"                     = "LA" ;
-            "Maine"                         = "ME" ; "Maryland"                      = "MD" ;
-            "Massachusetts"                 = "MA" ; "Michigan"                      = "MI" ;
-            "Minnesota"                     = "MN" ; "Mississippi"                   = "MS" ;
-            "Missouri"                      = "MO" ; "Montana"                       = "MT" ;
-            "Nebraska"                      = "NE" ; "Nevada"                        = "NV" ;
-            "New Hampshire"                 = "NH" ; "New Jersey"                    = "NJ" ;
-            "New Mexico"                    = "NM" ; "New York"                      = "NY" ;
-            "North Carolina"                = "NC" ; "North Dakota"                  = "ND" ;
-            "Ohio"                          = "OH" ; "Oklahoma"                      = "OK" ;
-            "Oregon"                        = "OR" ; "Pennsylvania"                  = "PA" ;
-            "Rhode Island"                  = "RI" ; "South Carolina"                = "SC" ;
-            "South Dakota"                  = "SD" ; "Tennessee"                     = "TN" ;
-            "Texas"                         = "TX" ; "Utah"                          = "UT" ;
-            "Vermont"                       = "VT" ; "Virginia"                      = "VA" ;
-            "Washington"                    = "WA" ; "West Virginia"                 = "WV" ;
-            "Wisconsin"                     = "WI" ; "Wyoming"                       = "WY" ;
-            "American Samoa"                = "AS" ; "District of Columbia"          = "DC" ;
-            "Guam"                          = "GU" ; "Marshall Islands"              = "MH" ;
-            "Northern Mariana Island"       = "MP" ; "Puerto Rico"                   = "PR" ;
-            "Virgin Islands"                = "VI" ; "Armed Forces Africa"           = "AE" ;
-            "Armed Forces Americas"         = "AA" ; "Armed Forces Canada"           = "AE" ;
-            "Armed Forces Europe"           = "AE" ; "Armed Forces Middle East"      = "AE" ;
-            "Armed Forces Pacific"          = "AP" ;
-
-        }
-        Static [String] GetName([String]$Code)
-        {
-            Return @( [States]::List | % GetEnumerator | ? Value -match $Code | % Name )
-        }
-        Static [String] GetCode([String]$Name)
-        {
-            Return @( [States]::List | % GetEnumerator | ? Name -eq $Name | % Value )
-        }
-        States()
-        {
-
-        }
-    }
-
-    # // ==========================================
-    # // | Returns potential zip code information |
-    # // ==========================================
-
-    Class ZipEntry
-    {
-        [String]       $Zip
-        [String]      $Type
-        [String]      $Name
-        [String]     $State
-        [String]   $Country
-        [String]      $Long
-        [String]       $Lat
-        ZipEntry([String]$Line)
-        {
-            $String         = $Line -Split "`t"
-            
-            $This.Zip       = $String[0]
-            $This.Type      = @("UNIQUE","STANDARD","PO_BOX","MILITARY")[$String[1]]
-            $This.Name      = $String[2]
-            $This.State     = $String[3]
-            $This.Country   = $String[4]
-            $This.Long      = $String[5]
-            $This.Lat       = $String[6]
-        }
-        ZipEntry([UInt32]$Zip)
-        {
-            $This.Zip       = $Zip
-            $This.Type      = "Invalid"
-            $This.Name      = "N/A"
-            $This.State     = "N/A"
-            $This.Country   = "N/A"
-            $This.Long      = "N/A"
-            $This.Lat       = "N/A"
-        }
-    }
-
-    # // ==================================================
-    # // | Converts the zipcode file into a usable object |
-    # // ==================================================
-
-    Class ZipStack
-    {
-        [String]      $Path
-        [Object]   $Content
-        [Object]     $Stack
-        ZipStack([String]$Path)
-        {
-            $This.Path    = $Path
-            $This.Content = Get-Content $Path | ? Length -gt 0
-            $This.Stack   = @{ }
-            $X            = 0
-            ForEach ( $Item in $This.Content )
-            {
-                $This.Stack.Add($Item.Substring(0,5),$X)
-                $X ++
-            }
-        }
-        [Object] Zip([String]$Zip)
-        {
-            $Index = $This.Stack["$Zip"]
-            If (!$Index)
-            {
-                Return [ZipEntry][UInt32]$Zip
-            }
-
-            Return [ZipEntry]$This.Content[$Index]
-        }
-    }
-
-    # // ================================================================================
-    # // | Extracts a string date with an offset, and converts to DateTime and Timespan |
-    # // ================================================================================
-
-    Class DateTimeZone
-    {
-        [Object] $Date
-        [Object] $Offset
-        DateTimeZone([String]$Date)
-        {
-            $This.Offset = [Timespan]$Date.Substring(19)
-            $This.Date   = [DateTime]$Date
-        }
-    }
-
-    # // ==================================================
-    # // | Takes action on input from an IP lookup result |
-    # // ==================================================
-
-    Class WhoisOrgRef
-    {
-        [String] $Handle
-        [String] $Name
-        [Object] $Url
+        [String]        $Handle
+        [String]          $Name
+        [Object]           $Url
         Hidden [Object] $Object
-        [Object] $Registration
-        [Object] $Update
-        [Object] $Location
-        WhoisOrgRef([Object]$Org)
+        [Object]  $Registration
+        [Object]        $Update
+        [Object]      $Location
+        WhoisOrganizationReference([Object]$Org)
         {
             $This.Handle     = $Org.Handle
             $This.Name       = $Org.Name
@@ -479,21 +572,24 @@ Function Get-WhoisUtility
                 $This.Update       = [DateTimeZone]$This.Object.Org.UpdateDate
             }
         }
+        [String] GetStreetAddress()
+        {
+            Return $This.Object.Org.StreetAddress.Line."#text"
+        }
         SetLocation([Object]$Zipstack)
         {
             $This.Location = $Zipstack.Zip($This.Object.Org.PostalCode)
         }
+        [String] ToString()
+        {
+            Return "<FEModule.Whois[OrgRef]>"
+        }
     }
 
-    # // ===================================================================
-    # // | Flattens all of the various objects returned from Whois Lookup. |
-    # // | This will be the desired object we'll want to bind to the GUI   | 
-    # // | in order to view.                                               |
-    # // ===================================================================
-
-    Class WhoisRegistrar
+    Class WhoisRegistrarItem
     {
         [UInt32]               $Index
+        Hidden [Object] $Ip
         [IPAddress]        $IPAddress
         [String]              $Status
         [String]              $Handle
@@ -513,7 +609,7 @@ Function Get-WhoisUtility
         [String]             $Country
         [Float]                 $Long
         [Float]                  $Lat
-        WhoisRegistrar([UInt32]$Index,[Object]$IP)
+        WhoisRegistrarItem([UInt32]$Index,[Object]$IP)
         {
             $This.Index        = $Index
             $This.IPAddress    = [IPAddress]$IP.IPAddress
@@ -535,70 +631,99 @@ Function Get-WhoisUtility
                 $This.Location     = $Loc
                 $This.Zip          = $Loc.Zip
                 $This.Type         = $Loc.Type
-                $This.City         = $Loc.Name
+                $This.City         = Switch ($Loc.Name)
+                {
+                    "N/A"   { $IP.Object.Net.City } Default { $Loc.Name    }
+                }
+
                 $This.State        = $Loc.State
                 $This.Country      = $Loc.Country
-                $This.Long         = $Loc.Long
-                $This.Lat          = $Loc.Lat
+
+                If ($Loc.Long -ne "N/A")
+                {
+                    $This.Long     = $Loc.Long
+                }
+                
+                If ($Loc.Lat -ne "N/A")
+                {
+                    $This.Lat     = $Loc.Lat
+                }
             }
         }
-    }
-
-    # // ===================================================
-    # // | This returns the initial IP whois lookup result |
-    # // ===================================================
-
-    Class IPResult
-    {
-        Hidden [Object] $Object
-        [String] $IPAddress
-        [String] $Status
-        [Object] $Org
-        IPResult([String]$IPAddress)
+        [String] ToString()
         {
-            If ($IPAddress -notmatch "^(\d+\.){3}\d+$")
-            {
-                Throw "Invalid IP Address (IPV4 req'd)"
-            }
-
-            $This.IPAddress     = $IPAddress
-            $This.Object        = Invoke-RestMethod "http://whois.arin.net/rest/ip/$Ipaddress" -Headers @{ Accept = "application/xml" } -EA 0
-
-            If (!$This.Object)
-            {
-                $This.Status    = "-"
-            }
-            If ($This.Object)
-            {
-                $This.Status    = "+"
-                $This.Org       = [WhoisOrgRef]$This.Object.Net.OrgRef
-            }
+            Return "<FEModule.WhoisRegistrar[Item]>"
         }
     }
 
-    # // ========================================================================
-    # // | This is the controller class that basically orchestrates everything. |
-    # // | We want to modify THIS class as well as the GUI, so that this class  |
-    # // | will effectively be able to control the GUI                          |
-    # // ========================================================================
-
-    Class WhoisControl
+    Class WhoisProperty
+    {
+        [String]  $Name
+        [Object] $Value
+        WhoisProperty([Object]$Property)
+        {
+            $This.Name  = $Property.Name
+            $This.Value = $Property.Value -join ", "
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Whois[Property]>"
+        }
+    }
+    
+    Class WhoisController
     {
         [Object] $Module
-        Hidden [Object] $Zipstack
+        Hidden [Object] $ZipCode
         [Object] $Xaml
         [Object] $Output
-        WhoisControl()
+        WhoisController()
         {
-            $This.Module       = Get-FEModule
-            $Path              = Get-ChildItem $This.Module.Path -Recurse | ? Name -eq zipcode.txt | % Fullname
-            $This.Zipstack     = [Zipstack]::New($Path)
-            $This.Xaml         = [XamlWindow][WhoisUtilityGUI]::Tab
+            $This.Main()
+        }
+        WhoisController([String[]]$IpAddress)
+        {
+            $This.Main()
+
+            ForEach ($Item in $IpAddress)
+            {
+                $This.ResolveIp($Item)
+            }
+        }
+        Main()
+        {
+            $This.Module       = $This.Get("Module")
+            $This.ZipCode      = $This.Get("ZipCodeList")
+            $This.Xaml         = $This.Get("Xaml")
+
             $This.Output       = @( )
+        }
+        [Object] Get([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                Module      { Get-FEModule -Mode 1 }
+                ZipCodeList { [ZipCodeList]::New($This.Module._Control("zipcode.txt").Fullname) }
+                Xaml        { [XamlWindow][WhoisUtilityXaml]::Content }
+            }
+
+            Return $Item
         }
         [Object] Zip([String]$Zip)
         {
-            Return $This.Zipstack.Zip($Zip)
+            Return $This.ZipCode.Zip($Zip)
+        }
+        [Object] IpResult([String]$IpAddress)
+        {
+            Return [IPResultItem]::New($IpAddress)
+        }
+        [Object] WhoisRegistrar([Object]$Result)
+        {
+            Return [WhoisRegistrarItem]::New($This.Output.Count,$Result)
+        }
+        [Object] WhoisProperty([Object]$Property)
+        {
+            Return [WhoisProperty]::New($Property)
         }
         ResolveIP([String]$IPAddress)
         {
@@ -607,21 +732,25 @@ Function Get-WhoisUtility
                 Throw "Invalid IP Address (IPV4 req'd)"
             }
 
-            Write-Host "Searching [~] $IPAddress"
-            $Result = [IPResult]::New($IPAddress)
+            [Console]::WriteLine("Searching [~] $IPAddress")
+            $Result = $This.IpResult($IpAddress)
             If ($Result)
             {
-                Write-Host "Found [+] $IPAddress"
-                $Result.Org.SetLocation($This.Zipstack)
-                $Return = [WhoisRegistrar]::New($This.Output.Count,$Result)
+                [Console]::WriteLine("Found [+] $IPAddress")
+                $Result.Org.SetLocation($This.ZipCode)
+                If ($Result.Org.Location.Name -eq "N/A")
+                {
+                    $Result.Org.Location.Name = (Invoke-RestMethod $Result.Object.Net.OrgRef."#text").Org.City
+                }
+                $Return = $This.WhoisRegistrar($Result)
                 If ($Return.IPAddress -notin $This.Output.IPAddress)
                 {
                     $This.Output += $Return
-                    Write-Host "Adding [+] $($Return.IPAddress)"
+                    [Console]::WriteLine("Adding [+] $($Return.IPAddress)")
                 }
             }
 
-            $This.Reset($This.Xaml.IO.AddressList.Items,$This.Output)
+            $This.Reset($This.Xaml.IO.AddressList,$This.Output)
         }
         [String] Search([UInt32]$Index)
         {
@@ -634,96 +763,143 @@ Function Get-WhoisUtility
 
             Return "https://www.google.com/maps/@{0:n7},{1:n7},7.5z" -f $X.Lat, $X.Long
         }
+        [String[]] Grid([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                "Default"
+                {
+                    "Zip",
+                    "Type",
+                    "City",
+                    "State",
+                    "Country",
+                    "Long",
+                    "Lat"
+                }
+            }
+
+            Return $Item
+        }
+        [Object[]] Property([Object]$Object,[String[]]$Names)
+        {
+            $List = ForEach ($Item in $Object.PSObject.Properties | ? Name -in $Names)
+            {
+                $This.WhoisProperty($Item)
+            }
+
+            Return $List
+        }
         Reset([Object]$xSender,[Object[]]$Content)
         {
-            $xSender.Clear()
+            $xSender.Items.Clear()
             ForEach ($Item in $Content)
             {
-                $xSender.Add($Item)
+                $xSender.Items.Add($Item)
             }
+        }
+        StageXaml()
+        {
+            $Ctrl = $This
+
+            $Ctrl.Xaml.IO.AddIpAddress.Add_Click(
+            {
+                $IPAddress = $Ctrl.Xaml.IO.IPAddress.Text
+                If ($IPAddress -notmatch "^(\d+\.){3}\d+$")
+                {
+                    [System.Windows.MessageBox]::Show("Invalid IP Address","Error")
+                }
+
+                ElseIf ($IPAddress -in $Ctrl.Output.IPAddress)
+                {
+                    [System.Windows.MessageBox]::Show("Duplicate IP Address","Error")
+                }
+
+                $Ctrl.ResolveIP($IPAddress)
+                $Ctrl.Xaml.IO.IPAddress.Text = $Null
+            })
+
+            $Ctrl.Xaml.IO.AddressList.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.AddressList.SelectedIndex
+
+                # Handles the registration date information
+                $Ctrl.Xaml.IO.RegDate.Text     = $Null
+                $Ctrl.Xaml.IO.RegZone.Text     = $Null
+                
+                # Handles the last update date information
+                $Ctrl.Xaml.IO.UpdateDate.Text  = $Null
+                $Ctrl.Xaml.IO.UpdateZone.Text  = $Null
+                
+                # Handles the string to open the browser with to open location            
+                $Ctrl.Xaml.IO.Coordinates.Text = $Null
+
+                Switch ($Index)
+                {
+                    -1
+                    {
+                        # Handles the vertical datagrid key/values
+                        $Ctrl.Reset($Ctrl.Xaml.IO.LocationList,$Null)
+                    }
+                    Default
+                    {
+                        $Item = $Ctrl.Output[$Index]
+                        $List = $Ctrl.Property($Item,$Ctrl.Grid("Default"))
+
+                        # Handles the vertical datagrid key/values
+                        $Ctrl.Reset($Ctrl.Xaml.IO.LocationList,$List)
+    
+                        # Handles the registration date information
+                        If ($Item.RegDate)
+                        {
+                            $Ctrl.Xaml.IO.RegDate.Text    = $Item.RegDate.ToString()
+                        }
+                        
+                        If ($Item.RegZone)
+                        {
+                            $Ctrl.Xaml.IO.RegZone.Text     = $Item.RegZone.ToString()
+                        }
+    
+                        # Handles the last update date information
+                        If ($Item.UpdateDate)
+                        {
+                            $Ctrl.Xaml.IO.UpdateDate.Text  = $Item.UpdateDate.ToString()
+                        }
+
+                        If ($Item.UpdateZone)
+                        {
+                            $Ctrl.Xaml.IO.UpdateZone.Text  = $Item.UpdateZone.ToString()
+                        }
+    
+                        # Handles the string to open the browser with to open location            
+                        $Ctrl.Xaml.IO.Coordinates.Text = $Ctrl.Search($Index)
+                    }
+                }
+            })
+
+            $Ctrl.Xaml.IO.Coordinates.Add_TextChanged(
+            {
+                $Ctrl.Xaml.IO.Start.IsEnabled = @(0,1)[$Ctrl.Xaml.IO.Coordinates.Text -ne ""]
+            })
+
+            # Starts disabled, but if data is in the "Coordinates" box, then it becomes available
+            $Ctrl.Xaml.IO.Start.Add_Click(
+            {
+                Start-Process $Ctrl.Xaml.IO.Coordinates.Text
+            })
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Whois[Controller]>"
         }
     }
 
-    # // ================================================
-    # // | Testing variables, also, the "suspicious" IP |
-    # // ================================================
-
-    $IPAddress = "8.48.253.109"
-    $Ctrl      = [WhoisControl]::New()
-
-    # When clicked on, it adds the information to the output table\
-    $Ctrl.Xaml.IO.AddIpAddress.Add_Click(
+    $Ctrl = Switch ($PsCmdLet.ParameterSetName)
     {
-        $IPAddress = $Ctrl.Xaml.IO.IPAddress.Text
-        If ($IPAddress -notmatch "^(\d+\.){3}\d+$")
-        {
-            [System.Windows.MessageBox]::Show("Invalid IP Address","Error")
-        }
-
-        ElseIf ($IPAddress -in $Ctrl.Output.IPAddress)
-        {
-            [System.Windows.MessageBox]::Show("Duplicate IP Address","Error")
-        }
-
-        $Ctrl.ResolveIP($IPAddress)
-        $Ctrl.Xaml.IO.IPAddress.Text = $Null
-    })
-
-    # Output will be bound to this box (Needs event handler for onclick)
-    $Ctrl.Xaml.IO.AddressList.Add_SelectionChanged(
-    {
-        $Index = $Ctrl.Xaml.IO.AddressList.SelectedIndex
-        If ($Index -ne -1)
-        {
-            $Item = $Ctrl.Output[$Index]
-            $Swap = "Zip","Type","City","State","Country","Long","Lat" | % {
-                
-                [DGList]::New($_,$Item.$_)
-            }
-
-            # Handles the vertical datagrid key/values
-            $Ctrl.Reset($Ctrl.Xaml.IO.LocationList.Items,$Swap)
-
-            # Handles the registration date information
-            $Ctrl.Xaml.IO.RegDate.Text     = $Item.RegDate.ToString()
-            $Ctrl.Xaml.IO.RegZone.Text     = $Item.RegZone.ToString()
-
-            # Handles the last update date information
-            $Ctrl.Xaml.IO.UpdateDate.Text  = $Item.UpdateDate.ToString()
-            $Ctrl.Xaml.IO.UpdateZone.Text  = $Item.UpdateZone.ToString()
-
-            # Handles the string to open the browser with to open location            
-            $Ctrl.Xaml.IO.Coordinates.Text = $Ctrl.Search($Index)
-        }
-
-        If ($Index -eq -1)
-        {
-            # Handles the vertical datagrid key/values
-            $Ctrl.Reset($Ctrl.Xaml.IO.LocationList,$Null)
-
-            # Handles the registration date information
-            $Ctrl.Xaml.IO.RegDate.Text     = $Null
-            $Ctrl.Xaml.IO.RegZone.Text     = $Null
-
-            # Handles the last update date information
-            $Ctrl.Xaml.IO.UpdateDate.Text  = $Null
-            $Ctrl.Xaml.IO.UpdateZone.Text  = $Null
-
-            # Handles the string to open the browser with to open location            
-            $Ctrl.Xaml.IO.Coordinates.Text = $Null
-        }
-    })
-
-    $Ctrl.Xaml.IO.Coordinates.Add_TextChanged(
-    {
-        $Ctrl.Xaml.IO.Start.IsEnabled = @(0,1)[$Ctrl.Xaml.IO.Coordinates.Text -ne ""]
-    })
-
-    # Starts disabled, but if data is in the "Coordinates" box, then it becomes available
-    $Ctrl.Xaml.IO.Start.Add_Click(
-    {
-        Start-Process $Ctrl.Xaml.IO.Coordinates.Text
-    })
-
+        0 { [WhoisController]::New()           }
+        1 { [WhoisController]::New($IpAddress) }
+    }
+    
+    $Ctrl.StageXaml()
     $Ctrl.Xaml.Invoke()
 }
