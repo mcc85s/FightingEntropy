@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-16 12:02:15                                                                  //
+\\  Date       : 2023-05-16 13:43:14                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1494,10 +1494,6 @@ Function Get-FEModule
         {
             Return [Environment]::GetEnvironmentVariable("ProgramData")
         }
-        [String] Author()
-        {
-            Return "Secure Digits Plus LLC"
-        }
         [String] Label()
         {
             # Returns the module name and version as a string
@@ -1642,6 +1638,7 @@ Function Get-FEModule
                     ("PSDServerMod.xml"                , "C90146EECF2696539ACFDE5C2E08CFD97548E639ED7B1340A650C27F749AC9CE") ,
                     ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
                     ("vendorlist.txt"                  , "A37B6652014467A149AC6277D086B4EEE7580DDB548F81B0B2AA7AC78C240874") ,
+                    ("warning.png"                     , "CC05A590DE7AD32AEB47E117AA2DD845F710080F9A3856FBCDC9BC68106C562F") ,
                     ("Wifi.cs"                         , "405226234D7726180C0F9C97DF3C663CA0028A36CBCD00806D6517575A6F549F") ,
                     ("zipcode.txt"                     , "E471E887F537FA295A070AB41E21DEE978181A92CB204CA1080C6DC32CBBE0D8") 
                 }
