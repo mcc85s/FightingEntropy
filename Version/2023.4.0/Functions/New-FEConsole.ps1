@@ -1,4 +1,3 @@
-    
 <#
 .SYNOPSIS
 .DESCRIPTION
@@ -7,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:12:54                                                                  //
+\\  Date       : 2023-05-16 11:39:37                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-FEConsole.ps1
@@ -17,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-05-16
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : -
@@ -31,12 +30,12 @@ Function New-FEConsole
     # // | Used to track console logging, similar to Stopwatch |
     # // =======================================================
 
-    Class StatusTime
+    Class ConsoleTime
     {
         [String]   $Name
         [DateTime] $Time
         [UInt32]    $Set
-        StatusTime([String]$Name)
+        ConsoleTime([String]$Name)
         {
             $This.Name = $Name
             $This.Time = [DateTime]::MinValue
@@ -57,18 +56,20 @@ Function New-FEConsole
     # // | Single object that displays a status |
     # // ========================================
 
-    Class StatusEntry
+    Class ConsoleEntry
     {
-        [UInt32]   $Index
-        [String] $Elapsed
-        [Int32]    $State
-        [String]  $Status
-        StatusEntry([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
+        [UInt32]         $Index
+        [String]       $Elapsed
+        [Int32]          $State
+        [String]        $Status
+        Hidden [String] $String
+        ConsoleEntry([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
         {
             $This.Index   = $Index
             $This.Elapsed = $Time
             $This.State   = $State
             $This.Status  = $Status
+            $This.String  = $This.ToString()
         }
         [String] ToString()
         {
@@ -80,14 +81,14 @@ Function New-FEConsole
     # // | A collection of status objects, uses itself to create/update messages |
     # // =========================================================================
 
-    Class StatusBank
+    Class ConsoleController
     {
-        [Object]    $Start
-        [Object]      $End
-        [String]     $Span
-        [Object]   $Status
-        [Object]   $Output
-        StatusBank()
+        [Object]  $Start
+        [Object]    $End
+        [String]   $Span
+        [Object] $Status
+        [Object] $Output
+        ConsoleController()
         {
             $This.Reset()
         }
@@ -99,19 +100,31 @@ Function New-FEConsole
                 1 { [Timespan]($This.End.Time-$This.Start.Time) }
             })         
         }
+        [Object] ConsoleTime([String]$Name)
+        {
+            Return [ConsoleTime]::New($Name)
+        }
+        [Object] ConsoleEntry([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
+        {
+            Return [ConsoleEntry]::New($Index,$Time,$State,$Status)
+        }
+        [Object] Collection()
+        {
+            Return [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+        }
         [Void] SetStatus()
         {
-            $This.Status = [StatusEntry]::New($This.Output.Count,
-                                                  $This.Elapsed(),
-                                                  $This.Status.State,
-                                                  $This.Status.Status)
+            $This.Status = $This.ConsoleEntry($This.Output.Count,
+                                              $This.Elapsed(),
+                                              $This.Status.State,
+                                              $This.Status.Status)
         }
         [Void] SetStatus([Int32]$State,[String]$Status)
         {
-            $This.Status = [StatusEntry]::New($This.Output.Count,
-                                                  $This.Elapsed(),
-                                                  $State,
-                                                  $Status)
+            $This.Status = $This.ConsoleEntry($This.Output.Count,
+                                              $This.Elapsed(),
+                                              $State,
+                                              $Status)
         }
         Initialize()
         {
@@ -134,11 +147,11 @@ Function New-FEConsole
         }
         Reset()
         {
-            $This.Start  = [StatusTime]::New("Start")
-            $This.End    = [StatusTime]::New("End")
+            $This.Start  = $This.ConsoleTime("Start")
+            $This.End    = $This.ConsoleTime("End")
             $This.Span   = $Null
             $This.Status = $Null
-            $This.Output = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Output = $This.Collection()
         }
         Write()
         {
@@ -176,5 +189,5 @@ Function New-FEConsole
         }
     }
 
-    [StatusBank]::New()
+    [ConsoleController]::New()
 }
