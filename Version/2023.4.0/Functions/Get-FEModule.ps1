@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-16 13:54:20                                                                  //
+\\  Date       : 2023-05-19 16:06:22                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2023-05-16
+   Modified   : 2023-05-19
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1671,7 +1671,7 @@ Function Get-FEModule
                     ("Get-PSDModule.ps1"               , "CD83DA3B18F706174C9D65969938B85F730D36479A42D1D71EDE2C0CA9BE8024") ,
                     ("Get-ThreadController.ps1"        , "3DFA549D11BB239E63B1E114C4C86CFA7A92B83C95F114B5BD66DDC33778E545") ,
                     ("Get-UserProfile.ps1"             , "97FF1186827FDE6A84B66C67036B3018F61624C92ECA37F89AC70077B717A6C6") ,
-                    ("Get-ViperBomb.ps1"               , "DBFC9FFE87E8C421C9B3A910C2F7AC2F7E4C7EE0D867619C7BB2E1E476A6B7ED") ,
+                    ("Get-ViperBomb.ps1"               , "3FF032FB70785D15EB8A82F9C743EAD5D72B3FBCB12B81CB287F5D5EDBFC666B") ,
                     ("Get-WhoisUtility.ps1"            , "BFE480D46157A0A0F541A4A14E12D85F834592DA8243A5BCE4D24EDADDB4BE9A") ,
                     ("Initialize-FeAdInstance.ps1"     , "0EEF28E919AE410A405DB87C4124239C63026192E188D26B23885A23C6388477") ,
                     ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
