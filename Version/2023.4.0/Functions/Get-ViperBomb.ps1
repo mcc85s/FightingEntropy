@@ -9747,8 +9747,8 @@ Function Get-ViperBomb
                 Taskbar         {       [TaskbarType] }
                 StartMenu       {     [StartMenuType] }
                 Explorer        {      [ExplorerType] }
-                ThisPC          {    [ThisPCIconType] }
-                Desktop         {   [DesktopIconType] }
+                ThisPC          {        [ThisPCType] }
+                Desktop         {       [DesktopType] }
                 Lockscreen      {    [LockscreenType] }
                 Miscellaneous   { [MiscellaneousType] }
                 PhotoViewer     {   [PhotoViewerType] }
