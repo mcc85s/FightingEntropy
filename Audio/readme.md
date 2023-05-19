@@ -5,10 +5,11 @@ I've spent years making these recordings, though I have not always made them pub
 The idea here, is that if I profess my train of thought and rhetoric, and other people can listen to what I have to say...?<br>
 Then people will understand my motivations a lot more clearly.<br>
 
-<h2>Last updated: [05/14/23]</h2>
+<h2>Last updated: [05/19/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **05/19/23** | 0h 56m 03s | **2023_05_19_11_48_41.mp3**    | [Class Warfare](https://drive.google.com/file/d/1j1s5wseWMCqVcSZASRklcYk_zv7yEOwf)
 | **05/16/23** | 0h 31m 26s | **2023_05_16_08_41_40.mp3**    | [Flow Control](https://drive.google.com/file/d/1ie3Fiwk3c-QbDvBFCwIskW5Jz_6OmaeW)
 | **05/14/23** | 1h 18m 40s | **2023_05_14_17_04_51.mp3**    | [Fact Vs Fiction](https://drive.google.com/file/d/1iONB571ixBldHdC96gbrKA0gtqQhJf2T)
 | **05/14/23** | 2h 52m 38s | **2023_05_14_14_09_55.mp3**    | [Insult To Injury + Dystopia](https://drive.google.com/file/d/1SbJeV0pOrk39bEtVZEwTdzN70qc0o_6F)
