@@ -8996,7 +8996,7 @@ Function Get-ViperBomb
                 }
                 LegacyComponents
                 {
-                    "[DirectPlay] – Part of the [DirectX] application programming interface."
+                    "[DirectPlay] - Part of the [DirectX] application programming interface."
                 }
                 MediaPlayback
                 {
