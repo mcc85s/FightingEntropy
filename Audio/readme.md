@@ -5,10 +5,11 @@ I've spent years making these recordings, though I have not always made them pub
 The idea here, is that if I profess my train of thought and rhetoric, and other people can listen to what I have to say...?<br>
 Then people will understand my motivations a lot more clearly.<br>
 
-<h2>Last updated: [05/21/23]</h2>
+<h2>Last updated: [05/22/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **05/22/23** | 1h 03m 11s | **2023_05_22_07_56_35.mp3**    | [Captain Dumbface](https://drive.google.com/file/d/1K8aY8HizFHWZgfo1iqPPFo0_3QyNUi8j)
 | **05/21/23** | 1h 49m 34s | **2023_05_21_08_42_45.mp3**    | [Persistence](https://drive.google.com/file/d/1iONB571ixBldHdC96gbrKA0gtqQhJf2T)
 | **05/19/23** | 0h 56m 03s | **2023_05_19_11_48_41.mp3**    | [Class Warfare](https://drive.google.com/file/d/1j1s5wseWMCqVcSZASRklcYk_zv7yEOwf)
 | **05/16/23** | 0h 31m 26s | **2023_05_16_08_41_40.mp3**    | [Flow Control](https://drive.google.com/file/d/1ie3Fiwk3c-QbDvBFCwIskW5Jz_6OmaeW)
