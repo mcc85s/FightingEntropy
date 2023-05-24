@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-03 11:06:37                                                                  //
+\\  Date       : 2023-05-24 17:37:39                                                                  //
  \\==================================================================================================// 
 
     FileName   : Write-Xaml.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-05-03
+    Modified   : 2023-05-24
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -54,7 +54,7 @@ Function Write-Xaml
             {
                 If ($This.Content[$X] -match "\w+")
                 {
-                    $Out += "    '{0}'," -f $This.Content[$X]
+                    $Out += "    '{0}'," -f $This.Content[$X].TrimEnd(" ")
                 }
             }
             $Out += "    '{0}' -join `"``n`")" -f $This.Content[$X+1]
