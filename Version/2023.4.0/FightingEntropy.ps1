@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-19 16:54:23                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-05-25 18:24:27                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1739,7 +1739,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "3B58F748DA7582ADC0BB9DE4D7F6E500D6BADCA9D39EDC442E29505676253D96") ,
+                    ("Get-FEModule.ps1"                , "820ACEA6172634ACD534284040C542D1079A179F7A28B6B0605CEDC186C1C295") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
@@ -1752,7 +1752,7 @@ Function FightingEntropy.Module
                     ("Get-PSDModule.ps1"               , "CD83DA3B18F706174C9D65969938B85F730D36479A42D1D71EDE2C0CA9BE8024") ,
                     ("Get-ThreadController.ps1"        , "3DFA549D11BB239E63B1E114C4C86CFA7A92B83C95F114B5BD66DDC33778E545") ,
                     ("Get-UserProfile.ps1"             , "97FF1186827FDE6A84B66C67036B3018F61624C92ECA37F89AC70077B717A6C6") ,
-                    ("Get-ViperBomb.ps1"               , "A103F674B4278ABFD07B95D985F930197EF13BFA19B2CE0259CFBA836F6D7ADE") ,
+                    ("Get-ViperBomb.ps1"               , "D24024D5F6B37F6521C536CDBEEA9024830727AD4159EA67261206AE8EF1F13D") ,
                     ("Get-WhoisUtility.ps1"            , "BFE480D46157A0A0F541A4A14E12D85F834592DA8243A5BCE4D24EDADDB4BE9A") ,
                     ("Initialize-FeAdInstance.ps1"     , "0EEF28E919AE410A405DB87C4124239C63026192E188D26B23885A23C6388477") ,
                     ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
@@ -1775,7 +1775,7 @@ Function FightingEntropy.Module
                     ("Update-PowerShell.ps1"           , "4510EB6E34553E58393D8EDCBCFE34D8D11DFB6AF049D9C4CD4A6934DBCE779A") ,
                     ("Write-Element.ps1"               , "07D040C9749E6AAF56BD827238CF69DDFFF1A7123A4EE96D98249554FEC10610") ,
                     ("Write-Theme.ps1"                 , "01070281F24BE58928A1146EF89B3AE56F3FAE100BE178ED11A5FEF710724C00") ,
-                    ("Write-Xaml.ps1"                  , "4B3BF7A626B918DDA6E3449C4F5B8DDA87C1C67914B9190E676D491896BBEF75")
+                    ("Write-Xaml.ps1"                  , "F233F0E56889F7825615DE597D940EB9F5461158B57510E68E2F894B12722908")
                 }
                 Graphic
                 {
@@ -2549,7 +2549,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-19 16:54:23 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-05-25 18:24:27 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
