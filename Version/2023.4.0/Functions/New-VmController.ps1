@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-02 20:13:58                                                                  //
+\\  Date       : 2023-05-27 14:43:03                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-05-02
+    Modified   : 2023-05-27
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -29,6 +29,8 @@
 
 Function New-VmController
 {
+    Import-Module Hyper-V -EA 0
+
     # [Image Controller]
     Class ImageLabel
     {
@@ -890,7 +892,7 @@ Function New-VmController
             $This.Selected = $This.Output | ? Name -eq "US" | % Index
         }
     }
-
+    
     # [Xaml]
     Class XamlProperty
     {
@@ -3404,7 +3406,7 @@ Function New-VmController
         }
         [Object] VmNodePropertyItem([UInt32]$Index,[Object]$Property)
         {
-            Return [VmNodePropertyItem]::($Index,$Property)
+            Return [VmNodePropertyItem]::New($Index,$Property)
         }
         Add([Object]$Property)
         {
@@ -4084,6 +4086,25 @@ Function New-VmController
                 2       { Add-VmDvdDrive -VMName $This.Name -Verbose }
             }
         }
+        AddVmNetworkAdapter([String]$SwitchName,[String]$Name)
+        {
+            $This.Update(0,"[+] Adding VmNetworkAdapter")
+
+            # Verbosity level
+
+            $Splat = @{ 
+
+                VmName     = $This.name
+                SwitchName = $SwitchName
+                Name       = $Name
+            }
+
+            Switch ($This.Mode)
+            {
+                Default { Add-VMNetworkAdapter @Splat }
+                2       { Add-VMNetworkAdapter @Splat -Verbose }
+            }
+        }
         LoadIso()
         {
             $Item = $This.GetVmDvdDrive()
@@ -4231,18 +4252,50 @@ Function New-VmController
         }
         SpecialKey([UInt32]$Index)
         {
+            $This.Update(0,"[+] Special key : [$Index]")
             $This.Keyboard.PressKey(18)
             $This.Keyboard.TypeKey($Index)
             $This.Keyboard.ReleaseKey(18)
         }
         ShiftKey([UInt32[]]$Index)
         {
+            $This.Update(0,"[+] Shift key : [$Index]")
             $This.Keyboard.PressKey(16)
             ForEach ($X in $Index)
             {
                 $This.Keyboard.TypeKey($X)
             }
             $This.Keyboard.ReleaseKey(16)
+        }
+        AltKey([UInt32[]]$Index)
+        {
+            $This.Update(0,"[+] Alt key : [$Index]")
+            $This.Keyboard.PressKey(16)
+            ForEach ($X in $Index)
+            {
+                $This.Keyboard.TypeKey($X)
+            }
+            $This.Keyboard.ReleaseKey(16)
+        }
+        CtrlKey([UInt32[]]$Index)
+        {
+            $This.Update(0,"[+] Ctrl key : [$Index]")
+            $This.Keyboard.PressKey(18)
+            ForEach ($X in $Index)
+            {
+                $This.Keyboard.TypeKey($X)
+            }
+            $This.Keyboard.ReleaseKey(18)
+        }
+        WinKey([UInt32[]]$Index)
+        {
+            $This.Update(0,"[+] Win key : [$Index]")
+            $This.Keyboard.PressKey(91)
+            ForEach ($X in $Index)
+            {
+                $This.Keyboard.TypeKey($X)
+            }
+            $This.Keyboard.ReleaseKey(91)
         }
         TypeCtrlAltDel()
         {
@@ -4478,6 +4531,41 @@ Function New-VmController
             $Current.Complete     ++
             $This.Script.Selected ++
         }
+        [Void] InitTransmitTcp()
+        {
+            $This.Update(0,"[~] Initializing [Transmission Control Script]")
+            $This.TypeLine("irm https://www.github.com/mcc85s/FightingEntropy/blob/main/Scripts/Initialize-VmNode.ps1?raw=true | iex")
+            $This.TypeKey(13)
+
+            $This.Idle(5,2)
+
+            $Line  = "`$Ctrl = Initialize-VmNode"
+            $Line += " -Index {0}"     -f 0
+            $Line += " -Name {0}"      -f $This.Name
+            $Line += " -IpAddress {0}" -f $This.Network.IpAddress
+            $Line += " -Domain {0}"    -f $This.Network.Domain
+            $Line += " -NetBios {0}"   -f $This.Network.NetBios
+            $Line += " -Trusted {0}"   -f $This.Network.Trusted
+            $Line += " -Prefix {0}"    -f $This.Network.Prefix
+            $Line += " -Netmask {0}"   -f $This.Network.Netmask
+            $Line += " -Gateway {0}"   -f $This.Network.Gateway
+            $Line += " -Dns @('{0}')"  -f ($This.Network.Dns -join "','")
+            $Line += " -Transmit {0}"  -f $This.Network.Transmit
+
+            $This.TypeLine($Line)
+            $This.TypeKey(13)
+            $This.Idle(5,2)
+
+            $This.TypeLine('$Ctrl.Initialize()')
+            $This.TypeKey(13)
+            $This.Idle(5,2)
+        }
+        [Void] TransmitTcp()
+        {
+            $Current = 
+            $Script = Start-TcpSession -Client -Source $Vm.Network.IpAddress -Port $Vm.Network.Transmit -Content $Vm.Script.Output[1].Content.Line
+            $Script.Initialize()
+        }
         [String] ToString()
         {
             Return "<FEVirtual.VmNode[Object]>"
@@ -4529,7 +4617,7 @@ Function New-VmController
             $This.PressKey(91)
             $This.TypeKey(88)
             $This.ReleaseKey(91)
-            $This.Timer(1)
+            $This.Timer(2)
 
             Switch ($This.Role)
             {
@@ -4558,7 +4646,7 @@ Function New-VmController
                     $This.TypeKey(37)
                     $This.Timer(2)
                     $This.TypeKey(13)
-                    $This.Timer(2)
+                    $This.Timer(4)
 
                     # // Maximize window
                     $This.PressKey(91)
