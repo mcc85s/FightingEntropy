@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| Not the typical video where I either play music or make commentary... however, this covers some additional development of the function [**New-VmController**] in order to install [**OpnSense**]. In the beginning of the video, I build a script that will download the image from [**opnsense.org**] and validate the image, as well as conversion and whatnot. As of this writing, I am currently implementing a new feature to the function New-VmController that allows for additional network interfaces as well as whether they may be configured manually. |
+| Not the typical video where I either play music or make commentary... however, this covers some additional development of the function [**New-VmController**] in order to install [**OpnSense**]. In the beginning of the video, I build a script that will download the image from [**opnsense.org**] and validate the image, as well as conversion and whatnot. As of this writing, I am currently implementing a new feature to the function [**New-VmController**] that allows for additional network interfaces as well as whether they may be configured manually. |
 
 [[Video](#video)] - [[Script](#script)]
 
