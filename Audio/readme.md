@@ -9,8 +9,8 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
-| **05/29/23** | 0h 23m 54s | **2023_05_29_13_17_40.mp3** | https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6 |
-| **05/29/23** | 1h 15m 53s | **2023_05_29_06_36_49.mp3** | https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6 |
+| **05/29/23** | 0h 23m 54s | **2023_05_29_13_17_40.mp3** | [Doug Bagely](https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6) |
+| **05/29/23** | 1h 15m 53s | **2023_05_29_06_36_49.mp3** | [Tatiana Cleveland](https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6) |
 | **05/23/23** | 1h 17m 25s | **2023_05_23_07_46_10.mp3**    | [Amon Amarth](https://drive.google.com/file/d/1klse78zk2UPz3VoiISaZGM1pMbnUNw1X)
 | **05/22/23** | 1h 03m 11s | **2023_05_22_07_56_35.mp3**    | [Captain Dumbface](https://drive.google.com/file/d/1K8aY8HizFHWZgfo1iqPPFo0_3QyNUi8j)
 | **05/21/23** | 1h 49m 34s | **2023_05_21_08_42_45.mp3**    | [Persistence](https://drive.google.com/file/d/1iONB571ixBldHdC96gbrKA0gtqQhJf2T)
