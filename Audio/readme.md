@@ -5,10 +5,11 @@ I've spent years making these recordings, though I have not always made them pub
 The idea here, is that if I profess my train of thought and rhetoric, and other people can listen to what I have to say...?<br>
 Then people will understand my motivations a lot more clearly.<br>
 
-<h2>Last updated: [05/29/23]</h2>
+<h2>Last updated: [05/30/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **05/30/23** | 1h 05m 43s | **2023_05_30_20_58_47.mp3** | [Rememberance](https://drive.google.com/file/d/1oJ8NXdDwU3g58R1n_AM6qkdkg8Q9C5HW) |
 | **05/29/23** | 0h 23m 54s | **2023_05_29_13_17_40.mp3** | [Doug Bagely](https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6) |
 | **05/29/23** | 1h 15m 53s | **2023_05_29_06_36_49.mp3** | [Tatiana Cleveland](https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6) |
 | **05/23/23** | 1h 17m 25s | **2023_05_23_07_46_10.mp3**    | [Amon Amarth](https://drive.google.com/file/d/1klse78zk2UPz3VoiISaZGM1pMbnUNw1X)
