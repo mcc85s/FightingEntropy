@@ -9,6 +9,7 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **05/31/23** | 0h 28m 45s | **2023_05_31_20_45_35.mp3** | [Progress Report](https://drive.google.com/file/d/1ouAK67FV193WZzah75SdzLBMqp_pOAen) |
 | **05/31/23** | 0h 44m 44s | **2023_05_31_07_16_06.mp3** | [Debt Ceiling](https://drive.google.com/file/d/1ofrT8uO8foEKzpDCQY8JZDXdLGwkHTiA) |
 | **05/30/23** | 1h 05m 43s | **2023_05_30_20_58_47.mp3** | [Rememberance](https://drive.google.com/file/d/1oJ8NXdDwU3g58R1n_AM6qkdkg8Q9C5HW) |
 | **05/29/23** | 0h 23m 54s | **2023_05_29_13_17_40.mp3** | [Doug Bagely](https://drive.google.com/file/d/1nXSlKbbVKk25hjgGVwKTIC4PgBTwRwX6) |
