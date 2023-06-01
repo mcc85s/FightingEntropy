@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-01 14:38:28                                                                  //
+\\  Date       : 2023-06-01 16:51:25                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -1185,7 +1185,7 @@ Function New-VmController
         '                    <Label   Grid.Column="0" Content="[Credential(s)]:"/>',
         '                    <TextBox Grid.Column="1"',
         '                             Text="&lt;Manage credential objects + accounts&gt;"',
-        '                             IsReadOnly="False"/>',
+        '                             IsReadOnly="True"/>',
         '                </Grid>',
         '                <DataGrid Grid.Row="1" Name="CredentialOutput">',
         '                    <DataGrid.Columns>',
@@ -1330,7 +1330,8 @@ Function New-VmController
         '                    </Grid.ColumnDefinitions>',
         '                    <Label Grid.Column="0" Content="[Image]:"/>',
         '                    <TextBox Grid.Column="1"',
-        '                             Text="&lt;Select image for template to utilize&gt;"/>',
+        '                             Text="&lt;Select image for template to utilize&gt;"',
+        '                             IsReadOnly="True"/>',
         '                </Grid>',
         '                <DataGrid Grid.Row="1" Name="ImageStore">',
         '                    <DataGrid.RowStyle>',
@@ -1397,7 +1398,8 @@ Function New-VmController
         '                    </Grid.ColumnDefinitions>',
         '                    <Label Grid.Column="0" Content="[Edition]:"/>',
         '                    <TextBox Grid.Column="1"',
-        '                             Text="&lt;If Windows image, select edition for template to utilize&gt;"/>',
+        '                             Text="&lt;If Windows image, select edition for template to utilize&gt;"',
+        '                             IsReadOnly="True"/>',
         '                </Grid>',
         '                <DataGrid Grid.Row="5" Name="ImageStoreContent">',
         '                    <DataGrid.Columns>',
@@ -1462,30 +1464,22 @@ Function New-VmController
         '                                            Width="*"/>',
         '                        <DataGridTextColumn Header="Role"',
         '                                            Binding="{Binding Role}"',
-        '                                            Width="60"/>',
+        '                                            Width="70"/>',
+        '                        <DataGridTextColumn Header="Generation"',
+        '                                            Binding="{Binding Gen}"',
+        '                                            Width="70"/>',
         '                        <DataGridTextColumn Header="Memory"',
         '                                            Binding="{Binding Memory.Size}"',
-        '                                            Width="60"/>',
-        '                        <DataGridTextColumn Header="Hdd"',
+        '                                            Width="75"/>',
+        '                        <DataGridTextColumn Header="Hard Drive"',
         '                                            Binding="{Binding Hdd.Size}"',
-        '                                            Width="60"/>',
-        '                        <DataGridTextColumn Header="Gen"',
-        '                                            Binding="{Binding Gen}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="Core"',
+        '                                            Width="75"/>',
+        '                        <DataGridTextColumn Header="Cores"',
         '                                            Binding="{Binding Core}"',
         '                                            Width="40"/>',
         '                        <DataGridTextColumn Header="SwitchId"',
         '                                            Binding="{Binding SwitchId}"',
-        '                                            Width="100"/>',
-        '                        <DataGridTemplateColumn Header="[+]" Width="25">',
-        '                            <DataGridTemplateColumn.CellTemplate>',
-        '                                <DataTemplate>',
-        '                                    <CheckBox IsChecked="{Binding Profile,',
-        '                                              UpdateSourceTrigger=PropertyChanged}"/>',
-        '                                </DataTemplate>',
-        '                            </DataGridTemplateColumn.CellTemplate>',
-        '                        </DataGridTemplateColumn>',
+        '                                            Width="125"/>',
         '                    </DataGrid.Columns>',
         '                </DataGrid>',
         '                <Grid Grid.Row="2">',
@@ -1537,14 +1531,14 @@ Function New-VmController
         '                        <ColumnDefinition Width="90"/>',
         '                    </Grid.ColumnDefinitions>',
         '                    <Label Grid.Column="0"',
-        '                           Content="[Path]:"/>',
+        '                           Content="[Root]:"/>',
         '                    <TextBox Grid.Column="1"',
-        '                             Name="TemplateStoragePath"',
-        '                             Text="&lt;Set virtual machine storage path&gt;"/>',
+        '                             Name="TemplateRootPath"',
+        '                             Text="&lt;Set virtual machine root path&gt;"/>',
         '                    <Image Grid.Column="2"',
-        '                           Name="TemplateStoragePathIcon"/>',
+        '                           Name="TemplateRootPathIcon"/>',
         '                    <Button Grid.Column="3"',
-        '                            Name="TemplateStoragePathBrowse"',
+        '                            Name="TemplateRootPathBrowse"',
         '                            Content="Browse"/>',
         '                </Grid>',
         '                <TabControl Grid.Row="6">',
@@ -1654,31 +1648,20 @@ Function New-VmController
         '                                <DataGridTextColumn Header="Username"',
         '                                            Binding="{Binding Username}"',
         '                                            Width="*"/>',
-        '                                <DataGridTextColumn Header="Password"',
-        '                                            Binding="{Binding Pass}"',
-        '                                            Width="150"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                    </TabItem>',
         '                    <TabItem Header="Image">',
-        '                        <Grid Grid.Row="8" Height="40" VerticalAlignment="Top">',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="105"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="25"/>',
-        '                                <ColumnDefinition Width="90"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <Label Grid.Column="0"',
-        '                                   Content="[Image/Iso]:"/>',
-        '                            <TextBox Grid.Column="1"',
-        '                                     Name="TemplateImagePath"',
-        '                                     Text="&lt;Select an image&gt;"/>',
-        '                            <Image Grid.Column="2"',
-        '                                   Name="TemplateImagePathIcon"/>',
-        '                            <Button Grid.Column="3"',
-        '                                    Name="TemplateImagePathBrowse"',
-        '                                    Content="Browse"/>',
-        '                        </Grid>',
+        '                        <DataGrid Name="TemplateImageOutput">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
+        '                                            Width="90"/>',
+        '                                <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
         '                    </TabItem>',
         '                </TabControl>',
         '            </Grid>',
@@ -6512,6 +6495,182 @@ Function New-VmController
         }
     }
 
+    # [Validation controller]
+    Enum VmValidationSlotType
+    {
+        Network
+        Credential
+        Image
+        Template
+        Node
+    }
+
+    Class VmValidationSlotItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String] $Description
+        VmValidationSlotItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmValidationSlotType]::$Name
+            $This.Name  = [VmValidationSlotType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmValidationSlotList
+    {
+        [Object] $Output
+        VmValidationSlotList()
+        {
+
+        }
+        [Object] VmValidationSlotItem([String]$Name)
+        {
+            Return [VmValidationSlotItem]::New($Name)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Output | ? Name -eq $Name
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+            
+            ForEach ($Name in [System.Enum]::GetNames([VmValidationSlotType]))
+            {
+                $Item             = $This.VmValidationSlotItem($Name)
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Network    { "Controls related to networking."                 }
+                    Credential { "Controls related to credential management."      }
+                    Image      { "Controls related to the imaging engine."         }
+                    Template   { "Controls related to template fabrication."       }
+                    Node       { "Controls related to virtual machine management." }
+                }
+
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidationSlot[List]>"
+        }
+    }
+    
+    Class VmValidationItem
+    {
+        [UInt32]   $Index
+        [Object]    $Slot
+        [String]    $Name
+        [Object] $Control
+        [UInt32]  $Status
+        VmValidationItem([UInt32]$Index,[Object]$Slot,[Object]$Control)
+        {
+            $This.Index   = $Index
+            $This.Slot    = $Slot
+            $This.Name    = $Control.Name
+            $This.Control = $Control.Control
+            $This.SetStatus(0)
+        }
+        SetStatus([UInt32]$Status)
+        {
+            $This.Status = $Status
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidation[Item]>"
+        }
+    }
+
+    Class VmValidationController
+    {
+        Hidden [Object] $Slot
+        [Object]      $Output
+        VmValidationController()
+        {
+            $This.Slot = $This.VmValidationSlotList()
+            $This.Clear()
+        }
+        [Object] VmValidationSlotList()
+        {
+            Return [VmValidationSlotList]::New()
+        }
+        [Object] VmValidationItem([UInt32]$Index,[Object]$Slot,[Object]$Control)
+        {
+            Return [VmValidationItem]::New($Index,$Slot,$Control)
+        }
+        [Object] New([UInt32]$Slot,[Object]$Control)
+        {
+            Return $This.VmValidationItem($This.Output.Count,$This.Slot[$Slot],$Control)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Add([UInt32]$Slot,[Object]$Control)
+        {
+            $This.Output += $This.New($Slot,$Control)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Output | ? Name -eq $Name
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidation[Controller]>"
+        }
+    }
+
+    Class VmValidatePath
+    {
+        [UInt32]   $Status
+        [String]     $Type
+        [String]     $Name
+        [Object] $Fullname
+        VmValidatePath([String]$Entry)
+        {
+            $This.Status       = [UInt32]($Entry -match "^\w+\:\\")
+            $This.Fullname     = $Entry
+            If ($This.Status -eq 1)
+            {
+                Try
+                {
+                    If ([System.IO.FileInfo]::new($Entry).Attributes -match "Directory")
+                    {
+                        $This.Type   = "Directory" 
+                    }
+                    Else
+                    {
+                        $This.Type   = "File"
+                    }
+                    
+                    $This.Name       = Split-Path -Leaf $Entry
+
+                    If (!(Test-Path $This.Fullname))
+                    {
+                        $This.Status = 2
+                    }
+                }
+                Catch
+                {
+                    
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Fullname
+        }
+    }
+
     # [Master controller types]
     Class VmControllerFlag
     {
@@ -6527,10 +6686,6 @@ Function New-VmController
         SetStatus([UInt32]$Status)
         {
             $This.Status = $Status
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmController[Flag]>"
         }
     }
 
@@ -6616,6 +6771,7 @@ Function New-VmController
         [Object]      $Image
         [Object]   $Template
         [Object]       $Node
+        [Object]   $Validate
         [Object]       $Flag
         VmControllerMaster()
         {
@@ -6626,6 +6782,9 @@ Function New-VmController
             $This.Image      = $This.Get("Image")
             $This.Template   = $This.Get("Template")
             $This.Node       = $This.Get("Node")
+            $This.Validate   = $This.Get("Validate")
+
+            $This.Validation()
 
             $This.Flag       = @( )
             
@@ -6639,8 +6798,7 @@ Function New-VmController
                               "ImagePath",
                               "TemplateExportPath",
                               "TemplateName",
-                              "TemplateStoragePath",
-                              "TemplateImagePath",
+                              "TemplateRootPath",
                               "NodeTemplatePath")
             {
                 $This.Flag += $This.VmControllerFlag($This.Flag.Count,$Name)
@@ -6736,6 +6894,11 @@ Function New-VmController
                     $This.Update(0,"Getting [~] Node Controller")
                     $Item = [VmNodeController]::New()
                 }
+                Validate
+                {
+                    $This.Update(0,"Getting [~] Validation controller")
+                    $Item = [VmValidationController]::New()
+                }
             }
 
             Return $Item
@@ -6756,13 +6919,36 @@ Function New-VmController
         {
             Return [VmControllerProperty]::New($Property)
         }
+        [Object] VmValidatePath([String]$Entry)
+        {
+            Return [VmValidatePath]::New($Entry)
+        }
+        Validation()
+        {
+            $This.Validate.Clear()
+
+            (0,"NetworkDomain"),
+            (0,"NetworkNetBios"),
+            (0,"NetworkSwitchName"),
+            (1,"CredentialUsername"),
+            (1,"CredentialPassword"),
+            (1,"CredentialConfirm"),
+            (1,"CredentialPin"),
+            (2,"ImagePath"),
+            (3,"TemplateExportPath"),
+            (3,"TemplateName"),
+            (3,"TemplateRootPath"),
+            (4,"NodeTemplatePath") | % { 
+
+                $This.Validate.Add($_[0],$_[1])
+            }
+        }
         [String] DefaultText([String]$Name)
         {
             $Item = Switch ($Name)
             {
-                TemplateExportPath  { "<Set template export path>"         }
-                TemplateStoragePath { "<Set virtual machine storage path>" }
-                TemplateImagePath   { "<Select an image>"                  }
+                TemplateExportPath { "<Set template export path>"      }
+                TemplateRootPath   { "<Set virtual machine root path>" }
             }
 
             Return $Item
@@ -6788,7 +6974,7 @@ Function New-VmController
         }
         [String] IconStatus([UInt32]$Flag)
         {
-            Return $This.Module._Control(@("failure.png","success.png")[$Flag]).Fullname
+            Return $This.Module._Control(@("failure.png","success.png","warning.png")[$Flag]).Fullname
         }
         [Object] Grid([String]$Name)
         {
@@ -7087,61 +7273,55 @@ Function New-VmController
         }
         CheckPath([String]$Name)
         {
-            $Item        = $This.Xaml.Get($Name)
-            $Icon        = $This.Xaml.Get("$Name`Icon")
+            $Item         = $This.Xaml.Get($Name)
+            $Icon         = $This.Xaml.Get("$Name`Icon")
+            $xFlag        = $This.Flag | ? Name -eq $Name
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $xFlag       = $This.Flag | ? Name -eq $Name
-            $xFlag.SetStatus([UInt32][System.IO.Directory]::Exists($Item.Text))
-    
-            $Icon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleMasterCreate()
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
         CheckTemplateExportPath()
         {
             $Item         = $This.Xaml.Get("TemplateExportPath")
-            $xFlag        = $This.Flag | ? Name -eq TemplatePath
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+            $Icon         = $This.Xaml.Get("TemplateExportPathIcon")
+            $xFlag        = $This.Flag | ? Name -eq TemplateExportPath
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $This.Xaml.IO.TemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
         CheckTemplateName()
         {
             $Item         = $This.Xaml.Get("TemplateName")
+            $Icon         = $This.Xaml.Get("TemplateNameIcon")
+
             $xFlag        = $This.Flag | ? Name -eq TemplateName
             $xFlag.Status = [UInt32]($Item.Text -match "[a-zA-Z]{1}[a-zA-Z0-9]{0,14}" -and $Item.Text -notin $This.Node.Host.Name)
     
-            $This.Xaml.IO.TemplateNameIcon.Source = $This.IconStatus($xFlag.Status)
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
 
             $This.ToggleTemplateCreate()
         }
-        CheckTemplatePath()
+        CheckTemplateRootPath()
         {
-            $Item         = $This.Xaml.Get("TemplatePath")
-            $xFlag        = $This.Flag | ? Name -eq TemplatePath
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+            $Item         = $This.Xaml.Get("TemplateRootPath")
+            $Icon         = $This.Xaml.Get("TemplateRootPathIcon")
+            $xFlag        = $This.Flag | ? Name -eq TemplateRootPath
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $This.Xaml.IO.TemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleTemplateCreate()
-        }
-        CheckTemplateImagePath()
-        {
-            $Item         = $This.Xaml.Get("TemplateImagePath")
-            $xFlag        = $This.Flag | ? Name -eq TemplateImagePath
-            $xFlag.Status = [UInt32][System.IO.File]::Exists($Item.Text)
-    
-            $This.Xaml.IO.TemplateImagePathIcon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleTemplateCreate()
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
         CheckNodeTemplatePath()
         {
             $Item         = $This.Xaml.Get("NodeTemplatePath")
+            $Icon         = $This.Xaml.Get("NodeTemplatePathIcon")
             $xFlag        = $This.Flag | ? Name -eq "NodeTemplatePath"
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
-            
-            $This.Xaml.IO.NodeTemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
+    
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
         SetMain()
         {
@@ -7250,19 +7430,13 @@ Function New-VmController
                     $This.Xaml.IO.TemplateCreate.IsEnabled     = 0
                     $This.Xaml.IO.TemplateRemove.IsEnabled     = 0
                     $This.Xaml.IO.TemplateExport.IsEnabled     = 0
-                    $This.Xaml.IO.TemplateCredentialCount.Text = $This.Credential.Output.Count
             
                     $This.Xaml.IO.TemplateRole.SelectedIndex   = 0
-                    $This.Xaml.IO.TemplateSwitch.SelectedIndex = 0
-
-                    $This.Xaml.IO.TemplateOutput.SelectedIndex = $This.Template.Output.Count
                 }
                 Node
                 {
                     $This.Xaml.IO.NodeHostCreate.IsEnabled     = 0
                     $This.Xaml.IO.NodeHostRemove.IsEnabled     = 0
-            
-                    $This.Xaml.IO.NodeSlot.SelectedIndex       = 1
                     $This.Xaml.IO.NodeTemplateImport.IsEnabled = 0
                 }
             }
@@ -7373,10 +7547,10 @@ Function New-VmController
                         $Ctrl.SwitchPanel($Ctrl.Xaml.IO.NetworkPanel.SelectedItem.Content)
                     })
 
-                    <# NetworkAssign (May deprecate) #>
                     $Ctrl.Xaml.IO.NetworkAssign.Add_Click(
                     {
-
+                        $List = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$List)
                     })
                 }
                 Credential
@@ -7418,7 +7592,7 @@ Function New-VmController
                 
                     $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
                     {
-                        $Ctrl.CredentialPanel()
+                        $Ctrl.Handle("Credential")
                     })
                 
                     $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
@@ -7435,21 +7609,20 @@ Function New-VmController
                             }
                             {$_ -gt 1}
                             {
-                                $Index = $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex
-                                $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Index -ne $Index)
+                                $Guid = $Ctrl.Xaml.IO.CredentialOutput.SelectedItem.Guid
+                                $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
                                 $Ctrl.Credential.Rerank()
                             }
                         }
                     
                         $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-                        $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
                     })
                 
                     $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
                     {
                         $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                                            $Ctrl.Xaml.IO.CredentialUsername.Text,
-                                            $Ctrl.Xaml.IO.CredentialPassword.Password)
+                                             $Ctrl.Xaml.IO.CredentialUsername.Text,
+                                             $Ctrl.Xaml.IO.CredentialPassword.Password)
                     
                         If ($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
                         {
@@ -7459,11 +7632,14 @@ Function New-VmController
                     
                         $Ctrl.Credential.Rerank()
                         $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-                    
-                        $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
                     })
                 
                     $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
+
+                    $Ctrl.Xaml.IO.CredentialAssign.Add_Click(
+                    {
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Credential.Output)
+                    })
                 }
                 Image
                 {
@@ -7488,60 +7664,62 @@ Function New-VmController
                     {
                         $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
                         $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
-                        $Ctrl.Xaml.IO.TemplateImagePath.Text = $Ctrl.Image.Current().Fullname
+                    })
+
+                    $Ctrl.Xaml.IO.ImageAssign.Add_Click(
+                    {
+                        $List = $Ctrl.Xaml.IO.ImageStore.Items | ? Profile
+                        If ($List.Count -ne 1)
+                        {
+                            [System.Windows.MessageBox]::Show("Only (1) image allowed")
+                        }
+                        Else
+                        {
+                            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$List)
+                        }
                     })
                 }
                 Template
                 {
+                    $Ctrl.Xaml.IO.TemplateExportPath.Add_TextChanged(
+                    {
+                        If ($Ctrl.Xaml.IO.TemplateExportPath.Text -eq "")
+                        {
+                            $Ctrl.Xaml.IO.TemplateExportPath.Text = $Ctrl.DefaultText("TemplateExportPath")
+                            $Ctrl.Xaml.IO.TemplateExportPathIcon.Source = $Null
+                        }
+                        Else
+                        {
+                            $Ctrl.CheckTemplateExportPath()
+                        }
+                    })
 
-                    TemplateExportPath
-                    TemplateExportPathIcon
-                    TemplateExportBrowse
-                    TemplateOutput
-                    TemplateCreate
-                    TemplateRemove
-                    TemplateExport
-                    TemplateName
-                    TemplateNameIcon
-                    TemplateRole
-                    TemplateStoragePath
-                    TemplateStoragePathIcon
-                    TemplateStoragePathBrowse
-                    TemplateMemory
-                    TemplateHardDrive
-                    TemplateGeneration
-                    TemplateCore
-                    TemplateNetworkUp
-                    TemplateNetworkDown
-                    TemplateNetworkOutput
-                    TemplateCredentialOutput
-                    TemplateImagePath
-                    TemplateImagePathIcon
-                    TemplateImagePathBrowse
+                    $Ctrl.Xaml.IO.TemplateExportBrowse.Add_Click(
+                    {
+                        $Ctrl.FolderBrowse("TemplateExportPath")
+                    })
 
                     $Ctrl.Xaml.IO.TemplateName.Add_TextChanged(
                     {
                         $Ctrl.CheckTemplateName()
                     })
                     
-                    $Ctrl.Xaml.IO.TemplatePath.Add_TextChanged(
+                    $Ctrl.Xaml.IO.TemplateRootPath.Add_TextChanged(
                     {
-                        $Ctrl.CheckTemplatePath()
+                        If ($Ctrl.Xaml.IO.TemplateRootPath.Text -eq "")
+                        {
+                            $Ctrl.Xaml.IO.TemplateRootPath.Text = $Ctrl.DefaultText("TemplateRootPath")
+                            $Ctrl.Xaml.IO.TemplateRootPathIcon.Source = $Null
+                        }
+                        Else
+                        {
+                            $Ctrl.CheckTemplateRootPath()
+                        }
                     })
                     
-                    $Ctrl.Xaml.IO.TemplatePathBrowse.Add_Click(
+                    $Ctrl.Xaml.IO.TemplateRootPathBrowse.Add_Click(
                     {
-                        $Ctrl.FolderBrowse("TemplatePath")
-                    })
-                    
-                    $Ctrl.Xaml.IO.TemplateImagePath.Add_TextChanged(
-                    {
-                        $Ctrl.CheckTemplateImagePath()
-                    })
-                    
-                    $Ctrl.Xaml.IO.TemplateImagePathBrowse.Add_Click(
-                    {
-                        $Ctrl.FileBrowse("TemplateImagePath")
+                        $Ctrl.FolderBrowse("TemplateRootPath")
                     })
                     
                     $Ctrl.Xaml.IO.TemplateCreate.Add_Click(
@@ -7581,10 +7759,8 @@ Function New-VmController
                             $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
                     
                             $Ctrl.Xaml.Get("TemplateName").Text            = ""
-                            $Ctrl.Xaml.Get("TemplatePath").Text            = "<Select a path>"
-                            $Ctrl.Xaml.Get("TemplatePathIcon").Source      = $Null
-                            $Ctrl.Xaml.Get("TemplateImagePath").Text       = "<Select an image>"
-                            $Ctrl.Xaml.Get("TemplateImagePathIcon").Source = $Null
+                            $Ctrl.Xaml.Get("TemplateRootPath").Text        = $Ctrl.DefaultText("")
+                            $Ctrl.Xaml.Get("TemplateRootPathIcon").Source  = $Null
                         }
                     })
                     
@@ -7611,45 +7787,12 @@ Function New-VmController
                 }
                 Node
                 {
-                    $Ctrl.Xaml.IO.NodeSlot.Add_SelectionChanged(
-                    {
-                        $Ctrl.Xaml.IO.NodeSwitchPanel.Visibility = @("Collapsed","Visible")[[UInt32]$Ctrl.Xaml.IO.NodeSlot.SelectedIndex -eq 0]
-                        $Ctrl.Xaml.IO.NodeHostPanel.Visibility   = @("Collapsed","Visible")[[UInt32]$Ctrl.Xaml.IO.NodeSlot.SelectedIndex -eq 1]
-                    })
+                    $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostOutput,$Ctrl.Node.Host)
                     
-                    $Ctrl.Xaml.IO.NodeSwitch.Add_SelectionChanged(
-                    {
-                        $Ctrl.NodeSwitchPanel()
-                    })
-                    
-                    $Ctrl.Xaml.IO.NodeSwitchUpdate.Add_Click(
-                    {
-                        $Ctrl.Node.Refresh("Switch")
-                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-                    })
-                    
-                    $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-                    $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
-                    $Ctrl.Reset($Ctrl.Xaml.IO.TemplateSwitch,$Ctrl.Node.Switch.Name)
-                    
-                    $Ctrl.Xaml.IO.NodeSwitchName.Add_TextChanged(
-                    {
-                        $Status = [UInt32]($Ctrl.Xaml.IO.NodeSwitchName.Text -notin $Ctrl.Node.Switch.Name)
-                        $Ctrl.Xaml.IO.NodeSwitchIcon.Source      = $Ctrl.IconStatus($Status)
-                        $Ctrl.Xaml.IO.NodeSwitchCreate.IsEnabled = $Status
-                    })
-                    
-                    $Ctrl.Xaml.IO.NodeSwitchCreate.Add_Click(
-                    {
-                        $Ctrl.Node.NewVmSwitch($Ctrl.Xaml.IO.NodeSwitchName.Text,$Ctrl.Xaml.IO.NodeSwitchType.SelectedItem.Content)
-                        $Ctrl.Node.Refresh("Switch")
-                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-                    })
-                    
-                    $Ctrl.Xaml.IO.NodeHostUpdate.Add_Click(
+                    $Ctrl.Xaml.IO.NodeRefresh.Add_Click(
                     {
                         $Ctrl.Node.Refresh()
-                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostOutput,$Ctrl.Node.Object)
                         $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostExtension,$Null)
                     })
                     
@@ -7669,17 +7812,17 @@ Function New-VmController
                         $Ctrl.Update(0,"Setting [~] Node template import path")
                         $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodeTemplatePath.Text)
                         $Ctrl.Node.Refresh()
-                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostOutput,$Ctrl.Node.Object)
                     })
                     
-                    $Ctrl.Xaml.IO.NodeHost.Add_SelectionChanged(
+                    $Ctrl.Xaml.IO.NodeHostOutput.Add_SelectionChanged(
                     {
                         $Ctrl.NodeHostPanel()
                     })
                     
                     $Ctrl.Xaml.IO.NodeHostCreate.Add_Click(
                     {
-                        $Item = $Ctrl.Xaml.IO.NodeHost.SelectedItem
+                        $Item = $Ctrl.Xaml.IO.NodeHostOutput.SelectedItem
                     
                         Switch ($Item.Type)
                         {
@@ -7696,7 +7839,7 @@ Function New-VmController
                     
                     $Ctrl.Xaml.IO.NodeHostRemove.Add_Click(
                     {
-                        $Item = $Ctrl.Xaml.IO.NodeHost.SelectedItem
+                        $Item = $Ctrl.Xaml.IO.NodeHostOutput.SelectedItem
                         Switch ($Item.Type)
                         {
                             Host
@@ -7713,7 +7856,7 @@ Function New-VmController
                         }
         
                         $Ctrl.Node.Refresh()
-                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostOutput,$Ctrl.Node.Object)
                         $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostExtension,$Null)
                     })
                 }
@@ -7932,4 +8075,3 @@ Function New-VmController
     $Ctrl.StageXaml()
     $Ctrl.Invoke()
 #}#>
-
