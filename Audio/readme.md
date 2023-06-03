@@ -5,10 +5,11 @@ I've spent years making these recordings, though I have not always made them pub
 The idea here, is that if I profess my train of thought and rhetoric, and other people can listen to what I have to say...?<br>
 Then people will understand my motivations a lot more clearly.<br>
 
-<h2>Last updated: [05/31/23]</h2>
+<h2>Last updated: [06/03/23]</h2>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **06/03/23** | 0h 40m 04s | **2023_06_03_17_06_46.mp3** | [Pattern Recognition](https://drive.google.com/file/d/1qAB2NNUMxkvb0yZPZ9GzCX-b9VZ8aONs) |
 | **05/31/23** | 0h 28m 45s | **2023_05_31_20_45_35.mp3** | [Progress Report](https://drive.google.com/file/d/1ouAK67FV193WZzah75SdzLBMqp_pOAen) |
 | **05/31/23** | 0h 44m 44s | **2023_05_31_07_16_06.mp3** | [Debt Ceiling](https://drive.google.com/file/d/1ofrT8uO8foEKzpDCQY8JZDXdLGwkHTiA) |
 | **05/30/23** | 1h 05m 43s | **2023_05_30_20_58_47.mp3** | [Rememberance](https://drive.google.com/file/d/1oJ8NXdDwU3g58R1n_AM6qkdkg8Q9C5HW) |
