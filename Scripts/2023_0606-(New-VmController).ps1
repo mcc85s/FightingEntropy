@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 17:38:15                                                                  //
+\\  Date       : 2023-06-06 17:58:57                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -3958,6 +3958,7 @@ Function New-VmController
     
     Class VmTemplateNetworkRangeDivisionList
     {
+        [UInt32]           $Index
         [Object]       $Interface
         [Object]           $Range
         [UInt64]           $Total
@@ -3966,8 +3967,9 @@ Function New-VmController
         [Object]         $Process
         [Object]          $Output
         Hidden [Object] $Runspace
-        VmTemplateNetworkRangeDivisionList([Object]$Interface)
+        VmTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
         {
+            $This.Index     = $Index
             $This.Interface = $Interface
             $This.Range     = $This.Interface.Range
             $This.Total     = $This.Interface.Range.Total
@@ -4200,9 +4202,9 @@ Function New-VmController
         {
             Return [VmTemplateNetworkItem]::New($Index,$Network,$IpAddress)
         }
-        [Object] VmTemplateNetworkRangeDivisionList([Object]$Interface)
+        [Object] VmTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
         {
-            Return [VmTemplateNetworkRangeDivisionList]::New($Interface)
+            Return [VmTemplateNetworkRangeDivisionList]::New($Index,$Interface)
         }
         [Object] VmTemplateItem(
         [UInt32] $Index,
@@ -4242,7 +4244,12 @@ Function New-VmController
         }
         SetNetwork([Object[]]$Interface)
         {
-            $This.Network = $Interface | % { $This.VmTemplateNetworkRangeDivisionList($_) }
+            $This.Network = @( )
+            
+            ForEach ($Item in $Interface)
+            {
+                $This.Network += $This.VmTemplateNetworkRangeDivisionList($This.Network.Count,$Item)
+            }
         }
         SetImage([Object]$Image)
         {
@@ -7033,7 +7040,7 @@ Function New-VmController
             $This.Gen      = $Object.Gen
             $This.Core     = $Object.Core
             $This.Account  = $Object.Account.Username
-            $This.Switch   = $Object.Network.Name
+            $This.Switch   = $Object.Network.Interface.Name
             $This.Image    = $Object.Image.Fullname
         }
         VmControllerTemplate()
@@ -8521,7 +8528,9 @@ Function New-VmController
         
         # // [Template tab] \\__________________
 
-
+        # Set export path
+        $Ctrl.Xaml.IO.TemplateExportPath.Text = "C:\FileVm"
+        $Ctrl.SetTemplatePath()
     }
 
     $Ctrl.Invoke()
