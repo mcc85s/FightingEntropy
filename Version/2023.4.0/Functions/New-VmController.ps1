@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 19:12:55                                                                  //
+\\  Date       : 2023-06-06 19:14:59                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -8280,99 +8280,5 @@ Function New-VmController
 
     $Ctrl    = [VmControllerMaster]::New()
     $Ctrl.StageXaml()
-
-    $Mode = 1
-    # Stages everything for testing
-    If ($Mode -eq 1)
-    {
-        # // [Network tab] \\_____________________
-
-        # Set Domain/NetBios
-        $Ctrl.Xaml.IO.NetworkDomain.Text  = "securedigitsplus.com"
-        $Ctrl.Xaml.IO.NetworkNetBios.Text = "SECURED"
-        $Ctrl.SetMain()
-
-        # Refresh adapters
-        $Ctrl.Network.Refresh()
-        $Ctrl.SwitchConfig()
-        $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,
-                    $Ctrl.Network.Physical().Name)
-
-        $Ctrl.Xaml.IO.NetworkOutput.Items[0].Profile = 1
-        $Ctrl.Xaml.IO.NetworkOutput.Items[1].Profile = 1
-
-        # Assign
-        $List = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
-        $Ctrl.Template.SetNetwork($List)
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
-
-        # // [Credential tab] \\_____________________
-
-        # Add [Setup\installer]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 0
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "installer"
-        $Password                                  = "opnsense"
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-        
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # Add [System\root]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 1
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "root"
-        $Password                                  = $Ctrl.Credential.Generate()
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # Add [User\mcadmin]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 3
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "mcadmin"
-        $Password                                  = $Ctrl.Credential.Generate()
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # remove [Setup\Administrator]
-        
-        $Guid = $Ctrl.Xaml.IO.CredentialOutput.Items | ? Username -eq Administrator | % Guid
-        $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
-        $Ctrl.Credential.Rerank()
-
-        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-
-        # Assign
-        $Ctrl.Template.SetAccount($Ctrl.Credential.Output)
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
-
-        # // [Image tab] \\_____________________
-
-        # Set image path
-        $Ctrl.Xaml.IO.ImagePath.Text = "C:\Images"
-        $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
-        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
-
-        $Ctrl.Xaml.IO.ImageStore.Items[0].Profile = 1
-
-        # Assign
-        $List  = $Ctrl.Xaml.IO.ImageStore.Items | ? Profile
-        $Ctrl.Template.SetImage($Ctrl.Image.ImageObject($List))
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
-        
-        # // [Template tab] \\__________________
-
-        # Set export path
-        $Ctrl.Xaml.IO.TemplateExportPath.Text = "C:\FileVm"
-        $Ctrl.SetTemplatePath()
-    }
-
     $Ctrl.Invoke()
 }
