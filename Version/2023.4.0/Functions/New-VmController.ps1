@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 19:44:13                                                                  //
+\\  Date       : 2023-06-06 19:59:16                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -8278,7 +8278,5 @@ Function New-VmController
         }
     }
 
-    $Ctrl    = [VmControllerMaster]::New()
-    $Ctrl.StageXaml()
-    $Ctrl.Invoke()
+    [VmControllerMaster]::New()
 }
