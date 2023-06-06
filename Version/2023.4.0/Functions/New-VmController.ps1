@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 19:14:59                                                                  //
+\\  Date       : 2023-06-06 19:44:13                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -7719,7 +7719,7 @@ Function New-VmController
                         $Ctrl.Template.SetNetwork($Item)
 
                         # Refreshes the UI template network object
-                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network.Interface)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
 
                         # Shows message detailing network switch count
                         [System.Windows.MessageBox]::Show("Interface(s) ($($Ctrl.Template.Network.Count))","Assigned [+] Network(s)")
