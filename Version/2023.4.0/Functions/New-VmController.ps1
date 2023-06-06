@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-27 15:04:56                                                                  //
+\\  Date       : 2023-06-06 19:12:55                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-05-27
+    Modified   : 2023-06-06
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -31,7 +31,3195 @@ Function New-VmController
 {
     Import-Module Hyper-V -EA 0
 
-    # [Image Controller]
+    # [General]
+    Class VmByteSize
+    {
+        [String]   $Name
+        [UInt64]  $Bytes
+        [String]   $Unit
+        [String]   $Size
+        VmByteSize([String]$Name,[UInt64]$Bytes)
+        {
+            $This.Name   = $Name
+            $This.Bytes  = $Bytes
+            $This.GetUnit()
+            $This.GetSize()
+        }
+        GetUnit()
+        {
+            $This.Unit   = Switch ($This.Bytes)
+            {
+                {$_ -lt 1KB}                 {     "Byte" }
+                {$_ -ge 1KB -and $_ -lt 1MB} { "Kilobyte" }
+                {$_ -ge 1MB -and $_ -lt 1GB} { "Megabyte" }
+                {$_ -ge 1GB -and $_ -lt 1TB} { "Gigabyte" }
+                {$_ -ge 1TB}                 { "Terabyte" }
+            }
+        }
+        GetSize()
+        {
+            $This.Size   = Switch -Regex ($This.Unit)
+            {
+                ^Byte     {     "{0} B" -f  $This.Bytes/1    }
+                ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
+                ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
+                ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
+                ^Terabyte { "{0:n2} TB" -f ($This.Bytes/1TB) }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Size
+        }
+    }
+
+    Class VmControllerProperty
+    {
+        [String]  $Name
+        [Object] $Value
+        VmControllerProperty([Object]$Property)
+        {
+            $This.Name  = $Property.Name
+            $This.Value = $Property.Value -join ", "
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmController[Property]>"
+        }
+    }
+
+    # [Security Options (Windows 10, unused)]
+    Enum SecurityOptionType
+    {
+        FirstPet
+        BirthCity
+        ChildhoodNick
+        ParentCity
+        CousinFirst
+        FirstSchool
+    }
+
+    Class SecurityOptionItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String] $Description
+        SecurityOptionItem([String]$Name)
+        {
+            $This.Index = [UInt32][SecurityOptionType]::$Name
+            $This.Name  = [SecurityOptionType]::$Name
+        }
+    }
+
+    Class SecurityOptionList
+    {
+        [String]    $Name
+        [Object]  $Output
+        SecurityOptionList()
+        {
+            $This.Name = "SecurityOptionList"
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] SecurityOptionItem([String]$Name)
+        {
+            Return [SecurityOptionItem]::New($Name)
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $Object
+        }
+        Refresh()
+        {
+            $This.Clear()
+            ForEach ($Name in [System.Enum]::GetNames([SecurityOptionType]))
+            {
+                $Item             = $This.SecurityOptionItem($Name)
+                $Item.Description = Switch ($Item.Index)
+                {
+                    0 { "What was your first pets name?"                      }
+                    1 { "What's the name of the city where you were born?"    }
+                    2 { "What was your childhood nickname?"                   }
+                    3 { "What's the name of the city where your parents met?" }
+                    4 { "What's the first name of your oldest cousin?"        }
+                    5 { "What's the name of the first school you attended?"   }
+                }
+    
+                $This.Add($Item)
+            }
+        }
+    }
+
+    Class SecurityOptionSelection
+    {
+        [UInt32]    $Index
+        [String]     $Name
+        [String] $Question
+        [String]   $Answer
+        SecurityOptionSelection([UInt32]$Index,[Object]$Item)
+        {
+            $This.Index    = $Index
+            $This.Name     = $Item.Name
+            $This.Question = $Item.Description
+        }
+        SetAnswer([String]$Answer)
+        {
+            $This.Answer   = $Answer
+        }
+    }
+
+    Class SecurityOptionController
+    {
+        [Object]    $Account
+        [Object] $Credential
+        [Object]       $Slot
+        [Object]     $Output
+        SecurityOptionController()
+        {
+            $This.Slot    = $This.SecurityOptionList()
+            $This.Clear()
+        }
+        [Object] SecurityOptionList()
+        {
+            Return [SecurityOptionList]::New().Output
+        }
+        [Object] SecurityOptionItem([UInt32]$Index,[String]$Name,[String]$Question)
+        {
+            Return [SecurityOptionItem]::New($Index,$Name,$Question)
+        }
+        [Object] SecurityOptionSelection([UInt32]$Index,[Object]$Item)
+        {
+            Return [SecurityOptionSelection]::New($Index,$Item)
+        }
+        [String] GetUsername()
+        {
+            If (!$This.Account)
+            {
+                Throw "Must insert an account"
+            }
+            Return "{0}{1}{2}" -f $This.Account.First.Substring(0,1).ToLower(),
+                                $This.Account.Last.ToLower(),
+                                $This.Account.Year.ToString().Substring(2,2)
+        }
+        [UInt32] Random()
+        {
+            Return Get-Random -Max 20
+        }
+        [String] Char()
+        {
+            Return "!@#$%^&*(){}[]:;,./\".Substring($This.Random(),1)
+        }
+        [String] GetPassword()
+        {
+            $R = $This.Char()
+            $H = @{ }
+            $H.Add($H.Count,$R)
+            $H.Add($H.Count,$This.Account.First.Substring(0,1))
+            $H.Add($H.Count,("{0:d2}" -f $This.Account.Month))
+            If ($This.Account.MI)
+            {
+                $H.Add($H.Count,$This.Account.MI)
+            }
+            $H.Add($H.Count,("{0:d2}" -f $This.Account.Day))
+            $H.Add($H.Count,$This.Account.Last.Substring(0,1))
+            $H.Add($H.Count,$This.Account.Year.ToString().Substring(2,2))
+            $H.Add($H.Count,$R)
+            Return $H[0..($H.Count-1)] -join ""
+        }
+        [PSCredential] PSCredential([String]$Username,[SecureString]$SecureString)
+        {
+            Return [PSCredential]::New($Username,$SecureString)
+        }
+        [String] PW()
+        {
+            If (!$This.Credential)
+            {
+                Throw "No credential set"
+            }
+            Return $This.Credential.GetNetworkCredential().Password
+        }
+        [String] UN()
+        {
+            If (!$This.Credential)
+            {
+                Throw "No credential set"
+            }
+            Return $This.Credential.Username
+        }
+        SetCredential()
+        {
+            $SS              = $This.GetPassword() | ConvertTo-SecureString -AsPlainText -Force
+            $This.Credential = $This.PSCredential($This.GetUsername(),$SS)
+        }
+        SetAccount([Object]$Account)
+        {
+            $This.Account = $Account
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Add([UInt32]$Rank,[String]$Answer)
+        {
+            $Temp = $This.SecurityOptionSelection($This.Output.Count,$This.Slot[$Rank])
+            
+            If ($Temp.Name -in $This.Output.Name)
+            {
+                Throw "Option already selected"
+            }
+            ElseIf ($Answer -eq "")
+            {
+                Throw "Cannot have a <null> answer"
+            }
+            $Temp.SetAnswer($Answer)
+            $This.Output += $Temp
+        }
+    }
+
+    # [Country (Unused)]
+    Class CountryItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        CountryItem([UInt32]$Index,[String]$Name)
+        {
+            $This.Index = $Index
+            $This.Name  = $Name
+        }
+    }
+
+    Class CountryList
+    {
+        [UInt32] $Selected
+        [Object] $Output
+        CountryList()
+        {
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] CountryItem([UInt32]$Index,[String]$Name)
+        {
+            Return [CountryItem]::New($Index,$Name)
+        }
+        Add([String]$Name)
+        {
+            $This.Output += $This.CountryItem($This.Output.Count,$Name)
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+    
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected]
+        }
+        [String[]] Countries()
+        {
+            Return ("Afghanistan;Åland Islands;Albania;Algeria;American Samoa;"+
+            "Andorra;Angola;Anguilla;Antarctica;Antigua and Barbuda;Argentina;"+
+            "Armenia;Aruba;Australia;Austrai;Azerbaijan;Bahamas, The;Bahrain;B"+
+            "angladesh;Barbados;Belarus;Belgium;Belize;Benin;Bermuda;Bhutan;Bo"+
+            "livia;Bonaire, Sint Eustatis and Saba;Bosnia and Herzegovina;Bots"+
+            "wana;Bouvet Island;Brazil;British Indian Ocean Territory;British "+
+            "Virgin Islands;Brunei;Bulgaria;Burkina Faso;Burundi;Cabo Verde;Ca"+
+            "mbodia;Cameroon;Canada;Cayman Islans;Central African Republic;Cha"+
+            "d;Chile;China;Christmas Island;Cocos (Keeling) Islands;Colombia;C"+
+            "omoros;Congo;Congo (DRC);Cook Islands;Costa Rica;Côte d'Ivoire;Cr"+
+            "oatia;Cuba;Curaçao;Cyprus;Czech Republic;Denmark;Djibouti;Dominic"+
+            "a;Dominican Republic;Ecuador;Egypt;El Salvador;Equatorial Guinea;"+
+            "Eritrea;Estonia;Eswatini;Ethiopia;Falkland Islands;Faroe Islands;"+
+            "Fiji;Finland;France;French Guiana;French Polynesia;French Souther"+
+            "n Territoes;Gabon;Gambia;Georgia;Germany;Ghana;Gibraltar;Greece;G"+
+            "reenland;Grenada;Guadeloupe;Guam;Guatemala;Guernsey;Guinea;Guinea"+
+            "-Bissau;Guyana;Haiti;Heard Island and McDonald Islands;Honduras;H"+
+            "ong Kong SAR;Hungary;Iceland;India;Indonesia;Iran;Iraq;Ireland;Is"+
+            "le of Man;Israel;Italy;Jamaica;Japan;Jersey;Jordan;Kazakhstan;Ken"+
+            "ya;Kiribati;Korea;Kosovo;Kuwait;Kyrgyzstan;Laos;Latvia;Lebanon;Le"+
+            "sotho;Liberia;Libya;Liechtenstein;Lithuania;Luxembourg;Macao SAR;"+
+            "Madagascar;Malawi;Malaysia;Maldives;Mali;Malta;Marshall Islands;M"+
+            "artinique;Mauritania;Mauritius;Mayotte;Mexico;Micronesia;Moldova;"+
+            "Monaco;Mongolia;Montenegro;Montserrat;Morocco;Mozambique;Myanmar;"+
+            "Namibia;Nauru;Nepal;Netherlands;New Caledonia;New Zealand;Nicarag"+
+            "ua;Niger;Nigeria;Niue;Norfolk Island;North Korea;North Macedonia;"+
+            "Northern Mariana Islands;Norway;Oman;Pakistan;Palau;Palestinian A"+
+            "uthority;Panama;Papua New Guinea;Paraguay;Peru;Philippines;Pitcai"+
+            "rn Islands;Poland;Portugal;Puerto Rico;Qatar;Reuincion;Romania;Ru"+
+            "ssia;Rwanda;Saint Barthélemy;Saint Kiits and Nevis;Saint Lucia;Sa"+
+            "int Martin;Saint Pierre and Miquelon;Saint Vincent and the Grenad"+
+            "ines;Samoa;San Marino;São Tomé and Príncipe;Saudi Arabia;Senegal;"+
+            "Serbia;Seychelles;Sierra Leone;Singapore;Sint Maarten;Slovakia;Sl"+
+            "ovenia;Soloman Islands;Somalia;South Africa;South Georgia and the"+
+            " South Sandwich Islands;South Sudan;Spain;Sri Lankda;St Kelena, A"+
+            "scension and Tristan da Cunha;Sudan;Suriname;Svalbard;Sweden;Swit"+
+            "zerland;Syria;Taiwan;Tajikistan;Tanzania;Thailand;Timor-Leste;Tog"+
+            "o;Tokelau;Tonga;Trinidad and Tobago;Tunisia;Turkey;Turkmenistan;T"+
+            "urks and Caicos Islands;Tuvalu;U.S. Minor Outlying Islands;U.S. V"+
+            "irgin Islands;Uganda;Ukraine;United Arab Emirates;United Kingdom;"+
+            "United States;Uruguay;Uzbekistan;Vanuatu;Vatican City;Venezuela;V"+
+            "ietnam;Wallis and Futuna;Yemen;Zambia;Zimbabwe") -Split ";"
+        }
+        Refresh()
+        {
+            $This.Clear()
+    
+            ForEach ($Item in $This.Countries())
+            {
+                $This.Add($Item)
+            }
+    
+            $This.Selected = $This.Output | ? Name -eq "United States" | % Index
+        }
+    }
+
+    # [Keyboard (Unused)]
+    Class KeyboardItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        KeyboardItem([UInt32]$Index,[String]$Name)
+        {
+            $This.Index = $Index
+            $This.Name  = $Name
+        }
+    }
+        
+    Class KeyboardList
+    {
+        [UInt32] $Selected
+        [Object] $Output
+        KeyboardList()
+        {
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] KeyboardItem([UInt32]$Index,[String]$Name)
+        {
+            Return [KeyboardItem]::New($Index,$Name)
+        }
+        Add([String]$Name)
+        {
+            $This.Output += $This.KeyboardItem($This.Output.Count,$Name)
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+    
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected]
+        }
+        [String[]] Keyboards()
+        {
+            Return ("US;Canadian Multilingual Standard;English (India);Irish;Scottish"+
+            " Gaelic;United Kingdom;United States-Dvorak;United States-Dvorak for lef"+
+            "t hand;United States-Dvorak for right hand;United States-International;U"+
+            "S English Table for IBM Arabic 238_L;Albanian;Azerbaijani (Standard);Aze"+
+            "rbaijani Latin;Belgian (Comma);Belgian (Period);Belgian French;Bulgarian"+
+            " (Latin);Canadian French;Canadian French (Legacy);Central Atlas Tamazigh"+
+            "t;Czech;Czech (QWERTY);Czech Programmers;Danish;Dutch;Estonian;Faeroese;"+
+            "Finnish;Finnish with Sami;French;German;German (IBM);Greek (220) Latin;G"+
+            "reek (319) Latin;Greek Latin;Greenlandic;Guarani;Hausa;Hawaiian;Hungaria"+
+            "n;Hungarian 101-key;Icelandic;Igbo;Inuktitut - Latin;Italian;Italian (14"+
+            "2);Japanese;Korean;Latin America;Latvian;Latvian (QWERTY);Latvian (Stand"+
+            "ard);Lithuanian;Lithuanian IBM;Lithuanian Standard;Luxembourgish;Maltese"+
+            " 47-Key;Maltese 48-Key;Norwegian;Norwegain with Sami;Polish (214);Polish"+
+            " (Programmers);Portuguese;Portugese (Brazil ABNT);Portugese (Brazil ABNT"+
+            "2);Romanian (Legacy);Romanian (Programmers);Romanian (Standard);Sami Ext"+
+            "ended Finland-Sweden;Sami Extended Norway;Serbian (Latin);Sesotho sa Leb"+
+            "oa;Setswana;Slovak;Slovak (QWERTY);Slovenian;Sorbian Extended;Sorbian St"+
+            "andard;Sorbian Standard (Legacy);Spanish;Spanish Variation;Standard;Swed"+
+            "ish;Swedish with Sami;Swiss French;Swiss German;Turkish F;Turkish Q;Turk"+
+            "men;United Kingdom Extended;Vietnamese;Wolof;Yoruba") -Split ";"
+        }
+        Refresh()
+        {
+            $This.Clear()
+    
+            ForEach ($Item in $This.Keyboards())
+            {
+                $This.Add($Item)
+            }
+    
+            $This.Selected = $This.Output | ? Name -eq "US" | % Index
+        }
+    }
+    
+    # [Xaml controller types]
+    Class VmControllerXaml
+    {
+        Static [String] $Content = @(
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
+        '        Title="[FightingEntropy]://(VmController)"',
+        '        Height="480"',
+        '        Width="640"',
+        '        Topmost="True"',
+        '        ResizeMode="NoResize"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        HorizontalAlignment="Center"',
+        '        WindowStartupLocation="CenterScreen"',
+        '        FontFamily="Consolas"',
+        '        Background="LightYellow">',
+        '    <Window.Resources>',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="ToolTip">',
+        '            <Setter Property="Background" Value="#000000"/>',
+        '            <Setter Property="Foreground" Value="#66D066"/>',
+        '        </Style>',
+        '        <Style TargetType="TabItem">',
+        '            <Setter Property="Template">',
+        '                <Setter.Value>',
+        '                    <ControlTemplate TargetType="TabItem">',
+        '                        <Border Name="Border"',
+        '                                BorderThickness="2"',
+        '                                BorderBrush="Black"',
+        '                                CornerRadius="5"',
+        '                                Margin="2">',
+        '                            <ContentPresenter x:Name="ContentSite"',
+        '                                              VerticalAlignment="Center"',
+        '                                              HorizontalAlignment="Right"',
+        '                                              ContentSource="Header"',
+        '                                              Margin="5"/>',
+        '                        </Border>',
+        '                        <ControlTemplate.Triggers>',
+        '                            <Trigger Property="IsSelected"',
+        '                                     Value="True">',
+        '                                <Setter TargetName="Border"',
+        '                                        Property="Background"',
+        '                                        Value="#4444FF"/>',
+        '                                <Setter Property="Foreground"',
+        '                                        Value="#FFFFFF"/>',
+        '                            </Trigger>',
+        '                            <Trigger Property="IsSelected"',
+        '                                     Value="False">',
+        '                                <Setter TargetName="Border"',
+        '                                        Property="Background"',
+        '                                        Value="#DFFFBA"/>',
+        '                                <Setter Property="Foreground"',
+        '                                        Value="#000000"/>',
+        '                            </Trigger>',
+        '                        </ControlTemplate.Triggers>',
+        '                    </ControlTemplate>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="Button">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="FontWeight" Value="Heavy"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style x:Key="DGCombo" TargetType="ComboBox">',
+        '            <Setter Property="Margin" Value="0"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '            <Setter Property="Height" Value="18"/>',
+        '            <Setter Property="FontSize" Value="10"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="CheckBox">',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGrid">',
+        '            <Setter Property="Margin"',
+        '                    Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns"',
+        '                    Value="False"/>',
+        '            <Setter Property="AlternationCount"',
+        '                    Value="2"/>',
+        '            <Setter Property="HeadersVisibility"',
+        '                    Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows"',
+        '                    Value="False"/>',
+        '            <Setter Property="CanUserAddRows"',
+        '                    Value="False"/>',
+        '            <Setter Property="IsReadOnly"',
+        '                    Value="True"/>',
+        '            <Setter Property="IsTabStop"',
+        '                    Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled"',
+        '                    Value="True"/>',
+        '            <Setter Property="SelectionMode"',
+        '                    Value="Single"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll"',
+        '                    Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"',
+        '                    Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"',
+        '                    Value="Auto"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="VerticalAlignment"',
+        '                    Value="Center"/>',
+        '            <Setter Property="VerticalContentAlignment"',
+        '                    Value="Center"/>',
+        '            <Setter Property="TextBlock.VerticalAlignment"',
+        '                    Value="Center"/>',
+        '            <Setter Property="Height" Value="20"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex"',
+        '                         Value="0">',
+        '                    <Setter Property="Background"',
+        '                            Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background"',
+        '                            Value="#FFD6FFFB"/>',
+        '                </Trigger>',
+        '                <Trigger Property="IsMouseOver" Value="True">',
+        '                    <Setter Property="ToolTip">',
+        '                        <Setter.Value>',
+        '                            <TextBlock TextWrapping="Wrap"',
+        '                                       Width="400"',
+        '                                       Background="#000000"',
+        '                                       Foreground="#00FF00"/>',
+        '                        </Setter.Value>',
+        '                    </Setter>',
+        '                    <Setter Property="ToolTipService.ShowDuration" Value="360000000"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="TabControl">',
+        '            <Setter Property="TabStripPlacement" Value="Top"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Setter Property="Background" Value="LightYellow"/>',
+        '        </Style>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="Label">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Gray"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style x:Key="LabelGray" TargetType="Label">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="DarkSlateGray"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style x:Key="LabelRed" TargetType="Label">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="IndianRed"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style x:Key="Line" TargetType="Border">',
+        '            <Setter Property="Background" Value="Black"/>',
+        '            <Setter Property="BorderThickness" Value="0"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '        </Style>',
+        '    </Window.Resources>',
+        '    <TabControl Grid.Row="0">',
+        '        <TabItem Header="Network">',
+        '            <Grid>',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="10"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="80"/>',
+        '                    <RowDefinition Height="80"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="2*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label   Grid.Column="0"',
+        '                             Content="[Domain]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Name="NetworkDomain"/>',
+        '                    <Image   Grid.Column="2"',
+        '                             Name="NetworkDomainIcon"/>',
+        '                    <Label   Grid.Column="3"',
+        '                             Content="[NetBios]:"/>',
+        '                    <TextBox Grid.Column="4"',
+        '                             Name="NetworkNetBios"/>',
+        '                    <Image   Grid.Column="5"',
+        '                             Name="NetworkNetBiosIcon"/>',
+        '                    <Button  Grid.Column="6"',
+        '                             Name="NetworkSetMain" Content="Set"/>',
+        '                </Grid>',
+        '                <Border Grid.Row="1" Background="Black" Margin="4"/>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="125"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label   Grid.Column="0"',
+        '                             Content="[Switch]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;Manage virtual switches + adapters&gt;"',
+        '                             IsReadOnly="True"/>',
+        '                    <ComboBox Grid.Column="2" Name="NetworkProperty" SelectedIndex="0">',
+        '                        <ComboBoxItem Content="*"/>',
+        '                        <ComboBoxItem Content="LocalNetwork"/>',
+        '                        <ComboBoxItem Content="Internet"/>',
+        '                        <ComboBoxItem Content="Null"/>',
+        '                    </ComboBox>',
+        '                    <Button  Grid.Column="3"',
+        '                             Content="Refresh"',
+        '                             Name="NetworkRefresh"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="3" Name="NetworkOutput" HeadersVisibility="None">',
+        '                    <DataGrid.RowStyle>',
+        '                        <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style.Triggers>',
+        '                                <Trigger Property="IsMouseOver" Value="True">',
+        '                                    <Setter Property="ToolTip">',
+        '                                        <Setter.Value>',
+        '                                            <TextBlock Text="{Binding Description}"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                        </Setter.Value>',
+        '                                    </Setter>',
+        '                                </Trigger>',
+        '                            </Style.Triggers>',
+        '                        </Style>',
+        '                    </DataGrid.RowStyle>',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTemplateColumn Header="Mode" Width="75">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <ComboBox SelectedIndex="{Binding Mode.Index}"',
+        '                                              Style="{StaticResource DGCombo}">',
+        '                                        <ComboBoxItem Content="Local"/>',
+        '                                        <ComboBoxItem Content="Internet"/>',
+        '                                        <ComboBoxItem Content="Null"/>',
+        '                                    </ComboBox>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                        <DataGridTextColumn Header="Alias"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="100"/>',
+        '                        <DataGridTextColumn Header="IpAddress"',
+        '                                            Binding="{Binding IpAddress}"',
+        '                                            Width="130"/>',
+        '                        <DataGridTextColumn Header="Description"',
+        '                                            Binding="{Binding Description}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <CheckBox IsChecked="{Binding Profile,',
+        '                                              UpdateSourceTrigger=PropertyChanged,',
+        '                                              Mode=TwoWay}"/>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="4">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="10"/>',
+        '                        <ColumnDefinition Width="200"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Grid Grid.Column="0">',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Grid Grid.Row="0">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="90"/>',
+        '                                <ColumnDefinition Width="90"/>',
+        '                                <ColumnDefinition Width="90"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="25"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label Grid.Column="0" Content="[Type]:"/>',
+        '                            <ComboBox Grid.Column="1" Name="NetworkSwitchType" SelectedIndex="0">',
+        '                                <ComboBoxItem Content="External"/>',
+        '                                <ComboBoxItem Content="Internal"/>',
+        '                                <ComboBoxItem Content="Private"/>',
+        '                            </ComboBox>',
+        '                            <Label Grid.Column="2" Content="[Name]:"/>',
+        '                            <TextBox  Grid.Column="3" Name="NetworkSwitchName"/>',
+        '                            <Image    Grid.Column="4" Name="NetworkSwitchIcon"/>',
+        '                        </Grid>',
+        '                        <Grid Grid.Row="1">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="90"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label Grid.Column="0" Content="[Adapter]:"/>',
+        '                            <ComboBox Grid.Column="1" Name="NetworkSwitchAdapter"/>',
+        '                        </Grid>',
+        '                    </Grid>',
+        '                    <Border Grid.Column="1" Background="Black" Margin="4"/>',
+        '                    <Grid Grid.Column="2">',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Grid Grid.Row="0">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Button Grid.Column="0"',
+        '                                    Content="Create"',
+        '                                    Name="NetworkSwitchCreate"/>',
+        '                            <Button Grid.Column="1"',
+        '                                    Content="Remove"',
+        '                                    Name="NetworkSwitchRemove"/>',
+        '                        </Grid>',
+        '                        <Grid Grid.Row="1">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label Grid.Column="0" Content="[Current]:"/>',
+        '                            <ComboBox Grid.Column="1"',
+        '                                      Name="NetworkPanel">',
+        '                                <ComboBoxItem Content="Adapter"/>',
+        '                                <ComboBoxItem Content="Config"/>',
+        '                                <ComboBoxItem Content="Switch"/>',
+        '                                <ComboBoxItem Content="Base"/>',
+        '                                <ComboBoxItem Content="Range"/>',
+        '                                <ComboBoxItem Content="Host"/>',
+        '                                <ComboBoxItem Content="Dhcp"/>',
+        '                            </ComboBox>',
+        '                        </Grid>',
+        '                    </Grid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkAdapterPanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkAdapterOutput"',
+        '                              HeadersVisibility="None">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Adapter Property"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Value"',
+        '                                                Binding="{Binding Value}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkConfigPanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkConfigOutput"',
+        '                              HeadersVisibility="None">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Configuration Property"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Value"',
+        '                                                Binding="{Binding Value}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkSwitchPanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkSwitchOutput"',
+        '                              HeadersVisibility="None">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Switch Property"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Value"',
+        '                                                Binding="{Binding Value}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkBasePanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkBaseOutput"',
+        '                              HeadersVisibility="None">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Base Property"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Value"',
+        '                                                Binding="{Binding Value}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkRangePanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkRangeOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Range"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Index"',
+        '                                                Binding="{Binding Index}"',
+        '                                                Width="50"/>',
+        '                            <DataGridTextColumn Header="Count"',
+        '                                                Binding="{Binding Count}"',
+        '                                                Width="100"/>',
+        '                            <DataGridTextColumn Header="Netmask"',
+        '                                                Binding="{Binding Netmask}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Notation"',
+        '                                                Binding="{Binding Notation}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkHostPanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkHostOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Host"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Index"',
+        '                                                Binding="{Binding Index}"',
+        '                                                Width="50"/>',
+        '                            <DataGridTemplateColumn Header="Status" Width="45">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Status}"',
+        '                                                  Margin="0"',
+        '                                                  Padding="2"',
+        '                                                  Height="18"',
+        '                                                  FontSize="10"',
+        '                                                  VerticalContentAlignment="Center">',
+        '                                            <ComboBoxItem Content="[-]"/>',
+        '                                            <ComboBoxItem Content="[+]"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                Binding="{Binding Type}"',
+        '                                                Width="80"/>',
+        '                            <DataGridTextColumn Header="IpAddress"',
+        '                                                Binding="{Binding IpAddress}"',
+        '                                                Width="120"/>',
+        '                            <DataGridTextColumn Header="Hostname"',
+        '                                                Binding="{Binding Hostname}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5"',
+        '                      Name="NetworkDhcpPanel"',
+        '                      Visibility="Collapsed">',
+        '                    <DataGrid Name="NetworkDhcpOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Current Switch/Dhcp Property"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Value"',
+        '                                                Binding="{Binding Value}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Button Grid.Row="6"',
+        '                        Name="NetworkAssign"',
+        '                        Content="Assign"/>',
+        '            </Grid>',
+        '        </TabItem>',
+        '        <TabItem Header="Credential">',
+        '            <Grid>',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="10"/>',
+        '                    <RowDefinition Height="160"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                </Grid>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="130"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label   Grid.Column="0" Content="[Credential(s)]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;Manage credential objects + accounts&gt;"',
+        '                             IsReadOnly="True"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1" Name="CredentialOutput">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
+        '                                            Width="90"/>',
+        '                        <DataGridTextColumn Header="Username"',
+        '                                            Binding="{Binding Username}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTextColumn Header="Password"',
+        '                                            Binding="{Binding Pass}"',
+        '                                            Width="150"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Column="0"',
+        '                            Name="CredentialCreate"',
+        '                            Content="Create"/>',
+        '                    <Button Grid.Column="1"',
+        '                            Name="CredentialRemove"',
+        '                            Content="Remove"/>',
+        '                </Grid>',
+        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+        '                <Grid Grid.Row="4">',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="150"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0" Content="[Type]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                  Name="CredentialType"',
+        '                                  SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Setup"/>',
+        '                            <ComboBoxItem Content="System"/>',
+        '                            <ComboBoxItem Content="Service"/>',
+        '                            <ComboBoxItem Content="User"/>',
+        '                            <ComboBoxItem Content="Microsoft"/>',
+        '                        </ComboBox>',
+        '                        <DataGrid Grid.Column="2"',
+        '                                  HeadersVisibility="None"',
+        '                                  Name="CredentialDescription"',
+        '                                  Margin="10">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Description"',
+        '                                                    Binding="{Binding Description}"',
+        '                                                    Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="1">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="300"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Username]:"/>',
+        '                        <TextBox Grid.Column="1"',
+        '                                 Name="CredentialUsername"/>',
+        '                        <Image Grid.Column="2" Name="CredentialUsernameIcon"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="300"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Password]:"/>',
+        '                        <PasswordBox Grid.Column="1"',
+        '                                 Name="CredentialPassword"/>',
+        '                        <Image Grid.Column="2" Name="CredentialPasswordIcon"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="300"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Confirm]:"/>',
+        '                        <PasswordBox Grid.Column="1"',
+        '                                     Name="CredentialConfirm"/>',
+        '                        <Image Grid.Column="2" Name="CredentialConfirmIcon"/>',
+        '                        <Button  Grid.Column="3"',
+        '                                 Name="CredentialGenerate"',
+        '                                 Content="Generate"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="4">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="300"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Pin]:"/>',
+        '                        <PasswordBox Grid.Column="1"',
+        '                                     Name="CredentialPin"/>',
+        '                        <Image Grid.Column="2" Name="CredentialPinIcon"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '                <Button Grid.Row="5" Name="CredentialAssign" Content="Assign"/>',
+        '            </Grid>',
+        '        </TabItem>',
+        '        <TabItem Header="Image">',
+        '            <Grid>',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="110"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="10"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0" Content="[Image]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;Select image for template to utilize&gt;"',
+        '                             IsReadOnly="True"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1" Name="ImageStore">',
+        '                    <DataGrid.RowStyle>',
+        '                        <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style.Triggers>',
+        '                                <Trigger Property="IsMouseOver" Value="True">',
+        '                                    <Setter Property="ToolTip">',
+        '                                        <Setter.Value>',
+        '                                            <TextBlock Text="{Binding Fullname}"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                        </Setter.Value>',
+        '                                    </Setter>',
+        '                                </Trigger>',
+        '                            </Style.Triggers>',
+        '                        </Style>',
+        '                    </DataGrid.RowStyle>',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
+        '                                            Width="90"/>',
+        '                        <DataGridTextColumn Header="Version"',
+        '                                            Binding="{Binding Version}"',
+        '                                            Width="110"/>',
+        '                        <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <CheckBox IsChecked="{Binding Profile,',
+        '                                              UpdateSourceTrigger=PropertyChanged}"/>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="100"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="100"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button  Grid.Column="0"',
+        '                             Name="ImageImport"',
+        '                             Content="Import"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Name="ImagePath"/>',
+        '                    <Image   Grid.Column="2"',
+        '                             Name="ImagePathIcon"/>',
+        '                    <Button  Grid.Column="3"',
+        '                             Name="ImagePathBrowse"',
+        '                             Content="Browse"/>',
+        '                </Grid>',
+        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+        '                <Grid Grid.Row="4">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0" Content="[Edition]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;If Windows image, select edition for template to utilize&gt;"',
+        '                             IsReadOnly="True"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="5" Name="ImageStoreContent">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding DestinationName}"',
+        '                                            Width="300"/>',
+        '                        <DataGridTextColumn Header="Size"',
+        '                                            Binding="{Binding Size}"',
+        '                                            Width="80"/>',
+        '                        <DataGridTextColumn Header="Label"',
+        '                                            Binding="{Binding Label}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <CheckBox IsChecked="{Binding Profile,',
+        '                                              UpdateSourceTrigger=PropertyChanged}"/>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Button Grid.Row="6" Name="ImageAssign" Content="Assign"/>',
+        '            </Grid>',
+        '        </TabItem>',
+        '        <TabItem Header="Template">',
+        '            <Grid>',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="10"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="105"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0" Content="[Template]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;Set template export path&gt;"',
+        '                             Name="TemplateExportPath"/>',
+        '                    <Image Grid.Column="2"',
+        '                           Name="TemplateExportPathIcon"/>',
+        '                    <Button Grid.Column="3"',
+        '                            Content="Browse"',
+        '                            Name="TemplateExportBrowse"/>',
+        '                    <Button Grid.Column="4"',
+        '                            Content="Set"',
+        '                            Name="TemplateSetPath"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1"',
+        '                              Name="TemplateOutput"',
+        '                              ScrollViewer.CanContentScroll="True"',
+        '                              ScrollViewer.VerticalScrollBarVisibility="Auto"',
+        '                              ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                    <DataGrid.RowStyle>',
+        '                        <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style.Triggers>',
+        '                                <Trigger Property="IsMouseOver" Value="True">',
+        '                                    <Setter Property="ToolTip">',
+        '                                        <Setter.Value>',
+        '                                            <TextBlock Text="{Binding Image}"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                        </Setter.Value>',
+        '                                    </Setter>',
+        '                                </Trigger>',
+        '                            </Style.Triggers>',
+        '                        </Style>',
+        '                    </DataGrid.RowStyle>',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTextColumn Header="Role"',
+        '                                            Binding="{Binding Role}"',
+        '                                            Width="70"/>',
+        '                        <DataGridTextColumn Header="Memory"',
+        '                                            Binding="{Binding Memory}"',
+        '                                            Width="75"/>',
+        '                        <DataGridTextColumn Header="Hard Drive"',
+        '                                            Binding="{Binding Hdd}"',
+        '                                            Width="75"/>',
+        '                        <DataGridTextColumn Header="Gen."',
+        '                                            Binding="{Binding Gen}"',
+        '                                            Width="40"/>',
+        '                        <DataGridTextColumn Header="Cores"',
+        '                                            Binding="{Binding Core}"',
+        '                                            Width="40"/>',
+        '                        <DataGridTemplateColumn Header="Account" Width="90">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <ComboBox SelectedIndex="0"',
+        '                                              Style="{StaticResource DGCombo}"',
+        '                                              ItemsSource="{Binding Account}">',
+        '                                    </ComboBox>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                        <DataGridTemplateColumn Header="Switch" Width="90">',
+        '                            <DataGridTemplateColumn.CellTemplate>',
+        '                                <DataTemplate>',
+        '                                    <ComboBox SelectedIndex="0"',
+        '                                              Style="{StaticResource DGCombo}"',
+        '                                              ItemsSource="{Binding Switch}">',
+        '                                    </ComboBox>',
+        '                                </DataTemplate>',
+        '                            </DataGridTemplateColumn.CellTemplate>',
+        '                        </DataGridTemplateColumn>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Column="0"',
+        '                            Content="Create"',
+        '                            Name="TemplateCreate"/>',
+        '                    <Button Grid.Column="1"',
+        '                            Content="Remove"',
+        '                            Name="TemplateRemove"/>',
+        '                    <Button Grid.Column="2"',
+        '                            Content="Export"',
+        '                            Name="TemplateExport"/>',
+        '                </Grid>',
+        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+        '                <Grid Grid.Row="4">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="105"/>',
+        '                        <ColumnDefinition Width="120"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="80"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0"',
+        '                           Content="[Name/Role]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Name="TemplateName"/>',
+        '                    <Image Grid.Column="2"',
+        '                           Name="TemplateNameIcon"/>',
+        '                    <ComboBox Grid.Column="3" Name="TemplateRole">',
+        '                        <ComboBoxItem Content="Server"/>',
+        '                        <ComboBoxItem Content="Client"/>',
+        '                        <ComboBoxItem Content="Unix"/>',
+        '                    </ComboBox>',
+        '                    <DataGrid Grid.Column="4"',
+        '                              HeadersVisibility="None"',
+        '                              Margin="10"',
+        '                              Name="TemplateRoleDescription">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Description"',
+        '                                                Binding="{Binding Description}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
+        '                <Grid Grid.Row="5">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="105"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0"',
+        '                           Content="[Root Path]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Name="TemplateRootPath"',
+        '                             Text="&lt;Set virtual machine root path&gt;"/>',
+        '                    <Image Grid.Column="2"',
+        '                           Name="TemplateRootPathIcon"/>',
+        '                    <Button Grid.Column="3"',
+        '                            Name="TemplateRootPathBrowse"',
+        '                            Content="Browse"/>',
+        '                </Grid>',
+        '                <TabControl Grid.Row="6">',
+        '                    <TabItem Header="Specs">',
+        '                        <Grid Height="40" VerticalAlignment="Top">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="105"/>',
+        '                                <ColumnDefinition Width="50"/>',
+        '                                <ColumnDefinition Width="95"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="110"/>',
+        '                                <ColumnDefinition Width="50"/>',
+        '                                <ColumnDefinition Width="95"/>',
+        '                                <ColumnDefinition Width="50"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label    Grid.Column="0"',
+        '                                      Content="[Memory/GB]:"',
+        '                                      Style="{StaticResource LabelRed}"/>',
+        '                            <ComboBox Grid.Column="1"',
+        '                                      Name="TemplateMemory"',
+        '                                      SelectedIndex="0">',
+        '                                <ComboBoxItem Content="2"/>',
+        '                                <ComboBoxItem Content="4"/>',
+        '                                <ComboBoxItem Content="8"/>',
+        '                                <ComboBoxItem Content="16"/>',
+        '                            </ComboBox>',
+        '                            <Label Grid.Column="2"',
+        '                                   Content="[Drive/GB]:"',
+        '                                   Style="{StaticResource LabelRed}"/>',
+        '                            <ComboBox Grid.Column="3"',
+        '                                      Name="TemplateHardDrive"',
+        '                                      SelectedIndex="1">',
+        '                                <ComboBoxItem Content="32"/>',
+        '                                <ComboBoxItem Content="64"/>',
+        '                                <ComboBoxItem Content="128"/>',
+        '                                <ComboBoxItem Content="256"/>',
+        '                            </ComboBox>',
+        '                            <Label Grid.Column="4"',
+        '                                   Content="[Generation]:"',
+        '                                   Style="{StaticResource LabelRed}"/>',
+        '                            <ComboBox Grid.Column="5"',
+        '                                      Name="TemplateGeneration"',
+        '                                      SelectedIndex="1">',
+        '                                <ComboBoxItem Content="1"/>',
+        '                                <ComboBoxItem Content="2"/>',
+        '                            </ComboBox>',
+        '                            <Label Grid.Column="6"',
+        '                                   Content="[CPU/Core]:"',
+        '                                   Style="{StaticResource LabelRed}"/>',
+        '                            <ComboBox Grid.Column="7"',
+        '                                      Name="TemplateCore"',
+        '                                      SelectedIndex="1">',
+        '                                <ComboBoxItem Content="1"/>',
+        '                                <ComboBoxItem Content="2"/>',
+        '                                <ComboBoxItem Content="3"/>',
+        '                                <ComboBoxItem Content="4"/>',
+        '                            </ComboBox>',
+        '                        </Grid>',
+        '                    </TabItem>',
+        '                    <TabItem Header="Switch">',
+        '                        <Grid>',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="70"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Grid Grid.Column="0">',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Button Grid.Row="0"',
+        '                                        Name="TemplateNetworkUp"',
+        '                                        Content="[Up]"/>',
+        '                                <Button Grid.Row="2"',
+        '                                        Name="TemplateNetworkDown"',
+        '                                        Content="[Down]"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Column="1" Name="TemplateNetworkOutput">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Alias"',
+        '                                            Binding="{Binding Interface.Name}"',
+        '                                            Width="125"/>',
+        '                                    <DataGridTextColumn Header="IpAddress"',
+        '                                            Binding="{Binding Interface.IpAddress}"',
+        '                                            Width="125"/>',
+        '                                    <DataGridTextColumn Header="Description"',
+        '                                            Binding="{Binding Interface.Description}"',
+        '                                            Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </Grid>',
+        '                    </TabItem>',
+        '                    <TabItem Header="Credentials">',
+        '                        <DataGrid Name="TemplateCredentialOutput">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
+        '                                            Width="90"/>',
+        '                                <DataGridTextColumn Header="Username"',
+        '                                            Binding="{Binding Username}"',
+        '                                            Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                    </TabItem>',
+        '                    <TabItem Header="Image">',
+        '                        <DataGrid Name="TemplateImageOutput">',
+        '                            <DataGrid.RowStyle>',
+        '                                <Style TargetType="{x:Type DataGridRow}">',
+        '                                    <Style.Triggers>',
+        '                                        <Trigger Property="IsMouseOver" Value="True">',
+        '                                            <Setter Property="ToolTip">',
+        '                                                <Setter.Value>',
+        '                                                    <TextBlock Text="{Binding Fullname}"',
+        '                                                       TextWrapping="Wrap"',
+        '                                                       FontFamily="Consolas"',
+        '                                                       Background="#000000"',
+        '                                                       Foreground="#00FF00"/>',
+        '                                                </Setter.Value>',
+        '                                            </Setter>',
+        '                                        </Trigger>',
+        '                                    </Style.Triggers>',
+        '                                </Style>',
+        '                            </DataGrid.RowStyle>',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding File.Type}"',
+        '                                            Width="90"/>',
+        '                                <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding File.Name}"',
+        '                                            Width="*"/>',
+        '                                <DataGridTextColumn Header="Edition"',
+        '                                            Binding="{Binding Edition.Label}"',
+        '                                            Width="150"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                    </TabItem>',
+        '                </TabControl>',
+        '            </Grid>',
+        '        </TabItem>',
+        '        <TabItem Header="Node">',
+        '            <Grid>',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="110"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="10"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="40"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="90"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Label Grid.Column="0"',
+        '                           Content="[Node]:"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Text="&lt;Manage virtual machine hosts + templates&gt;"',
+        '                             IsReadOnly="True"/>',
+        '                    <Button Grid.Column="2"',
+        '                            Content="Refresh"',
+        '                            Name="NodeRefresh"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1"',
+        '                          Name="NodeOutput">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Index"',
+        '                                            Binding="{Binding Index}"',
+        '                                            Width="40"/>',
+        '                        <DataGridTextColumn Header="Guid"',
+        '                                            Binding="{Binding Guid}"',
+        '                                            Width="350"/>',
+        '                        <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="*"/>',
+        '                        <DataGridTextColumn Header="Type"',
+        '                                            Binding="{Binding Type}"',
+        '                                            Width="100"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Column="0"',
+        '                            Content="Create"',
+        '                            Name="NodeCreate"/>',
+        '                    <Button Grid.Column="1"',
+        '                            Content="Remove"',
+        '                            Name="NodeRemove"/>',
+        '                </Grid>',
+        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+        '                <DataGrid Grid.Row="4" Name="NodeExtension">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"',
+        '                                            Binding="{Binding Name}"',
+        '                                            Width="150"/>',
+        '                        <DataGridTextColumn Header="Value"',
+        '                                            Binding="{Binding Value}"',
+        '                                            Width="*"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="5">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="100"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="25"/>',
+        '                        <ColumnDefinition Width="100"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Column="0"',
+        '                            Content="Import"',
+        '                            Name="NodeImport"/>',
+        '                    <TextBox Grid.Column="1"',
+        '                             Name="NodePath"',
+        '                             Text="&lt;Set path to import control template(s)&gt;"/>',
+        '                    <Image   Grid.Column="2"',
+        '                             Name="NodePathIcon"/>',
+        '                    <Button  Grid.Column="3"',
+        '                             Name="NodePathBrowse"',
+        '                             Content="Browse"/>',
+        '                </Grid>',
+        '            </Grid>',
+        '        </TabItem>',
+        '    </TabControl>',
+        '</Window>' -join "`n")
+    }
+    
+    Class XamlProperty
+    {
+        [UInt32]   $Index
+        [String]    $Name
+        [Object]    $Type
+        [Object] $Control
+        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Type    = $Object.GetType().Name
+            $This.Control = $Object
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+    
+    Class XamlWindow
+    {
+        Hidden [Object]        $Xaml
+        Hidden [Object]         $Xml
+        [String[]]            $Names
+        [Object]              $Types
+        [Object]               $Node
+        [Object]                 $IO
+        [String]          $Exception
+        XamlWindow([String]$Xaml)
+        {           
+            If (!$Xaml)
+            {
+                Throw "Invalid XAML Input"
+            }
+    
+            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+    
+            $This.Xaml           = $Xaml
+            $This.Xml            = [XML]$Xaml
+            $This.Names          = $This.FindNames()
+            $This.Types          = @( )
+            $This.Node           = [System.Xml.XmlNodeReader]::New($This.Xml)
+            $This.IO             = [System.Windows.Markup.XamlReader]::Load($This.Node)
+            
+            ForEach ($X in 0..($This.Names.Count-1))
+            {
+                $Name            = $This.Names[$X]
+                $Object          = $This.IO.FindName($Name)
+                $This.IO         | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
+                If (!!$Object)
+                {
+                    $This.Types += $This.XamlProperty($This.Types.Count,$Name,$Object)
+                }
+            }
+        }
+        [String[]] FindNames()
+        {
+            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
+        }
+        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            Return [XamlProperty]::New($Index,$Name,$Object)
+        }
+        [Object] Get([String]$Name)
+        {
+            $Item = $This.Types | ? Name -eq $Name
+            If ($Item)
+            {
+                Return $Item.Control
+            }
+            Else
+            {
+                Return $Null
+            }
+        }
+        Invoke()
+        {
+            Try
+            {
+                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            }
+            Catch
+            {
+                $This.Exception = $PSItem
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.XamlWindow[VmControllerXaml]>"
+        }
+    }
+
+    # [Network/Switch interface controller types]
+    Enum VmNetworkAdapterStateType
+    {
+        Disconnected
+        Connected
+    }
+
+    Class VmNetworkAdapterStateItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String]       $Label
+        [String] $Description
+        VmNetworkAdapterStateItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmNetworkAdapterStateType]::$Name
+            $This.Name  = [VmNetworkAdapterStateType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmNetworkAdapterStateList
+    {
+        [Object] $Output
+        VmNetworkAdapterStateList()
+        {
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] VmNetworkAdapterStateItem([String]$Name)
+        {
+            Return [VmNetworkAdapterStateItem]::New($Name)
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in [System.Enum]::GetNames([VmNetworkAdapterStateType]))
+            {
+                $Item             = $This.VmNetworkAdapterStateItem($Name)
+                $Item.Label       = @("[ ]","[+]")[$Item.Index]
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Disconnected { "Adapter network is disabled" }
+                    Connected    { "Adapter network is enabled"  }
+                }
+
+                $This.Output     += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkAdapterState[List]>"
+        }
+    }
+
+    Class VmNetworkAdapterItem
+    {
+        Hidden [UInt32]   $Index
+        Hidden [Object] $Adapter
+        [UInt32]           $Rank
+        [String]           $Name
+        [String]    $Description
+        [Object]          $State
+        [String]     $MacAddress
+        [UInt32]       $Physical
+        [String]         $Status
+        VmNetworkAdapterItem([UInt32]$Index,[Object]$Adapter)
+        {
+            $This.Index       = $Index
+            $This.Adapter     = $Adapter
+            $This.Rank        = $Adapter.InterfaceIndex
+            $This.Name        = $Adapter.Name
+            $This.Description = $Adapter.InterfaceDescription
+            $This.MacAddress  = $Adapter.MacAddress
+            $This.Physical    = $Adapter.PnPDeviceId -match "(USB\\VID|PCI\\VEN)"
+        }
+        SetState([Object]$State)
+        {
+            $This.State       = $State
+        }
+        SetStatus()
+        {
+            $This.Status      = "[Adapter]: {0} {1}" -f $This.State.Label, $This.Name
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkAdapter[Item]>"
+        }    
+    }
+
+    Class VmNetworkAdapterController
+    {
+        Hidden [Object] $State
+        [Object]       $Output
+        VmNetworkAdapterController()
+        {
+            $This.State = $This.VmNetworkAdapterStateList()
+        }
+        [Object] VmNetworkAdapterStateList()
+        {
+            Return [VmNetworkAdapterStateList]::New()
+        }
+        [Object] VmNetworkAdapterItem([UInt32]$Index,[Object]$Adapter)
+        {
+            Return [VmNetworkAdapterItem]::New($Index,$Adapter)
+        }
+        [Object[]] GetObject()
+        {
+            Return Get-CimInstance Win32_NetworkAdapter | Sort-Object InterfaceIndex
+        }
+        [Object] New([Object]$Adapter)
+        {
+            $Item   = $This.VmNetworkAdapterItem($This.Output.Count,$Adapter)
+            
+            $xState = $This.State.Output[[UInt32]$Item.Adapter.NetEnabled]
+            $Item.SetState($xState)
+
+            $Item.SetStatus()
+
+            Return $Item
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Adapter in $This.GetObject())
+            {
+                $Item = $This.New($Adapter)
+
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkAdapter[Controller]>"
+        }
+    }
+
+    Enum VmNetworkConfigStateType
+    {
+        Disconnected
+        Up
+    }
+
+    Class VmNetworkConfigStateItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String]       $Label
+        [String] $Description
+        VmNetworkConfigStateItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmNetworkConfigStateType]::$Name
+            $This.Name  = [VmNetworkConfigStateType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmNetworkConfigStateList
+    {
+        [Object] $Output
+        VmNetworkConfigStateList()
+        {
+            $This.Refresh()
+        }
+        [Object] VmNetworkConfigStateItem([String]$Name)
+        {
+            Return [VmNetworkConfigStateItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in [System.Enum]::GetNames([VmNetworkConfigStateType]))
+            {
+                $Item             = $This.VmNetworkConfigStateItem($Name)
+                $Item.Label       = @("[_]","[+]")[$Item.Index]
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Disconnected { "Configuration is disconnected" }
+                    Up           { "Configuration is connected"    }
+                }
+
+                $This.Output     += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkConfigMode[List]>"
+        }
+    }
+
+    Class VmNetworkConfigItem
+    {
+        Hidden [UInt32]         $Index
+        Hidden [Object]        $Config
+        [String]                $Alias
+        [UInt32]       $InterfaceIndex
+        [String]          $Description
+        [Object]                $State
+        [String]               $CompID
+        [String]      $CompDescription
+        [String]           $MacAddress
+        [String]                 $Name
+        [String]             $Category
+        [String]     $IPv4Connectivity
+        [String]          $IPv4Address
+        [String]           $IPv4Prefix
+        [String]   $IPv4DefaultGateway
+        [String]     $IPv4InterfaceMtu
+        [String]    $IPv4InterfaceDhcp
+        [String[]]      $IPv4DnsServer
+        [String]     $IPv6Connectivity
+        [String] $IPv6LinkLocalAddress
+        [String]   $IPv6DefaultGateway
+        [String]     $IPv6InterfaceMtu
+        [String]    $IPv6InterfaceDhcp
+        [String[]]      $IPv6DnsServer
+        [String]               $Status
+        VmNetworkConfigItem([UInt32]$Index,[Object]$Config)
+        {
+            $This.Index                  = $Index
+            $This.Config                 = $Config
+            $This.Alias                  = $Config.InterfaceAlias
+            $This.InterfaceIndex         = $Config.InterfaceIndex
+            $This.Description            = $Config.InterfaceDescription
+            $This.CompID                 = $Config.NetCompartment.CompartmentId
+            $This.CompDescription        = $Config.NetCompartment.CompartmentDescription
+            $This.MacAddress             = $Config.NetAdapter.LinkLayerAddress
+            $This.Status                 = $Config.NetAdapter.Status
+            $This.Name                   = $Config.NetProfile.Name
+            $This.Category               = $Config.NetProfile.NetworkCategory
+            $This.IPv4Connectivity       = $Config.NetProfile.IPv4Connectivity
+            $This.IPv4Address            = $Config.IPv4Address.IpAddress
+            $This.IPv4Prefix             = $Config.IPv4Address.PrefixLength
+            $This.IPv4DefaultGateway     = $Config.IPv4DefaultGateway.NextHop
+            $This.IPv4InterfaceMtu       = $Config.NetIPv4Interface.NlMTU
+            $This.IPv4InterfaceDhcp      = $Config.NetIPv4Interface.DHCP
+            $This.IPv4DnsServer          = $Config.DNSServer | ? AddressFamily -eq 2 | % ServerAddresses
+            $This.IPv6Connectivity       = $Config.NetProfile.IPv6Connectivity
+            $This.IPv6DefaultGateway     = $Config.IPv6DefaultGateway.NextHop
+            $This.IPv6LinkLocalAddress   = $Config.IPv6LinkLocalAddress
+            $This.IPv6InterfaceMtu       = $Config.NetIPv6Interface.NlMTU
+            $This.IPv6InterfaceDhcp      = $Config.NetIPv6Interface.DHCP
+            $This.IPv6DnsServer          = $Config.DNSServer | ? AddressFamily -eq 23 | % ServerAddresses
+        }
+        SetState([Object]$State)
+        {
+            $This.State                  = $State
+        }
+        SetStatus()
+        {
+            $This.Status                 = "[Config]: {0} {1}" -f $This.State.Label, $This.Alias
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkConfig[Item]>"
+        }
+    }
+
+    Class VmNetworkConfigController
+    {
+        Hidden [Object] $State
+        [Object]       $Output
+        VmNetworkConfigController()
+        {
+            $This.State = $This.VmNetworkConfigStateList()
+        }
+        [Object] VmNetworkConfigStateList()
+        {
+            Return [VmNetworkConfigStateList]::New()
+        }
+        [Object] VmNetworkConfigItem([UInt32]$Index,[Object]$Config)
+        {
+            Return [VmNetworkConfigItem]::New($Index,$Config)
+        }
+        [Object[]] GetObject()
+        {
+            Return Get-NetIPConfiguration -Detailed
+        }
+        [Object] New([Object]$Config)
+        {
+            $Item = $This.VmNetworkConfigItem($This.Output.Count,$Config)
+
+            $xState = $This.State.Output[[UInt32]($Item.Config.NetAdapter.Status -eq "Up")]
+            $Item.SetState($xState)
+
+            $Item.SetStatus()
+
+            Return $Item
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Config in $This.GetObject())
+            {
+                $This.Output += $This.New($Config)
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkConfig[Controller]>"
+        }
+    }
+
+    Enum VmNetworkSwitchModeType
+    {
+        Internal
+        External
+        Private
+    }
+
+    Class VmNetworkSwitchModeItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String]       $Label
+        [String] $Description
+        VmNetworkSwitchModeItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmNetworkSwitchModeType]::$Name
+            $This.Name  = [VmNetworkSwitchModeType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmNetworkSwitchModeList
+    {
+        [Object] $Output
+        VmNetworkSwitchModeList()
+        {
+            $This.Refresh()
+        }
+        [Object] VmNetworkSwitchModeItem([String]$Name)
+        {
+            Return [VmNetworkSwitchModeItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in [System.Enum]::GetNames([VmNetworkSwitchModeType]))
+            {
+                $Item             = $This.VmNetworkSwitchModeItem($Name)
+                $Item.Label       = @("[E]","[I]","[P]")[$Item.Index]
+                $Item.Description = Switch ($Item.Name)
+                {
+                    External { "Switch is connected to an external network."                   }
+                    Internal { "Switch is connected internally on the host, but can be seen."  }
+                    Private  { "Switch is connected internally on the host, and is invisible." }
+                }
+
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkSwitchMode[List]>"
+        }
+    }
+
+    Class VmNetworkSwitchItem
+    {
+        [UInt32]         $Index
+        Hidden [Object] $Switch
+        [String]          $Name
+        [Object]         $State
+        [String]         $Alias
+        [String]   $Description
+        [String]        $Status
+        VmNetworkSwitchItem([UInt32]$Index,[Object]$Switch)
+        {
+            $This.Index       = $Index
+            $This.Switch      = $Switch
+            $This.Name        = $Switch.Name
+            $This.Alias       = "vEthernet ({0})" -f $This.Name
+            $This.Description = $Switch.NetAdapterInterfaceDescription
+        }
+        SetState([Object]$State)
+        {
+            $This.State       = $State
+        }
+        SetStatus()
+        {
+            $This.Status      = "[VmSwitch]: {0} {1}" -f $This.State.Label, $This.Name
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkSwitch[Item]>"
+        }
+    }
+
+    Class VmNetworkSwitchController
+    {
+        Hidden [Object] $Mode
+        [Object]      $Output
+        VmNetworkSwitchController()
+        {
+            $This.Mode = $This.VmNetworkSwitchModeList()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        [Object] VmNetworkSwitchModeList()
+        {
+            Return [VmNetworkSwitchModeList]::New()
+        }
+        [Object] VmNetworkSwitchItem([UInt32]$Index,[Object]$Switch)
+        {
+            Return [VmNetworkSwitchItem]::New($Index,$Switch)
+        }
+        [Object] New([Object]$Switch)
+        {
+            $Item   = $This.VmNetworkSwitchItem($This.Output.Count,$Switch)
+
+            $xState = $This.Mode.Output | ? Name -eq $Item.Switch.SwitchType
+            $Item.SetState($xState)
+            
+            $Item.SetStatus()
+
+            Return $Item
+        }
+        [Object[]] GetObject()
+        {
+            Return Get-VmSwitch | Sort-Object 
+        }
+        Refresh()
+        {
+            $This.Clear()
+            
+            ForEach ($VmSwitch in $This.GetObject())
+            {
+                $Item = $This.New($VmSwitch)
+
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkSwitch[Controller]>"
+        }
+    }
+
+    Class VmMain
+    {
+        [String]  $Domain
+        [String] $NetBios
+        VmMain([String]$Domain,[String]$NetBios)
+        {
+            $This.Domain  = $Domain.ToLower()
+            $This.NetBios = $NetBios.ToUpper()
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmMain>"
+        }
+    }
+
+    Class VmNetworkBase
+    {
+        [String]    $Domain
+        [String]   $NetBios
+        [String]   $Network
+        [String] $Broadcast
+        [String]   $Trusted
+        [UInt32]    $Prefix
+        [String]   $Netmask
+        [String]  $Wildcard
+        [String]  $Notation
+        [String]   $Gateway
+        [String[]]     $Dns
+        VmNetworkBase([Object]$Main,[Object]$Entry)
+        {
+            $This.Domain    = $Main.Domain
+            $This.NetBios   = $Main.NetBios
+    
+            $This.Trusted   = $Entry.IPAddress
+            $This.Prefix    = $Entry.Config.IPV4Prefix
+    
+            # Binary
+            $This.GetConversion()
+    
+            $This.Gateway   = $Entry.IPV4DefaultGateway
+            $This.Dns       = $Entry.IPv4DnsServer
+        }
+        GetConversion()
+        {
+            # Convert IP and PrefixLength into binary, netmask, and wildcard
+            $xBinary       = 0..3 | % { (($_*8)..(($_*8)+7) | % { @(0,1)[$_ -lt $This.Prefix] }) -join '' }
+            $This.Netmask  = ($xBinary | % { [Convert]::ToInt32($_,2 ) }) -join "."
+            $This.Wildcard = ($This.Netmask.Split(".") | % { (256-$_) }) -join "."
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Base]>"
+        }
+    }
+
+    Class VmNetworkRange
+    {
+        [UInt32]     $Index
+        [String]     $Total
+        [String]   $Netmask
+        [String]  $Notation
+        [Object]    $Output
+        VmNetworkRange([UInt32]$Index,[String]$Netmask,[UInt32]$Total,[String]$Notation)
+        {
+            $This.Index    = $Index
+            $This.Total    = $Total
+            $This.Netmask  = $Netmask
+            $This.Notation = $Notation
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Output   = @( )
+        }
+        Expand()
+        {
+            $Split     = $This.Notation.Split("/")
+            $HostRange = @{ }
+            ForEach ($0 in $Split[0] | Invoke-Expression)
+            {
+                ForEach ($1 in $Split[1] | Invoke-Expression)
+                {
+                    ForEach ($2 in $Split[2] | Invoke-Expression)
+                    {
+                        ForEach ($3 in $Split[3] | Invoke-Expression)
+                        {
+                            $HostRange.Add($HostRange.Count,"$0.$1.$2.$3")
+                        }
+                    }
+                }
+            }
+    
+            $This.Output    = $HostRange[0..($HostRange.Count-1)]
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Range]>"
+        }
+    }
+
+    Class VmNetworkHost
+    {
+        [UInt32]         $Index
+        [UInt32]        $Status
+        [String]        $Source
+        [String]          $Type = "Host"
+        [String]         $Class
+        [String]     $IpAddress
+        [String]    $MacAddress
+        [String]      $Hostname
+        VmNetworkHost([UInt32]$Index,[String]$IpAddress,[Object]$Reply)
+        {
+            $This.Index          = $Index
+            $This.Status         = [UInt32]($Reply.Result.Status -match "Success")
+            $This.Source         = "Sweep"
+            $This.IpAddress      = $IpAddress
+            $This.GetClass()
+        }
+        VmNetworkHost([UInt32]$Index,[String]$IpAddress)
+        {
+            $This.Index          = $Index
+            $This.Status         = 0
+            $This.Source         = "Sweep"
+            $This.IpAddress      = $IpAddress
+            $This.GetClass()
+        }
+        VmNetworkHost([Switch]$Flags,[Uint32]$Index,[String]$Line)
+        {
+            $This.Index          = $Index
+            $This.Status         = 1
+            $This.Source         = "Arp"
+            $This.IpAddress      = [Regex]::Matches($Line,"(\d+\.){3}\d+").Value
+            $This.MacAddress     = [Regex]::Matches($Line,"([a-f0-9]{2}\-){5}([a-f0-9]{2})").Value.Replace("-","").ToUpper()
+            $This.GetClass()
+        }
+        GetClass()
+        {
+            If ($This.IpAddress -match "^169.254")
+            {
+                $This.Class = "APIPA"
+            }
+            Else
+            {
+                $First      = $This.IpAddress -Split "\."
+                $This.Class = Switch ([UInt32]$First[0])
+                {
+                    {$_ -in        0} { "N/A"       }
+                    {$_ -in   1..126} { "A"         }
+                    {$_ -in      127} { "Local"     }
+                    {$_ -in 128..191} { "B"         }
+                    {$_ -in 192..223} { "C"         }
+                    {$_ -in 224..239} { "Multicast" }
+                    {$_ -in 240..254} { "Reserved"  }
+                    {$_ -in      255} { "Broadcast" }
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Host]>"
+        }
+    }
+
+    Class VmNetworkDhcp
+    {
+        [String]          $Name
+        [String]    $SubnetMask
+        [String]       $Network
+        [String]    $StartRange
+        [String]      $EndRange
+        [String]     $Broadcast
+        [String[]]   $Exclusion
+        VmNetworkDhcp([Object]$Base,[Object]$Hosts)
+        {
+            $This.Network     = $Base.Network   = $Hosts[0].IpAddress
+            $This.Broadcast   = $Base.Broadcast = $Hosts[-1].IpAddress
+            $This.Name        = "{0}/{1}" -f $This.Network, $Base.Prefix
+            $This.SubnetMask  = $Base.Netmask
+            $Range            = $Hosts | ? Type -eq Host
+            $This.StartRange  = $Range[0].IpAddress
+            $This.EndRange    = $Range[-1].IpAddress
+            $This.Exclusion   = $Range | ? Status | % IpAddress
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Dhcp]>"
+        }
+    }
+
+    Enum VmNetworkInterfaceModeType
+    {
+        LocalNetwork
+        Internet
+        Null
+    }
+
+    Class VmNetworkInterfaceModeItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String]       $Label
+        [String] $Description
+        VmNetworkInterfaceModeItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmNetworkInterfaceModeType]::$Name
+            $This.Name  = [VmNetworkInterfaceModeType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmNetworkInterfaceModeList
+    {
+        [Object] $Output
+        VmNetworkInterfaceModeList()
+        {
+            $This.Refresh()
+        }
+        [Object] VmNetworkInterfaceModeItem([String]$Name)
+        {
+            Return [VmNetworkInterfaceModeItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in [System.Enum]::GetNames([VmNetworkInterfaceModeType]))
+            {
+                $Item             = $This.VmNetworkInterfaceModeItem($Name)
+                $Item.Label       = @("[.]","[+]","[_]")[$Item.Index]
+                $Item.Description = Switch ($Item.Name)
+                {
+                    LocalNetwork { "Interface is set for local area network" }
+                    Internet     { "Interface is set to access the internet" }
+                    Null         { "Interface is not externally connected"   }
+                }
+
+                $This.Output     += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkConfigMode[List]>"
+        }
+    }
+
+    Class VmNetworkInterfaceItem
+    {
+        [UInt32]          $Index
+        [Object]           $Mode
+        [String]           $Name
+        [String]          $Alias
+        [String]        $Display
+        [String]      $IpAddress
+        [UInt32] $InterfaceIndex
+        [String]    $Description
+        [String]     $MacAddress
+        [Object]        $Adapter
+        [Object]       $Physical
+        [Object]         $Config
+        [Object]         $Switch
+        [Object]           $Base
+        [Object]          $Range
+        [Object]           $Host
+        [Object]           $Dhcp
+        [UInt32]        $Profile
+        VmNetworkInterfaceItem([UInt32]$Index,[String]$Line)
+        {
+            # Arp discovery mode
+            $This.Index          = $Index
+            $This.IpAddress      = [Regex]::Matches($Line,"(\d+\.){3}\d+").Value
+            $This.InterfaceIndex = [Regex]::Matches($Line,"0x([0-9a-f]){2}").Value | Invoke-Expression
+
+            $This.Clear()
+        }
+        VmNetworkInterfaceItem([Switch]$Flags,[UInt32]$Index,[Object]$Switch)
+        {
+            # Blank switch mode
+            $This.Index          = $Index
+            $This.SetSwitch($Switch)
+
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Range          = @( )
+            $This.Host           = @( )
+        }
+        [Object] VmNetworkHost([UInt32]$Index,[String]$IpAddress)
+        {
+            Return [VmNetworkHost]::New($Index,$IpAddress)
+        }
+        [Object] VmNetworkHost([UInt32]$Index,[String]$IpAddress,[Object]$Reply)
+        {
+            Return [VmNetworkHost]::New($Index,$IpAddress,[Object]$Reply)
+        }
+        [Object] VmNetworkHost([Switch]$Flags,[Uint32]$Index,[String]$Line)
+        {
+            Return [VmNetworkHost]::New($False,$Index,$Line)
+        }
+        [Object] VmNetworkRange([UInt32]$Index,[String]$Netmask,[UInt32]$Total,[String]$Notation)
+        {
+            Return [VmNetworkRange]::New($Index,$Netmask,$Total,$Notation)
+        }
+        AddHost([String]$IpAddress)
+        {
+            $This.Host += $This.VmNetworkHost($This.Host.Count,$IpAddress)
+        }
+        AddHost([String]$IpAddress,[Object]$Reply)
+        {
+            $This.Host += $This.VmNetworkHost($This.Host.Count,$IpAddress,$Reply)
+        }
+        AddHost([Switch]$Flags,[String]$Line)
+        {
+            $Item       = $This.VmNetworkHost([Switch]$Flags,$This.Host.Count,$Line)
+            If ($Item.Class -notin "Multicast","Broadcast")
+            {
+                $This.Host += $Item
+            }
+        }
+        AddRange([UInt64]$Total,[String]$Notation)
+        {
+            $This.Range += $This.VmNetworkRange($This.Range.Count,$This.Base.Netmask,$Total,$Notation)
+        }
+        GetNetworkRange()
+        {
+            $Address       = $This.Base.Trusted.Split(".")
+            $xNetmask      = $This.Base.Netmask  -Split "\."
+            $xWildCard     = $This.Base.Wildcard -Split "\."
+            $Total         = $xWildcard -join "*" | Invoke-Expression
+
+            # Convert wildcard into total host range
+            $Hash          = @{ }
+            ForEach ($X in 0..3)
+            { 
+                $Value = Switch ($xWildcard[$X])
+                {
+                    1       
+                    { 
+                        $Address[$X]
+                    }
+                    Default
+                    {
+                        ForEach ($Item in 0..255 | ? { $_ % $xWildcard[$X] -eq 0 })
+                        {
+                            "{0}..{1}" -f $Item, ($Item+($xWildcard[$X]-1))
+                        }
+                    }
+                    255
+                    {
+                        "{0}..{1}" -f $xNetmask[$X],($xNetmask[$X]+$xWildcard[$X])
+                    }
+                }
+
+                $Hash.Add($X,$Value)
+            }
+
+            # Build host range
+            $xRange   = @{ }
+            ForEach ($0 in $Hash[0])
+            {
+                ForEach ($1 in $Hash[1])
+                {
+                    ForEach ($2 in $Hash[2])
+                    {
+                        ForEach ($3 in $Hash[3])
+                        {
+                            $xRange.Add($xRange.Count,"$0/$1/$2/$3")
+                        }
+                    }
+                }
+            }
+
+            Switch ($xRange.Count)
+            {
+                0
+                {
+                    "Error"
+                }
+                1
+                {
+                    $This.AddRange($Total,$xRange[0])
+                }
+                Default
+                {
+                    ForEach ($X in 0..($xRange.Count-1))
+                    {
+                        $This.AddRange($Total,$xRange[$X])
+                    }
+                }
+            }
+
+            # Subtract network + broadcast addresses
+            ForEach ($Range in $This.Range)
+            {
+                $Range.Expand()
+                If ($This.Base.Trusted -in $Range.Output)
+                {
+                    $This.Base.Network   = $Range.Output[ 0]
+                    $This.Base.Broadcast = $Range.Output[-1]
+                    $This.Base.Notation  = $Range.Notation
+                }
+                Else
+                {
+                    $Range.Output        = @( )
+                }
+            }
+        }
+        SetAdapter([Object]$Adapter)
+        {
+            $This.Adapter     = $Adapter
+            $This.MacAddress  = $Adapter.MacAddress -Replace ":",""
+        }
+        SetPhysical([Object]$Physical)
+        {
+            $This.Physical    = $Physical
+        }
+        SetConfig([Object]$Config)
+        {
+            $This.Config      = $Config
+            $This.Alias       = $Config.Alias
+            $This.Display     = $Config.Name
+            $This.Description = $Config.Description
+        }
+        SetMode([Object]$Mode)
+        {
+            $This.Mode        = $Mode
+        }
+        SetSwitch([Object]$Switch)
+        {
+            $This.Switch      = $Switch
+            $This.Name        = $Switch.Name
+        }
+        SetBase([Object]$Base)
+        {
+            $This.Base        = $Base
+            $This.GetNetworkRange()
+        }
+        SetDhcp()
+        {
+            $This.Dhcp     = $This.VmNetworkDhcp($This.Base,$This.Hosts)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetworkConfig[Entry]>"
+        }
+    }
+
+    Class VmNetworkController
+    {
+        Hidden [Object] $Mode
+        [Object]        $Main
+        [Object]     $Adapter
+        [Object]      $Config
+        [Object]      $Switch
+        [Object]      $Output
+        VmNetworkController()
+        {
+            $This.Mode     = $This.VmNetworkInterfaceModeList()
+            $This.Adapter  = $This.VmNetworkAdapterController()
+            $This.Config   = $This.VmNetworkConfigController()
+            $This.Switch   = $This.VmNetworkSwitchController()
+            $This.Clear()
+        }
+        [Object] VmMain([String]$Domain,[String]$NetBios)
+        {
+            Return [VmMain]::New($Domain,$NetBios)
+        }
+        [Object] VmBase([Object]$Main,[Object]$Entry)
+        {
+            Return [VmNetworkBase]::New($Main,$Entry)
+        }
+        [Object] VmNetworkInterfaceModeList()
+        {
+            Return [VmNetworkInterfaceModeList]::New()
+        }
+        [Object] VmNetworkAdapterController()
+        {
+            Return [VmNetworkAdapterController]::New()
+        }
+        [Object] VmNetworkConfigController()
+        {
+            Return [VmNetworkConfigController]::New()
+        }
+        [Object] VmNetworkSwitchController()
+        {
+            Return [VmNetworkSwitchController]::New()
+        }
+        [Object] VmNetworkInterfaceItem([UInt32]$Index,[String]$Line)
+        {
+            Return [VmNetworkInterfaceItem]::New($Index,$Line)
+        }
+        [Object] VmNetworkInterfaceItem([Switch]$Flags,[UInt32]$Index,[Object]$Switch)
+        {
+            Return [VmNetworkInterfaceItem]::New([Switch]$Flags,$Index,$Switch)
+        }
+        [Object] VmControllerProperty([Object]$Property)
+        {
+            Return [VmControllerProperty]::New($Property)
+        }
+        [Object[]] Physical()
+        {
+            Return $This.Adapter.Output | ? Physical
+        }
+        [Object] New([String]$Line)
+        { 
+            Return $This.VmNetworkInterfaceItem($This.Output.Count,$Line)
+        }
+        [Object] New([Switch]$Flags,[Object]$VmSwitch)
+        {
+            Return $This.VmNetworkInterfaceItem([Switch]$Flags,$This.Output.Count,$VmSwitch)
+        }
+        Rerank()
+        {
+            $X = 0
+            Do
+            {
+                $This.Output[$X].Index = $X
+                $X ++
+            }
+            Until ($X -eq $This.Output.Count)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            $This.Adapter.Refresh()
+            $This.Config.Refresh()
+            $This.Switch.Refresh()
+
+            # [Switches found using arp -a]
+            ForEach ($Line in (arp -a))
+            {
+                Switch -Regex ($Line)
+                {
+                    {$_ -match "^Interface\:"}
+                    {
+                        $Item         = $This.New($Line)
+                        
+                        # [Set adapter]
+                        $xAdapter     = $This.Adapter.Output | ? Rank -eq $Item.InterfaceIndex
+                        $Item.SetAdapter($xAdapter)
+                        
+                        # [Set config]
+                        $xConfig      = $This.Config.Output | ? InterfaceIndex -eq $Item.InterfaceIndex
+                        $Item.SetConfig($xConfig)
+
+                        # [Set mode based on IPv4 connectivity (for now)]
+                        $Value        = $xConfig.IPv4Connectivity
+                        If ($Value -eq "")
+                        {
+                            $Value    = "Null"
+                        }
+                        $Item.Mode    = $This.Mode.Output | ? Name -eq $Value
+
+                        # [Set switch]
+                        $xSwitch      = $This.Switch.Output | ? Alias -eq $Item.Alias
+                        $Item.SetSwitch($xSwitch)
+
+                        # [Set physical]
+                        $xPhysical    = $This.Adapter.Output | ? Name -eq $Item.Switch.Description
+                        $Item.SetPhysical($xPhysical)
+
+                        # [Set base]
+                        $xBase        = $This.VmBase($This.Main,$Item)
+                        If ($xBase.Prefix -ne 0)
+                        {
+                            $Item.SetBase($xBase)
+                        }
+
+                        $This.Output += $Item
+                    }
+                    {$_ -match "^\s+(\d+\.){3}\d+"}
+                    {
+                        $This.Output[-1].AddHost([Switch]$False,$Line)
+                    }
+                    Default
+                    {
+
+                    }
+                }
+            }
+
+            # [Switches not found using arp -a]
+            ForEach ($VmSwitch in $This.Switch.Output | ? Name -notin $This.Output.Name)
+            {
+                $Item         = $This.New([Switch]$False,$VmSwitch)
+
+                $This.Output += $Item
+            }
+        }
+        [Object[]] Property([Object]$Object)
+        {
+            $List = @( )
+
+            ForEach ($Property in $Object.PSObject.Properties | ? Name -notmatch ^PS)
+            {
+                $List += $This.VmControllerProperty($Property)
+            }
+
+            Return $List
+        }
+        SwitchConfig([Object]$Control,[Object]$Property,[Object]$Object)
+        {
+            $List     = $Object
+            $Property = $Property.SelectedItem.Content.Replace(" ","")
+            If ($Property -ne "*")
+            {
+                $List = $List | ? { $_.Mode.Name -match $Property }
+            }
+
+            $This.Reset($Control,$List)
+        }
+        [String] Escape([String]$String)
+        {
+            Return [Regex]::Escape($String)
+        }
+        SetMain([String]$Domain,[String]$NetBios)
+        {
+            $This.Main = $This.VmMain($Domain,$NetBios)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNetwork[Controller]>"
+        }
+    }
+
+    # [Credential controller types]
+    Enum VmCredentialSlotType
+    {
+        Setup
+        System
+        Service
+        User
+        Microsoft
+    }
+
+    Class VmCredentialSlotItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String] $Description
+        VmCredentialSlotItem([String]$Name)
+        {
+            $This.Index = [UInt32][VmCredentialSlotType]::$Name
+            $This.Name  = [VmCredentialSlotType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class VmCredentialSlotList
+    {
+        [Object] $Output
+        VmCredentialSlotList()
+        {
+            $This.Refresh()
+        }
+        [Object] VmCredentialSlotItem([String]$Name)
+        {
+            Return [VmCredentialSlotItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+    
+            ForEach ($Name in [System.Enum]::GetNames([VmCredentialSlotType]))
+            {
+                $Item             = $This.VmCredentialSlotItem($Name)
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Setup     { "System setup account"      }
+                    System    { "System level account"      }
+                    Service   { "Service level account"     }
+                    User      { "Local/domain user account" }
+                    Microsoft { "Online Microsoft account"  }
+                }
+    
+                $This.Add($Item)
+            }
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $Object
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmCredentialSlot[List]>"
+        }
+    }
+
+    Class VmCredentialItem
+    {
+        [UInt32]            $Index
+        [Guid]               $Guid
+        [Object]             $Type
+        [String]         $Username
+        Hidden [String]      $Pass
+        [PSCredential] $Credential
+        [String]              $Pin
+        [UInt32]          $Profile
+        VmCredentialItem([UInt32]$Index,[Object]$Type,[PSCredential]$Credential)
+        {
+            $This.Index      = $Index
+            $This.Guid       = $This.NewGuid()
+            $This.Type       = $Type
+            $This.Username   = $Credential.Username
+            $This.Credential = $Credential
+            $This.Pass       = $This.Mask()
+        }
+        VmCredentialItem([Object]$Serial)
+        {
+            $This.Index      = $Serial.Index
+            $This.Guid       = $Serial.Guid
+            $This.Type       = $Serial.Type
+            $This.Username   = $Serial.Username
+            $This.Credential = $Serial.Credential
+            $This.Pass       = $This.Mask()
+            $This.Pin        = $Serial.Pin
+        }
+        [Object] NewGuid()
+        {
+            Return [Guid]::NewGuid()
+        }
+        [String] Password()
+        {
+            Return $This.Credential.GetNetworkCredential().Password
+        }
+        [String] Mask()
+        {
+            Return "<SecureString>"
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmCredential[Item]>"
+        }
+    }
+
+    Class VmCredentialController
+    {
+        Hidden [Object] $Slot
+        [Object]      $Output
+        VmCredentialController()
+        {
+            $This.Slot = $This.VmCredentialSlotList()
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+            $This.Setup()
+        }
+        [Object] VmCredentialSlotList()
+        {
+            Return [VmCredentialSlotList]::New().Output
+        }
+        [Object] VmCredentialItem([UInt32]$Index,[String]$Type,[PSCredential]$Credential)
+        {
+            Return [VmCredentialItem]::New($Index,$Type,$Credential)
+        }
+        [Object] VmCredentialItem([Object]$Serial)
+        {
+            Return [VmCredentialItem]::New($Serial)
+        }
+        [PSCredential] SetCredential([String]$Username,[String]$Pass)
+        {
+            Return [PSCredential]::New($Username,$This.SecureString($Pass))
+        }
+        [PSCredential] SetCredential([String]$Username,[SecureString]$Pass)
+        {
+            Return [PSCredential]::New($Username,$Pass)
+        }
+        [SecureString] SecureString([String]$In)
+        {
+            Return $In | ConvertTo-SecureString -AsPlainText -Force
+        }
+        [String] Generate()
+        {
+            Do
+            {
+                $Length          = $This.Random(10,16)
+                $Bytes           = [Byte[]]::New($Length)
+    
+                ForEach ($X in 0..($Length-1))
+                {
+                    $Bytes[$X]   = $This.Random(32,126)
+                }
+    
+                $Pass            = [Char[]]$Bytes -join ''
+            }
+            Until ($Pass -match $This.Pattern())
+    
+            Return $Pass
+        }
+        [String] Pattern()
+        {
+            Return "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}"
+        }
+        [UInt32] Random([UInt32]$Min,[UInt32]$Max)
+        {
+            Return Get-Random -Min $Min -Max $Max
+        }
+        Setup()
+        {
+            If ("Administrator" -in $This.Output.Username)
+            {
+                Throw "Administrator account already exists"
+            }
+    
+            $This.Add(0,"Administrator",$This.Generate())
+        }
+        Rerank()
+        {
+            $C = 0
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Index = $C
+                $C ++
+            }
+        }
+        Add([UInt32]$Type,[String]$Username,[String]$Pass)
+        {
+            If ($Type -gt $This.Slot.Count)
+            {
+                Throw "Invalid account type"
+            }
+    
+            $Credential   = $This.SetCredential($Username,$Pass)
+            $This.Output += $This.VmCredentialItem($This.Count,$This.Slot[$Type],$Credential)
+        }
+        Add([UInt32]$Type,[String]$Username,[SecureString]$Pass)
+        {
+            If ($Type -gt $This.Slot.Count)
+            {
+                Throw "Invalid account type"
+            }
+            
+            $Credential   = $This.SetCredential($Username,$Pass)
+            $This.Output += $This.VmCredentialItem($This.Count,$This.Slot[$Type],$Credential)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmCredential[Controller]>"
+        }
+    }
+
+    # [Image controller types]
     Class ImageLabel
     {
         [UInt32]           $Index
@@ -186,6 +3374,7 @@ Function New-VmController
         [String]          $Fullname
         Hidden [String]     $Letter
         Hidden [Object[]]  $Content
+        [UInt32]           $Profile
         ImageFile([UInt32]$Index,[String]$Fullname)
         {
             $This.Index     = $Index
@@ -518,1922 +3707,40 @@ Function New-VmController
         }
     }
 
-    # [Security Options (Windows 10)]
-    Enum SecurityOptionType
+    # [Template controller types]
+    Enum VmRoleType
     {
-        FirstPet
-        BirthCity
-        ChildhoodNick
-        ParentCity
-        CousinFirst
-        FirstSchool
+        Server
+        Client
+        Unix
     }
-
-    Class SecurityOptionItem
+    
+    Class VmRoleItem
     {
         [UInt32]       $Index
         [String]        $Name
         [String] $Description
-        SecurityOptionItem([String]$Name)
+        VmRoleItem([String]$Name)
         {
-            $This.Index = [UInt32][SecurityOptionType]::$Name
-            $This.Name  = [SecurityOptionType]::$Name
-        }
-    }
-
-    Class SecurityOptionList
-    {
-        [String]    $Name
-        [Object]  $Output
-        SecurityOptionList()
-        {
-            $This.Name = "SecurityOptionList"
-            $This.Refresh()
-        }
-        Clear()
-        {
-            $This.Output = @( )
-        }
-        [Object] SecurityOptionItem([String]$Name)
-        {
-            Return [SecurityOptionItem]::New($Name)
-        }
-        Add([Object]$Object)
-        {
-            $This.Output += $Object
-        }
-        Refresh()
-        {
-            $This.Clear()
-            ForEach ($Name in [System.Enum]::GetNames([SecurityOptionType]))
-            {
-                $Item             = $This.SecurityOptionItem($Name)
-                $Item.Description = Switch ($Item.Index)
-                {
-                    0 { "What was your first pets name?"                      }
-                    1 { "What's the name of the city where you were born?"    }
-                    2 { "What was your childhood nickname?"                   }
-                    3 { "What's the name of the city where your parents met?" }
-                    4 { "What's the first name of your oldest cousin?"        }
-                    5 { "What's the name of the first school you attended?"   }
-                }
-    
-                $This.Add($Item)
-            }
-        }
-    }
-
-    Class SecurityOptionSelection
-    {
-        [UInt32]    $Index
-        [String]     $Name
-        [String] $Question
-        [String]   $Answer
-        SecurityOptionSelection([UInt32]$Index,[Object]$Item)
-        {
-            $This.Index    = $Index
-            $This.Name     = $Item.Name
-            $This.Question = $Item.Description
-        }
-        SetAnswer([String]$Answer)
-        {
-            $This.Answer   = $Answer
-        }
-    }
-
-    Class SecurityOptionController
-    {
-        [Object]    $Account
-        [Object] $Credential
-        [Object]       $Slot
-        [Object]     $Output
-        SecurityOptionController()
-        {
-            $This.Slot    = $This.SecurityOptionList()
-            $This.Clear()
-        }
-        [Object] SecurityOptionList()
-        {
-            Return [SecurityOptionList]::New().Output
-        }
-        [Object] SecurityOptionItem([UInt32]$Index,[String]$Name,[String]$Question)
-        {
-            Return [SecurityOptionItem]::New($Index,$Name,$Question)
-        }
-        [Object] SecurityOptionSelection([UInt32]$Index,[Object]$Item)
-        {
-            Return [SecurityOptionSelection]::New($Index,$Item)
-        }
-        [String] GetUsername()
-        {
-            If (!$This.Account)
-            {
-                Throw "Must insert an account"
-            }
-            Return "{0}{1}{2}" -f $This.Account.First.Substring(0,1).ToLower(),
-                                $This.Account.Last.ToLower(),
-                                $This.Account.Year.ToString().Substring(2,2)
-        }
-        [UInt32] Random()
-        {
-            Return Get-Random -Max 20
-        }
-        [String] Char()
-        {
-            Return "!@#$%^&*(){}[]:;,./\".Substring($This.Random(),1)
-        }
-        [String] GetPassword()
-        {
-            $R = $This.Char()
-            $H = @{ }
-            $H.Add($H.Count,$R)
-            $H.Add($H.Count,$This.Account.First.Substring(0,1))
-            $H.Add($H.Count,("{0:d2}" -f $This.Account.Month))
-            If ($This.Account.MI)
-            {
-                $H.Add($H.Count,$This.Account.MI)
-            }
-            $H.Add($H.Count,("{0:d2}" -f $This.Account.Day))
-            $H.Add($H.Count,$This.Account.Last.Substring(0,1))
-            $H.Add($H.Count,$This.Account.Year.ToString().Substring(2,2))
-            $H.Add($H.Count,$R)
-            Return $H[0..($H.Count-1)] -join ""
-        }
-        [PSCredential] PSCredential([String]$Username,[SecureString]$SecureString)
-        {
-            Return [PSCredential]::New($Username,$SecureString)
-        }
-        [String] PW()
-        {
-            If (!$This.Credential)
-            {
-                Throw "No credential set"
-            }
-            Return $This.Credential.GetNetworkCredential().Password
-        }
-        [String] UN()
-        {
-            If (!$This.Credential)
-            {
-                Throw "No credential set"
-            }
-            Return $This.Credential.Username
-        }
-        SetCredential()
-        {
-            $SS              = $This.GetPassword() | ConvertTo-SecureString -AsPlainText -Force
-            $This.Credential = $This.PSCredential($This.GetUsername(),$SS)
-        }
-        SetAccount([Object]$Account)
-        {
-            $This.Account = $Account
-        }
-        Clear()
-        {
-            $This.Output = @( )
-        }
-        Add([UInt32]$Rank,[String]$Answer)
-        {
-            $Temp = $This.SecurityOptionSelection($This.Output.Count,$This.Slot[$Rank])
-            
-            If ($Temp.Name -in $This.Output.Name)
-            {
-                Throw "Option already selected"
-            }
-            ElseIf ($Answer -eq "")
-            {
-                Throw "Cannot have a <null> answer"
-            }
-            $Temp.SetAnswer($Answer)
-            $This.Output += $Temp
-        }
-    }
-
-    # [Country]
-    Class CountryItem
-    {
-        [UInt32] $Index
-        [String]  $Name
-        CountryItem([UInt32]$Index,[String]$Name)
-        {
-            $This.Index = $Index
-            $This.Name  = $Name
-        }
-    }
-
-    Class CountryList
-    {
-        [UInt32] $Selected
-        [Object] $Output
-        CountryList()
-        {
-            $This.Refresh()
-        }
-        Clear()
-        {
-            $This.Output = @( )
-        }
-        [Object] CountryItem([UInt32]$Index,[String]$Name)
-        {
-            Return [CountryItem]::New($Index,$Name)
-        }
-        Add([String]$Name)
-        {
-            $This.Output += $This.CountryItem($This.Output.Count,$Name)
-        }
-        Select([UInt32]$Index)
-        {
-            If ($Index -gt $This.Output.Count)
-            {
-                Throw "Invalid index"
-            }
-    
-            $This.Selected = $Index
-        }
-        [Object] Current()
-        {
-            Return $This.Output[$This.Selected]
-        }
-        [String[]] Countries()
-        {
-            Return ("Afghanistan;Åland Islands;Albania;Algeria;American Samoa;"+
-            "Andorra;Angola;Anguilla;Antarctica;Antigua and Barbuda;Argentina;"+
-            "Armenia;Aruba;Australia;Austrai;Azerbaijan;Bahamas, The;Bahrain;B"+
-            "angladesh;Barbados;Belarus;Belgium;Belize;Benin;Bermuda;Bhutan;Bo"+
-            "livia;Bonaire, Sint Eustatis and Saba;Bosnia and Herzegovina;Bots"+
-            "wana;Bouvet Island;Brazil;British Indian Ocean Territory;British "+
-            "Virgin Islands;Brunei;Bulgaria;Burkina Faso;Burundi;Cabo Verde;Ca"+
-            "mbodia;Cameroon;Canada;Cayman Islans;Central African Republic;Cha"+
-            "d;Chile;China;Christmas Island;Cocos (Keeling) Islands;Colombia;C"+
-            "omoros;Congo;Congo (DRC);Cook Islands;Costa Rica;Côte d'Ivoire;Cr"+
-            "oatia;Cuba;Curaçao;Cyprus;Czech Republic;Denmark;Djibouti;Dominic"+
-            "a;Dominican Republic;Ecuador;Egypt;El Salvador;Equatorial Guinea;"+
-            "Eritrea;Estonia;Eswatini;Ethiopia;Falkland Islands;Faroe Islands;"+
-            "Fiji;Finland;France;French Guiana;French Polynesia;French Souther"+
-            "n Territoes;Gabon;Gambia;Georgia;Germany;Ghana;Gibraltar;Greece;G"+
-            "reenland;Grenada;Guadeloupe;Guam;Guatemala;Guernsey;Guinea;Guinea"+
-            "-Bissau;Guyana;Haiti;Heard Island and McDonald Islands;Honduras;H"+
-            "ong Kong SAR;Hungary;Iceland;India;Indonesia;Iran;Iraq;Ireland;Is"+
-            "le of Man;Israel;Italy;Jamaica;Japan;Jersey;Jordan;Kazakhstan;Ken"+
-            "ya;Kiribati;Korea;Kosovo;Kuwait;Kyrgyzstan;Laos;Latvia;Lebanon;Le"+
-            "sotho;Liberia;Libya;Liechtenstein;Lithuania;Luxembourg;Macao SAR;"+
-            "Madagascar;Malawi;Malaysia;Maldives;Mali;Malta;Marshall Islands;M"+
-            "artinique;Mauritania;Mauritius;Mayotte;Mexico;Micronesia;Moldova;"+
-            "Monaco;Mongolia;Montenegro;Montserrat;Morocco;Mozambique;Myanmar;"+
-            "Namibia;Nauru;Nepal;Netherlands;New Caledonia;New Zealand;Nicarag"+
-            "ua;Niger;Nigeria;Niue;Norfolk Island;North Korea;North Macedonia;"+
-            "Northern Mariana Islands;Norway;Oman;Pakistan;Palau;Palestinian A"+
-            "uthority;Panama;Papua New Guinea;Paraguay;Peru;Philippines;Pitcai"+
-            "rn Islands;Poland;Portugal;Puerto Rico;Qatar;Reuincion;Romania;Ru"+
-            "ssia;Rwanda;Saint Barthélemy;Saint Kiits and Nevis;Saint Lucia;Sa"+
-            "int Martin;Saint Pierre and Miquelon;Saint Vincent and the Grenad"+
-            "ines;Samoa;San Marino;São Tomé and Príncipe;Saudi Arabia;Senegal;"+
-            "Serbia;Seychelles;Sierra Leone;Singapore;Sint Maarten;Slovakia;Sl"+
-            "ovenia;Soloman Islands;Somalia;South Africa;South Georgia and the"+
-            " South Sandwich Islands;South Sudan;Spain;Sri Lankda;St Kelena, A"+
-            "scension and Tristan da Cunha;Sudan;Suriname;Svalbard;Sweden;Swit"+
-            "zerland;Syria;Taiwan;Tajikistan;Tanzania;Thailand;Timor-Leste;Tog"+
-            "o;Tokelau;Tonga;Trinidad and Tobago;Tunisia;Turkey;Turkmenistan;T"+
-            "urks and Caicos Islands;Tuvalu;U.S. Minor Outlying Islands;U.S. V"+
-            "irgin Islands;Uganda;Ukraine;United Arab Emirates;United Kingdom;"+
-            "United States;Uruguay;Uzbekistan;Vanuatu;Vatican City;Venezuela;V"+
-            "ietnam;Wallis and Futuna;Yemen;Zambia;Zimbabwe") -Split ";"
-        }
-        Refresh()
-        {
-            $This.Clear()
-    
-            ForEach ($Item in $This.Countries())
-            {
-                $This.Add($Item)
-            }
-    
-            $This.Selected = $This.Output | ? Name -eq "United States" | % Index
-        }
-    }
-
-    # [Keyboard]
-    Class KeyboardItem
-    {
-        [UInt32] $Index
-        [String]  $Name
-        KeyboardItem([UInt32]$Index,[String]$Name)
-        {
-            $This.Index = $Index
-            $This.Name  = $Name
-        }
-    }
-        
-    Class KeyboardList
-    {
-        [UInt32] $Selected
-        [Object] $Output
-        KeyboardList()
-        {
-            $This.Refresh()
-        }
-        Clear()
-        {
-            $This.Output = @( )
-        }
-        [Object] KeyboardItem([UInt32]$Index,[String]$Name)
-        {
-            Return [KeyboardItem]::New($Index,$Name)
-        }
-        Add([String]$Name)
-        {
-            $This.Output += $This.KeyboardItem($This.Output.Count,$Name)
-        }
-        Select([UInt32]$Index)
-        {
-            If ($Index -gt $This.Output.Count)
-            {
-                Throw "Invalid index"
-            }
-    
-            $This.Selected = $Index
-        }
-        [Object] Current()
-        {
-            Return $This.Output[$This.Selected]
-        }
-        [String[]] Keyboards()
-        {
-            Return ("US;Canadian Multilingual Standard;English (India);Irish;Scottish"+
-            " Gaelic;United Kingdom;United States-Dvorak;United States-Dvorak for lef"+
-            "t hand;United States-Dvorak for right hand;United States-International;U"+
-            "S English Table for IBM Arabic 238_L;Albanian;Azerbaijani (Standard);Aze"+
-            "rbaijani Latin;Belgian (Comma);Belgian (Period);Belgian French;Bulgarian"+
-            " (Latin);Canadian French;Canadian French (Legacy);Central Atlas Tamazigh"+
-            "t;Czech;Czech (QWERTY);Czech Programmers;Danish;Dutch;Estonian;Faeroese;"+
-            "Finnish;Finnish with Sami;French;German;German (IBM);Greek (220) Latin;G"+
-            "reek (319) Latin;Greek Latin;Greenlandic;Guarani;Hausa;Hawaiian;Hungaria"+
-            "n;Hungarian 101-key;Icelandic;Igbo;Inuktitut - Latin;Italian;Italian (14"+
-            "2);Japanese;Korean;Latin America;Latvian;Latvian (QWERTY);Latvian (Stand"+
-            "ard);Lithuanian;Lithuanian IBM;Lithuanian Standard;Luxembourgish;Maltese"+
-            " 47-Key;Maltese 48-Key;Norwegian;Norwegain with Sami;Polish (214);Polish"+
-            " (Programmers);Portuguese;Portugese (Brazil ABNT);Portugese (Brazil ABNT"+
-            "2);Romanian (Legacy);Romanian (Programmers);Romanian (Standard);Sami Ext"+
-            "ended Finland-Sweden;Sami Extended Norway;Serbian (Latin);Sesotho sa Leb"+
-            "oa;Setswana;Slovak;Slovak (QWERTY);Slovenian;Sorbian Extended;Sorbian St"+
-            "andard;Sorbian Standard (Legacy);Spanish;Spanish Variation;Standard;Swed"+
-            "ish;Swedish with Sami;Swiss French;Swiss German;Turkish F;Turkish Q;Turk"+
-            "men;United Kingdom Extended;Vietnamese;Wolof;Yoruba") -Split ";"
-        }
-        Refresh()
-        {
-            $This.Clear()
-    
-            ForEach ($Item in $This.Keyboards())
-            {
-                $This.Add($Item)
-            }
-    
-            $This.Selected = $This.Output | ? Name -eq "US" | % Index
-        }
-    }
-    
-    # [Xaml]
-    Class XamlProperty
-    {
-        [UInt32]   $Index
-        [String]    $Name
-        [Object]    $Type
-        [Object] $Control
-        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
-        {
-            $This.Index   = $Index
-            $This.Name    = $Name
-            $This.Type    = $Object.GetType().Name
-            $This.Control = $Object
+            $This.Index = [Uint32][VmRoleType]::$Name
+            $This.Name  = [VmRoleType]::$Name
         }
         [String] ToString()
         {
             Return $This.Name
         }
     }
-
-    Class XamlWindow
-    {
-        Hidden [Object]        $Xaml
-        Hidden [Object]         $Xml
-        [String[]]            $Names
-        [Object]              $Types
-        [Object]               $Node
-        [Object]                 $IO
-        [String]          $Exception
-        XamlWindow([String]$Xaml)
-        {           
-            If (!$Xaml)
-            {
-                Throw "Invalid XAML Input"
-            }
     
-            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-    
-            $This.Xaml           = $Xaml
-            $This.Xml            = [XML]$Xaml
-            $This.Names          = $This.FindNames()
-            $This.Types          = @( )
-            $This.Node           = [System.Xml.XmlNodeReader]::New($This.Xml)
-            $This.IO             = [System.Windows.Markup.XamlReader]::Load($This.Node)
-            
-            ForEach ($X in 0..($This.Names.Count-1))
-            {
-                $Name            = $This.Names[$X]
-                $Object          = $This.IO.FindName($Name)
-                $This.IO         | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
-                If (!!$Object)
-                {
-                    $This.Types += $This.XamlProperty($This.Types.Count,$Name,$Object)
-                }
-            }
-        }
-        [String[]] FindNames()
-        {
-            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
-        }
-        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
-        {
-            Return [XamlProperty]::New($Index,$Name,$Object)
-        }
-        [Object] Get([String]$Name)
-        {
-            $Item = $This.Types | ? Name -eq $Name
-            If ($Item)
-            {
-                Return $Item.Control
-            }
-            Else
-            {
-                Return $Null
-            }
-        }
-        Invoke()
-        {
-            Try
-            {
-                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
-            }
-            Catch
-            {
-                $This.Exception = $PSItem
-            }
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.XamlWindow[VmControllerXaml]>"
-        }
-    }
-
-    Class VmControllerXaml
-    {
-        Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" ',
-        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ',
-        '        Title="[FightingEntropy]://(VmController)"',
-        '        Height="480"',
-        '        Width="640"',
-        '        Topmost="True"',
-        '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
-        '        HorizontalAlignment="Center"',
-        '        WindowStartupLocation="CenterScreen"',
-        '        FontFamily="Consolas"',
-        '        Background="LightYellow">',
-        '    <Window.Resources>',
-        '        <Style x:Key="DropShadow">',
-        '            <Setter Property="TextBlock.Effect">',
-        '                <Setter.Value>',
-        '                    <DropShadowEffect ShadowDepth="1"/>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="ToolTip">',
-        '            <Setter Property="Background" Value="#000000"/>',
-        '            <Setter Property="Foreground" Value="#66D066"/>',
-        '        </Style>',
-        '        <Style TargetType="TabItem">',
-        '            <Setter Property="Template">',
-        '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="TabItem">',
-        '                        <Border Name="Border"',
-        '                                BorderThickness="2"',
-        '                                BorderBrush="Black"',
-        '                                CornerRadius="5"',
-        '                                Margin="2">',
-        '                            <ContentPresenter x:Name="ContentSite"',
-        '                                              VerticalAlignment="Center"',
-        '                                              HorizontalAlignment="Right"',
-        '                                              ContentSource="Header"',
-        '                                              Margin="5"/>',
-        '                        </Border>',
-        '                        <ControlTemplate.Triggers>',
-        '                            <Trigger Property="IsSelected" ',
-        '                                     Value="True">',
-        '                                <Setter TargetName="Border" ',
-        '                                        Property="Background" ',
-        '                                        Value="#4444FF"/>',
-        '                                <Setter Property="Foreground" ',
-        '                                        Value="#FFFFFF"/>',
-        '                            </Trigger>',
-        '                            <Trigger Property="IsSelected" ',
-        '                                     Value="False">',
-        '                                <Setter TargetName="Border" ',
-        '                                        Property="Background" ',
-        '                                        Value="#DFFFBA"/>',
-        '                                <Setter Property="Foreground" ',
-        '                                        Value="#000000"/>',
-        '                            </Trigger>',
-        '                        </ControlTemplate.Triggers>',
-        '                    </ControlTemplate>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="Button">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="Padding" Value="5"/>',
-        '            <Setter Property="FontWeight" Value="Heavy"/>',
-        '            <Setter Property="Foreground" Value="Black"/>',
-        '            <Setter Property="Background" Value="#DFFFBA"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="4"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="Foreground" Value="#000000"/>',
-        '            <Setter Property="TextWrapping" Value="Wrap"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="2"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            <Setter Property="Margin" Value="4"/>',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="2"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style TargetType="ComboBox">',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
-        '        </Style>',
-        '        <Style TargetType="CheckBox">',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '        </Style>',
-        '        <Style TargetType="DataGrid">',
-        '            <Setter Property="Margin" ',
-        '                    Value="5"/>',
-        '            <Setter Property="AutoGenerateColumns"',
-        '                    Value="False"/>',
-        '            <Setter Property="AlternationCount"',
-        '                    Value="2"/>',
-        '            <Setter Property="HeadersVisibility"',
-        '                    Value="Column"/>',
-        '            <Setter Property="CanUserResizeRows"',
-        '                    Value="False"/>',
-        '            <Setter Property="CanUserAddRows"',
-        '                    Value="False"/>',
-        '            <Setter Property="IsReadOnly"',
-        '                    Value="True"/>',
-        '            <Setter Property="IsTabStop"',
-        '                    Value="True"/>',
-        '            <Setter Property="IsTextSearchEnabled"',
-        '                    Value="True"/>',
-        '            <Setter Property="SelectionMode"',
-        '                    Value="Single"/>',
-        '            <Setter Property="ScrollViewer.CanContentScroll"',
-        '                    Value="True"/>',
-        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"',
-        '                    Value="Auto"/>',
-        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"',
-        '                    Value="Auto"/>',
-        '        </Style>',
-        '        <Style TargetType="DataGridRow">',
-        '            <Setter Property="VerticalAlignment"',
-        '                    Value="Center"/>',
-        '            <Setter Property="VerticalContentAlignment"',
-        '                    Value="Center"/>',
-        '            <Setter Property="TextBlock.VerticalAlignment"',
-        '                    Value="Center"/>',
-        '            <Setter Property="Height" Value="20"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Style.Triggers>',
-        '                <Trigger Property="AlternationIndex" ',
-        '                         Value="0">',
-        '                    <Setter Property="Background" ',
-        '                            Value="White"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex" Value="1">',
-        '                    <Setter Property="Background" ',
-        '                            Value="#FFD6FFFB"/>',
-        '                </Trigger>',
-        '                <Trigger Property="IsMouseOver" Value="True">',
-        '                    <Setter Property="ToolTip">',
-        '                        <Setter.Value>',
-        '                            <TextBlock TextWrapping="Wrap" ',
-        '                                       Width="400" ',
-        '                                       Background="#000000" ',
-        '                                       Foreground="#00FF00"/>',
-        '                        </Setter.Value>',
-        '                    </Setter>',
-        '                    <Setter Property="ToolTipService.ShowDuration" Value="360000000"/>',
-        '                </Trigger>',
-        '            </Style.Triggers>',
-        '        </Style>',
-        '        <Style TargetType="DataGridColumnHeader">',
-        '            <Setter Property="FontSize"   Value="10"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
-        '        </Style>',
-        '        <Style TargetType="TabControl">',
-        '            <Setter Property="TabStripPlacement" Value="Top"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
-        '            <Setter Property="Background" Value="LightYellow"/>',
-        '        </Style>',
-        '        <Style TargetType="GroupBox">',
-        '            <Setter Property="Foreground" Value="Black"/>',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
-        '        </Style>',
-        '        <Style TargetType="Label">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontWeight" Value="Bold"/>',
-        '            <Setter Property="Background" Value="Black"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="BorderBrush" Value="Gray"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style x:Key="LabelGray" TargetType="Label">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontWeight" Value="Bold"/>',
-        '            <Setter Property="Background" Value="DarkSlateGray"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="BorderBrush" Value="Black"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style x:Key="LabelRed" TargetType="Label">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontWeight" Value="Bold"/>',
-        '            <Setter Property="Background" Value="IndianRed"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="BorderBrush" Value="Black"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style x:Key="Line" TargetType="Border">',
-        '            <Setter Property="Background" Value="Black"/>',
-        '            <Setter Property="BorderThickness" Value="0"/>',
-        '            <Setter Property="Margin" Value="4"/>',
-        '        </Style>',
-        '    </Window.Resources>',
-        '    <TabControl Grid.Row="0">',
-        '        <TabItem Header="Master">',
-        '            <Grid>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="70"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="10"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Label Content="[Master]: Propagates valid template properties"/>',
-        '                <DataGrid Grid.Row="1" Name="MasterConfig">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Status"',
-        '                                            Binding="{Binding Status}"',
-        '                                            Width="100"/>',
-        '                        <DataGridTextColumn Header="Alias"',
-        '                                            Binding="{Binding Alias}"',
-        '                                            Width="200"/>',
-        '                        <DataGridTextColumn Header="Description"',
-        '                                            Binding="{Binding Description}"',
-        '                                            Width="*"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label   Grid.Column="0"',
-        '                             Content="[Path]:"/>',
-        '                    <TextBox Grid.Column="1"',
-        '                             Name="MasterPath"/>',
-        '                    <Image   Grid.Column="2"',
-        '                             Name="MasterPathIcon"/>',
-        '                    <Button  Grid.Column="3"',
-        '                             Name="MasterPathBrowse"',
-        '                             Content="Browse"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="3">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="2*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label   Grid.Column="0" Content="[Domain]:"/>',
-        '                    <TextBox Grid.Column="1" Name="MasterDomain"/>',
-        '                    <Image   Grid.Column="2" Name="MasterDomainIcon"/>',
-        '                    <Label   Grid.Column="3" Content="[NetBios]:"/>',
-        '                    <TextBox Grid.Column="4" Name="MasterNetBios"/>',
-        '                    <Image   Grid.Column="5" Name="MasterNetBiosIcon"/>',
-        '                    <Button  Grid.Column="7" Name="MasterCreate" Content="Create"/>',
-        '                </Grid>',
-        '                <Border Grid.Row="4" Background="Black" Margin="4"/>',
-        '                <TabControl Grid.Row="5">',
-        '                    <TabItem Header="Config">',
-        '                        <DataGrid Name="MasterConfigOutput">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                    Binding="{Binding Name}"',
-        '                                                    Width="150"/>',
-        '                                <DataGridTextColumn Header="Value"',
-        '                                                    Binding="{Binding Value}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Base">',
-        '                        <DataGrid Name="MasterBase">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                    Binding="{Binding Name}"',
-        '                                                    Width="150"/>',
-        '                                <DataGridTextColumn Header="Value"',
-        '                                                    Binding="{Binding Value}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Range">',
-        '                        <DataGrid Name="MasterRange">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Index"',
-        '                                                    Binding="{Binding Index}"',
-        '                                                    Width="50"/>',
-        '                                <DataGridTextColumn Header="Count"',
-        '                                                    Binding="{Binding Count}"',
-        '                                                    Width="100"/>',
-        '                                <DataGridTextColumn Header="Netmask"',
-        '                                                    Binding="{Binding Netmask}"',
-        '                                                    Width="150"/>',
-        '                                <DataGridTextColumn Header="Notation"',
-        '                                                    Binding="{Binding Notation}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Hosts">',
-        '                        <DataGrid Name="MasterHosts">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Index"',
-        '                                                    Binding="{Binding Index}"',
-        '                                                    Width="50"/>',
-        '                                <DataGridTemplateColumn Header="Status" Width="45">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Status}"',
-        '                                                      Margin="0"',
-        '                                                      Padding="2"',
-        '                                                      Height="18"',
-        '                                                      FontSize="10"',
-        '                                                      VerticalContentAlignment="Center">',
-        '                                                <ComboBoxItem Content="[-]"/>',
-        '                                                <ComboBoxItem Content="[+]"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                                <DataGridTextColumn Header="Type"',
-        '                                                    Binding="{Binding Type}"',
-        '                                                    Width="80"/>',
-        '                                <DataGridTextColumn Header="IpAddress"',
-        '                                                    Binding="{Binding IpAddress}"',
-        '                                                    Width="120"/>',
-        '                                <DataGridTextColumn Header="Hostname"',
-        '                                                    Binding="{Binding Hostname}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Dhcp">',
-        '                        <DataGrid Name="MasterDhcp">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                    Binding="{Binding Name}"',
-        '                                                    Width="150"/>',
-        '                                <DataGridTextColumn Header="Value"',
-        '                                                    Binding="{Binding Value}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </TabItem>',
-        '                </TabControl>',
-        '            </Grid>',
-        '        </TabItem>',
-        '        <TabItem Header="Credential">',
-        '            <Grid>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="110"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="10"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Label Content="[Credential]: Creates (standard/add&apos;l) credential(s)"/>',
-        '                <DataGrid Grid.Row="1" Name="CredentialOutput">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Type"',
-        '                                            Binding="{Binding Type}"',
-        '                                            Width="90"/>',
-        '                        <DataGridTextColumn Header="Username"',
-        '                                            Binding="{Binding Username}"',
-        '                                            Width="*"/>',
-        '                        <DataGridTextColumn Header="Password"',
-        '                                            Binding="{Binding Pass}"',
-        '                                            Width="150"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Button Grid.Column="0"',
-        '                            Name="CredentialCreate"',
-        '                            Content="Create"/>',
-        '                    <Button Grid.Column="1"',
-        '                            Name="CredentialRemove"',
-        '                            Content="Remove"/>',
-        '                </Grid>',
-        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
-        '                <Grid Grid.Row="4">',
-        '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="40"/>',
-        '                        <RowDefinition Height="40"/>',
-        '                        <RowDefinition Height="40"/>',
-        '                        <RowDefinition Height="40"/>',
-        '                        <RowDefinition Height="40"/>',
-        '                    </Grid.RowDefinitions>',
-        '                    <Grid Grid.Row="0">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="150"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Column="0" Content="[Type]:"/>',
-        '                        <ComboBox Grid.Column="1"',
-        '                                  Name="CredentialType"',
-        '                                  SelectedIndex="0">',
-        '                            <ComboBoxItem Content="Setup"/>',
-        '                            <ComboBoxItem Content="System"/>',
-        '                            <ComboBoxItem Content="Service"/>',
-        '                            <ComboBoxItem Content="User"/>',
-        '                            <ComboBoxItem Content="Microsoft"/>',
-        '                        </ComboBox>',
-        '                        <DataGrid Grid.Column="2"',
-        '                                  HeadersVisibility="None"',
-        '                                  Name="CredentialDescription"',
-        '                                  Margin="10">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Description"',
-        '                                                    Binding="{Binding Description}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="1">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="300"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="0" Content="[Username]:"/>',
-        '                        <TextBox Grid.Column="1"',
-        '                                 Name="CredentialUsername"/>',
-        '                        <Image Grid.Column="2" Name="CredentialUsernameIcon"/>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="2">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="300"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="0" Content="[Password]:"/>',
-        '                        <PasswordBox Grid.Column="1"',
-        '                                 Name="CredentialPassword"/>',
-        '                        <Image Grid.Column="2" Name="CredentialPasswordIcon"/>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="3">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="300"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="0" Content="[Confirm]:"/>',
-        '                        <PasswordBox Grid.Column="1"',
-        '                                     Name="CredentialConfirm"/>',
-        '                        <Image Grid.Column="2" Name="CredentialConfirmIcon"/>',
-        '                        <Button  Grid.Column="3"',
-        '                                 Name="CredentialGenerate"',
-        '                                 Content="Generate"/>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="4">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="300"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="0" Content="[Pin]:"/>',
-        '                        <PasswordBox Grid.Column="1"',
-        '                                     Name="CredentialPin"/>',
-        '                        <Image Grid.Column="2" Name="CredentialPinIcon"/>',
-        '                    </Grid>',
-        '                </Grid>',
-        '            </Grid>',
-        '        </TabItem>',
-        '        <TabItem Header="Image">',
-        '            <Grid>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="110"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="10"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Label Grid.Row="0" ',
-        '                       Content="[Image]: Load images for templates to utilize"/>',
-        '                <DataGrid Grid.Row="1" Name="ImageStore">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index"',
-        '                                            Binding="{Binding Index}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="Type"',
-        '                                            Binding="{Binding Type}"',
-        '                                            Width="90"/>',
-        '                        <DataGridTextColumn Header="Version"',
-        '                                            Binding="{Binding Version}"',
-        '                                            Width="110"/>',
-        '                        <DataGridTextColumn Header="Name"',
-        '                                            Binding="{Binding Name}"',
-        '                                            Width="500"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Button  Grid.Column="0"',
-        '                             Name="ImageImport"',
-        '                             Content="Import"/>',
-        '                    <TextBox Grid.Column="1"',
-        '                             Name="ImagePath"/>',
-        '                    <Image   Grid.Column="2"',
-        '                             Name="ImagePathIcon"/>',
-        '                    <Button  Grid.Column="3"',
-        '                             Name="ImagePathBrowse"',
-        '                             Content="Browse"/>',
-        '                </Grid>',
-        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
-        '                <DataGrid Grid.Row="4" Name="ImageStoreContent">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index"',
-        '                                            Binding="{Binding Index}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="Name"',
-        '                                            Binding="{Binding DestinationName}"',
-        '                                            Width="300"/>',
-        '                        <DataGridTextColumn Header="Size"',
-        '                                            Binding="{Binding Size}"',
-        '                                            Width="80"/>',
-        '                        <DataGridTextColumn Header="Label"',
-        '                                            Binding="{Binding Label}"',
-        '                                            Width="*"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '            </Grid>',
-        '        </TabItem>',
-        '        <TabItem Header="Template">',
-        '            <Grid>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="110"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="10"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Label Content="[Template]: Generates VM template(s) for [Hyper-V]"/>',
-        '                <DataGrid Grid.Row="1"',
-        '                              Name="TemplateOutput"',
-        '                              ScrollViewer.CanContentScroll="True"',
-        '                              ScrollViewer.VerticalScrollBarVisibility="Auto"',
-        '                              ScrollViewer.HorizontalScrollBarVisibility="Visible">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index"',
-        '                                            Binding="{Binding Index}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="Name"',
-        '                                            Binding="{Binding Name}"',
-        '                                            Width="100"/>',
-        '                        <DataGridTextColumn Header="Role"',
-        '                                            Binding="{Binding Role}"',
-        '                                            Width="60"/>',
-        '                        <DataGridTextColumn Header="Memory"',
-        '                                            Binding="{Binding Memory.Size}"',
-        '                                            Width="60"/>',
-        '                        <DataGridTextColumn Header="Hdd"',
-        '                                            Binding="{Binding Hdd.Size}"',
-        '                                            Width="60"/>',
-        '                        <DataGridTextColumn Header="Gen"',
-        '                                            Binding="{Binding Gen}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="Core"',
-        '                                            Binding="{Binding Core}"',
-        '                                            Width="40"/>',
-        '                        <DataGridTextColumn Header="SwitchId"',
-        '                                            Binding="{Binding SwitchId}"',
-        '                                            Width="100"/>',
-        '                        <DataGridTextColumn Header="Image"',
-        '                                            Binding="{Binding Image}"',
-        '                                            Width="350"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Button Grid.Column="0"',
-        '                            Content="Create"',
-        '                            Name="TemplateCreate"/>',
-        '                    <Button Grid.Column="1"',
-        '                            Content="Remove"',
-        '                            Name="TemplateRemove"/>',
-        '                    <Button Grid.Column="2"',
-        '                            Content="Export"',
-        '                            Name="TemplateExport"/>',
-        '                </Grid>',
-        '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
-        '                <Grid Grid.Row="4">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0" Content="[Name]:"/>',
-        '                    <TextBox Grid.Column="1" Name="TemplateName"/>',
-        '                    <Image Grid.Column="2" Name="TemplateNameIcon"/>',
-        '                    <Label Grid.Column="3" Content="[Role]:"/>',
-        '                    <ComboBox Grid.Column="4" Name="TemplateRole">',
-        '                        <ComboBoxItem Content="Server"/>',
-        '                        <ComboBoxItem Content="Client"/>',
-        '                        <ComboBoxItem Content="Unix"/>',
-        '                    </ComboBox>',
-        '                    <Label Grid.Column="5" Content="[Credentials]:"/>',
-        '                    <TextBox Grid.Column="6"',
-        '                             Name="TemplateCredentialCount"',
-        '                             IsReadOnly="True"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="5">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="90"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label   Grid.Column="0"',
-        '                             Content="[Path]:"/>',
-        '                    <TextBox Grid.Column="1"',
-        '                             Name="TemplatePath"',
-        '                             Text="&lt;Select a path&gt;"/>',
-        '                    <Image   Grid.Column="2"',
-        '                             Name="TemplatePathIcon"/>',
-        '                    <Button  Grid.Column="3"',
-        '                             Name="TemplatePathBrowse"',
-        '                             Content="Browse"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="6">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="105"/>',
-        '                        <ColumnDefinition Width="50"/>',
-        '                        <ColumnDefinition Width="95"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="110"/>',
-        '                        <ColumnDefinition Width="50"/>',
-        '                        <ColumnDefinition Width="95"/>',
-        '                        <ColumnDefinition Width="50"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label    Grid.Column="0"',
-        '                              Content="[Memory/GB]:"',
-        '                              Style="{StaticResource LabelRed}"/>',
-        '                    <ComboBox Grid.Column="1" ',
-        '                              Name="TemplateMemory"',
-        '                              SelectedIndex="0">',
-        '                        <ComboBoxItem Content="2"/>',
-        '                        <ComboBoxItem Content="4"/>',
-        '                        <ComboBoxItem Content="8"/>',
-        '                        <ComboBoxItem Content="16"/>',
-        '                    </ComboBox>',
-        '                    <Label Grid.Column="2"',
-        '                           Content="[Drive/GB]:"',
-        '                           Style="{StaticResource LabelRed}"/>',
-        '                    <ComboBox Grid.Column="3"',
-        '                              Name="TemplateHardDrive"',
-        '                              SelectedIndex="1">',
-        '                        <ComboBoxItem Content="32"/>',
-        '                        <ComboBoxItem Content="64"/>',
-        '                        <ComboBoxItem Content="128"/>',
-        '                        <ComboBoxItem Content="256"/>',
-        '                    </ComboBox>',
-        '                    <Label Grid.Column="4"',
-        '                           Content="[Generation]:"',
-        '                           Style="{StaticResource LabelRed}"/>',
-        '                    <ComboBox Grid.Column="5"',
-        '                              Name="TemplateGeneration"',
-        '                              SelectedIndex="1">',
-        '                        <ComboBoxItem Content="1"/>',
-        '                        <ComboBoxItem Content="2"/>',
-        '                    </ComboBox>',
-        '                    <Label Grid.Column="6"',
-        '                           Content="[CPU/Core]:"',
-        '                           Style="{StaticResource LabelRed}"/>',
-        '                    <ComboBox Grid.Column="7"',
-        '                              Name="TemplateCore"',
-        '                              SelectedIndex="1">',
-        '                        <ComboBoxItem Content="1"/>',
-        '                        <ComboBoxItem Content="2"/>',
-        '                        <ComboBoxItem Content="3"/>',
-        '                        <ComboBoxItem Content="4"/>',
-        '                    </ComboBox>',
-        '                </Grid>',
-        '                <Grid Grid.Row="7">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="105"/>',
-        '                        <ColumnDefinition Width="150"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label     Grid.Column="0" Content="[Switch]:"/>',
-        '                    <ComboBox  Grid.Column="1" Name="TemplateSwitch"/>',
-        '                    <TextBlock Grid.Column="2"',
-        '                               Foreground="Black"',
-        '                               VerticalAlignment="Center"',
-        '                               Text="[Virtual switch to use]"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="8">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="105"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="25"/>',
-        '                        <ColumnDefinition Width="90"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0" Content="[Image/Iso]:"/>',
-        '                    <TextBox Grid.Column="1" ',
-        '                             Name="TemplateImagePath"',
-        '                             Text="&lt;Select an image&gt;"/>',
-        '                    <Image   Grid.Column="2"',
-        '                             Name="TemplateImagePathIcon"/>',
-        '                    <Button  Grid.Column="3"',
-        '                             Name="TemplateImagePathBrowse"',
-        '                             Content="Browse"/>',
-        '                </Grid>',
-        '            </Grid>',
-        '        </TabItem>',
-        '        <TabItem Header="Node" Height="32" VerticalAlignment="Top">',
-        '            <Grid>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Grid Grid.Row="0">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0"',
-        '                       Content="[Node]: Manages switches, hosts, and templates"/>',
-        '                    <ComboBox Grid.Column="1" Name="NodeSlot" SelectedIndex="1">',
-        '                        <ComboBoxItem Content="Switch(es)"/>',
-        '                        <ComboBoxItem Content="Host(s)"/>',
-        '                    </ComboBox>',
-        '                </Grid>',
-        '                <Grid Grid.Row="1" Name="NodeSwitchPanel" Visibility="Collapsed">',
-        '                    <Grid>',
-        '                        <Grid.RowDefinitions>',
-        '                            <RowDefinition Height="110"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="10"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                        </Grid.RowDefinitions>',
-        '                        <DataGrid Grid.Row="0" Name="NodeSwitch">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Index"',
-        '                                                        Binding="{Binding Index}"',
-        '                                                        Width="50"/>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                        Binding="{Binding Name}"',
-        '                                                        Width="125"/>',
-        '                                <DataGridTextColumn Header="Type"',
-        '                                                        Binding="{Binding Type}"',
-        '                                                        Width="100"/>',
-        '                                <DataGridTextColumn Header="Description"',
-        '                                                        Binding="{Binding Description}"',
-        '                                                        Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                        <Grid Grid.Row="1">',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <Button Grid.Column="0"',
-        '                                        Content="Create"',
-        '                                        Name="NodeSwitchCreate"/>',
-        '                            <Button Grid.Column="1"',
-        '                                        Content="Remove"',
-        '                                        Name="NodeSwitchRemove"/>',
-        '                            <Button Grid.Column="2"',
-        '                                        Content="Update"',
-        '                                        Name="NodeSwitchUpdate"/>',
-        '                        </Grid>',
-        '                        <Border Grid.Row="2" Background="Black" Margin="4"/>',
-        '                        <Grid Grid.Row="3">',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="100"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="25"/>',
-        '                                <ColumnDefinition Width="100"/>',
-        '                                <ColumnDefinition Width="100"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <Label    Grid.Column="0" Content="[Name]:"/>',
-        '                            <TextBox  Grid.Column="1" Name="NodeSwitchName"/>',
-        '                            <Image    Grid.Column="2" Name="NodeSwitchIcon"/>',
-        '                            <Label    Grid.Column="3" Content="[Type]:"/>',
-        '                            <ComboBox Grid.Column="4" Name="NodeSwitchType" SelectedIndex="0">',
-        '                                <ComboBoxItem Content="External"/>',
-        '                                <ComboBoxItem Content="Internal"/>',
-        '                                <ComboBoxItem Content="Private"/>',
-        '                            </ComboBox>',
-        '                        </Grid>',
-        '                    </Grid>',
-        '                </Grid>',
-        '                <Grid Grid.Row="1" Name="NodeHostPanel" Visibility="Visible">',
-        '                    <Grid>',
-        '                        <Grid.RowDefinitions>',
-        '                            <RowDefinition Height="110"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="10"/>',
-        '                            <RowDefinition Height="*"/>',
-        '                            <RowDefinition Height="40"/>',
-        '                        </Grid.RowDefinitions>',
-        '                        <DataGrid Grid.Row="0" Name="NodeHost">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Index"',
-        '                                            Binding="{Binding Index}"',
-        '                                            Width="40"/>',
-        '                                <DataGridTextColumn Header="Guid"',
-        '                                            Binding="{Binding Guid}"',
-        '                                            Width="350"/>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                            Binding="{Binding Name}"',
-        '                                            Width="*"/>',
-        '                                <DataGridTextColumn Header="Type"',
-        '                                            Binding="{Binding Type}"',
-        '                                            Width="100"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                        <Grid Grid.Row="1">',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <Button Grid.Column="0"',
-        '                                        Content="Create"',
-        '                                        Name="NodeHostCreate"/>',
-        '                            <Button Grid.Column="1"',
-        '                                        Content="Remove"',
-        '                                        Name="NodeHostRemove"/>',
-        '                            <Button Grid.Column="2"',
-        '                                        Content="Update"',
-        '                                        Name="NodeHostUpdate"/>',
-        '                        </Grid>',
-        '                        <Border Grid.Row="2" Background="Black" Margin="4"/>',
-        '                        <DataGrid Grid.Row="3" Name="NodeHostExtension">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"',
-        '                                                    Binding="{Binding Name}"',
-        '                                                    Width="150"/>',
-        '                                <DataGridTextColumn Header="Value"',
-        '                                                    Binding="{Binding Value}"',
-        '                                                    Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                        <Grid Grid.Row="4">',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="100"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="25"/>',
-        '                                <ColumnDefinition Width="100"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <Button  Grid.Column="0"',
-        '                                         Content="Import"',
-        '                                         Name="NodeTemplateImport"/>',
-        '                            <TextBox Grid.Column="1"',
-        '                                     Name="NodeTemplatePath"/>',
-        '                            <Image   Grid.Column="2"',
-        '                                     Name="NodeTemplatePathIcon"/>',
-        '                            <Button  Grid.Column="3"',
-        '                                     Name="NodeTemplatePathBrowse" ',
-        '                                     Content="Browse"/>',
-        '                        </Grid>',
-        '                    </Grid>',
-        '                </Grid>',
-        '            </Grid>',
-        '        </TabItem>',
-        '    </TabControl>',
-        '</Window>' -join "`n")
-    }
-
-    # [Master]
-    Class VmMain
-    {
-        [String]    $Path
-        [String]  $Domain
-        [String] $NetBios
-        VmMain([String]$Path,[String]$Domain,[String]$NetBios)
-        {
-            $This.Path    = $Path
-            $This.Domain  = $Domain.ToLower()
-            $This.NetBios = $NetBios.ToUpper()
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmMain>"
-        }
-    }
-
-    Class VmNetworkConfig
-    {
-        Hidden [Object]        $Config
-        [String]         $ComputerName
-        [String]                $Alias
-        [String]          $Description
-        [String]               $CompID
-        [String]      $CompDescription
-        [String]           $MacAddress
-        [String]               $Status
-        [String]                 $Name
-        [String]             $Category
-        [String]     $IPv4Connectivity
-        [String]          $IPv4Address
-        [String]           $IPv4Prefix
-        [String]   $IPv4DefaultGateway
-        [String]     $IPv4InterfaceMtu
-        [String]    $IPv4InterfaceDhcp
-        [String[]]      $IPv4DnsServer
-        [String]     $IPv6Connectivity
-        [String] $IPv6LinkLocalAddress
-        [String]   $IPv6DefaultGateway
-        [String]     $IPv6InterfaceMtu
-        [String]    $IPv6InterfaceDhcp
-        [String[]]      $IPv6DnsServer
-        VmNetworkConfig([Object]$Config)
-        {
-            $This.Config                 = $Config
-            $This.ComputerName           = $Config.ComputerName
-            $This.Alias                  = $Config.InterfaceAlias
-            $This.Description            = $Config.InterfaceDescription
-            $This.CompID                 = $Config.NetCompartment.CompartmentId
-            $This.CompDescription        = $Config.NetCompartment.CompartmentDescription
-            $This.MacAddress             = $Config.NetAdapter.LinkLayerAddress
-            $This.Status                 = $Config.NetAdapter.Status
-            $This.Name                   = $Config.NetProfile.Name
-            $This.Category               = $Config.NetProfile.NetworkCategory
-            $This.IPv4Connectivity       = $Config.NetProfile.IPv4Connectivity
-            $This.IPv4Address            = $Config.IPv4Address.IpAddress
-            $This.IPv4Prefix             = $Config.IPv4Address.PrefixLength
-            $This.IPv4DefaultGateway     = $Config.IPv4DefaultGateway.NextHop
-            $This.IPv4InterfaceMtu       = $Config.NetIPv4Interface.NlMTU
-            $This.IPv4InterfaceDhcp      = $Config.NetIPv4Interface.DHCP
-            $This.IPv4DnsServer          = $Config.DNSServer | ? AddressFamily -eq 2 | % ServerAddresses
-            $This.IPv6Connectivity       = $Config.NetProfile.IPv6Connectivity
-            $This.IPv6DefaultGateway     = $Config.IPv6DefaultGateway.NextHop
-            $This.IPv6LinkLocalAddress   = $Config.IPv6LinkLocalAddress
-            $This.IPv6InterfaceMtu       = $Config.NetIPv6Interface.NlMTU
-            $This.IPv6InterfaceDhcp      = $Config.NetIPv6Interface.DHCP
-            $This.IPv6DnsServer          = $Config.DNSServer | ? AddressFamily -eq 23 | % ServerAddresses
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Config]>"
-        }
-    }
-
-    Class VmNetworkHost
-    {
-        [UInt32]         $Index
-        [UInt32]        $Status
-        [String]          $Type = "Host"
-        [String]     $IpAddress
-        [String]      $Hostname
-        [String[]]     $Aliases
-        [String[]] $AddressList
-        VmNetworkHost([UInt32]$Index,[String]$IpAddress,[Object]$Reply)
-        {
-            $This.Index          = $Index
-            $This.Status         = $Reply.Result.Status -match "Success"
-            $This.IpAddress      = $IpAddress
-        }
-        VmNetworkHost([UInt32]$Index,[String]$IpAddress)
-        {
-            $This.Index          = $Index
-            $This.Status         = 0
-            $This.IpAddress      = $IpAddress
-        }
-        Resolve()
-        {
-            $Item                = [System.Net.Dns]::Resolve($This.IpAddress)
-            $This.Hostname       = $Item.Hostname
-            $This.Aliases        = $Item.Aliases
-            $This.AddressList    = $Item.AddressList
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Host]>"
-        }
-    }
-
-    Class VmNetworkBase
-    {
-        [String]    $Domain
-        [String]   $NetBios
-        [String]   $Network
-        [String] $Broadcast
-        [String]   $Trusted
-        [UInt32]    $Prefix
-        [String]   $Netmask
-        [String]  $Wildcard
-        [String]   $Gateway
-        [String[]]     $Dns
-        VmNetworkBase([Object]$Main,[Object]$Config)
-        {
-            $This.Domain    = $Main.Domain
-            $This.NetBios   = $Main.NetBios
-            $This.Trusted   = $Config.IPV4Address
-            $This.Prefix    = $Config.IPv4Prefix
-
-            # Binary
-            $This.GetConversion()
-
-            $This.Gateway   = $Config.IPV4DefaultGateway
-            $This.Dns       = $Config.IPv4DnsServer
-        }
-        GetConversion()
-        {
-            # Convert IP and PrefixLength into binary, netmask, and wildcard
-            $xBinary       = 0..3 | % { (($_*8)..(($_*8)+7) | % { @(0,1)[$_ -lt $This.Prefix] }) -join '' }
-            $This.Netmask  = ($xBinary | % { [Convert]::ToInt32($_,2 ) }) -join "."
-            $This.Wildcard = ($This.Netmask.Split(".") | % { (256-$_) }) -join "."
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Base]>"
-        }
-    }
-
-    Class VmNetworkDhcp
-    {
-        [String]          $Name
-        [String]    $SubnetMask
-        [String]       $Network
-        [String]    $StartRange
-        [String]      $EndRange
-        [String]     $Broadcast
-        [String[]]   $Exclusion
-        VmNetworkDhcp([Object]$Base,[Object]$Hosts)
-        {
-            $This.Network     = $Base.Network   = $Hosts[0].IpAddress
-            $This.Broadcast   = $Base.Broadcast = $Hosts[-1].IpAddress
-            $This.Name        = "{0}/{1}" -f $This.Network, $Base.Prefix
-            $This.SubnetMask  = $Base.Netmask
-            $Range            = $Hosts | ? Type -eq Host
-            $This.StartRange  = $Range[0].IpAddress
-            $This.EndRange    = $Range[-1].IpAddress
-            $This.Exclusion   = $Range | ? Status | % IpAddress
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Dhcp]>"
-        }
-    }
-
-    Class VmNetworkNode
-    {
-        [UInt32]     $Index
-        [String]      $Name
-        [String] $IpAddress
-        [String]    $Domain
-        [String]   $NetBios
-        [String]   $Trusted
-        [UInt32]    $Prefix
-        [String]   $Netmask
-        [String]   $Gateway
-        [String[]]     $Dns
-        [Object]      $Dhcp
-        VmNetworkNode([UInt32]$Index,[String]$Name,[String]$IpAddress,[Object]$Hive)
-        {
-            $This.Index     = $Index
-            $This.Name      = $Name
-            $This.IpAddress = $IpAddress
-            $This.Domain    = $Hive.Domain
-            $This.NetBios   = $Hive.NetBios
-            $This.Trusted   = $Hive.Trusted
-            $This.Prefix    = $Hive.Prefix
-            $This.Netmask   = $Hive.Netmask
-            $This.Gateway   = $Hive.Gateway
-            $This.Dns       = $Hive.Dns
-            $This.Dhcp      = $Hive.Dhcp
-        }
-        VmNetworkNode([Object]$File)
-        {
-            $This.Index     = $File.Index
-            $This.Name      = $File.Name
-            $This.IpAddress = $File.IpAddress
-            $This.Domain    = $File.Domain
-            $This.NetBios   = $File.NetBios
-            $This.Trusted   = $File.Trusted
-            $This.Prefix    = $File.Prefix
-            $This.Netmask   = $File.Netmask
-            $This.Gateway   = $File.Gateway
-            $This.Dns       = $File.Dns
-            $This.Dhcp      = $File.Dhcp
-        }
-        [String] Hostname()
-        {
-            Return "{0}.{1}" -f $This.Name, $This.Domain
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Node]>"
-        }
-    }
-
-    Class VmNetworkRange
-    {
-        [UInt32]     $Index
-        [String]     $Count
-        [String]   $Netmask
-        [String]  $Notation
-        [Object]    $Output
-        VmNetworkRange([UInt32]$Index,[String]$Netmask,[UInt32]$Count,[String]$Notation)
-        {
-            $This.Index    = $Index
-            $This.Count    = $Count
-            $This.Netmask  = $Netmask
-            $This.Notation = $Notation
-            $This.Output   = @( )
-        }
-        Expand()
-        {
-            $Split     = $This.Notation.Split("/")
-            $HostRange = @{ }
-            ForEach ($0 in $Split[0] | Invoke-Expression)
-            {
-                ForEach ($1 in $Split[1] | Invoke-Expression)
-                {
-                    ForEach ($2 in $Split[2] | Invoke-Expression)
-                    {
-                        ForEach ($3 in $Split[3] | Invoke-Expression)
-                        {
-                            $HostRange.Add($HostRange.Count,"$0.$1.$2.$3")
-                        }
-                    }
-                }
-            }
-
-            $This.Output    = $HostRange[0..($HostRange.Count-1)]
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Range]>"
-        }
-    }
-
-    Class VmNetworkControl
-    {
-        [Object]   $Config
-        [Object]     $Base
-        [Object]    $Range
-        [Object]    $Hosts
-        [Object]     $Dhcp
-        VmNetworkControl([Object]$Main,[Object]$Config)
-        {
-            $This.Config   = $Config
-            $This.Base     = $This.VmNetworkBase($Main,$Config)
-            $This.Range    = @( )
-            $This.Hosts    = @( )
-
-            $This.GetNetworkRange()
-        }
-        [Object] VmNetworkBase([Object]$Main,[Object]$Config)
-        {
-            Return [VmNetworkBase]::New($Main,$Config)
-        }
-        [Object] VmNetworkRange([UInt32]$Index,[String]$Netmask,[UInt32]$Count,[String]$Notation)
-        {
-            Return [VmNetworkRange]::New($Index,$Netmask,$Count,$Notation)
-        }
-        [Object] VmNetworkDhcp([Object]$Base,[Object[]]$Hosts)
-        {
-            Return [VmNetworkDhcp]::New($Base,$Hosts)
-        }
-        [Object] VmNetworkHost([UInt32]$Index,[String]$IpAddress)
-        {
-            Return [VmNetworkHost]::New($Index,$IpAddress)
-        }
-        AddList([UInt32]$Count,[String]$Notation)
-        {
-            $This.Range += $This.VmNetworkRange($This.Range.Count,$This.Base.Netmask,$Count,$Notation)
-        }
-        GetNetworkRange()
-        {
-            $Address       = $This.Base.Trusted.Split(".")
-
-            $xNetmask      = $This.Base.Netmask  -split "\."
-            $xWildCard     = $This.Base.Wildcard -split "\."
-            $Total         = $xWildcard -join "*" | Invoke-Expression
-
-            # Convert wildcard into total host range
-            $Hash          = @{ }
-            ForEach ($X in 0..3)
-            { 
-                $Value = Switch ($xWildcard[$X])
-                {
-                    1       
-                    { 
-                        $Address[$X]
-                    }
-                    Default
-                    {
-                        ForEach ($Item in 0..255 | ? { $_ % $xWildcard[$X] -eq 0 })
-                        {
-                            "{0}..{1}" -f $Item, ($Item+($xWildcard[$X]-1))
-                        }
-                    }
-                    255
-                    {
-                        "{0}..{1}" -f $xNetmask[$X],($xNetmask[$X]+$xWildcard[$X])
-                    }
-                }
-
-                $Hash.Add($X,$Value)
-            }
-
-            # Build host range
-            $xRange   = @{ }
-            ForEach ($0 in $Hash[0])
-            {
-                ForEach ($1 in $Hash[1])
-                {
-                    ForEach ($2 in $Hash[2])
-                    {
-                        ForEach ($3 in $Hash[3])
-                        {
-                            $xRange.Add($xRange.Count,"$0/$1/$2/$3")
-                        }
-                    }
-                }
-            }
-
-            Switch ($xRange.Count)
-            {
-                0
-                {
-                    "Error"
-                }
-                1
-                {
-                    $This.AddList($Total,$xRange[0])
-                }
-                Default
-                {
-                    ForEach ($X in 0..($xRange.Count-1))
-                    {
-                        $This.AddList($Total,$xRange[$X])
-                    }
-                }
-            }
-
-            # Subtract network + broadcast addresses
-            ForEach ($Network in $This.Range)
-            {
-                $Network.Expand()
-                If ($This.Base.Trusted -in $Network.Output)
-                {
-                    $xHost               = @{ }
-                    ForEach ($Item in $Network.Output)
-                    {
-                        $xHost.Add($xHost.Count,$This.VmNetworkHost($xHost.Count,$Item))
-                    }
-                    $This.Hosts          = $xHost[0..($xHost.Count-1)]
-                    $This.Hosts[ 0].Type = "Network"
-                    $This.Hosts[-1].Type = "Broadcast"
-                }
-                Else
-                {
-                    $Network.Output      = @( )
-                }
-            }
-        }
-        SetDhcp()
-        {
-            $This.Dhcp     = $This.VmNetworkDhcp($This.Base,$This.Hosts)
-        }
-        [String] FirstAvailableIPAddress()
-        {
-            $Address = $Null
-            $List    = $This.Hosts | ? Type -eq Host | ? Status -eq 0
-            If ($List.Count -gt 0)
-            {
-                $Address = $List[0].IPAddress
-            }
-            
-            Return $Address
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Control]>"
-        }
-    }
-
-    Class VmNetworkMaster
-    {
-        [Object]       $Main
-        [Object]     $Config
-        [Object]    $Network
-        VmNetworkMaster()
-        {
-            $This.Config = $This.VmNetworkConfig()
-        }
-        [Object[]] NetIPConfig()
-        {
-            Return Get-NetIPConfiguration -Detailed | ? IPV4DefaultGateway
-        }
-        [Object] VmMain([String]$Path,[String]$Domain,[String]$NetBios)
-        {
-            Return [VmMain]::New($Path,$Domain,$NetBios)
-        }
-        [Object[]] VmNetworkConfig()
-        {
-            Return $This.NetIPConfig() | % { [VmNetworkConfig]::New($_) }
-        }
-        [Object] VmNetworkControl([Object]$Main,[Object]$Config)
-        {
-            Return [VmNetworkControl]::New($Main,$Config)
-        }
-        SetMain([String]$Path,[String]$Domain,[String]$NetBios)
-        {
-            $This.Main = $This.VmMain($Path,$Domain,$NetBios)
-        }
-        SetNetwork([UInt32]$Index)
-        {
-            If (!$This.Main)
-            {
-                Throw "Must set (Path/Domain/NetBios) info first"
-            }
-
-            ElseIf ($Index -gt $This.Config.Count)
-            {
-                Throw "Invalid index"
-            }
-
-            $This.Network = $This.VmNetworkControl($This.Main,$This.Config[$Index])
-        }
-        InternalPingSweep()
-        {
-            If ($This.Network.Range.Output.Count -eq 0)
-            {
-                Throw "Unable to run the scan"
-            }
-
-            $xHosts   = $This.Network.Hosts.IPAddress 
-            $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
-            $Option   = New-Object System.Net.NetworkInformation.PingOptions
-            $Ping     = @{ }
-            ForEach ($X in 0..($xHosts.Count-1))
-            {
-                $Item = New-Object System.Net.NetworkInformation.Ping
-                $Ping.Add($X,$Item.SendPingAsync($xHosts[$X],100,$Buffer,$Option))
-            }
-
-            ForEach ($X in 0..($Ping.Count-1))
-            {
-                $This.Network.Hosts[$X].Status = [UInt32]($Ping[$X].Result.Status -eq "Success")
-            }
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNetwork[Master]>"
-        }
-    }
-
-    # [Credential]
-    Enum VmCredentialType
-    {
-        Setup
-        System
-        Service
-        User
-        Microsoft
-    }
-
-    Class VmCredentialSlot
-    {
-        [UInt32]       $Index
-        [String]        $Name
-        [String] $Description
-        VmCredentialSlot([String]$Name)
-        {
-            $This.Index = [UInt32][VmCredentialType]::$Name
-            $This.Name  = [VmCredentialType]::$Name
-        }
-        [String] ToString()
-        {
-            Return $This.Name
-        }
-    }
-
-    Class VmCredentialList
+    Class VmRoleList
     {
         [Object] $Output
-        VmCredentialList()
+        VmRoleList()
         {
             $This.Refresh()
         }
-        [Object] VmCredentialSlot([String]$Name)
+        [Object] VmRoleItem([String]$Name)
         {
-            Return [VmCredentialSlot]::New($Name)
+            Return [VmRoleItem]::New($Name)
         }
         Clear()
         {
@@ -2443,250 +3750,28 @@ Function New-VmController
         {
             $This.Clear()
     
-            ForEach ($Name in [System.Enum]::GetNames([VmCredentialType]))
+            ForEach ($Name in [System.Enum]::GetNames([VmRoleType]))
             {
-                $Item             = $This.VmCredentialSlot($Name)
+                $Item             = $This.VmRoleItem($Name)
                 $Item.Description = Switch ($Item.Name)
                 {
-                    Setup     { "System setup account"      }
-                    System    { "System level account"      }
-                    Service   { "Service level account"     }
-                    User      { "Local/domain user account" }
-                    Microsoft { "Online Microsoft account"  }
+                    Server { "Windows Server 2016/2019/2022" }
+                    Client { "Windows 10/11"                 }
+                    Unix   { "Linux, Unix, or FreeBSD"       }
                 }
     
-                $This.Add($Item)
-            }
-        }
-        Add([Object]$Object)
-        {
-            $This.Output += $Object
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmCredential[Type[]]"
-        }
-    }
-
-    Class VmCredentialItem
-    {
-        [UInt32]            $Index
-        [Guid]               $Guid
-        [Object]             $Type
-        [String]         $Username
-        Hidden [String]      $Pass
-        [PSCredential] $Credential
-        [String]              $Pin
-        VmCredentialItem([UInt32]$Index,[Object]$Type,[PSCredential]$Credential)
-        {
-            $This.Index      = $Index
-            $This.Guid       = $This.NewGuid()
-            $This.Type       = $Type
-            $This.Username   = $Credential.Username
-            $This.Credential = $Credential
-            $This.Pass       = $This.Mask()
-        }
-        VmCredentialItem([Object]$Serial)
-        {
-            $This.Index      = $Serial.Index
-            $This.Guid       = $Serial.Guid
-            $This.Type       = $Serial.Type
-            $This.Username   = $Serial.Username
-            $This.Credential = $Serial.Credential
-            $This.Pass       = $This.Mask()
-            $This.Pin        = $Serial.Pin
-        }
-        [Object] NewGuid()
-        {
-            Return [Guid]::NewGuid()
-        }
-        [String] Password()
-        {
-            Return $This.Credential.GetNetworkCredential().Password
-        }
-        [String] Mask()
-        {
-            Return "<SecureString>"
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmCredential[Item]>"
-        }
-    }
-
-    Class VmCredentialMaster
-    {
-        [String]        $Name
-        Hidden [Object] $Slot
-        [UInt32]       $Count
-        [Object]      $Output
-        VmCredentialMaster()
-        {
-            $This.Name = "VmCredentialMaster"
-            $This.Slot = $This.VmCredentialList()
-            $This.Clear()
-        }
-        Clear()
-        {
-            $This.Output = @( )
-            $This.Count  = 0
-            $This.Setup()
-        }
-        [Object] VmCredentialList()
-        {
-            Return [VmCredentialList]::New().Output
-        }
-        [Object] VmCredentialItem([UInt32]$Index,[String]$Type,[PSCredential]$Credential)
-        {
-            Return [VmCredentialItem]::New($Index,$Type,$Credential)
-        }
-        [Object] VmCredentialItem([Object]$Serial)
-        {
-            Return [VmCredentialItem]::New($Serial)
-        }
-        [PSCredential] SetCredential([String]$Username,[String]$Pass)
-        {
-            Return [PSCredential]::New($Username,$This.SecureString($Pass))
-        }
-        [PSCredential] SetCredential([String]$Username,[SecureString]$Pass)
-        {
-            Return [PSCredential]::New($Username,$Pass)
-        }
-        [SecureString] SecureString([String]$In)
-        {
-            Return $In | ConvertTo-SecureString -AsPlainText -Force
-        }
-        [String] Generate()
-        {
-            Do
-            {
-                $Length          = $This.Random(10,16)
-                $Bytes           = [Byte[]]::New($Length)
-    
-                ForEach ($X in 0..($Length-1))
-                {
-                    $Bytes[$X]   = $This.Random(32,126)
-                }
-    
-                $Pass            = [Char[]]$Bytes -join ''
-            }
-            Until ($Pass -match $This.Pattern())
-    
-            Return $Pass
-        }
-        [String] Pattern()
-        {
-            Return "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}"
-        }
-        [UInt32] Random([UInt32]$Min,[UInt32]$Max)
-        {
-            Return Get-Random -Min $Min -Max $Max
-        }
-        Setup()
-        {
-            If ("Administrator" -in $This.Output.Username)
-            {
-                Throw "Administrator account already exists"
-            }
-    
-            $This.Add(0,"Administrator",$This.Generate())
-        }
-        Rerank()
-        {
-            $C = 0
-            ForEach ($Item in $This.Output)
-            {
-                $Item.Index = $C
-                $C ++
-            }
-        }
-        Add([UInt32]$Type,[String]$Username,[String]$Pass)
-        {
-            If ($Type -gt $This.Slot.Count)
-            {
-                Throw "Invalid account type"
-            }
-    
-            $Credential   = $This.SetCredential($Username,$Pass)
-            $This.Output += $This.VmCredentialItem($This.Count,$This.Slot[$Type],$Credential)
-            $This.Count   = $This.Output.Count
-        }
-        Add([UInt32]$Type,[String]$Username,[SecureString]$Pass)
-        {
-            If ($Type -gt $This.Slot.Count)
-            {
-                Throw "Invalid account type"
-            }
-            
-            $Credential   = $This.SetCredential($Username,$Pass)
-            $This.Output += $This.VmCredentialItem($This.Count,$This.Slot[$Type],$Credential)
-            $This.Count   = $This.Output.Count
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmCredential[Master]"
-        }
-    }
-
-    # [Template]
-    Class VmByteSize
-    {
-        [String]   $Name
-        [UInt64]  $Bytes
-        [String]   $Unit
-        [String]   $Size
-        VmByteSize([String]$Name,[UInt64]$Bytes)
-        {
-            $This.Name   = $Name
-            $This.Bytes  = $Bytes
-            $This.GetUnit()
-            $This.GetSize()
-        }
-        GetUnit()
-        {
-            $This.Unit   = Switch ($This.Bytes)
-            {
-                {$_ -lt 1KB}                 {     "Byte" }
-                {$_ -ge 1KB -and $_ -lt 1MB} { "Kilobyte" }
-                {$_ -ge 1MB -and $_ -lt 1GB} { "Megabyte" }
-                {$_ -ge 1GB -and $_ -lt 1TB} { "Gigabyte" }
-                {$_ -ge 1TB}                 { "Terabyte" }
-            }
-        }
-        GetSize()
-        {
-            $This.Size   = Switch -Regex ($This.Unit)
-            {
-                ^Byte     {     "{0} B" -f  $This.Bytes/1    }
-                ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
-                ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
-                ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
-                ^Terabyte { "{0:n2} TB" -f ($This.Bytes/1TB) }
+                $This.Output     += $Item
             }
         }
         [String] ToString()
         {
-            Return $This.Size
+            Return "<FEVirtual.VmRole[List]>"
         }
     }
-
-    Class VmRole
+    
+    Class VmTemplateNetworkItem
     {
-        [UInt32]  $Index
-        [String]   $Type
-        VmRole([UInt32]$Index)
-        {
-            $This.Index = $Index
-            $This.Type  = @("Server","Client","Unix")[$Index]
-        }
-        [String] ToString()
-        {
-            Return $This.Type
-        } 
-    }
-
-    Class VmTemplateNetwork
-    {
+        [UInt32]     $Index
         [String] $IpAddress
         [String]    $Domain
         [String]   $NetBios
@@ -2696,9 +3781,10 @@ Function New-VmController
         [String]   $Gateway
         [String[]]     $Dns
         [Object]      $Dhcp
-        VmTemplateNetwork([Object]$Network)
+        VmTemplateNetworkItem([UInt32]$Index,[Object]$Network,[String]$IpAddress)
         {
-            $This.IPAddress = $Network.FirstAvailableIPAddress()
+            $This.Index     = $Index
+            $This.IPAddress = $IpAddress
             $This.Domain    = $Network.Base.Domain
             $This.NetBios   = $Network.Base.NetBios
             $This.Trusted   = $Network.Base.Trusted
@@ -2708,44 +3794,229 @@ Function New-VmController
             $This.Dns       = $Network.Base.Dns
             $This.Dhcp      = $Network.Dhcp
         }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmTemplateNetwork[Item]>"
+        }
     }
-
+    
+    Class VmTemplateNetworkRangeDivisionHost
+    {
+        [UInt32]      $Rank
+        [String] $IpAddress
+        [UInt32]    $Status
+        VmTemplateNetworkRangeDivisionHost([UInt32]$Rank,[String]$IpAddress)
+        {
+            $This.Rank      = $Rank
+            $This.IpAddress = $IpAddress
+        }
+        [String] ToString()
+        {
+            Return $This.IpAddress
+        }
+    }
+    
+    Class VmTemplateNetworkRangeDivisionBlock
+    {
+        [UInt32]    $Index
+        [UInt32]    $Total
+        [UInt32]    $Alive
+        [Object[]]   $Host
+        VmTemplateNetworkRangeDivisionBlock([UInt32]$Index,[String[]]$Range)
+        {
+            $This.Index  = $Index
+            $This.Total  = $Range.Count
+            $This.Host   = @( ) 
+            
+            $Hash        = @{ }
+            ForEach ($Item in $Range)
+            {
+                $Hash.Add($Hash.Count,$This.VmTemplateNetworkDivisionHost($Hash.Count,$Item))
+            }
+    
+            $This.Host   = $Hash[0..($Hash.Count-1)]
+        }
+        [Object] VmTemplateNetworkDivisionHost([UInt32]$Index,[String]$IpAddress)
+        {
+            Return [VmTemplateNetworkRangeDivisionHost]::New($Index,$IpAddress)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmTemplateNetworkRangeDivision[Block]>"
+        }
+    }
+    
+    Class VmTemplateNetworkRangeDivisionList
+    {
+        [UInt32]           $Index
+        [Object]       $Interface
+        [Object]           $Range
+        [UInt64]           $Total
+        [UInt64]           $Block
+        [String]            $Type
+        [Object]         $Process
+        [Object]          $Output
+        Hidden [Object] $Runspace
+        VmTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
+        {
+            $This.Index     = $Index
+            $This.Interface = $Interface
+            $This.Range     = $This.Interface.Range
+            $This.Total     = $This.Interface.Range.Total
+    
+            If ($This.Total -le 256)
+            {
+                $This.Block = 1
+                $This.Type  = "Single"
+            }
+    
+            If ($This.Total -gt 256)
+            {
+                $This.Block = $This.Total/256
+                $This.Type  = "Multiple"
+            }
+    
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Process = @( )
+            $This.Output  = @( )
+        }
+        [Object] VmTemplateNetworkRangeDivisionBlock([UInt32]$Index,[String[]]$Range)
+        {
+            Return [VmTemplateNetworkRangeDivisionBlock]::New($Index,$Range)
+        }
+        AddBlock([String[]]$Range)
+        {
+            $This.Process += $This.VmTemplateNetworkRangeDivisionBlock($This.Process.Count,$Range)
+        }
+        Refresh()
+        {
+            $This.Clear()
+    
+            If ($This.Type -eq "Single")
+            {
+                $This.AddBlock($This.Range.Output)
+                $This.PingSweep(0)
+            }
+    
+            If ($This.Type -eq "Multiple")
+            {
+                $End = 0
+                $X   = 0
+                Do
+                {
+                    $This.AddBlock($This.Range.Output[($X*256)..(($X*256)+255)])
+                    $This.PingSweep($X)
+    
+                    If ($This.Process[$X].Alive -eq 0)
+                    {
+                        $End ++
+                    }
+    
+                    $X ++
+                }
+                Until ($End -eq 1)
+            }
+    
+            $This.Process.Host | ? IpAddress -eq $This.Interface.Base.Network   | % { $_.Status = 1 }
+            $This.Process.Host | ? IpAddress -eq $This.Interface.Base.Broadcast | % { $_.Status = 1 }
+    
+            $This.Output = $This.Process.Host
+        }
+        [String] FirstAvailableIpAddress()
+        {
+            $Item        = ($This.Output | ? Status -eq 0)[0]
+            $Item.Status = 1
+            Return $Item.IpAddress
+        }
+        PingSweep([UInt32]$Index)
+        {
+            $Object        = $This.Process[$Index]
+            $HostList      = $Object.Host.IpAddress
+            $This.Runspace = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+            $PS            = [PowerShell]::Create()
+            $PS.Runspace   = $This.Runspace
+    
+            $This.Runspace.Open()
+            [Void]$PS.AddScript(
+            {
+                Param ($HostList)
+    
+                $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+                $Option   = New-Object System.Net.NetworkInformation.PingOptions
+                $Ping     = @{ }
+                ForEach ($X in 0..($HostList.Count-1))
+                {
+                    $Item = New-Object System.Net.NetworkInformation.Ping
+                    $Ping.Add($X,$Item.SendPingAsync($HostList[$X],100,$Buffer,$Option))
+                }
+    
+                $Ping[0..($Ping.Count-1)]
+            })
+    
+            $PS.AddArgument($HostList)
+            $Async        = $PS.BeginInvoke()
+            $Out          = $PS.EndInvoke($Async)
+            $PS.Dispose()
+            $This.Runspace.Dispose()
+    
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $Object.Host[$X].Status = [UInt32]($Out[$X].Result.Status -eq "Success")
+            }
+    
+            $Object.Alive = ($Object.Host | ? Status).Count
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmTemplateNetworkRangeDivision[List]>"
+        }
+    }
+    
     Class VmTemplateItem
     {
-        [UInt32]     $Index
-        [Guid]        $Guid
-        [String]      $Name
-        [Object]      $Role
-        [String]      $Base
-        [Object]    $Memory
-        [Object]       $Hdd
-        [UInt32]       $Gen
-        [UInt32]      $Core
-        [String]  $SwitchId
-        [Object]     $Image
+        [UInt32]      $Index
+        [Guid]         $Guid
+        [String]       $Name
+        [Object]       $Role
+        [String]       $Root
+        [Object]     $Memory
+        [Object]        $Hdd
+        [UInt32]        $Gen
+        [UInt32]       $Core
+        [Object]    $Account
+        [Object]    $Network
+        [Object]       $Node
+        [Object]      $Image
         VmTemplateItem(
-        [UInt32]     $Index,
-        [String]      $Name,
-        [Object]      $Role,
-        [String]      $Path,
-        [Object]       $Ram,
-        [Object]       $Hdd,
-        [UInt32]       $Gen,
-        [UInt32]      $Core,
-        [String]    $Switch,
-        [Object]     $Image)
+        [UInt32]      $Index,
+        [String]       $Name,
+        [Object]       $Role,
+        [String]       $Root,
+        [Object]        $Ram,
+        [Object]        $Hdd,
+        [UInt32]        $Gen,
+        [UInt32]       $Core,
+        [Object]    $Account,
+        [Object]    $Network,
+        [Object]       $Node,
+        [Object]      $Image)
         {
-            $This.Index    = $Index
-            $This.Guid     = $This.NewGuid()
-            $This.Name     = $Name
-            $This.Role     = $Role
-            $This.Base     = $Path
-            $This.Memory   = $Ram
-            $This.Hdd      = $Hdd
-            $This.Gen      = $Gen
-            $This.Core     = $Core
-            $This.SwitchId = $Switch
-            $This.Image    = $Image
+            $This.Index     = $Index
+            $This.Guid      = $This.NewGuid()
+            $This.Name      = $Name
+            $This.Role      = $Role
+            $This.Root      = $Root
+            $This.Memory    = $Ram
+            $This.Hdd       = $Hdd
+            $This.Gen       = $Gen
+            $This.Core      = $Core
+            $This.Account   = $Account
+            $This.Network   = $Network
+            $This.Node      = $Node
+            $This.Image     = $Image
         }
         [Object] NewGuid()
         {
@@ -2756,167 +4027,155 @@ Function New-VmController
             Return "<FEVirtual.VmNode[Template]>"
         }
     }
-
-    Class VmTemplateFile
+    
+    Class VmTemplateController
     {
-        [String]      $Name
-        [String]      $Role
-        [Guid]        $Guid
-        [Object]   $Account
-        [Object]     $Image
-        [String] $IpAddress
-        [String]    $Domain
-        [String]   $NetBios
-        [String]   $Trusted
-        [UInt32]    $Prefix
-        [String]   $Netmask
-        [String]   $Gateway
-        [String[]]     $Dns
-        [Object]      $Dhcp
-        [String]      $Base
-        [UInt64]    $Memory
-        [UInt64]       $Hdd
-        [UInt32]       $Gen
-        [UInt32]      $Core
-        [String]  $SwitchId
-        VmTemplateFile([Object]$Template,[Object]$Account,[Object]$Network)
+        Hidden [Object] $Role
+        [String]        $Path
+        [Object]     $Account
+        [Object]     $Network
+        [Object]       $Image
+        [Object]      $Output
+        VmTemplateController()
         {
-            $This.Name      = $Template.Name
-            $This.Role      = $Template.Role
-            $This.Guid      = $Template.Guid
-            $This.Account   = $Account
-            $This.Image     = $Template.Image
-            $This.IpAddress = $Network.IPAddress
-            $This.Domain    = $Network.Domain
-            $This.NetBios   = $Network.NetBios
-            $This.Trusted   = $Network.Trusted
-            $This.Prefix    = $Network.Prefix
-            $This.Netmask   = $Network.Netmask
-            $This.Gateway   = $Network.Gateway
-            $This.Dns       = $Network.Dns
-            $This.Dhcp      = $Network.Dhcp
-            $This.Base      = $Template.Base
-            $This.Memory    = $Template.Memory.Bytes
-            $This.Hdd       = $Template.Hdd.Bytes
-            $This.Gen       = $Template.Gen
-            $This.Core      = $Template.Core
-            $This.SwitchId  = $Template.SwitchId
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNode[File]>"
-        }
-    }
-
-    Class VmTemplateMaster
-    {
-        [Object] $Output
-        VmTemplateMaster()
-        {
+            $This.Role = $This.VmRoleList()
             $This.Clear()
         }
         Clear()
         {
             $This.Output = @( )
         }
-        [Object] VmTemplateFile([Object]$Template,[Object]$Accounts,[Object]$Node)
-        {            
-            Return [VmTemplateFile]::New($Template,$Accounts,$Node)
-        }
-        [Object] VmTemplateNetwork([Object]$Network)
+        [Object] VmRoleList()
         {
-            Return [VmTemplateNetwork]::New($Network)
+            Return [VmRoleList]::New()
+        }
+        [Object] VmTemplateNetworkItem([UInt32]$Index,[Object]$Network,[String]$IpAddress)
+        {
+            Return [VmTemplateNetworkItem]::New($Index,$Network,$IpAddress)
+        }
+        [Object] VmTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
+        {
+            Return [VmTemplateNetworkRangeDivisionList]::New($Index,$Interface)
         }
         [Object] VmTemplateItem(
-        [UInt32]   $Index,
-        [String]    $Name,
-        [Object]    $Type,
-        [String]    $Path,
-        [Object]     $Ram,
-        [Object]     $Hdd,
-        [UInt32]     $Gen,
-        [UInt32]    $Core,
-        [String]  $Switch,
-        [Object]   $Image)
+        [UInt32] $Index,
+        [String]  $Name,
+        [Object]  $Role,
+        [String]  $Root,
+        [Object]   $Ram,
+        [Object]   $Hdd,
+        [UInt32]   $Gen,
+        [UInt32]  $Core,
+        [Object]  $Node)
         {
             Return [VmTemplateItem]::New($Index,
-                                        $Name,
-                                        $Type,
-                                        $Path,
-                                        $Ram,
-                                        $Hdd,
-                                        $Gen,
-                                        $Core,
-                                        $Switch,
-                                        $Image)
-        }
-        [Object] VmRole([UInt32]$Index)
-        {
-            Return [VmRole]::New($Index)
+                                         $Name,
+                                         $Role,
+                                         $Root,
+                                         $Ram,
+                                         $Hdd,
+                                         $Gen,
+                                         $Core,
+                                         $This.Account,
+                                         $This.Network,
+                                         $Node,
+                                         $This.Image)
         }
         [Object] VmByteSize([String]$Name,[UInt32]$Size)
         {
             Return [VmByteSize]::New($Name,$Size * 1GB)
         }
+        SetPath([String]$Path)
+        {
+            If (![System.IO.Directory]::Exists($Path))
+            {
+                [System.Windows.MessageBox]::Show("Invalid path","Exception [!] Path error")
+            }
+            $This.Path      = $Path
+        }
+        SetNetwork([Object[]]$Interface)
+        {
+            $This.Network = @( )
+            
+            ForEach ($Item in $Interface)
+            {
+                $This.Network += $This.VmTemplateNetworkRangeDivisionList($This.Network.Count,$Item)
+            }
+        }
+        SetImage([Object]$Image)
+        {
+            $This.Image     = $Image
+        }
+        SetAccount([Object]$Account)
+        {
+            $This.Account   = $Account
+        }
         Add(
-        [String]    $Name,
-        [UInt32]    $Type,
-        [String]    $Path,
-        [UInt32]     $Ram,
-        [UInt32]     $Hdd,
-        [UInt32]     $Gen,
-        [UInt32]    $Core,
-        [String]  $Switch,
-        [Object]   $Image)
+        [String]$Name,
+        [UInt32]$Role,
+        [String]$Root,
+        [UInt32]$Ram,
+        [UInt32]$Hdd,
+        [UInt32]$Gen,
+        [UInt32]$Core)
         {
             If ($Name -in $This.Output.Name)
             {
                 Throw "Item already exists"
             }
-
+    
+            $Node       = @( ) 
+    
+            ForEach ($Item in $This.Network)
+            { 
+                $Node  += $This.VmTemplateNetworkItem($Node.Count,
+                                                      $Item.Interface,
+                                                      $Item.FirstAvailableIPAddress())
+            }
+    
             $This.Output += $This.VmTemplateItem($This.Output.Count,
             $Name,
-            $This.VmRole($Type),
-            $Path,
+            $This.Role.Output[$Role],
+            $Root,
             $This.VmByteSize("Memory",$Ram),
             $This.VmByteSize("Drive",$Hdd),
             $Gen,
             $Core,
-            $Switch,
-            $Image)
+            $Node)
         }
-        Export([String]$Path,[Object]$Network,[Object]$Account,[UInt32]$Index)
+        Export([UInt32]$Index)
         {
             If ($Index -gt $This.Output.Count)
             {
-                Throw "Invalid index"
+                [System.Windows.MessageBox]::Show("Invalid index","Exception [!] Index error")
             }
-
-            $Template      = $This.Output[$Index]
-            $FilePath      = "{0}\{1}.fex" -f $Path, $Template.Name
-            $Node          = $This.VmTemplateNetwork($Network)
-            $Item          = $Network.Hosts | ? IPAddress -eq $Node.IPAddress
-            $Item.Hostname = $Template.Name
-            $Value         = $This.VmTemplateFile($Template,$Account,$Node)
+    
+            ElseIf (!$This.Path)
+            {
+                [System.Windows.MessageBox]::Show("Path not set","Exception [!] Path error")
+            }
+    
+            $Value      = $This.Output[$Index]
+            $FilePath   = "{0}\{1}.fex" -f $This.Path, $Value.Name
     
             Export-CliXml -Path $FilePath -InputObject $Value -Depth 3
     
             If ([System.IO.File]::Exists($FilePath))
             {
-                [Console]::WriteLine("Exported  [+] File: [$FilePath]")
+                [Console]::WriteLine("Exported [+] File: [$FilePath]")
             }
             Else
             {
-                Throw "Something failed... bye."
+                [System.Windows.MessageBox]::Show("Something failed... bye.","Exception [!] Unknown failure")
             }
         }
         [String] ToString()
         {
-            Return "<FEVirtual.VmTemplate[Master]>"
+            Return "<FEVirtual.VmTemplate[Controller]>"
         }
     }
 
-    # [Node]
+    # [Node controller types]
     Class VmNodeDhcp
     {
         [String]        $Name
@@ -2939,6 +4198,39 @@ Function New-VmController
         [String] ToString()
         {
             Return "<FEVirtual.VmNode[Dhcp]>"
+        }
+    }
+
+    Class VmNodeNetworkItem
+    {
+        Hidden [UInt32]  $Index
+        Hidden [Object] $Switch
+        [String]     $IpAddress
+        [String]        $Domain
+        [String]       $NetBios
+        [String]       $Trusted
+        [String]        $Prefix
+        [String]       $Netmask
+        [String]       $Gateway
+        [String[]]         $Dns
+        [Object]          $Dhcp
+        VmNodeNetworkItem([Object]$Network,[Object]$Node)
+        {
+            $This.Index     = $Node.Index
+            $This.Switch    = $Network.Interface.Name
+            $This.IpAddress = $Node.IpAddress
+            $This.Domain    = $Node.Domain
+            $This.NetBios   = $Node.NetBios
+            $This.Trusted   = $Node.Trusted
+            $This.Prefix    = $Node.Prefix
+            $This.Netmask   = $Node.Netmask
+            $This.Gateway   = $Node.gateway
+            $This.Dns       = $Node.Dns
+            $This.Dhcp      = $Node.Dhcp
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmNodeNetwork[Item]>"
         }
     }
 
@@ -2989,141 +4281,89 @@ Function New-VmController
         }
     }
 
-    Class VmNodeImageFile
-    {
-        [UInt32]    $Index
-        [String]     $Type
-        [String]  $Version
-        [String]     $Name
-        [String] $Fullname
-        VmNodeImageFile([Object]$File)
-        {
-            $This.Index    = $File.Index
-            $This.Type     = $File.Type
-            $This.Version  = $File.Version
-            $This.Name     = $File.Name
-            $This.Fullname = $File.Fullname
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNodeImage[File]"
-        }
-    }
-
-    Class VmNodeImageEdition
-    {
-        [UInt32]           $Index
-        [String]            $Type
-        [String]         $Version
-        [String]            $Name
-        [String]     $Description
-        [String]            $Size
-        [String]    $Architecture
-        [String] $DestinationName
-        [String]           $Label
-        VmNodeImageEdition([Object]$Edition)
-        {
-            $This.Index           = $Edition.Index
-            $This.Type            = $Edition.Type
-            $This.Version         = $Edition.Version
-            $This.Name            = $Edition.Name
-            $This.Description     = $Edition.Description
-            $This.Size            = $Edition.Size
-            $This.Architecture    = $Edition.Architecture
-            $This.DestinationName = $Edition.DestinationName
-            $This.Label           = $Edition.Label
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNodeImage[Edition]"
-        }
-    }
-
-    Class VmNodeImageObject
-    {
-        [Object] $File
-        [Object] $Edition
-        VmNodeImageObject([Object]$Image)
-        {
-            $This.File        = $This.VmNodeImageFile($Image.File)
-            If ($Image.Edition)
-            {
-                $This.Edition = $This.VmNodeImageEdition($Image.Edition)
-            }
-        }
-        [Object] VmNodeImageFile([Object]$File)
-        {
-            Return [VmNodeImageFile]::New($File)
-        }
-        [Object] VmNodeImageEdition([Object]$Edition)
-        {
-            Return [VmNodeImageEdition]::New($Edition)
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNodeImage[Object]"
-        }
-    }
-
     Class VmNodeTemplate
     {
         [UInt32]     $Index
-        [Guid]        $Guid
         [String]      $Name
         [Object]      $Role
-        [Object]   $Account
-        [String] $IPAddress
-        [String]    $Domain
-        [String]   $NetBios
-        [String]   $Trusted
-        [UInt32]    $Prefix
-        [String]   $Netmask
-        [String]   $Gateway
-        [String[]]     $Dns
-        [Object]      $Dhcp
-        [String]      $Base
+        [Guid]        $Guid
+        [String]      $Root
         [Object]    $Memory
         [Object]       $Hdd
         [UInt32]       $Gen
         [Uint32]      $Core
-        [String]  $SwitchId
+        [Object]   $Account
+        [Object]   $Network
         [Object]     $Image
         VmNodeTemplate([UInt32]$Index,[Object]$File)
         {
-            $Item           = Import-CliXml -Path $File.Fullname
             $This.Index     = $Index
+            $Item           = Import-CliXml -Path $File.Fullname
             $This.Name      = $Item.Name
+            $This.Role      = $This.VmRoleItem($Item.Role.Name)
             $This.Guid      = $Item.Guid
-            $This.Role      = $Item.Role
-            $This.Account   = $Item.Account
-            $This.IPAddress = $Item.IPAddress
-            $This.Domain    = $Item.Domain
-            $This.NetBios   = $Item.NetBios
-            $This.Trusted   = $Item.Trusted
-            $This.Prefix    = $Item.Prefix
-            $This.Netmask   = $Item.Netmask
-            $This.Gateway   = $Item.Gateway
-            $This.Dns       = $Item.Dns
-            $This.Dhcp      = $This.VmNodeDhcp($Item.Dhcp)
-            $This.Base      = $Item.Base
-            $This.Memory    = $Item.Memory
-            $This.Hdd       = $Item.Hdd
+            $This.Root      = $Item.Root
+            $This.Memory    = $This.VmByteSize("Memory",$Item.Memory.Bytes)
+            $This.Hdd       = $This.VmByteSize("Hdd",$Item.Hdd.Bytes)
             $This.Gen       = $Item.Gen
             $This.Core      = $Item.Core
-            $This.SwitchId  = $Item.SwitchId
-            $This.Image     = $This.VmNodeImageObject($Item.Image)
+
+            $This.SetAccount($Item.Account)
+            $This.SetNetwork($Item.Network,$Item.Node)
+            $This.SetImage($Item.Image)
         }
-        [Object] NewGuid()
+        [Object] VmRoleItem([String]$Name)
         {
-            Return [Guid]::NewGuid()
+            Return [VmRoleItem]::New($Name)
         }
-        [Object] VmNodeDhcp([Object]$Dhcp)
+        [Object] VmByteSize([String]$Name,[UInt64]$Bytes)
         {
-            Return [VmNodeDhcp]::New($Dhcp)
+            Return [VmByteSize]::New($Name,$Bytes)
         }
-        [Object] VmNodeImageObject([Object]$Image)
+        [Object] VmCredentialItem([Object]$Serial)
         {
-            Return [VmNodeImageObject]::New($Image)
+            Return [VmCredentialItem]::New($Serial)
+        }
+        [Object] VmNodeNetworkItem([Object]$Network,[Object]$Node)
+        {
+            Return [VmNodeNetworkItem]::New($Network,$Node)
+        }
+        [Object] ImageObject([Object]$File,[Object]$Edition)
+        {
+            Return [ImageObject]::New($File,$Edition)
+        }
+        SetAccount([Object[]]$Account)
+        {
+            # Deserialize the accounts
+            $This.Account = @( )
+            
+            ForEach ($Item in $Account)
+            {
+                $This.Account += $This.VmCredentialItem($Item)
+            }
+        }
+        SetNetwork([Object[]]$Network,[Object[]]$Node)
+        {
+            # Merge the interface and node properties
+            $This.Network = @( )
+
+            If ($Network.Count -eq 1)
+            {
+                $This.Network += $This.VmNodeNetworkItem($Network,$Node)
+            }
+
+            If ($Network.Count -gt 1)
+            {
+                ForEach ($X in 0..($Network.Count-1))
+                {
+                    $This.Network += $This.VmNodeNetworkItem($Network[$X],$Node[$X])
+                }
+            }
+        }
+        SetImage([Object]$Image)
+        {
+            # Merge the image object
+            $This.Image = $This.ImageObject($Image.File,$Image.Edition)
         }
         [String] ToString()
         {
@@ -3165,33 +4405,6 @@ Function New-VmController
         [String] ToString()
         {
             Return "<FEVirtual.VmNode[Item]>"
-        }
-    }
-
-    Class VmNodeSwitch
-    {
-        [UInt32]         $Index
-        [Guid]            $Guid
-        Hidden [Object] $Object
-        [String]          $Name
-        [String]          $Type
-        [String]   $Description
-        VmNodeSwitch([UInt32]$Index,[Object]$Object)
-        {
-            $This.Index       = $Index
-            $This.Guid        = $Object.Id
-            $This.Object      = $Object
-            $This.Name        = $Object.Name
-            $This.Type        = $Object.SwitchType
-            $This.Description = $Object.NetAdapterInterfaceDescription
-        }
-        [Object] NewGuid()
-        {
-            Return [Guid]::NewGuid()
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNode[Switch]>"
         }
     }
 
@@ -3483,16 +4696,16 @@ Function New-VmController
         [Object]         $Console
         [Object]            $Name
         [Object]            $Role
-        [Object]          $Memory
+        [Object]            $Guid
         [Object]            $Path
-        [Object]             $Vhd
+        [Object]          $Memory
         [Object]         $VhdSize
+        [Object]             $Vhd
         [Object]      $Generation
         [UInt32]            $Core
         [Object]          $Switch
         [Object]        $Firmware
         [UInt32]          $Exists
-        [Object]            $Guid
         [Object]         $Account
         [Object]         $Network
         [Object]           $Image
@@ -3506,23 +4719,24 @@ Function New-VmController
         {
             # Meant to build a new VM
             $This.Mode       = 1
-            $This.Role       = $Node.Role
-            $This.StartConsole()
-
             $This.Name       = $Node.Name
+            $This.Role       = $Node.Role
+
+            $This.StartConsole()
             [Void]$This.Get()
 
             Switch ($This.Exists)
             {
                 0
                 {
-                    $This.Memory     = $This.Size("Ram",$Node.Memory)
-                    $This.Path       = "{0}\{1}" -f $Node.Base, $Node.Name
-                    $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Base, $Node.Name
-                    $This.VhdSize    = $This.Size("Hdd",$Node.HDD)
+                    $This.Guid       = $Node.Guid
+                    $This.Path       = "{0}\{1}" -f $Node.Root, $Node.Name
+                    $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Root, $Node.Name
+                    $This.Memory     = $This.Size("Memory",$Node.Memory.Bytes)
+                    $This.VhdSize    = $This.Size("Hdd",$Node.Hdd.Bytes)
                     $This.Generation = $Node.Gen
                     $This.Core       = $Node.Core
-                    $This.Switch     = @($Node.SwitchId)
+                    $This.Switch     = @($Node.Network.Switch)
                 }
                 1
                 {
@@ -3533,12 +4747,12 @@ Function New-VmController
                     $This.VhdSize    = $xVhd.Size
                     $This.Generation = $This.Object.Generation
                     $This.Core       = $This.Object.ProcessorCount
-                    $This.Switch     = @($This.Object.NetworkAdapters[0].SwitchName)
+                    $This.Switch     = @($This.Object.NetworkAdapters.SwitchName)
                 }
             }
 
             $This.Account    = $Node.Account
-            $This.Network    = $This.VmNodeNetwork($Node)
+            $This.Network    = $Node.Network
             $This.Image      = $Node.Image
             $This.Script     = $This.VmNodeScriptBlockController()
             $This.Security   = $This.VmNodeSecurity()
@@ -5250,15 +6464,14 @@ Function New-VmController
         }
     }
 
-    Class VmNodeMaster
+    Class VmNodeController
     {
         [UInt32] $Selected
         [String]     $Path
-        [Object]   $Switch
         [Object]     $Host
         [Object] $Template
         [Object]   $Object
-        VmNodeMaster()
+        VmNodeController()
         {
             $This.Refresh()
         }
@@ -5288,15 +6501,10 @@ Function New-VmController
         {
             Switch -Regex ($Slot)
             {
-                "Switch"   { $This.Switch   = @( ) }
                 "Host"     { $This.Host     = @( ) }
                 "Template" { $This.Template = @( ) }
                 "Object"   { $This.Object   = @( ) }
             }
-        }
-        [Object] VmNodeSwitch([UInt32]$Index,[Object]$VmSwitch)
-        {
-            Return [VmNodeSwitch]::New($Index,$VmSwitch)
         }
         [Object] VmNodeHost([UInt32]$Index,[Object]$VmNode)
         {
@@ -5322,10 +6530,6 @@ Function New-VmController
         {
             Return [VmNodeLinux]::New($Node)
         }
-        [Object[]] GetVmSwitch()
-        {
-            Return Get-VmSwitch
-        }
         [Object[]] GetVm()
         {
             Return Get-Vm
@@ -5334,36 +6538,27 @@ Function New-VmController
         {
             Return Get-ChildItem $This.Path | ? Extension -eq .fex
         }
-        NewVmSwitch([String]$Name,[String]$Type)
-        {
-            New-VmSwitch -Name $Name -SwitchType $Type -Verbose
-            $This.Refresh("Switch")
-        }
-        RemoveVmSwitch([String]$Name)
-        {
-            Remove-VmSwitch -Name $Name -Force -Verbose
-            $This.Refresh("Switch")
-        }
         [Object] Create([UInt32]$Index)
         {
-            If (!$This.Template[$Index])
+            If ($Index -gt $This.Template.Count)
             {
                 Throw "Invalid index"
             }
 
-            If ($This.Template[$Index].Name -in $This.Object)
+            $Temp = $This.Template[$Index]
+
+            If ($Temp.Name -in $This.Object)
             {
                 Throw "Item is already in the object list"
             }
 
-            $Temp = $This.Template[$Index]
-            $Item = Switch -Regex ($Temp.Role)
+            $Item = Switch -Regex ($Temp.Role.Name)
             {
                 "(^Server$|^Client$)"
                 {
                     $This.VmNodeWindows($Temp)
                 }
-                "(^Linux$)"
+                "(^Unix$)"
                 {
                     $This.VmNodeLinux($Temp)
                 }
@@ -5374,10 +6569,6 @@ Function New-VmController
         AddTemplate([Object]$Template)
         {
             $This.Template += $This.VmNodeTemplate($This.Template.Count,$Template)
-        }
-        AddSwitch([Object]$VmSwitch)
-        {
-            $This.Switch   += $This.VmNodeSwitch($This.Switch.Count,$VmSwitch)
         }
         AddHost([Object]$Node)
         {
@@ -5398,13 +6589,6 @@ Function New-VmController
         
             Switch ($Type)
             {
-                "Switch"
-                {
-                    ForEach ($Item in $This.GetVmSwitch())
-                    {
-                        $This.AddSwitch($Item)
-                    }
-                }
                 "Host"
                 {
                     ForEach ($Item in $This.GetVm())
@@ -5438,7 +6622,7 @@ Function New-VmController
         }
         Refresh()
         {
-            ForEach ($Item in "Switch","Host","Template","Object")
+            ForEach ($Item in "Host","Template","Object")
             {
                 $This.Refresh($Item)
             }
@@ -5454,26 +6638,187 @@ Function New-VmController
         }
         [String] ToString()
         {
-            Return "<FEVirtual.VmNode[Master]>"
+            Return "<FEVirtual.VmNode[Controller]>"
         }
     }
-    
-    # [Controller]
-    Class VmControllerProperty
+
+    # [Validation controller]
+    Enum VmValidationSlotType
     {
-        [String]  $Name
-        [Object] $Value
-        VmControllerProperty([Object]$Property)
+        Network
+        Credential
+        Image
+        Template
+        Node
+    }
+
+    Class VmValidationSlotItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String] $Description
+        VmValidationSlotItem([String]$Name)
         {
-            $This.Name  = $Property.Name
-            $This.Value = $Property.Value -join ", "
+            $This.Index = [UInt32][VmValidationSlotType]::$Name
+            $This.Name  = [VmValidationSlotType]::$Name
         }
         [String] ToString()
         {
-            Return "<FEVirtual.VmController[Property]>"
+            Return $This.Name
+        }
+    }
+
+    Class VmValidationSlotList
+    {
+        [Object] $Output
+        VmValidationSlotList()
+        {
+
+        }
+        [Object] VmValidationSlotItem([String]$Name)
+        {
+            Return [VmValidationSlotItem]::New($Name)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Output | ? Name -eq $Name
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+            
+            ForEach ($Name in [System.Enum]::GetNames([VmValidationSlotType]))
+            {
+                $Item             = $This.VmValidationSlotItem($Name)
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Network    { "Controls related to networking."                 }
+                    Credential { "Controls related to credential management."      }
+                    Image      { "Controls related to the imaging engine."         }
+                    Template   { "Controls related to template fabrication."       }
+                    Node       { "Controls related to virtual machine management." }
+                }
+
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidationSlot[List]>"
         }
     }
     
+    Class VmValidationItem
+    {
+        [UInt32]   $Index
+        [Object]    $Slot
+        [String]    $Name
+        [Object] $Control
+        [UInt32]  $Status
+        VmValidationItem([UInt32]$Index,[Object]$Slot,[Object]$Control)
+        {
+            $This.Index   = $Index
+            $This.Slot    = $Slot
+            $This.Name    = $Control.Name
+            $This.Control = $Control.Control
+            $This.SetStatus(0)
+        }
+        SetStatus([UInt32]$Status)
+        {
+            $This.Status = $Status
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidation[Item]>"
+        }
+    }
+
+    Class VmValidationController
+    {
+        Hidden [Object] $Slot
+        [Object]      $Output
+        VmValidationController()
+        {
+            $This.Slot = $This.VmValidationSlotList()
+            $This.Clear()
+        }
+        [Object] VmValidationSlotList()
+        {
+            Return [VmValidationSlotList]::New()
+        }
+        [Object] VmValidationItem([UInt32]$Index,[Object]$Slot,[Object]$Control)
+        {
+            Return [VmValidationItem]::New($Index,$Slot,$Control)
+        }
+        [Object] New([UInt32]$Slot,[Object]$Control)
+        {
+            Return $This.VmValidationItem($This.Output.Count,$This.Slot[$Slot],$Control)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Add([UInt32]$Slot,[Object]$Control)
+        {
+            $This.Output += $This.New($Slot,$Control)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Output | ? Name -eq $Name
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmValidation[Controller]>"
+        }
+    }
+
+    Class VmValidatePath
+    {
+        [UInt32]   $Status
+        [String]     $Type
+        [String]     $Name
+        [Object] $Fullname
+        VmValidatePath([String]$Entry)
+        {
+            $This.Status       = [UInt32]($Entry -match "^\w+\:\\")
+            $This.Fullname     = $Entry
+            If ($This.Status -eq 1)
+            {
+                Try
+                {
+                    If ([System.IO.FileInfo]::new($Entry).Attributes -match "Directory")
+                    {
+                        $This.Type   = "Directory" 
+                    }
+                    Else
+                    {
+                        $This.Type   = "File"
+                    }
+                    
+                    $This.Name       = Split-Path -Leaf $Entry
+
+                    If (!(Test-Path $This.Fullname))
+                    {
+                        $This.Status = 2
+                    }
+                }
+                Catch
+                {
+                    
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Fullname
+        }
+    }
+
+    # [Master controller types]
     Class VmControllerFlag
     {
         [UInt32] $Index
@@ -5488,10 +6833,6 @@ Function New-VmController
         SetStatus([UInt32]$Status)
         {
             $This.Status = $Status
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmController[Flag]>"
         }
     }
 
@@ -5527,36 +6868,38 @@ Function New-VmController
 
     Class VmControllerTemplate
     {
-        [String]    $Index
-        [Guid]       $Guid
-        [String]     $Name
-        [String]     $Role
-        [String]     $Base
-        [String]   $Memory
-        [String]      $Hdd
-        [String]      $Gen
-        [String]     $Core
-        [String] $SwitchId
-        [String]    $Image
+        [Guid]        $Guid
+        [String]      $Name
+        [String]      $Role
+        [String]      $Root
+        [String]    $Memory
+        [String]       $Hdd
+        [String]       $Gen
+        [String]      $Core
+        [String[]] $Account
+        [String[]]  $Switch
+        [String]     $Image
         VmControllerTemplate([Object]$Object)
         {
-            $This.Index    = $Object.Index
             $This.Guid     = $Object.Guid
             $This.Name     = $Object.Name
             $This.Role     = $Object.Role
-            $This.Base     = $Object.Path
-            $This.Memory   = $Object.Ram
+            $This.Root     = $Object.Root
+            $This.Memory   = $Object.Memory
             $This.Hdd      = $Object.Hdd
             $This.Gen      = $Object.Gen
             $This.Core     = $Object.Core
-            $This.SwitchId = $Object.Switch
-            $This.Image    = $Object.Image
+            $This.Account  = $Object.Account.Username
+            $This.Switch   = $Object.Network.Interface.Name
+            $This.Image    = $Object.Image.File.Fullname
         }
         VmControllerTemplate()
         {
-            $This.Index    = $Null
             $This.Guid     = $This.NewGuid()
             $This.Name     = "<New>"
+            $This.Account  = "-"
+            $This.Switch   = "-"
+            $This.Image    = "Null template"
         }
         [Object] NewGuid()
         {
@@ -5568,70 +6911,44 @@ Function New-VmController
         }
     }
 
-    Class VmControllerNodeSwitch
-    {
-        [String]       $Index
-        [Guid]          $Guid
-        [String]        $Name
-        [String]        $Type
-        [String] $Description
-        VmControllerNodeSwitch([Object]$Object)
-        {
-            $This.Index       = $Object.Index
-            $This.Guid        = $Object.Guid
-            $This.Name        = $Object.Name
-            $This.Type        = $Object.Type
-            $This.Description = $Object.Description
-        }
-        VmControllerNodeSwitch()
-        {
-            $This.Index       = $Null
-            $This.Guid        = $This.NewGuid()
-            $This.Name        = "<New>"
-        }
-        [Object] NewGuid()
-        {
-            Return [Guid]::NewGuid()
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmController[NodeSwitch]>"
-        }
-    }
-
     Class VmControllerMaster
     {
         [Object]     $Module
         [Object]       $Xaml
-        [Object]     $Master
+        [Object]    $Network
         [Object] $Credential
         [Object]      $Image
         [Object]   $Template
         [Object]       $Node
+        [Object]   $Validate
         [Object]       $Flag
         VmControllerMaster()
         {
-            $This.Module      = $This.GetFEModule()
-            $This.Xaml        = $This.VmXaml()
-            $This.Master      = $This.VmMaster()
-            $This.Credential  = $This.VmCredential()
-            $This.Image       = $This.ImageController()
-            $This.Template    = $This.VmTemplate()
-            $This.Node        = $This.VmNode()
-            $This.Flag        = @( )
-    
-            ForEach ($Name in "MasterPath",
-                            "MasterDomain",
-                            "MasterNetBios",
-                            "CredentialUsername",
-                            "CredentialPassword",
-                            "CredentialConfirm",
-                            "CredentialPin",
-                            "ImagePath",
-                            "TemplateName",
-                            "TemplatePath",
-                            "TemplateImagePath",
-                            "NodeTemplatePath")
+            $This.Module     = $This.Get("Module")
+            $This.Xaml       = $This.Get("Xaml")
+            $This.Network    = $This.Get("Network")
+            $This.Credential = $This.Get("Credential")
+            $This.Image      = $This.Get("Image")
+            $This.Template   = $This.Get("Template")
+            $This.Node       = $This.Get("Node")
+            $This.Validate   = $This.Get("Validate")
+
+            $This.Validation()
+
+            $This.Flag       = @( )
+            
+            ForEach ($Name in "NetworkDomain",
+                              "NetworkNetBios",
+                              "NetworkSwitchName",
+                              "CredentialUsername",
+                              "CredentialPassword",
+                              "CredentialConfirm",
+                              "CredentialPin",
+                              "ImagePath",
+                              "TemplateExportPath",
+                              "TemplateName",
+                              "TemplateRootPath",
+                              "NodePath")
             {
                 $This.Flag += $This.VmControllerFlag($This.Flag.Count,$Name)
             }
@@ -5683,43 +7000,57 @@ Function New-VmController
         {
             Return "Secure Digits Plus LLC"
         }
-        [Object] GetFEModule()
+        [Object] Get([String]$Name)
         {
-            $Item = Get-FEModule -Mode 1
-            $Item.Console.Reset()
-            $Item.Mode = 0
-            $Item.Console.Initialize()
+            $Item = $Null
+
+            Switch ($Name)
+            {
+                Module
+                { 
+                    $Item = Get-FEModule -Mode 1
+                    $Item.Console.Reset()
+                    $Item.Mode = 0
+                    $Item.Console.Initialize()
+                }
+                Xaml
+                {
+                    $This.Update(0,"Getting [~] Xaml Controller")
+                    $Item = [XamlWindow][VmControllerXaml]::Content
+                }
+                Network
+                {
+                    $This.Update(0,"Getting [~] Network Controller")
+                    $Item = [VmNetworkController]::New()
+                }
+                Credential
+                {
+                    $This.Update(0,"Getting [~] Credential Controller")
+                    $Item = [VmCredentialController]::New()
+                }
+                Image
+                {
+                    $This.Update(0,"Getting [~] Image Controller")
+                    $Item = [ImageController]::New()
+                }
+                Template
+                {
+                    $This.Update(0,"Getting [~] Template Controller")
+                    $Item = [VmTemplateController]::New()
+                }
+                Node
+                {
+                    $This.Update(0,"Getting [~] Node Controller")
+                    $Item = [VmNodeController]::New()
+                }
+                Validate
+                {
+                    $This.Update(0,"Getting [~] Validation controller")
+                    $Item = [VmValidationController]::New()
+                }
+            }
+
             Return $Item
-        }
-        [Object] VmXaml()
-        {
-            $This.Update(0,"Getting [~] VmXaml")
-            Return [XamlWindow][VmControllerXaml]::Content
-        }
-        [Object] VmMaster()
-        {
-            $This.Update(0,"Getting [~] VmMaster")
-            Return [VmNetworkMaster]::New()
-        }
-        [Object] VmCredential()
-        {
-            $This.Update(0,"Getting [~] VmCredential")
-            Return [VmCredentialMaster]::New()
-        }
-        [Object] VmTemplate()
-        {
-            $This.Update(0,"Getting [~] VmTemplate")
-            Return [VmTemplateMaster]::New()
-        }
-        [Object] VmNode()
-        {
-            $This.Update(0,"Getting [~] VmNode")
-            Return [VmNodeMaster]::New()
-        }
-        [Object] ImageController()
-        {
-            $This.Update(0,"Getting [~] ImageController")
-            Return [ImageController]::New()
         }
         [Object] VmControllerFlag([UInt32]$Index,[String]$Name)
         {
@@ -5729,13 +7060,69 @@ Function New-VmController
         {
             Return [VmControllerProperty]::New($Property)
         }
+        [Object] VmValidatePath([String]$Entry)
+        {
+            Return [VmValidatePath]::New($Entry)
+        }
+        Validation()
+        {
+            $This.Validate.Clear()
+
+            (0,"NetworkDomain"),
+            (0,"NetworkNetBios"),
+            (0,"NetworkSwitchName"),
+            (1,"CredentialUsername"),
+            (1,"CredentialPassword"),
+            (1,"CredentialConfirm"),
+            (1,"CredentialPin"),
+            (2,"ImagePath"),
+            (3,"TemplateExportPath"),
+            (3,"TemplateName"),
+            (3,"TemplateRootPath"),
+            (4,"NodeTemplatePath") | % { 
+
+                $This.Validate.Add($_[0],$_[1])
+            }
+        }
+        [String] DefaultText([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                TemplateExportPath { "<Set template export path>"      }
+                TemplateRootPath   { "<Set virtual machine root path>" }
+            }
+
+            Return $Item
+        }
+        [String[]] Reserved()
+        {
+            Return "ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GR"+
+            "OUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;DIALUP;DIGEST AUTH;IN"+
+            "TERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AU"+
+            "THORITY;NT DOMAIN;NTLM AUTH;NULL;PROXY;REMOTE INTERACTIVE;RESTRICTE"+
+            "D;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORG"+
+            "ANIZATION;USERS;WORLD" -Split ";"
+        }
+        [String[]] Legacy()
+        {
+            Return "-GATEWAY;-GW;-TAC" -Split ";"
+        }
+        [String[]] SecurityDescriptor()
+        {
+            Return "AN;AO;AU;BA;BG;BO;BU;CA;CD;CG;CO;DA;DC;DD;DG;DU;EA;ED;HI;IU;"+
+            "LA;LG;LS;LW;ME;MU;NO;NS;NU;PA;PO;PS;PU;RC;RD;RE;RO;RS;RU;SA;SI;SO;S"+
+            "U;SY;WD" -Split ";"
+        }
+        [String] IconStatus([UInt32]$Flag)
+        {
+            Return $This.Module._Control(@("failure.png","success.png","warning.png")[$Flag]).Fullname
+        }
         [Object] Grid([String]$Name)
         {
             $Item = Switch ($Name)
             {
                 VmControllerCredential   {   [VmControllerCredential]::New() }
                 VmControllerTemplate     {     [VmControllerTemplate]::New() }
-                VmControllerNodeSwitch   {   [VmControllerNodeSwitch]::New() }
             }
 
             Return $Item
@@ -5746,10 +7133,23 @@ Function New-VmController
             {
                 VmControllerCredential   {   [VmControllerCredential]::New($Object) }
                 VmControllerTemplate     {     [VmControllerTemplate]::New($Object) }
-                VmControllerNodeSwitch   {   [VmControllerNodeSwitch]::New($Object) }
             }
 
             Return $Item
+        }
+        [Object[]] Property([Object]$Object)
+        {
+            Return $Object.PSObject.Properties | % { $This.VmControllerProperty($_) }
+        }
+        [Object[]] Property([Object]$Object,[UInt32]$Mode,[String[]]$Property)
+        {
+            $Item = Switch ($Mode)
+            {
+                0 { $Object.PSObject.Properties | ? Name -notin $Property }
+                1 { $Object.PSObject.Properties | ? Name    -in $Property }
+            }
+    
+            Return $Item | % { $This.VmControllerProperty($_) }
         }
         [Object[]] Control([UInt32]$Index)
         {
@@ -5758,14 +7158,12 @@ Function New-VmController
             {
                 0 { $This.Credential.Output }
                 1 { $This.Template.Output   }
-                2 { $This.Node.Switch       }
             }
 
             $Id   = Switch ($Index)
             {
                 0 { "VmControllerCredential"   }
                 1 { "VmControllerTemplate"     }
-                2 { "VmControllerNodeSwitch"   }
             }
 
             ForEach ($Item in $Slot)
@@ -5777,87 +7175,12 @@ Function New-VmController
 
             Return $Out
         }
-        SetNetwork([UInt32]$Index)
+        Reset([Object]$xSender,[Object]$Object)
         {
-            $This.Update(0,"Setting [~] Network")
-            $This.Master.SetNetwork($Index)
-    
-            $This.PingSweep($This.Master.Network.Hosts)
-    
-            $This.Update(0,"Setting [~] Dhcp")
-            $This.Master.Network.SetDhcp()
-        }
-        SetImagePath([String]$Path)
-        {
-            $This.Update(0,"Setting [~] Image source")
-            $This.Image.SetSource($Path)
-            $This.Image.Refresh()
-            $This.Reset($This.Xaml.IO.ImageStore,$This.Image.Store)
-
-            Switch ($This.Image.Store.Count)
+            $xSender.Items.Clear()
+            ForEach ($Item in $Object)
             {
-                0
-                {
-                    Throw "No images detected"
-                }
-                1
-                {
-                    $This.Image.Select(0)
-                    $This.Update(0,"Processing [~] $($This.Image.Current().Name)")
-                    $This.Image.ProcessSlot()
-                }
-                Default
-                {
-                    ForEach ($X in 0..($This.Image.Store.Count-1))
-                    {
-                        $This.Image.Select($X)
-                        $This.Update(0,"Processing [~] $($This.Image.Current().Name)")
-                        $This.Image.ProcessSlot()
-                    }
-                }
-            }
-
-            $This.Update(1,"Complete [+] Images charted")
-        }
-        PingSweep([Object[]]$Range)
-        {
-            $This.Update(0,"Scanning [~] Network host(s)")
-            $Hosts        = $Range.IpAddress
-            $RS           = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-            $PS           = [PowerShell]::Create()
-            $PS.Runspace  = $RS
-            $RS.Open()
-            [Void]$PS.AddScript({
-    
-                Param ($Hosts)
-    
-                $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
-                $Option   = New-Object System.Net.NetworkInformation.PingOptions
-                $Ping     = @{ }
-                ForEach ($X in 0..($Hosts.Count-1))
-                {
-                    $Item = New-Object System.Net.NetworkInformation.Ping
-                    $Ping.Add($X,$Item.SendPingAsync($Hosts[$X],100,$Buffer,$Option))
-                }
-    
-                $Ping[0..($Ping.Count-1)]
-            })
-    
-            $PS.AddArgument($Hosts)
-            $Async        = $PS.BeginInvoke()
-            $Output       = $PS.EndInvoke($Async)
-            $PS.Dispose()
-            $RS.Dispose()
-    
-            $This.Update(0,"Scanned [+] Network host(s), resolving hostnames")
-            ForEach ($X in 0..($Output.Count-1))
-            {
-                $Status           = [UInt32]($Output[$X].Result.Status -eq "Success")
-                $Range[$X].Status = $Status
-                If ($Status -eq 1)
-                {
-                    $Range[$X].Resolve()
-                }
+                $xSender.Items.Add($Item)
             }
         }
         FolderBrowse([String]$Name)
@@ -5884,80 +7207,23 @@ Function New-VmController
         
             $Object.Text = @("<Select an image>",$Item.FileName)[!!$Item.FileName]
         }
-        [String[]] Reserved()
-        {
-            Return "ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GR"+
-            "OUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;DIALUP;DIGEST AUTH;IN"+
-            "TERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AU"+
-            "THORITY;NT DOMAIN;NTLM AUTH;NULL;PROXY;REMOTE INTERACTIVE;RESTRICTE"+
-            "D;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORG"+
-            "ANIZATION;USERS;WORLD" -Split ";"
-        }
-        [String[]] Legacy()
-        {
-            Return "-GATEWAY;-GW;-TAC" -Split ";"
-        }
-        [String[]] SecurityDescriptor()
-        {
-            Return "AN;AO;AU;BA;BG;BO;BU;CA;CD;CG;CO;DA;DC;DD;DG;DU;EA;ED;HI;IU;"+
-            "LA;LG;LS;LW;ME;MU;NO;NS;NU;PA;PO;PS;PU;RC;RD;RE;RO;RS;RU;SA;SI;SO;S"+
-            "U;SY;WD" -Split ";"
-        }
-        [String] IconStatus([UInt32]$Flag)
-        {
-            Return $This.Module._Control(@("failure.png","success.png")[$Flag]).Fullname
-        }
-        ToggleMasterCreate()
+        ToggleSetMain()
         {
             $C = 0
-            $D = 0
-            ForEach ($Item in $This.Flag | ? Name -match "^Master")
+
+            ForEach ($Item in $This.Flag | ? Name -in "NetworkDomain","NetworkNetBios")
             {
-                If ($Item.Status -eq 1)
+                If ($Item.Status)
                 {
                     $C ++
                 }
             }
     
-            If ($This.Xaml.IO.MasterConfig.SelectedIndex -ne -1)
-            {
-                $D = 1
-            }
-    
-            $This.Xaml.IO.MasterCreate.IsEnabled = $C -eq 3 -and $D -eq 1
+            $This.Xaml.IO.NetworkSetMain.IsEnabled = $C -eq 2
         }
-        CheckUsername()
+        ToggleSwitchCreate()
         {
-            $Username     = $This.Xaml.IO.CredentialUsername.Text
-            $xFlag        = $This.Flag | ? Name -eq CredentialUsername
-            $xFlag.Status = [UInt32]($Username -ne "" -and $Username -notin $This.Credential.Output)
-
-            $This.Xaml.IO.CredentialUsernameIcon.Source = $This.IconStatus($xFlag.Status)
-        }
-        CheckPassword()
-        {
-            $Password     = $This.Xaml.IO.CredentialPassword.Password
-            $xFlag        = $This.Flag | ? Name -eq CredentialPassword
-            $xFlag.Status = [UInt32]($Password -ne "")
-
-            $This.Xaml.IO.CredentialPasswordIcon.Source = $This.IconStatus($xFlag.Status)
-        }
-        CheckConfirm()
-        {
-            $Password     = [Regex]::Escape($This.Xaml.IO.CredentialPassword.Password)
-            $Confirm      = [Regex]::Escape($This.Xaml.IO.CredentialConfirm.Password)
-            $xFlag        = $This.Flag | ? Name -eq CredentialConfirm
-            $xFlag.Status = [UInt32]($Password -ne "" -and $Password -eq $Confirm)
-
-            $This.Xaml.IO.CredentialConfirmIcon.Source  = $This.IconStatus($xFlag.Status)
-        }
-        CheckPin()
-        {
-            $Pin          = $This.Xaml.IO.CredentialPin.Password
-            $xFlag        = $This.Flag | ? Name -eq CredentialPin
-            $xFlag.Status = [UInt32]($Pin.Length -ge 4)
-            
-            $This.Xaml.IO.CredentialPinIcon.Source      = $This.IconStatus($xFlag.Status)
+            <# [ToDo]: Implement a way to know which adapters are already bound to Microsoft Virtual Switch protocol #>
         }
         ToggleCredentialCreate()
         {
@@ -6015,21 +7281,11 @@ Function New-VmController
     
             $This.Xaml.IO.TemplateCreate.IsEnabled = $C -eq 3
         }
-        CheckPath([String]$Name)
+		CheckDomain()
         {
-            $Item        = $This.Xaml.Get($Name)
-            $Icon        = $This.Xaml.Get("$Name`Icon")
-    
-            $xFlag       = $This.Flag | ? Name -eq $Name
-            $xFlag.SetStatus([UInt32][System.IO.Directory]::Exists($Item.Text))
-    
-            $Icon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleMasterCreate()
-        }
-        CheckDomain()
-        {
-            $Item = $This.Xaml.IO.MasterDomain.Text
+            $Ctrl  = $This
+            $Item  = $Ctrl.Xaml.IO.NetworkDomain.Text
+            $xFlag = $Ctrl.Flag | ? Name -eq NetworkDomain
     
             If ($Item.Length -lt 2 -or $Item.Length -gt 63)
             {
@@ -6063,17 +7319,16 @@ Function New-VmController
             {
                 $X = "[+] Passed"
             }
-    
-            $xFlag = $This.Flag | ? Name -eq MasterDomain
+
             $xFlag.SetStatus([UInt32]($X -eq "[+] Passed"))
     
-            $This.Xaml.IO.MasterDomainIcon.Source = $This.IconStatus($xFlag.Status)
+            $This.Xaml.IO.NetworkDomainIcon.Source = $Ctrl.IconStatus($xFlag.Status)
     
-            $This.ToggleMasterCreate()
+            $Ctrl.ToggleSetMain()
         }
         CheckNetBios()
         {
-            $Item = $This.Xaml.IO.MasterNetBios.Text
+            $Item = $This.Xaml.IO.NetworkNetBios.Text
     
             If ($Item.Length -lt 1 -or $Item.Length -gt 15)
             {
@@ -6108,700 +7363,1016 @@ Function New-VmController
                 $X = "[+] Passed"
             }
     
-            $xFlag = $This.Flag | ? Name -eq MasterNetBios
+            $xFlag = $This.Flag | ? Name -eq NetworkNetBios
             $xFlag.SetStatus([UInt32]($X -eq "[+] Passed"))
     
-            $This.Xaml.IO.MasterNetBiosIcon.Source = $This.IconStatus($xFlag.Status)
+            $This.Xaml.IO.NetworkNetBiosIcon.Source = $This.IconStatus($xFlag.Status)
+
+            $This.ToggleSetMain()
+        }
+		CheckSwitchName()
+        {
+            $Item         = $This.Xaml.Get("NetworkSwitchName")
+            $xFlag        = $This.Flag | ? Name -eq NetworkSwitchName 
+            $xFlag.Status = [UInt32]($Item.Text -notin $This.Network.Switch.Output.Name)
+
+            $This.Xaml.IO.NetworkSwitchIcon.Source      = $This.IconStatus($xFlag.Status)
+            $This.Xaml.IO.NetworkSwitchCreate.IsEnabled = $xFlag.Status
+        }
+        CheckUsername()
+        {
+            $Username     = $This.Xaml.IO.CredentialUsername.Text
+            $xFlag        = $This.Flag | ? Name -eq CredentialUsername
+            $xFlag.Status = [UInt32]($Username -ne "" -and $Username -notin $This.Credential.Output)
+
+            $This.Xaml.IO.CredentialUsernameIcon.Source = $This.IconStatus($xFlag.Status)
+        }
+        CheckPassword()
+        {
+            $Password     = $This.Xaml.IO.CredentialPassword.Password
+            $xFlag        = $This.Flag | ? Name -eq CredentialPassword
+            $xFlag.Status = [UInt32]($Password -ne "")
+
+            $This.Xaml.IO.CredentialPasswordIcon.Source = $This.IconStatus($xFlag.Status)
+        }
+        CheckConfirm()
+        {
+            $Password     = [Regex]::Escape($This.Xaml.IO.CredentialPassword.Password)
+            $Confirm      = [Regex]::Escape($This.Xaml.IO.CredentialConfirm.Password)
+            $xFlag        = $This.Flag | ? Name -eq CredentialConfirm
+            $xFlag.Status = [UInt32]($Password -ne "" -and $Password -eq $Confirm)
+
+            $This.Xaml.IO.CredentialConfirmIcon.Source  = $This.IconStatus($xFlag.Status)
+        }
+        CheckPin()
+        {
+            $Pin          = $This.Xaml.IO.CredentialPin.Password
+            $xFlag        = $This.Flag | ? Name -eq CredentialPin
+            $xFlag.Status = [UInt32]($Pin.Length -ge 4)
+            
+            $This.Xaml.IO.CredentialPinIcon.Source      = $This.IconStatus($xFlag.Status)
+        }
+        CheckPath([String]$Name)
+        {
+            $Item         = $This.Xaml.Get($Name)
+            $Icon         = $This.Xaml.Get("$Name`Icon")
+            $xFlag        = $This.Flag | ? Name -eq $Name
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $This.ToggleMasterCreate()
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
+        }
+        CheckTemplateExportPath()
+        {
+            $Item         = $This.Xaml.Get("TemplateExportPath")
+            $Icon         = $This.Xaml.Get("TemplateExportPathIcon")
+            $xFlag        = $This.Flag | ? Name -eq TemplateExportPath
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
+    
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
         CheckTemplateName()
         {
             $Item         = $This.Xaml.Get("TemplateName")
+            $Icon         = $This.Xaml.Get("TemplateNameIcon")
+
             $xFlag        = $This.Flag | ? Name -eq TemplateName
             $xFlag.Status = [UInt32]($Item.Text -match "[a-zA-Z]{1}[a-zA-Z0-9]{0,14}" -and $Item.Text -notin $This.Node.Host.Name)
     
-            $This.Xaml.IO.TemplateNameIcon.Source = $This.IconStatus($xFlag.Status)
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
 
             $This.ToggleTemplateCreate()
         }
-        CheckTemplatePath()
+        CheckTemplateRootPath()
         {
-            $Item         = $This.Xaml.Get("TemplatePath")
-            $xFlag        = $This.Flag | ? Name -eq TemplatePath
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+            $Item         = $This.Xaml.Get("TemplateRootPath")
+            $Icon         = $This.Xaml.Get("TemplateRootPathIcon")
+            $xFlag        = $This.Flag | ? Name -eq TemplateRootPath
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $This.Xaml.IO.TemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleTemplateCreate()
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
-        CheckTemplateImagePath()
+        CheckNodePath()
         {
-            $Item         = $This.Xaml.Get("TemplateImagePath")
-            $xFlag        = $This.Flag | ? Name -eq TemplateImagePath
-            $xFlag.Status = [UInt32][System.IO.File]::Exists($Item.Text)
+            $Item         = $This.Xaml.Get("NodePath")
+            $Icon         = $This.Xaml.Get("NodePathIcon")
+            $xFlag        = $This.Flag | ? Name -eq "NodePath"
+
+            $xFlag.Status = $This.VmValidatePath($Item.Text).Status
     
-            $This.Xaml.IO.TemplateImagePathIcon.Source = $This.IconStatus($xFlag.Status)
-    
-            $This.ToggleTemplateCreate()
+            $Icon.Source  = $This.IconStatus($xFlag.Status)
         }
-        CheckNodeSwitchName()
+        SetMain()
         {
-            $Item         = $This.Xaml.Get("NodeSwitchName")
-            $xFlag        = $This.Flag | ? Name -eq NodeSwitchIcon
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
-    
-            $This.Xaml.IO.NodeSwitchNameIcon.Source = $This.IconStatus($xFlag.Status)
+            $This.Network.SetMain($This.Xaml.IO.NetworkDomain.Text,
+                                  $This.Xaml.IO.NetworkNetBios.Text)
+
+            $This.Xaml.IO.NetworkDomain.IsEnabled  = 0
+            $This.Xaml.IO.NetworkNetBios.IsEnabled = 0
+            $This.Xaml.IO.NetworkSetMain.IsEnabled = 0
+
+            $This.Xaml.IO.NetworkRefresh.IsEnabled = 1
+            $This.Xaml.IO.NetworkOutput.IsEnabled  = 1
         }
-        CheckNodeTemplatePath()
+        SetTemplatePath()
         {
-            $Item         = $This.Xaml.Get("NodeTemplatePath")
-            $xFlag        = $This.Flag | ? Name -eq "NodeTemplatePath"
-            $xFlag.Status = [UInt32][System.IO.Directory]::Exists($Item.Text)
+            $xFlag = $This.Flag | ? Name -eq TemplateExportPath
+            Switch ($xFlag.Status)
+            {
+                0
+                {
+                    [System.Windows.MessageBox]::Show("Invalid path designated","Exception [!] Path error")
+                }
+                1
+                {
+                    $This.Template.SetPath($This.Xaml.IO.TemplateExportPath.Text)
+
+                    $This.Xaml.IO.TemplateExportPath.IsEnabled   = 0
+                    $This.Xaml.IO.TemplateExportBrowse.IsEnabled = 0
+                    $This.Xaml.IO.TemplateSetPath.IsEnabled      = 0
+                    $This.Xaml.IO.TemplateOutput.IsEnabled       = 1
+                }
+            }
+        }
+        SwitchConfig()
+        {
+            $List     = $This.Network.Output
+            $Property = $This.Xaml.IO.NetworkProperty.SelectedItem.Content.Replace(" ","")
+            If ($Property -ne "*")
+            {
+                $List = $List | ? { $_.Mode.Name -match $Property }
+            }
+    
+            $This.Reset($This.Xaml.IO.NetworkOutput,$List)
+        }
+        SwitchPanel([String]$Name)
+        {
+            $Ctrl = $This
+
+            $Ctrl.Xaml.IO.NetworkAdapterPanel.Visibility = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkConfigPanel.Visibility  = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkSwitchPanel.Visibility  = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkBasePanel.Visibility    = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkRangePanel.Visibility   = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkHostPanel.Visibility    = "Collapsed"
+            $Ctrl.Xaml.IO.NetworkDhcpPanel.Visibility    = "Collapsed"
+
+            $Item = Switch ($Name)
+            {
+                "Adapter" { $Ctrl.Xaml.IO.NetworkAdapterPanel }
+                "Config"  { $Ctrl.Xaml.IO.NetworkConfigPanel  }
+                "Switch"  { $Ctrl.Xaml.IO.NetworkSwitchPanel  }
+                "Base"    { $Ctrl.Xaml.IO.NetworkBasePanel    }
+                "Range"   { $Ctrl.Xaml.IO.NetworkRangePanel   }
+                "Host"    { $Ctrl.Xaml.IO.NetworkHostPanel    }
+                "Dhcp"    { $Ctrl.Xaml.IO.NetworkDhcpPanel    }
+            }
+
+            $Item.Visibility = "Visible"
+        }
+        SetImagePath([String]$Path)
+        {
+            $This.Update(0,"Setting [~] Image source")
+
+            $This.Image.SetSource($Path)
+            $This.Image.Refresh()
+            $This.Reset($This.Xaml.IO.ImageStore,$This.Image.Store)
+
+            Switch ($This.Image.Store.Count)
+            {
+                0
+                {
+                    Throw "No images detected"
+                }
+                1
+                {
+                    $This.Image.Select(0)
+                    $This.Update(0,"Processing [~] $($This.Image.Current().Name)")
+                    $This.Image.ProcessSlot()
+                }
+                Default
+                {
+                    ForEach ($X in 0..($This.Image.Store.Count-1))
+                    {
+                        $This.Image.Select($X)
+                        $This.Update(0,"Processing [~] $($This.Image.Current().Name)")
+                        $This.Image.ProcessSlot()
+                    }
+                }
+            }
+
+            $This.Update(1,"Complete [+] Images charted")
+        }
+        Initial([String]$Name)
+        {
+            Switch ($Name)
+            {
+                Network
+                {
+                    $This.Xaml.IO.NetworkSetMain.IsEnabled = 0
+                    $This.Xaml.IO.NetworkRefresh.IsEnabled = 0
+                }
+                Credential
+                {
+                    $This.Xaml.IO.CredentialType.SelectedIndex = 0
+                    $This.Reset($This.Xaml.IO.CredentialDescription,$This.Credential.Slot[0])
             
-            $This.Xaml.IO.NodeTemplatePathIcon.Source = $This.IconStatus($xFlag.Status)
-        }
-        Reset([Object]$xSender,[Object]$Object)
-        {
-            $xSender.Items.Clear()
-            ForEach ($Item in $Object)
-            {
-                $xSender.Items.Add($Item)
-            }
-        }
-        [Object[]] Property([Object]$Object)
-        {
-            Return $Object.PSObject.Properties | % { $This.VmControllerProperty($_) }
-        }
-        [Object[]] Property([Object]$Object,[UInt32]$Mode,[String[]]$Property)
-        {
-            $Item = Switch ($Mode)
-            {
-                0 { $Object.PSObject.Properties | ? Name -notin $Property }
-                1 { $Object.PSObject.Properties | ? Name    -in $Property }
-            }
-    
-            Return $Item | % { $This.VmControllerProperty($_) }
-        }
-        SetInitialState()
-        {
-            # Master panel
-            $This.Xaml.IO.MasterPath.Text              = "<Select a path>"
-            $This.Xaml.IO.MasterCreate.IsEnabled       = 0
-    
-            # Credential panel
-            $This.Xaml.IO.CredentialType.SelectedIndex = 0
-            $This.Reset($This.Xaml.IO.CredentialDescription,$This.Credential.Slot[0])
-    
-            $This.Xaml.IO.CredentialRemove.IsEnabled   = 0
-            $This.Xaml.IO.CredentialCreate.IsEnabled   = 0
-
-            # Image panel
-            $This.Xaml.IO.ImageImport.IsEnabled        = 0
-    
-            # Template panel
-            $This.Xaml.IO.TemplateCreate.IsEnabled     = 0
-            $This.Xaml.IO.TemplateRemove.IsEnabled     = 0
-            $This.Xaml.IO.TemplateExport.IsEnabled     = 0
-            $This.Xaml.IO.TemplateCredentialCount.Text = $This.Credential.Output.Count
-    
-            $This.Xaml.IO.TemplateRole.SelectedIndex   = 0
-            $This.Xaml.IO.TemplateSwitch.SelectedIndex = 0
-
-            $This.Xaml.IO.TemplateOutput.SelectedIndex = $This.Template.Output.Count
-    
-            # Node panel
-            $This.Xaml.IO.NodeSwitchCreate.IsEnabled   = 0
-            $This.Xaml.IO.NodeSwitchRemove.IsEnabled   = 0
-    
-            $This.Xaml.IO.NodeHostCreate.IsEnabled     = 0
-            $This.Xaml.IO.NodeHostRemove.IsEnabled     = 0
-    
-            $This.Xaml.IO.NodeSlot.SelectedIndex       = 1
-            $This.Xaml.IO.NodeTemplateImport.IsEnabled = 0
-    
-            $This.Update(0,"Complete [+] Initial GUI state")
-        }
-        CredentialPanel()
-        {
-            $This.Xaml.IO.CredentialCreate.IsEnabled       = 0
-            $This.Xaml.IO.CredentialRemove.IsEnabled       = 0
-            $This.Xaml.IO.CredentialType.IsEnabled         = 0
-            $This.Xaml.IO.CredentialDescription.IsEnabled  = 0
-            $This.Xaml.IO.CredentialUsername.IsEnabled     = 0
-            $This.Xaml.IO.CredentialPassword.IsEnabled     = 0
-            $This.Xaml.IO.CredentialConfirm.IsEnabled      = 0
-            $This.Xaml.IO.CredentialPin.IsEnabled          = $This.Xaml.IO.CredentialType.SelectedIndex -eq 4
-
-            $This.Xaml.IO.CredentialUsername.Text          = ""
-            $This.Xaml.IO.CredentialPassword.Password      = ""
-            $This.Xaml.IO.CredentialConfirm.Password       = ""
-            $This.Xaml.IO.CredentialPin.Password           = ""
-
-            $This.Xaml.IO.CredentialUsernameIcon.Source    = $Null
-            $This.Xaml.IO.CredentialPasswordIcon.Source    = $Null
-            $This.Xaml.IO.CredentialConfirmIcon.Source     = $Null
-            $This.Xaml.IO.CredentialPinIcon.Source         = $Null
-
-            If ($This.Xaml.IO.CredentialOutput.SelectedIndex -ne -1)
-            {
-                $This.Xaml.IO.CredentialUsername.IsEnabled = 1
-                $This.Xaml.IO.CredentialPassword.IsEnabled = 1
-                $This.Xaml.IO.CredentialConfirm.IsEnabled  = 1
-
-                $Selected = $This.Xaml.IO.CredentialOutput.SelectedItem
-                $Item     = $This.Credential.Output | ? Guid -eq $Selected.Guid
-                If (!!$Item)
-                {
-                    $This.Xaml.IO.CredentialType.SelectedIndex    = $This.Credential.Slot | ? Name -eq $Selected.Type | % Index
-                    $This.Xaml.IO.CredentialUsername.Text         = $Item.Username
-                    $This.Xaml.IO.CredentialPassword.Password     = $Item.Password()
-                    $This.Xaml.IO.CredentialConfirm.Password      = $Item.Password()
-                    $This.Xaml.IO.CredentialCreate.IsEnabled      = 0
-                    $This.Xaml.IO.CredentialRemove.IsEnabled      = 1
+                    $This.Xaml.IO.CredentialRemove.IsEnabled   = 0
+                    $This.Xaml.IO.CredentialCreate.IsEnabled   = 0
                 }
-                Else
+                Image
                 {
-                    $This.Xaml.IO.CredentialUsername.Text         = ""
-                    $This.Xaml.IO.CredentialPassword.Password     = ""
-                    $This.Xaml.IO.CredentialConfirm.Password      = ""
-                    $This.Xaml.IO.CredentialType.IsEnabled        = 1
-                    $This.Xaml.IO.CredentialDescription.IsEnabled = 1
+                    $This.Xaml.IO.ImageImport.IsEnabled        = 0
                 }
-
-                If ($Item.Type -eq "Microsoft")
+                Template
                 {
-                    $This.Xaml.IO.CredentialPin.Password          = $Item.Pin
+                    $This.Xaml.IO.TemplateCreate.IsEnabled       = 0
+                    $This.Xaml.IO.TemplateRemove.IsEnabled       = 0
+                    $This.Xaml.IO.TemplateExport.IsEnabled       = 0
+            
+                    $This.Xaml.IO.TemplateRole.SelectedIndex     = 0
+
+                    $This.Xaml.IO.TemplateExportPathIcon.Source  = $Null
+                    $This.Xaml.IO.TemplateExportBrowse.IsEnabled = 1
+                    $This.Xaml.IO.TemplateOutput.IsEnabled       = 0
+                }
+                Node
+                {
+                    $This.Xaml.IO.NodeCreate.IsEnabled     = 0
+                    $This.Xaml.IO.NodeRemove.IsEnabled     = 0
+                    $This.Xaml.IO.NodeImport.IsEnabled     = 0
                 }
             }
         }
-        TemplatePanel()
+        Stage([String]$Name)
         {
-            $This.Xaml.IO.TemplateCreate.IsEnabled              = 0
-            $This.Xaml.IO.TemplateRemove.IsEnabled              = 0
-            $This.Xaml.IO.TemplateExport.IsEnabled              = 0
-            $This.Xaml.IO.TemplateName.IsEnabled                = 0
-            $This.Xaml.IO.TemplateRole.IsEnabled                = 0
-            $This.Xaml.IO.TemplatePath.IsEnabled                = 0
-            $This.Xaml.IO.TemplatePathIcon.IsEnabled            = 0
-            $This.Xaml.IO.TemplatePathBrowse.IsEnabled          = 0
-            $This.Xaml.IO.TemplateMemory.IsEnabled              = 0
-            $This.Xaml.IO.TemplateHardDrive.IsEnabled           = 0
-            $This.Xaml.IO.TemplateGeneration.IsEnabled          = 0
-            $This.Xaml.IO.TemplateCore.IsEnabled                = 0
-            $This.Xaml.IO.TemplateSwitch.IsEnabled              = 0
-            $This.Xaml.IO.TemplateImagePath.IsEnabled           = 0
-            $This.Xaml.IO.TemplateImagePathIcon.IsEnabled       = 0
-            $This.Xaml.IO.TemplateImagePathBrowse.IsEnabled     = 0
+            $This.Update(0,"Staging [~] $Name")
 
-            $This.Xaml.IO.TemplateMemory.SelectedIndex          = 1
-            $This.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
-            $This.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
-            $This.Xaml.IO.TemplateCore.SelectedIndex            = 1
+            $Ctrl = $This
 
-            $This.Xaml.IO.TemplatePathIcon.Source               = $Null
-            $This.Xaml.IO.TemplateImagePathIcon.Source          = $Null
-
-            If ($This.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
+            Switch ($Name)
             {
-                $This.Xaml.IO.TemplateName.IsEnabled            = 1
-                $This.Xaml.IO.TemplateRole.IsEnabled            = 1
-                $This.Xaml.IO.TemplatePath.IsEnabled            = 1
-                $This.Xaml.IO.TemplatePathIcon.IsEnabled        = 1
-                $This.Xaml.IO.TemplatePathBrowse.IsEnabled      = 1
-                $This.Xaml.IO.TemplateMemory.IsEnabled          = 1
-                $This.Xaml.IO.TemplateHardDrive.IsEnabled       = 1
-                $This.Xaml.IO.TemplateGeneration.IsEnabled      = 1
-                $This.Xaml.IO.TemplateCore.IsEnabled            = 1
-                $This.Xaml.IO.TemplateSwitch.IsEnabled          = 1
-                $This.Xaml.IO.TemplateImagePath.IsEnabled       = 1
-                $This.Xaml.IO.TemplateImagePathIcon.IsEnabled   = 1
-                $This.Xaml.IO.TemplateImagePathBrowse.IsEnabled = 1
-
-                $Selected = $This.Xaml.IO.TemplateOutput.SelectedItem
-                $Item     = $This.Template.Output | ? Guid -eq $Selected.Guid
-                If (!!$Item)
+                Network
                 {
-                    $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
-                    $This.Xaml.IO.TemplateRemove.IsEnabled          = 1
-                    $This.Xaml.IO.TemplateExport.IsEnabled          = 1
-                    $This.Xaml.IO.TemplateName.Text                 = $Item.Name
-                    $This.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
-                    $This.Xaml.IO.TemplatePath.Text                 = $Item.Base
-                    $This.Xaml.IO.TemplateMemory.SelectedIndex      = Switch ($Item.Memory)
+                    $Ctrl.Xaml.IO.NetworkDomain.Add_TextChanged(
                     {
-                        "2.00 GB"   { 0 }
-                        "4.00 GB"   { 1 }
-                        "8.00 GB"   { 2 }
-                        "16.00 GB"  { 3 }
-                    }
-                    $This.Xaml.IO.TemplateHardDrive.SelectedIndex   = Switch ($Item.Hdd)
+                        $Ctrl.CheckDomain()
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkNetBios.Add_TextChanged(
                     {
-                        "32.00 GB"  { 0 }
-                        "64.00 GB"  { 1 }
-                        "128.00 GB" { 2 }
-                        "256.00 GB" { 3 }
+                        $Ctrl.CheckNetBios()
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkSetMain.Add_Click(
+                    {
+                        $Ctrl.SetMain()
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkRefresh.Add_Click(
+                    {
+                        $Ctrl.Network.Refresh()
+                        $Ctrl.SwitchConfig()
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,
+                                    $Ctrl.Network.Physical().Name)
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkProperty.Add_SelectionChanged(
+                    {
+                        $Ctrl.SwitchConfig()
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkOutput.Add_SelectionChanged(
+                    {
+                        $Ctrl.Xaml.IO.NetworkAdapterOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkConfigOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkSwitchOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkBaseOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkRangeOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkHostOutput.Items.Clear()
+                        $Ctrl.Xaml.IO.NetworkDhcpOutput.Items.Clear()
+
+                        $Ctrl.Xaml.IO.NetworkSwitchName.Text        = ""
+                        $Ctrl.Xaml.IO.NetworkSwitchIcon.Source      = $Null
+                        $Ctrl.Xaml.IO.NetworkSwitchCreate.IsEnabled = 0
+                        $Ctrl.Xaml.IO.NetworkSwitchRemove.IsEnabled = 1
+
+                        $Index  = $Ctrl.Xaml.IO.NetworkOutput.SelectedIndex
+                        If ($Index -gt -1)
+                        {
+                            $Item = $Ctrl.Network.Output[$Index]
+
+                            $Ctrl.Reset($Ctrl.Xaml.IO.NetworkAdapterOutput,
+                                        $Ctrl.Property($Item.Adapter))
+
+                            $Ctrl.Reset($Ctrl.Xaml.IO.NetworkConfigOutput,
+                                        $Ctrl.Property($Item.Config))
+
+                            $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchOutput,
+                                        $Ctrl.Property($Item.Switch))
+
+                            If ($Item.Base)
+                            {
+                                $Ctrl.Reset($Ctrl.Xaml.IO.NetworkBaseOutput,
+                                            $Ctrl.Property($Item.Base))
+                            }
+                            If ($Item.Range)
+                            {
+                                $Ctrl.Reset($Ctrl.Xaml.IO.NetworkRangeOutput,
+                                            $Item.Range)
+                            }
+                            If ($Item.Host)
+                            {
+                                $Ctrl.Reset($Ctrl.Xaml.IO.NetworkHostOutput,
+                                            $Item.Host)
+                            }
+                            If ($Item.Dhcp)
+                            {
+                                $Ctrl.Reset($Ctrl.Xaml.IO.NetworkDhcpOutput,
+                                            $Item.Dhcp)
+                            }
+                        }
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkSwitchType.Add_SelectionChanged(
+                    {
+                        $Value = $Ctrl.Xaml.IO.NetworkSwitchType.SelectedItem.Content -eq "External"
+                        $Ctrl.Xaml.IO.NetworkSwitchAdapter.IsEnabled = $Value
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkSwitchName.Add_TextChanged(
+                    {
+                        $Ctrl.CheckSwitchName()
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkPanel.Add_SelectionChanged(
+                    {
+                        $Ctrl.SwitchPanel($Ctrl.Xaml.IO.NetworkPanel.SelectedItem.Content)
+                    })
+
+                    $Ctrl.Xaml.IO.NetworkAssign.Add_Click(
+                    {
+                        # Assigns the selected network(s) to the template object
+                        $Item = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
+                        $Ctrl.Template.SetNetwork($Item)
+
+                        # Refreshes the UI template network object
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network.Interface)
+
+                        # Shows message detailing network switch count
+                        [System.Windows.MessageBox]::Show("Interface(s) ($($Ctrl.Template.Network.Count))","Assigned [+] Network(s)")
+                    })
+                }
+                Credential
+                {
+                    $Ctrl.Xaml.IO.CredentialType.Add_SelectionChanged(
+                    {
+                        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialDescription,
+                                    $Ctrl.Credential.Slot[$Ctrl.Xaml.IO.CredentialType.SelectedIndex])
+                        
+                        $Ctrl.Handle("Credential")
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
+                    {
+                        $Ctrl.ToggleCredentialCreate()
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialPassword.Add_PasswordChanged(
+                    {
+                        $Ctrl.ToggleCredentialCreate()
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialConfirm.Add_PasswordChanged(
+                    {
+                        $Ctrl.ToggleCredentialCreate()
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialPin.Add_PasswordChanged(
+                    {
+                        $Ctrl.ToggleCredentialCreate()
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialGenerate.Add_Click(
+                    {
+                        $Entry                                    = $Ctrl.Credential.Generate()
+                        $Ctrl.Xaml.IO.CredentialPassword.Password = $Entry
+                        $Ctrl.Xaml.IO.CredentialConfirm.Password  = $Entry
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
+                    {
+                        $Ctrl.Handle("Credential")
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
+                    {
+                        Switch ($Ctrl.Credential.Output.Count)
+                        {
+                            {$_ -eq 0}
+                            {
+                                $Ctrl.Credential.Setup()
+                            }
+                            {$_ -eq 1}
+                            {
+                                Return [System.Windows.MessageBox]::Show("Must have at least (1) account")
+                            }
+                            {$_ -gt 1}
+                            {
+                                $Guid = $Ctrl.Xaml.IO.CredentialOutput.SelectedItem.Guid
+                                $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
+                                $Ctrl.Credential.Rerank()
+                            }
+                        }
+                    
+                        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
+                    })
+                
+                    $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
+                    {
+                        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                                             $Ctrl.Xaml.IO.CredentialUsername.Text,
+                                             $Ctrl.Xaml.IO.CredentialPassword.Password)
+                    
+                        If ($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
+                        {
+                            $Cred     = $Ctrl.Credential.Output | ? Username -eq $Ctrl.Xaml.IO.CredentialUsername.Text
+                            $Cred.Pin = $Ctrl.Xaml.IO.CredentialPin.Password
+                        }
+                    
+                        $Ctrl.Credential.Rerank()
+                        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
+                    })
+                
+                    $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
+
+                    $Ctrl.Xaml.IO.CredentialAssign.Add_Click(
+                    {
+                        $Ctrl.Template.SetAccount($Ctrl.Credential.Output)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
+
+                        [System.Windows.MessageBox]::Show("Accounts: ($($Ctrl.Template.Account.Count))","Assigned [+] Credential(s)")
+                    })
+                }
+                Image
+                {
+                    $Ctrl.Xaml.IO.ImagePathBrowse.Add_Click(
+                    {
+                        $Ctrl.FolderBrowse("ImagePath")
+                    })
+
+                    $Ctrl.Xaml.IO.ImagePath.Add_TextChanged(
+                    {
+                        $Ctrl.CheckPath("ImagePath")
+                        $Ctrl.Xaml.IO.ImageImport.IsEnabled = $Ctrl.Flag | ? Name -eq ImagePath | % Status
+                    })
+
+                    $Ctrl.Xaml.IO.ImageImport.Add_Click(
+                    {
+                        $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
+                    })
+
+                    $Ctrl.Xaml.IO.ImageStore.Add_SelectionChanged(
+                    {
+                        $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
+                    })
+
+                    $Ctrl.Xaml.IO.ImageAssign.Add_Click(
+                    {
+                        $List  = $Ctrl.Xaml.IO.ImageStore.Items        | ? Profile
+                        $List2 = $Ctrl.Xaml.IO.ImageStoreContent.Items | ? Profile
+
+                        If ($List.Count -ne 1)
+                        {
+                            [System.Windows.MessageBox]::Show("Must check (1) image")
+                        }
+                        ElseIf ($List.Count -eq 1 -and $List[0].Type -eq "Windows" -and $List2.Count -ne 1)
+                        {
+                            [System.Windows.MessageBox]::Show("Must check (1) edition")
+                        }
+                        Else
+                        {
+                            $Ctrl.Template.SetImage($Ctrl.Image.ImageObject($List,$List2))
+                            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
+
+                            [System.Windows.MessageBox]::Show($Ctrl.Template.Image.File.Fullname,"Assigned [+] Image")
+                        }
+                    })
+                }
+                Template
+                {
+                    $Ctrl.Xaml.IO.TemplateExportPath.Add_TextChanged(
+                    {
+                        If ($Ctrl.Xaml.IO.TemplateExportPath.Text -eq "")
+                        {
+                            $Ctrl.Xaml.IO.TemplateExportPath.Text = $Ctrl.DefaultText("TemplateExportPath")
+                            $Ctrl.Xaml.IO.TemplateExportPathIcon.Source = $Null
+                        }
+                        Else
+                        {
+                            $Ctrl.CheckTemplateExportPath()
+                            $Ctrl.ToggleTemplateCreate()
+                        }
+
+                        $xFlag = $Ctrl.Flag | ? Name -eq TemplateExportPath | % Status
+                        $Ctrl.Xaml.IO.TemplateSetPath.IsEnabled = [UInt32]($xFlag -eq 1)
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateExportBrowse.Add_Click(
+                    {
+                        $Ctrl.FolderBrowse("TemplateExportPath")
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateSetPath.Add_Click(
+                    {
+                        $Ctrl.SetTemplatePath()
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateName.Add_TextChanged(
+                    {
+                        $Ctrl.CheckTemplateName()
+                        $Ctrl.ToggleTemplateCreate()
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateRootPath.Add_TextChanged(
+                    {
+                        If ($Ctrl.Xaml.IO.TemplateRootPath.Text -eq "")
+                        {
+                            $Ctrl.Xaml.IO.TemplateRootPath.Text = $Ctrl.DefaultText("TemplateRootPath")
+                            $Ctrl.Xaml.IO.TemplateRootPathIcon.Source = $Null
+                        }
+                        Else
+                        {
+                            $Ctrl.CheckTemplateRootPath()
+                            $Ctrl.ToggleTemplateCreate()
+                        }
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateRootPathBrowse.Add_Click(
+                    {
+                        $Ctrl.FolderBrowse("TemplateRootPath")
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateCreate.Add_Click(
+                    {
+                        If ($Ctrl.Xaml.IO.TemplateName.Text -notmatch "(\w|\d)")
+                        {
+                            Return [System.Windows.MessageBox]::Show("Must enter a name","Error")
+                        }
+                    
+                        ElseIf ($Ctrl.Xaml.IO.TemplateName.Text -in $Ctrl.Template.Name)
+                        {
+                            Return [System.Windows.MessageBox]::Show("Duplicate name","Error")
+                        }
+                    
+                        Else
+                        {
+                            $Ctrl.Template.Add($Ctrl.Xaml.IO.TemplateName.Text,
+                                               $Ctrl.Xaml.IO.TemplateRole.SelectedIndex,
+                                               $Ctrl.Xaml.IO.TemplateRootPath.Text,
+                                               $Ctrl.Xaml.IO.TemplateMemory.SelectedItem.Content,
+                                               $Ctrl.Xaml.IO.TemplateHardDrive.SelectedItem.Content,
+                                               $Ctrl.Xaml.IO.TemplateGeneration.SelectedItem.Content,
+                                               $Ctrl.Xaml.IO.TemplateCore.SelectedItem.Content)
+                    
+                            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
+                    
+                            $Ctrl.Xaml.Get("TemplateName").Text            = ""
+                            $Ctrl.Xaml.Get("TemplateRootPath").Text        = $Ctrl.DefaultText("TemplateRootPath")
+                            $Ctrl.Xaml.Get("TemplateRootPathIcon").Source  = $Null
+                        }
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateOutput.Add_SelectionChanged(
+                    {
+                        $Ctrl.Handle("Template")
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateRole.Add_SelectionChanged(
+                    {
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateRoleDescription,
+                                    $Ctrl.Template.Role.Output[$Ctrl.Xaml.IO.TemplateRole.SelectedIndex])
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateRemove.Add_Click(
+                    {
+                        $Ctrl.Template.Output = @($Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
+                    })
+                    
+                    $Ctrl.Xaml.IO.TemplateExport.Add_Click(
+                    {
+                        $Ctrl.Template.Export($Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateNetworkUp.Add_Click(
+                    {
+                        $List    = $Ctrl.Xaml.IO.TemplateNetworkOutput.Items
+                        $Current = $Ctrl.Xaml.IO.TemplateNetworkOutput.SelectedItem
+                        $Item    = $List | ? Index -eq $Current.Index
+                        $Target  = $List | ? Index -eq ($Current.Index - 1)
+
+                        If ($Current.Index -ge 1)
+                        {
+                            $Item.Index --
+                            $Target.Index ++
+                            $Ctrl.Template.Network = $List | Sort-Object Index
+                            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+                        }
+                    })
+
+                    $Ctrl.Xaml.IO.TemplateNetworkDown.Add_Click(
+                    {
+                        $List    = $Ctrl.Xaml.IO.TemplateNetworkOutput.Items
+                        $Current = $Ctrl.Xaml.IO.TemplateNetworkOutput.SelectedItem
+                        $Item    = $List | ? Index -eq $Current.Index
+                        $Target  = $List | ? Index -eq ($Current.Index + 1)
+
+                        If ($Current.Index -le ($List.Count-2))
+                        {
+                            $Item.Index ++
+                            $Target.Index --
+                            $Ctrl.Template.Network = $List | Sort-Object Index
+                            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+                        }
+                    })
+                    
+                    $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
+                }
+                Node
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Host)
+                    
+                    $Ctrl.Xaml.IO.NodeRefresh.Add_Click(
+                    {
+                        $Ctrl.Node.Refresh()
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeExtension,$Null)
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodePath.Add_TextChanged(
+                    {
+                        $Ctrl.CheckNodePath()
+                        If ($Ctrl.Xaml.IO.NodePath.Text -eq "")
+                        {
+                            $Ctrl.Xaml.IO.NodePath.Text       = "<Set path to import control template(s)>"
+                            $Ctrl.Xaml.IO.NodePathIcon.Source = $Null
+                        }
+                        $Ctrl.Xaml.IO.NodeImport.IsEnabled = $Ctrl.Flag | ? Name -eq NodePath | % Status
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodePathBrowse.Add_Click(
+                    {
+                        $Ctrl.FolderBrowse("NodePath")
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodeImport.Add_Click(
+                    {
+                        $Ctrl.Update(0,"Setting [~] Node template import path")
+                        $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodePath.Text)
+                        $Ctrl.Node.Refresh()
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodeOutput.Add_SelectionChanged(
+                    {
+                        $Ctrl.Handle("Node")
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodeCreate.Add_Click(
+                    {
+                        $Item = $Ctrl.Xaml.IO.NodeOutput.SelectedItem
+                    
+                        Switch ($Item.Type)
+                        {
+                            Host
+                            {
+                                [System.Windows.MessageBox]::Show("Invalid type","Error")
+                            }
+                            Template
+                            {
+                                [System.Windows.MessageBox]::Show("Not yet implemented","Error")
+                            }
+                        }
+                    })
+                    
+                    $Ctrl.Xaml.IO.NodeRemove.Add_Click(
+                    {
+                        $Item = $Ctrl.Xaml.IO.NodeOutput.SelectedItem
+                        Switch ($Item.Type)
+                        {
+                            Host
+                            {
+                                $xNode = $Ctrl.Node.Host | ? Guid -eq $Item.Guid
+                                $Vm    = $Ctrl.Node.VmNodeObject($xNode)
+                                $Vm.Remove()
+                            }
+                            Template
+                            {
+                                $xNode = Get-ChildItem $Ctrl.Node.Path | ? Name -match $Item.Name
+                                Remove-Item $xNode.Fullname -Verbose
+                            }
+                        }
+        
+                        $Ctrl.Node.Refresh()
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+                        $Ctrl.Reset($Ctrl.Xaml.IO.NodeExtension,$Null)
+                    })
+                }
+            }
+        }
+        Handle([String]$Name)
+        {
+            Switch ($Name)
+            {
+                Network
+                {
+
+                }
+                Credential
+                {
+                    $This.Xaml.IO.CredentialCreate.IsEnabled       = 0
+                    $This.Xaml.IO.CredentialRemove.IsEnabled       = 0
+                    $This.Xaml.IO.CredentialType.IsEnabled         = 0
+                    $This.Xaml.IO.CredentialDescription.IsEnabled  = 0
+                    $This.Xaml.IO.CredentialUsername.IsEnabled     = 0
+                    $This.Xaml.IO.CredentialPassword.IsEnabled     = 0
+                    $This.Xaml.IO.CredentialConfirm.IsEnabled      = 0
+                    $This.Xaml.IO.CredentialPin.IsEnabled          = $This.Xaml.IO.CredentialType.SelectedIndex -eq 4
+        
+                    $This.Xaml.IO.CredentialUsername.Text          = ""
+                    $This.Xaml.IO.CredentialPassword.Password      = ""
+                    $This.Xaml.IO.CredentialConfirm.Password       = ""
+                    $This.Xaml.IO.CredentialPin.Password           = ""
+        
+                    $This.Xaml.IO.CredentialUsernameIcon.Source    = $Null
+                    $This.Xaml.IO.CredentialPasswordIcon.Source    = $Null
+                    $This.Xaml.IO.CredentialConfirmIcon.Source     = $Null
+                    $This.Xaml.IO.CredentialPinIcon.Source         = $Null
+        
+                    If ($This.Xaml.IO.CredentialOutput.SelectedIndex -ne -1)
+                    {
+                        $This.Xaml.IO.CredentialUsername.IsEnabled = 1
+                        $This.Xaml.IO.CredentialPassword.IsEnabled = 1
+                        $This.Xaml.IO.CredentialConfirm.IsEnabled  = 1
+        
+                        $Selected = $This.Xaml.IO.CredentialOutput.SelectedItem
+                        $Item     = $This.Credential.Output | ? Guid -eq $Selected.Guid
+                        If (!!$Item)
+                        {
+                            $This.Xaml.IO.CredentialType.SelectedIndex    = $This.Credential.Slot | ? Name -eq $Selected.Type | % Index
+                            $This.Xaml.IO.CredentialUsername.Text         = $Item.Username
+                            $This.Xaml.IO.CredentialPassword.Password     = $Item.Password()
+                            $This.Xaml.IO.CredentialConfirm.Password      = $Item.Password()
+                            $This.Xaml.IO.CredentialCreate.IsEnabled      = 0
+                            $This.Xaml.IO.CredentialRemove.IsEnabled      = 1
+                        }
+                        Else
+                        {
+                            $This.Xaml.IO.CredentialUsername.Text         = ""
+                            $This.Xaml.IO.CredentialPassword.Password     = ""
+                            $This.Xaml.IO.CredentialConfirm.Password      = ""
+                            $This.Xaml.IO.CredentialType.IsEnabled        = 1
+                            $This.Xaml.IO.CredentialDescription.IsEnabled = 1
+                        }
+        
+                        If ($Item.Type -eq "Microsoft")
+                        {
+                            $This.Xaml.IO.CredentialPin.Password          = $Item.Pin
+                        }
                     }
-                    $This.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
-                    $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Core]
-                    $This.Xaml.IO.TemplateSwitch.SelectedIndex      = $This.Node.Switch | ? Name -eq $Item.SwitchId | % Index
-                    $This.Xaml.IO.TemplateImagePath.Text            = $Item.Image.File.Fullname
-                    $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
                 }
-                Else
+                Image
                 {
-                    $This.Xaml.IO.TemplateName.Text                 = ""
-                    $This.Xaml.IO.TemplateRole.SelectedIndex        = 1
-                    $This.Xaml.IO.TemplatePath.Text                 = "<Select a path>"
-                    $This.Xaml.IO.TemplateImagePath.Text            = "<Select an image>"
+
+                }
+                Template
+                {
+                    $This.Xaml.IO.TemplateCreate.IsEnabled              = 0
+                    $This.Xaml.IO.TemplateRemove.IsEnabled              = 0
+                    $This.Xaml.IO.TemplateExport.IsEnabled              = 0
+                    $This.Xaml.IO.TemplateName.IsEnabled                = 0
+                    $This.Xaml.IO.TemplateRole.IsEnabled                = 0
+                    $This.Xaml.IO.TemplateRootPath.IsEnabled            = 0
+                    $This.Xaml.IO.TemplateRootPathIcon.IsEnabled        = 0
+                    $This.Xaml.IO.TemplateRootPathBrowse.IsEnabled      = 0
+                    $This.Xaml.IO.TemplateMemory.IsEnabled              = 0
+                    $This.Xaml.IO.TemplateHardDrive.IsEnabled           = 0
+                    $This.Xaml.IO.TemplateGeneration.IsEnabled          = 0
+                    $This.Xaml.IO.TemplateCore.IsEnabled                = 0
+        
+                    $This.Xaml.IO.TemplateMemory.SelectedIndex          = 1
+                    $This.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
+                    $This.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
+                    $This.Xaml.IO.TemplateCore.SelectedIndex            = 1
+        
+                    $This.Xaml.IO.TemplateRootPathIcon.Source           = $Null
+        
+                    If ($This.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
+                    {
+                        $This.Xaml.IO.TemplateName.IsEnabled            = 1
+                        $This.Xaml.IO.TemplateRole.IsEnabled            = 1
+                        $This.Xaml.IO.TemplateRootPath.IsEnabled        = 1
+                        $This.Xaml.IO.TemplateRootPathIcon.IsEnabled    = 1
+                        $This.Xaml.IO.TemplateRootPathBrowse.IsEnabled  = 1
+                        $This.Xaml.IO.TemplateMemory.IsEnabled          = 1
+                        $This.Xaml.IO.TemplateHardDrive.IsEnabled       = 1
+                        $This.Xaml.IO.TemplateGeneration.IsEnabled      = 1
+                        $This.Xaml.IO.TemplateCore.IsEnabled            = 1
+        
+                        $Selected = $This.Xaml.IO.TemplateOutput.SelectedItem
+                        $Item     = $This.Template.Output | ? Guid -eq $Selected.Guid
+                        If (!!$Item)
+                        {
+                            $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
+                            $This.Xaml.IO.TemplateRemove.IsEnabled          = 1
+                            $This.Xaml.IO.TemplateExport.IsEnabled          = 1
+                            $This.Xaml.IO.TemplateName.Text                 = $Item.Name
+                            $This.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
+
+                            $This.Xaml.IO.TemplateRootPath.Text             = $Item.Base
+                            $This.Xaml.IO.TemplateMemory.SelectedIndex      = Switch -Regex ($Item.Memory.Size)
+                            {
+                                "2.00 GB" { 0 } "4.00 GB" { 1 } "8.00 GB" { 2 } "16.00 GB" { 3 }
+                            }
+
+                            $This.Xaml.IO.TemplateHardDrive.SelectedIndex   = Switch -Regex ($Item.Hdd.Size)
+                            {
+                                "32.00 GB" { 0 } "64.00 GB" { 1 } "128.00 GB" { 2 } "256.00 GB" { 3 }
+                            }
+
+                            $This.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
+                            $This.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Core]
+                            $This.Xaml.IO.TemplateCreate.IsEnabled          = 0
+                        }
+                        Else
+                        {
+                            $This.Xaml.IO.TemplateName.Text                 = ""
+                            $This.Xaml.IO.TemplateRole.SelectedIndex        = 1
+                            $This.Xaml.IO.TemplateRootPath.Text             = $This.DefaultText("TemplateRootPath")
+                            $This.Xaml.IO.TemplateRootPathIcon.Source       = $Null
+                        }
+                    }
+                }
+                Node
+                {
+                    $This.Xaml.IO.NodeCreate.IsEnabled = 0
+                    $This.Xaml.IO.NodeRemove.IsEnabled = 0
+                    $This.Xaml.IO.NodeRefresh.IsEnabled = 1
+        
+                    If ($This.Xaml.IO.NodeOutput.SelectedIndex -ne -1)
+                    {
+                        $Selected = $This.Xaml.IO.NodeOutput.SelectedItem
+                        $Mode     = $Selected.Type -eq "Template"
+                        $Slot     = @($This.Node.Host,$This.Node.Template)[$Mode]
+                        $Item     = $Slot | ? Guid -eq $Selected.Guid
+                        $This.Reset($This.Xaml.IO.NodeExtension,$This.Property($Item))
+        
+                        $This.Xaml.IO.NodeCreate.IsEnabled = $Mode
+                        $This.Xaml.IO.NodeRemove.IsEnabled = 1
+                    }
                 }
             }
         }
-        NodeSwitchPanel()
+        StageXaml()
         {
-            $This.Xaml.IO.NodeSwitchCreate.IsEnabled = 0
-            $This.Xaml.IO.NodeSwitchRemove.IsEnabled = 0
-            $This.Xaml.IO.NodeSwitchUpdate.IsEnabled = 1
+            # [Event handler stuff]
+            $This.Stage("Network")
+            $This.Stage("Credential")
+            $This.Stage("Image")
+            $This.Stage("Template")
+            $This.Stage("Node")
 
-            $This.Xaml.IO.NodeSwitchIcon.Source      = $Null
-
-            If ($This.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
-            {
-                $Selected = $This.Xaml.IO.NodeSwitch.SelectedItem
-                $Item     = $This.Node.Switch | ? Guid -eq $Selected.Guid
-                If (!!$Item)
-                {
-                    $This.Xaml.IO.NodeSwitchRemove.IsEnabled = 1
-                }
-            }
+            # [Initial properties/settings]
+            $This.Initial("Network")
+            $This.Initial("Credential")
+            $This.Initial("Image")
+            $This.Initial("Template")
+            $This.Initial("Node")
         }
-        NodeHostPanel()
+        Reload()
         {
-            $This.Xaml.IO.NodeHostCreate.IsEnabled = 0
-            $This.Xaml.IO.NodeHostRemove.IsEnabled = 0
-            $This.Xaml.IO.NodeHostUpdate.IsEnabled = 1
-
-            If ($This.Xaml.IO.NodeHost.SelectedIndex -ne -1)
-            {
-                $Selected = $This.Xaml.IO.NodeHost.SelectedItem
-                $Mode     = $Selected.Type -eq "Template"
-                $Slot     = @($This.Node.Host,$This.Node.Template)[$Mode]
-                $Item     = $Slot | ? Guid -eq $Selected.Guid
-                $This.Reset($This.Xaml.IO.NodeHostExtension,$This.Property($Item))
-
-                $This.Xaml.IO.NodeHostCreate.IsEnabled = $Mode
-                $This.Xaml.IO.NodeHostRemove.IsEnabled = 1
-            }
+            $This.Xaml = $This.Get("Xaml")
+            $This.StageXaml()
+            $This.Invoke()
         }
         Invoke()
         {
+            $This.Update(0,"Invoking [~] Xaml Interface")
             Try
             {
                 $This.Xaml.Invoke()
             }
             Catch
             {
-                $This.Module.Write(1,"Failed [!] Either the user cancelled or the dialog failed")
+                $This.Write(1,"Exception [!] Either the user cancelled, or the dialog failed.")
             }
-        }
-        StageXaml()
-        {
-            $Ctrl = $This
-    
-            <#
-                ____    ____________________________________________________________________________________________________        
-               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-               \\__//¯¯¯ Master [~] Panel                                                                               ___//¯¯\\   
-                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            #>
-    
-            $Ctrl.Reset($Ctrl.Xaml.IO.MasterConfig,$Ctrl.Master.Config)
-            $Ctrl.Xaml.IO.MasterConfig.Add_SelectionChanged(
-            {
-                $Ctrl.ToggleMasterCreate()
-            })
-    
-            $Ctrl.Xaml.IO.MasterPath.Add_TextChanged(
-            {
-                $Ctrl.CheckPath("MasterPath")
-            })
-    
-            $Ctrl.Xaml.IO.MasterPathBrowse.Add_Click(
-            {
-                $Ctrl.FolderBrowse("MasterPath")
-            })
-    
-            $Ctrl.Xaml.IO.MasterDomain.Add_TextChanged(
-            {
-                $Ctrl.CheckDomain()
-            })
-    
-            $Ctrl.Xaml.IO.MasterNetBios.Add_TextChanged(
-            {
-                $Ctrl.CheckNetBios()
-            })
-    
-            $Ctrl.Xaml.IO.MasterCreate.Add_Click(
-            {
-                $Ctrl.Master.SetMain($Ctrl.Xaml.IO.MasterPath.Text,
-                                    $Ctrl.Xaml.IO.MasterDomain.Text,
-                                    $Ctrl.Xaml.IO.MasterNetBios.Text)
-    
-                $Ctrl.SetNetwork($Ctrl.Xaml.IO.MasterConfig.SelectedIndex)
-    
-                ForEach ($Item in "Config","Path","Domain","NetBios","PathBrowse","Create")
-                {
-                    $Ctrl.Xaml.Get("Master$Item").IsEnabled = 0
-                }
-    
-                $Ctrl.Reset($Ctrl.Xaml.IO.MasterConfigOutput,$Ctrl.Property($Ctrl.Master.Network.Config))
-                $Ctrl.Reset($Ctrl.Xaml.IO.MasterBase,$Ctrl.Property($Ctrl.Master.Network.Base))
-                $Ctrl.Reset($Ctrl.Xaml.IO.MasterRange,$Ctrl.Master.Network.Range)
-                $Ctrl.Reset($Ctrl.Xaml.IO.MasterHosts,$Ctrl.Master.Network.Hosts)
-                $Ctrl.Reset($Ctrl.Xaml.IO.MasterDhcp,$Ctrl.Property($Ctrl.Master.Network.Dhcp))
-            })
-    
-            <#
-                ____    ____________________________________________________________________________________________________        
-               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-               \\__//¯¯¯ Credential [~] Panel                                                                           ___//¯¯\\   
-                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            #>
-    
-            $Ctrl.Xaml.IO.CredentialType.Add_SelectionChanged(
-            {
-                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialDescription,$Ctrl.Credential.Slot[$Ctrl.Xaml.IO.CredentialType.SelectedIndex])
-                $Ctrl.CredentialPanel()
-            })
-    
-            $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
-            {
-                $Ctrl.ToggleCredentialCreate()
-            })
-    
-            $Ctrl.Xaml.IO.CredentialPassword.Add_PasswordChanged(
-            {
-                $Ctrl.ToggleCredentialCreate()
-            })
-    
-            $Ctrl.Xaml.IO.CredentialConfirm.Add_PasswordChanged(
-            {
-                $Ctrl.ToggleCredentialCreate()
-            })
-
-            $Ctrl.Xaml.IO.CredentialPin.Add_PasswordChanged(
-            {
-                $Ctrl.ToggleCredentialCreate()
-            })
-    
-            $Ctrl.Xaml.IO.CredentialGenerate.Add_Click(
-            {
-                $Entry                                    = $Ctrl.Credential.Generate()
-                $Ctrl.Xaml.IO.CredentialPassword.Password = $Entry
-                $Ctrl.Xaml.IO.CredentialConfirm.Password  = $Entry
-            })
-    
-            $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
-            {
-                $Ctrl.CredentialPanel()
-            })
-    
-            $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
-            {
-                Switch ($Ctrl.Credential.Output.Count)
-                {
-                    {$_ -eq 0}
-                    {
-                        $Ctrl.Credential.Setup()
-                    }
-                    {$_ -eq 1}
-                    {
-                        Return [System.Windows.MessageBox]::Show("Must have at least (1) account")
-                    }
-                    {$_ -gt 1}
-                    {
-                        $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Index -ne $Ctrl.Xaml.IO.CredentialOutput.SelectedIndex)
-                        $Ctrl.Credential.Rerank()
-                    }
-                }
-    
-                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-                $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
-            })
-    
-            $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
-            {
-                $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                                    $Ctrl.Xaml.IO.CredentialUsername.Text,
-                                    $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-                If ($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
-                {
-                    $Cred     = $Ctrl.Credential.Output | ? Username -eq $Ctrl.Xaml.IO.CredentialUsername.Text
-                    $Cred.Pin = $Ctrl.Xaml.IO.CredentialPin.Password
-                }
-    
-                $Ctrl.Credential.Rerank()
-                $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-    
-                $Ctrl.Xaml.IO.TemplateCredentialCount.Text = $Ctrl.Credential.Output.Count
-            })
-    
-            $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-
-            <#
-                ____    ____________________________________________________________________________________________________        
-               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-               \\__//¯¯¯ Image [~] Panel                                                                                ___//¯¯\\   
-                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            #>
-
-            $Ctrl.Xaml.IO.ImagePathBrowse.Add_Click(
-            {
-                $Ctrl.FolderBrowse("ImagePath")
-            })
-    
-            $Ctrl.Xaml.IO.ImagePath.Add_TextChanged(
-            {
-                $Ctrl.CheckPath("ImagePath")
-                $Ctrl.Xaml.IO.ImageImport.IsEnabled = $Ctrl.Flag | ? Name -eq ImagePath | % Status
-            })
-
-            $Ctrl.Xaml.IO.ImageImport.Add_Click(
-            {
-                $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
-                $Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
-            })
-
-            $Ctrl.Xaml.IO.ImageStore.Add_SelectionChanged(
-            {
-                $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
-                $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
-                $Ctrl.Xaml.IO.TemplateImagePath.Text = $Ctrl.Image.Current().Fullname
-            })
-    
-            <#
-                ____    ____________________________________________________________________________________________________        
-               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-               \\__//¯¯¯ Template [~] Panel                                                                             ___//¯¯\\   
-                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            #>
-
-            $Ctrl.Xaml.IO.TemplateName.Add_TextChanged(
-            {
-                $Ctrl.CheckTemplateName()
-            })
-
-            $Ctrl.Xaml.IO.TemplatePath.Add_TextChanged(
-            {
-                $Ctrl.CheckTemplatePath()
-            })
-    
-            $Ctrl.Xaml.IO.TemplatePathBrowse.Add_Click(
-            {
-                $Ctrl.FolderBrowse("TemplatePath")
-            })
-    
-            $Ctrl.Xaml.IO.TemplateImagePath.Add_TextChanged(
-            {
-                $Ctrl.CheckTemplateImagePath()
-            })
-    
-            $Ctrl.Xaml.IO.TemplateImagePathBrowse.Add_Click(
-            {
-                $Ctrl.FileBrowse("TemplateImagePath")
-            })
-    
-            $Ctrl.Xaml.IO.TemplateCreate.Add_Click(
-            {
-                If ($Ctrl.Xaml.IO.TemplateName.Text -notmatch "(\w|\d)")
-                {
-                    Return [System.Windows.MessageBox]::Show("Must enter a name","Error")
-                }
-    
-                ElseIf ($Ctrl.Xaml.IO.TemplateName.Text -in $Ctrl.Template.Name)
-                {
-                    Return [System.Windows.MessageBox]::Show("Duplicate name","Error")
-                }
-    
-                Else
-                {
-                    $ImageFile   = $Ctrl.Image.Store | ? Fullname -eq $Ctrl.Xaml.IO.TemplateImagePath.Text
-                    If ($ImageFile.Type -eq "Windows")
-                    {
-                        $ImageObject = $Ctrl.Image.ImageObject($ImageFile,$Ctrl.Xaml.IO.ImageStoreContent.SelectedItem)
-                    }
-                    Else
-                    {
-                        $ImageObject = $Ctrl.Image.ImageObject($ImageFile)
-                    }
-                    
-                    $Ctrl.Template.Add($Ctrl.Xaml.IO.TemplateName.Text,
-                                    $Ctrl.Xaml.IO.TemplateRole.SelectedIndex,
-                                    $Ctrl.Xaml.IO.TemplatePath.Text,
-                                    $Ctrl.Xaml.IO.TemplateMemory.SelectedItem.Content,
-                                    $Ctrl.Xaml.IO.TemplateHardDrive.SelectedItem.Content,
-                                    $Ctrl.Xaml.IO.TemplateGeneration.SelectedItem.Content,
-                                    $Ctrl.Xaml.IO.TemplateCore.SelectedItem.Content,
-                                    $Ctrl.Xaml.IO.TemplateSwitch.SelectedItem,
-                                    $ImageObject)
-    
-                    $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
-    
-                    $Ctrl.Xaml.Get("TemplateName").Text            = ""
-                    $Ctrl.Xaml.Get("TemplatePath").Text            = "<Select a path>"
-                    $Ctrl.Xaml.Get("TemplatePathIcon").Source      = $Null
-                    $Ctrl.Xaml.Get("TemplateImagePath").Text       = "<Select an image>"
-                    $Ctrl.Xaml.Get("TemplateImagePathIcon").Source = $Null
-                }
-            })
-    
-            $Ctrl.Xaml.IO.TemplateOutput.Add_SelectionChanged(
-            {
-                $Ctrl.TemplatePanel()
-            })
-            
-            $Ctrl.Xaml.IO.TemplateRemove.Add_Click(
-            {
-                $Ctrl.Template.Output = @($Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name)
-                $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
-            })
-    
-            $Ctrl.Xaml.IO.TemplateExport.Add_Click(
-            {
-                $Ctrl.Template.Export($Ctrl.Master.Main.Path,
-                                      $Ctrl.Master.Network,
-                                      $Ctrl.Credential.Output,
-                                      $Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
-            })
-
-            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.Control(1))
-    
-            <#
-                ____    ____________________________________________________________________________________________________        
-               //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-               \\__//¯¯¯ Node [~] Panel                                                                                 ___//¯¯\\   
-                ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-            #>
-    
-            $Ctrl.Xaml.IO.NodeSlot.Add_SelectionChanged(
-            {
-                $Ctrl.Xaml.IO.NodeSwitchPanel.Visibility = @("Collapsed","Visible")[[UInt32]$Ctrl.Xaml.IO.NodeSlot.SelectedIndex -eq 0]
-                $Ctrl.Xaml.IO.NodeHostPanel.Visibility   = @("Collapsed","Visible")[[UInt32]$Ctrl.Xaml.IO.NodeSlot.SelectedIndex -eq 1]
-            })
-
-            $Ctrl.Xaml.IO.NodeSwitch.Add_SelectionChanged(
-            {
-                $Ctrl.NodeSwitchPanel()
-            })
-
-            $Ctrl.Xaml.IO.NodeSwitchUpdate.Add_Click(
-            {
-                $Ctrl.Node.Refresh("Switch")
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-            })
-    
-            $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-            $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Host)
-            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateSwitch,$Ctrl.Node.Switch.Name)
-
-            $Ctrl.Xaml.IO.NodeSwitchName.Add_TextChanged(
-            {
-                $Status = [UInt32]($Ctrl.Xaml.IO.NodeSwitchName.Text -notin $Ctrl.Node.Switch.Name)
-                $Ctrl.Xaml.IO.NodeSwitchIcon.Source      = $Ctrl.IconStatus($Status)
-                $Ctrl.Xaml.IO.NodeSwitchCreate.IsEnabled = $Status
-            })
-
-            $Ctrl.Xaml.IO.NodeSwitchCreate.Add_Click(
-            {
-                $Ctrl.Node.NewVmSwitch($Ctrl.Xaml.IO.NodeSwitchName.Text,$Ctrl.Xaml.IO.NodeSwitchType.SelectedItem.Content)
-                $Ctrl.Node.Refresh("Switch")
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeSwitch,$Ctrl.Control(2))
-            })
-    
-            $Ctrl.Xaml.IO.NodeHostUpdate.Add_Click(
-            {
-                $Ctrl.Node.Refresh()
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostExtension,$Null)
-            })
-
-            $Ctrl.Xaml.IO.NodeTemplatePath.Add_TextChanged(
-            {
-                $Ctrl.CheckNodeTemplatePath()
-                $Ctrl.Xaml.IO.NodeTemplateImport.IsEnabled = $Ctrl.Flag | ? Name -eq NodeTemplatePath | % Status
-            })
-    
-            $Ctrl.Xaml.IO.NodeTemplatePathBrowse.Add_Click(
-            {
-                $Ctrl.FolderBrowse("NodeTemplatePath")
-            })
-    
-            $Ctrl.Xaml.IO.NodeTemplateImport.Add_Click(
-            {
-                $Ctrl.Update(0,"Setting [~] Node template import path")
-                $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodeTemplatePath.Text)
-                $Ctrl.Node.Refresh()
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
-            })
-    
-            $Ctrl.Xaml.IO.NodeHost.Add_SelectionChanged(
-            {
-                $Ctrl.NodeHostPanel()
-            })
-
-            $Ctrl.Xaml.IO.NodeHostCreate.Add_Click(
-            {
-                $Item = $Ctrl.Xaml.IO.NodeHost.SelectedItem
-
-                Switch ($Item.Type)
-                {
-                    Host
-                    {
-                        [System.Windows.MessageBox]::Show("Invalid type","Error")
-                    }
-                    Template
-                    {
-                        [System.Windows.MessageBox]::Show("Not yet implemented","Error")
-                    }
-                }
-            })
-
-            $Ctrl.Xaml.IO.NodeHostRemove.Add_Click(
-            {
-                $Item = $Ctrl.Xaml.IO.NodeHost.SelectedItem
-                Switch ($Item.Type)
-                {
-                    Host
-                    {
-                        $xNode = $Ctrl.Node.Host | ? Guid -eq $Item.Guid
-                        $Vm    = $Ctrl.Node.VmNodeObject($xNode)
-                        $Vm.Remove()
-                    }
-                    Template
-                    {
-                        $xNode = Get-ChildItem $Ctrl.Node.Path | ? Name -match $Item.Name
-                        Remove-Item $xNode.Fullname -Verbose
-                    }
-                }
-
-                $Ctrl.Node.Refresh()
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHost,$Ctrl.Node.Object)
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeHostExtension,$Null)
-            })
-    
-            $Ctrl.SetInitialState()
         }
         [String] ToString()
         {
-            Return "<FEVirtual.VmController[Master]"
+            Return "<FEVirtual.VmController[Master]>"
         }
     }
 
-    [VmControllerMaster]::New()
+    $Ctrl    = [VmControllerMaster]::New()
+    $Ctrl.StageXaml()
+
+    $Mode = 1
+    # Stages everything for testing
+    If ($Mode -eq 1)
+    {
+        # // [Network tab] \\_____________________
+
+        # Set Domain/NetBios
+        $Ctrl.Xaml.IO.NetworkDomain.Text  = "securedigitsplus.com"
+        $Ctrl.Xaml.IO.NetworkNetBios.Text = "SECURED"
+        $Ctrl.SetMain()
+
+        # Refresh adapters
+        $Ctrl.Network.Refresh()
+        $Ctrl.SwitchConfig()
+        $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,
+                    $Ctrl.Network.Physical().Name)
+
+        $Ctrl.Xaml.IO.NetworkOutput.Items[0].Profile = 1
+        $Ctrl.Xaml.IO.NetworkOutput.Items[1].Profile = 1
+
+        # Assign
+        $List = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
+        $Ctrl.Template.SetNetwork($List)
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+
+        # // [Credential tab] \\_____________________
+
+        # Add [Setup\installer]
+        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 0
+        $Ctrl.Xaml.IO.CredentialUsername.Text      = "installer"
+        $Password                                  = "opnsense"
+        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
+        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
+        
+        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                             $Ctrl.Xaml.IO.CredentialUsername.Text,
+                             $Ctrl.Xaml.IO.CredentialPassword.Password)
+
+        # Add [System\root]
+        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 1
+        $Ctrl.Xaml.IO.CredentialUsername.Text      = "root"
+        $Password                                  = $Ctrl.Credential.Generate()
+        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
+        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
+
+        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                             $Ctrl.Xaml.IO.CredentialUsername.Text,
+                             $Ctrl.Xaml.IO.CredentialPassword.Password)
+
+        # Add [User\mcadmin]
+        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 3
+        $Ctrl.Xaml.IO.CredentialUsername.Text      = "mcadmin"
+        $Password                                  = $Ctrl.Credential.Generate()
+        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
+        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
+
+        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                             $Ctrl.Xaml.IO.CredentialUsername.Text,
+                             $Ctrl.Xaml.IO.CredentialPassword.Password)
+
+        # remove [Setup\Administrator]
+        
+        $Guid = $Ctrl.Xaml.IO.CredentialOutput.Items | ? Username -eq Administrator | % Guid
+        $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
+        $Ctrl.Credential.Rerank()
+
+        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
+
+        # Assign
+        $Ctrl.Template.SetAccount($Ctrl.Credential.Output)
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
+
+        # // [Image tab] \\_____________________
+
+        # Set image path
+        $Ctrl.Xaml.IO.ImagePath.Text = "C:\Images"
+        $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
+        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
+
+        $Ctrl.Xaml.IO.ImageStore.Items[0].Profile = 1
+
+        # Assign
+        $List  = $Ctrl.Xaml.IO.ImageStore.Items | ? Profile
+        $Ctrl.Template.SetImage($Ctrl.Image.ImageObject($List))
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
+        
+        # // [Template tab] \\__________________
+
+        # Set export path
+        $Ctrl.Xaml.IO.TemplateExportPath.Text = "C:\FileVm"
+        $Ctrl.SetTemplatePath()
+    }
+
+    $Ctrl.Invoke()
 }
