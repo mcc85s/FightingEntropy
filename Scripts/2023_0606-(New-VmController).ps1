@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 17:58:57                                                                  //
+\\  Date       : 2023-06-06 18:57:39                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -25,10 +25,10 @@
     TODO       : N/A
 
 .Example
-#
+#>
 
 Function New-VmController
-{#>
+{
     Import-Module Hyper-V -EA 0
 
     # [General]
@@ -4138,41 +4138,6 @@ Function New-VmController
         }
     }
     
-    Class VmTemplateFile # Deprecate?
-    {
-        [String]      $Name
-        [Object]      $Role
-        [Guid]        $Guid
-        [String]      $Root
-        [Object]    $Memory
-        [Object]       $Hdd
-        [UInt32]       $Gen
-        [UInt32]      $Core
-        [Object]   $Account
-        [Object]   $Network
-        [Object]      $Node
-        [Object]     $Image
-        VmTemplateFile([Object]$Template)
-        {
-            $This.Name      = $Template.Name
-            $This.Role      = $Template.Role
-            $This.Guid      = $Template.Guid
-            $This.Root      = $Template.Root
-            $This.Memory    = $Template.Memory
-            $This.Hdd       = $Template.Hdd
-            $This.Gen       = $Template.Gen
-            $This.Core      = $Template.Core
-            $This.Account   = $Template.Account
-            $This.Network   = $Template.Network
-            $This.Node      = $Template.Node
-            $This.Image     = $Template.Image
-        }
-        [String] ToString()
-        {
-            Return "<FEVirtual.VmNode[File]>"
-        }
-    }
-    
     Class VmTemplateController
     {
         Hidden [Object] $Role
@@ -4193,10 +4158,6 @@ Function New-VmController
         [Object] VmRoleList()
         {
             Return [VmRoleList]::New()
-        }
-        [Object] VmTemplateFile([Object]$Template)
-        {            
-            Return [VmTemplateFile]::New($Template)
         }
         [Object] VmTemplateNetworkItem([UInt32]$Index,[Object]$Network,[String]$IpAddress)
         {
@@ -4278,7 +4239,7 @@ Function New-VmController
             ForEach ($Item in $This.Network)
             { 
                 $Node  += $This.VmTemplateNetworkItem($Node.Count,
-                                                      $Item.Network,
+                                                      $Item.Interface,
                                                       $Item.FirstAvailableIPAddress())
             }
     
@@ -4304,9 +4265,8 @@ Function New-VmController
                 [System.Windows.MessageBox]::Show("Path not set","Exception [!] Path error")
             }
     
-            $Template   = $This.Output[$Index]
-            $FilePath   = "{0}\{1}.fex" -f $This.Path, $Template.Name
-            $Value      = $This.VmTemplateFile($Template)
+            $Value      = $This.Output[$Index]
+            $FilePath   = "{0}\{1}.fex" -f $This.Path, $Value.Name
     
             Export-CliXml -Path $FilePath -InputObject $Value -Depth 3
     
@@ -4367,7 +4327,7 @@ Function New-VmController
         VmNodeNetworkItem([Object]$Network,[Object]$Node)
         {
             $This.Index     = $Node.Index
-            $This.Switch    = $Network.Switch
+            $This.Switch    = $Network.Switch.Name
             $This.IpAddress = $Node.IpAddress
             $This.Domain    = $Node.Domain
             $This.NetBios   = $Node.NetBios
@@ -4476,7 +4436,7 @@ Function New-VmController
         }
         [Object] VmNodeNetworkItem([Object]$Network,[Object]$Node)
         {
-            Return [VmNodeNetworkItem]::New($Network,$Node)
+            Return [VmNodeNetworkItem]::New($Network.Interface,$Node)
         }
         [Object] ImageObject([Object]$File,[Object]$Edition)
         {
@@ -4846,16 +4806,16 @@ Function New-VmController
         [Object]         $Console
         [Object]            $Name
         [Object]            $Role
-        [Object]          $Memory
+        [Object]            $Guid
         [Object]            $Path
-        [Object]             $Vhd
+        [Object]          $Memory
         [Object]         $VhdSize
+        [Object]             $Vhd
         [Object]      $Generation
         [UInt32]            $Core
         [Object]          $Switch
         [Object]        $Firmware
         [UInt32]          $Exists
-        [Object]            $Guid
         [Object]         $Account
         [Object]         $Network
         [Object]           $Image
@@ -4869,23 +4829,24 @@ Function New-VmController
         {
             # Meant to build a new VM
             $This.Mode       = 1
-            $This.Role       = $Node.Role
-            $This.StartConsole()
-
             $This.Name       = $Node.Name
+            $This.Role       = $Node.Role
+
+            $This.StartConsole()
             [Void]$This.Get()
 
             Switch ($This.Exists)
             {
                 0
                 {
-                    $This.Memory     = $This.Size("Ram",$Node.Memory)
-                    $This.Path       = "{0}\{1}" -f $Node.Base, $Node.Name
-                    $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Base, $Node.Name
-                    $This.VhdSize    = $This.Size("Hdd",$Node.HDD)
+                    $This.Guid       = $Node.Guid
+                    $This.Path       = "{0}\{1}" -f $Node.Root, $Node.Name
+                    $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Root, $Node.Name
+                    $This.Memory     = $This.Size("Memory",$Node.Memory.Bytes)
+                    $This.VhdSize    = $This.Size("Hdd",$Node.Hdd.Bytes)
                     $This.Generation = $Node.Gen
                     $This.Core       = $Node.Core
-                    $This.Switch     = @($Node.SwitchId)
+                    $This.Switch     = @($Node.Network.Switch)
                 }
                 1
                 {
@@ -4896,12 +4857,12 @@ Function New-VmController
                     $This.VhdSize    = $xVhd.Size
                     $This.Generation = $This.Object.Generation
                     $This.Core       = $This.Object.ProcessorCount
-                    $This.Switch     = @($This.Object.NetworkAdapters[0].SwitchName)
+                    $This.Switch     = @($This.Object.NetworkAdapters.SwitchName)
                 }
             }
 
             $This.Account    = $Node.Account
-            $This.Network    = $This.VmNodeNetwork($Node)
+            $This.Network    = $Node.Network
             $This.Image      = $Node.Image
             $This.Script     = $This.VmNodeScriptBlockController()
             $This.Security   = $This.VmNodeSecurity()
@@ -6689,24 +6650,25 @@ Function New-VmController
         }
         [Object] Create([UInt32]$Index)
         {
-            If (!$This.Template[$Index])
+            If ($Index -gt $This.Template.Count)
             {
                 Throw "Invalid index"
             }
 
-            If ($This.Template[$Index].Name -in $This.Object)
+            $Temp = $This.Template[$Index]
+
+            If ($Temp.Name -in $This.Object)
             {
                 Throw "Item is already in the object list"
             }
 
-            $Temp = $This.Template[$Index]
-            $Item = Switch -Regex ($Temp.Role)
+            $Item = Switch -Regex ($Temp.Role.Name)
             {
                 "(^Server$|^Client$)"
                 {
                     $This.VmNodeWindows($Temp)
                 }
-                "(^Linux$)"
+                "(^Unix$)"
                 {
                     $This.VmNodeLinux($Temp)
                 }
@@ -7016,7 +6978,6 @@ Function New-VmController
 
     Class VmControllerTemplate
     {
-        [String]     $Index
         [Guid]        $Guid
         [String]      $Name
         [String]      $Role
@@ -7030,7 +6991,6 @@ Function New-VmController
         [String]     $Image
         VmControllerTemplate([Object]$Object)
         {
-            $This.Index    = $Object.Index
             $This.Guid     = $Object.Guid
             $This.Name     = $Object.Name
             $This.Role     = $Object.Role
@@ -7041,11 +7001,10 @@ Function New-VmController
             $This.Core     = $Object.Core
             $This.Account  = $Object.Account.Username
             $This.Switch   = $Object.Network.Interface.Name
-            $This.Image    = $Object.Image.Fullname
+            $This.Image    = $Object.Image.File.Fullname
         }
         VmControllerTemplate()
         {
-            $This.Index    = $Null
             $This.Guid     = $This.NewGuid()
             $This.Name     = "<New>"
             $This.Account  = "-"
@@ -8439,99 +8398,5 @@ Function New-VmController
 
     $Ctrl    = [VmControllerMaster]::New()
     $Ctrl.StageXaml()
-
-    $Mode = 1
-    # Stages everything for testing
-    If ($Mode -eq 1)
-    {
-        # // [Network tab] \\_____________________
-
-        # Set Domain/NetBios
-        $Ctrl.Xaml.IO.NetworkDomain.Text  = "securedigitsplus.com"
-        $Ctrl.Xaml.IO.NetworkNetBios.Text = "SECURED"
-        $Ctrl.SetMain()
-
-        # Refresh adapters
-        $Ctrl.Network.Refresh()
-        $Ctrl.SwitchConfig()
-        $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,
-                    $Ctrl.Network.Physical().Name)
-
-        $Ctrl.Xaml.IO.NetworkOutput.Items[0].Profile = 1
-        $Ctrl.Xaml.IO.NetworkOutput.Items[1].Profile = 1
-
-        # Assign
-        $List = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
-        $Ctrl.Template.SetNetwork($List)
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
-
-        # // [Credential tab] \\_____________________
-
-        # Add [Setup\installer]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 0
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "installer"
-        $Password                                  = "opnsense"
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-        
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # Add [System\root]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 1
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "root"
-        $Password                                  = $Ctrl.Credential.Generate()
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # Add [User\mcadmin]
-        $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 3
-        $Ctrl.Xaml.IO.CredentialUsername.Text      = "mcadmin"
-        $Password                                  = $Ctrl.Credential.Generate()
-        $Ctrl.Xaml.IO.CredentialPassword.Password  = $Password
-        $Ctrl.Xaml.IO.CredentialConfirm.Password   = $Password
-
-        $Ctrl.Credential.Add($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
-                             $Ctrl.Xaml.IO.CredentialUsername.Text,
-                             $Ctrl.Xaml.IO.CredentialPassword.Password)
-
-        # remove [Setup\Administrator]
-        
-        $Guid = $Ctrl.Xaml.IO.CredentialOutput.Items | ? Username -eq Administrator | % Guid
-        $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
-        $Ctrl.Credential.Rerank()
-
-        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.Control(0))
-
-        # Assign
-        $Ctrl.Template.SetAccount($Ctrl.Credential.Output)
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
-
-        # // [Image tab] \\_____________________
-
-        # Set image path
-        $Ctrl.Xaml.IO.ImagePath.Text = "C:\Images"
-        $Ctrl.SetImagePath($Ctrl.Xaml.IO.ImagePath.Text)
-        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
-
-        $Ctrl.Xaml.IO.ImageStore.Items[0].Profile = 1
-
-        # Assign
-        $List  = $Ctrl.Xaml.IO.ImageStore.Items | ? Profile
-        $Ctrl.Template.SetImage($Ctrl.Image.ImageObject($List))
-        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
-        
-        # // [Template tab] \\__________________
-
-        # Set export path
-        $Ctrl.Xaml.IO.TemplateExportPath.Text = "C:\FileVm"
-        $Ctrl.SetTemplatePath()
-    }
-
     $Ctrl.Invoke()
-#}#>
+}
