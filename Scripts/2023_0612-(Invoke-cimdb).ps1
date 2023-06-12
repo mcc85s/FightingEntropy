@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-12 13:45:02                                                                  //
+\\  Date       : 2023-06-12 17:18:42                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
@@ -24,656 +24,7 @@
 .Example
 #>
 
-# Database templates/types
-
-Enum cimdbSlotType
-{
-    Client
-    Service
-    Device
-    Issue
-    Purchase
-    Inventory
-    Expense
-    Account
-    Invoice
-}
-
-Class cimdbSlotItem
-{
-    [UInt32]       $Index
-    [String]        $Name
-    [String] $Description
-    cimdbSlotItem([String]$Name)
-    {
-        $This.Index = [UInt32][cimdbSlotType]::$Name
-        $This.Name  = [cimdbSlotType]::$Name
-    }
-    [String] ToString()
-    {
-        Return $This.Name
-    }
-}
-
-Class cimdbSlotList
-{
-    [Object] $Output
-    cimdbSlotList()
-    {
-        $This.Refresh()
-    }
-    [Object] cimdbSlotItem([String]$Name)
-    {
-        Return [cimdbSlotItem]::New($Name)
-    }
-    Clear()
-    {
-        $This.Output = @( )
-    }
-    Refresh()
-    {
-        $This.Clear() 
-        ForEach ($Name in [System.Enum]::GetNames([cimdbSlotType]))
-        {
-            $Item             = $This.cimdbSlotItem($Name)
-            $Item.Description = Switch ($Item.Name)
-            {
-                Client     { "Tracks identity, phone(s), email(s), device(s), issue(s), and invoice(s)"  }
-                Service    { "Tracks the name, description, rate/price of labor"                         }
-                Device     { "Information such as make, model, serial number, etc."                      }
-                Issue      { "Particular notes and statuses about a particular device"                   }
-                Purchase   { "Item or service required for an issue or sale"                             }
-                Inventory  { "Item specifically meant for sale"                                          }
-                Expense    { "Good(s), service(s), or bill(s)"                                           }
-                Account    { "Monetary silo or information for a particular vendor or external business" }
-                Invoice    { "Representation of a sale"                                                  }
-            }
-
-            $This.Output += $Item
-        }
-    }
-    [Object] Get([String]$name)
-    {
-        Return $This.Output | ? Name -eq $Name
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdbSlot[List]>"
-    }
-}
-
-Enum cimdbModeType
-{
-    ViewUid
-    EditUid
-    ViewClient
-    EditClient 
-    ViewService
-    EditService
-    ViewDevice 
-    EditDevice
-    ViewIssue
-    EditIssue
-    ViewPurchase
-    EditPurchase
-    ViewInventory
-    EditInventory
-    ViewExpense
-    EditExpense
-    ViewAccount
-    EditAccount
-    ViewInvoice
-    EditInvoice
-}
-
-Class cimdbModeItem
-{
-    [UInt32] $Index
-    [String]  $Name
-    cimdbModeItem([String]$Name)
-    {
-        $This.Index = [UInt32][cimdbModeType]::$Name
-        $This.Name  = [cimdbModeType]::$Name
-    }
-    [String] ToString()
-    {
-        Return $This.Name
-    }
-}
-
-Class cimdbModeList
-{
-    [Object] $Output
-    cimdbModeList()
-    {
-        $This.Refresh()
-    }
-    [Object] cimdbModeItem([String]$Name)
-    {
-        Return [cimdbModeItem]::New($Name)
-    }
-    Clear()
-    {
-        $This.Output = @( )
-    }
-    Refresh()
-    {
-        $This.Clear()
-
-        ForEach ($Name in [System.Enum]::GetNames([cimdbModeType]))
-        {
-            $This.Output += $This.cimdbModeItem($Name)
-        }
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Mode[List]>"
-    }
-}
-
-Class cimdbUid
-{
-    [UInt32]  $Index
-    [Object]   $Slot
-    [String]    $Uid
-    [Object]   $Date
-    [Object]   $Time
-    [Object] $Record
-    cimdbUid([UInt32]$Index,[Object]$Slot)
-    {
-        $This.Index  = $Index
-        $This.Uid    = $This.NewGuid()
-        $This.Slot   = $Slot
-        $This.Main()
-    }
-    Main()
-    {
-        $DateTime    = $This.GetDateTime() -Split " "
-        $This.Date   = $DateTime[0]
-        $This.Time   = $DateTime[1]
-    }
-    Insert([Object]$Record)
-    {
-        $This.Record = $Record
-    }
-    [String] NewGuid()
-    {
-        Return [Guid]::NewGuid()
-    }
-    [String] GetDateTime()
-    {
-        Return [DateTime]::Now.ToString("MM/dd/yyyy HH:mm:ss")
-    }
-    [String] ToString()
-    {
-        Return $This.Slot
-    }
-}
-
-Class cimdbListTemplate
-{
-    [String]   $Name
-    [UInt32]  $Count
-    [Object] $Output
-    cimdbListTemplate([String]$Name)
-    {
-        $This.Name = $Name
-    }
-    Clear()
-    {
-        $This.Output = @( )
-        $This.GetCount()
-    }
-    GetCount()
-    {
-        $This.Count  = $This.Output.Count
-    }
-    Add([Object]$Item)
-    {
-        $This.Output += $Item
-        $This.GetCount()
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.List[Template]>"
-    }
-}
-
-Class cimdbClientTemplate
-{
-    [UInt32]          $Rank
-    [String]   $DisplayName
-    [Object]          $Name
-    [Object]           $Dob
-    [String]        $Gender
-    [Object]      $Location
-    [Object]         $Image
-    [Object]         $Phone
-    [Object]         $Email
-    [Object]        $Device
-    [Object]         $Issue
-    [Object]       $Invoice
-    cimdbClientTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Client[Template]>"
-    }
-}
-
-Class cimdbServiceTemplate
-{
-    [UInt32]        $Rank
-    [String] $DisplayName
-    [String]        $Name
-    [String] $Description
-    [Float]         $Cost
-    cimdbServiceTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Service[Template]>"
-    }
-}
-
-Class cimdbDeviceTemplate
-{
-    [UInt32]          $Rank
-    [String]   $DisplayName
-    [String]       $Chassis
-    [String]        $Vendor
-    [String]         $Model
-    [String] $Specification
-    [String]        $Serial
-    [String]        $Client
-    cimdbDeviceTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Device[Template]>"
-    }
-}
-
-Class cimdbIssueTemplate
-{
-    [UInt32]        $Rank
-    [Object] $DisplayName
-    [Object]      $Status
-    [String] $Description
-    [String]      $Client
-    [String]      $Device
-    [Object]     $Service
-    [Object]     $Invoice
-    cimdbIssueTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Issue[Template]>"
-    }
-}
-
-Class cimdbPurchaseTemplate
-{
-    [UInt32]          $Rank
-    [Object]   $DisplayName
-    [Object]   $Distributor
-    [Object]           $URL
-    [String]        $Vendor
-    [String]         $Model
-    [String] $Specification
-    [String]        $Serial
-    [Bool]        $IsDevice
-    [String]        $Device
-    [Object]          $Cost
-    cimdbPurchaseTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Purchase[Template]>"
-    }
-}
-
-Class cimdbInventoryTemplate
-{
-    [UInt32]        $Rank
-    [String] $DisplayName
-    [String]      $Vendor
-    [String]       $Model
-    [String]      $Serial
-    [Object]       $Title
-    [Object]        $Cost
-    [Bool]      $IsDevice
-    [Object]      $Device
-    cimdbInventoryTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Inventory[Template]>"
-    }
-}
-
-Class cimdbExpenseTemplate
-{
-    [UInt32]        $Rank
-    [Object] $DisplayName
-    [Object]   $Recipient
-    [Object]   $IsAccount
-    [Object]     $Account
-    [Object]        $Cost
-    cimdbExpenseTemplate()
-    {
-
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Expense[Template]>"
-    }
-}
-
-Class cimdbAccountTemplate
-{
-    [UInt32]        $Rank
-    [String] $DisplayName
-    [Object]      $Object
-    cimdbAccountTemplate()
-    {
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Account[Template]>"
-    }
-}
-
-Class cimdbInvoiceTemplate
-{
-    [UInt32]        $Rank
-    [String] $DisplayName
-    [UInt32]        $Mode
-    [Object]      $Client
-    [Object]       $Issue
-    [Object]    $Purchase
-    [Object]   $Inventory
-    cimdbInvoiceTemplate()
-    {
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Invoice[Template]>"
-    }
-}
-
-Class cimdbDatabaseController
-{
-    [Object]   $Slot
-    [Object]   $Mode
-    [Object] $Output
-    cimdbDatabaseController()
-    {
-        $This.Slot = $This.cimdbSlotList()
-        $This.Mode = $This.cimdbModeList()
-        $This.Clear()
-    }
-    Clear()
-    {
-        $This.Output = @( )
-    }
-    [Object] cimdbSlotList()
-    {
-        Return [cimdbSlotList]::New()
-    }
-    [Object] cimdbModeList()
-    {
-        Return [cimdbModeList]::New()
-    }
-    [Object] cimdbUid([UInt32]$Index,[Object]$Slot)
-    {
-        Return [cimdbUid]::New($Index,$Slot)
-    }
-    [Object] cimdbClientTemplate()
-    {
-        Return [cimdbClientTemplate]::New()
-    }
-    [Object] cimdbServiceTemplate()
-    {
-        Return [cimdbServiceTemplate]::New()
-    }
-    [Object] cimdbDeviceTemplate()
-    {
-        Return [cimdbDeviceTemplate]::New()
-    }
-    [Object] cimdbIssueTemplate()
-    {
-        Return [cimdbIssueTemplate]::New()
-    }
-    [Object] cimdbPurchaseTemplate()
-    {
-        Return [cimdbPurchaseTemplate]::New()
-    }
-    [Object] cimdbInventoryTemplate()
-    {
-        Return [cimdbInventoryTemplate]::New()
-    }
-    [Object] cimdbExpenseTemplate()
-    {
-        Return [cimdbExpenseTemplate]::New()
-    }
-    [Object] cimdbAccountTemplate()
-    {
-        Return [cimdbAccountTemplate]::New()
-    }
-    [Object] cimdbInvoiceTemplate()
-    {
-        Return [cimdbInvoiceTemplate]::New()
-    }
-    [Object] Entry([String]$Name)
-    {
-        Return $This.cimdbUid($This.Output.Count,$This.Slot.Output[$This.GetIndex($Name)])
-    }
-    [String] GetName([UInt32]$Index)
-    {
-        Return [cimdbSlotType]$Index
-    }
-    [Uint32] GetIndex([String]$Name)
-    {
-        Return [UInt32][cimdbSlotType]::$Name
-    }
-    [Object[]] GetSlot([String]$Name)
-    {
-        Return @($This.Output | ? Slot -match $Name)
-    }
-    [Object] New([String]$Name)
-    {
-        $Uid        = $This.Entry($Name)
-        $Uid.Record = Switch ($Name)
-        {
-            Client    {    $This.cimdbClientTemplate() }
-            Service   {   $This.cimdbServiceTemplate() }
-            Device    {    $This.cimdbDeviceTemplate() }
-            Issue     {     $This.cimdbIssueTemplate() }
-            Purchase  {  $This.cimdbPurchaseTemplate() }
-            Inventory { $This.cimdbInventoryTemplate() }
-            Expense   {   $This.cimdbExpenseTemplate() }
-            Account   {   $This.cimdbAccountTemplate() }
-            Invoice   {   $This.cimdbInvoiceTemplate() }
-        }
-
-        $Uid.Record.Rank = $This.GetSlot($Name).Count
-
-        Return $Uid
-    }
-    Add([Object]$String)
-    {
-        Switch -Regex ($String)
-        {
-            "^\d$"
-            {
-                $This.Output += $This.New($This.GetName([UInt32]$String))
-            }
-            Default
-            {
-                $This.Output += $This.New($String)
-            }
-        }
-    }
-    Generate([UInt32]$Length)
-    {
-        ForEach ($X in 0..($Length-1))
-        {
-            $This.Add($This.GetRandom())
-        }
-    }
-    [UInt32] GetRandom()
-    {
-        Return Get-Random -Max 9
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Database[Controller]>"
-    }
-}
-
-# GUI Enums
-Enum UidPropertyType
-{
-    Index
-    Slot
-    Uid
-    Date
-    Time
-    Record
-}
-
-Enum ClientPropertyType
-{
-    Rank
-    DisplayName
-    Name
-    Dob
-    Gender
-    Location
-    Image
-    Phone
-    Email
-    Device
-    Issue
-    Invoice
-}
-
-Enum ServicePropertyType
-{
-    Rank
-    DisplayName
-    Name
-    Description
-    Cost
-}
-
-Enum DevicePropertyType
-{
-    Rank
-    DisplayName
-    Chassis
-    Vendor
-    Model
-    Specification
-    Serial
-    Client
-}
-
-Enum IssuePropertyType
-{
-    Rank
-    DisplayName
-    Status
-    Description
-    Client
-    Device
-    Service
-    Invoice
-}
-
-Enum PurchasePropertyType
-{
-    Rank
-    DisplayName
-    Distributor
-    URL
-    Vendor
-    Model
-    Specification
-    Serial
-    IsDevice
-    Device
-    Cost
-}
-
-Enum InventoryPropertyType
-{
-    Rank
-    DisplayName
-    Vendor
-    Model
-    Serial
-    Title
-    Cost
-    IsDevice
-    Device
-}
-
-Enum ExpensePropertyType
-{
-    Rank
-    DisplayName
-    Recipient
-    IsAccount
-    Account
-    Cost
-}
-
-Enum AccountPropertyType
-{
-    Rank
-    DisplayName
-    Object
-}
-
-Enum InvoicePropertyType
-{
-    Rank
-    DisplayName
-    Mode
-    Client
-    Issue
-    Purchase
-    Inventory
-}
-
-Enum ButtonPanelType
-{
-    UidPanel
-    ClientPanel
-    ServicePanel
-    DevicePanel
-    IssuePanel
-    PurchasePanel
-    InventoryPanel
-    ExpensePanel
-    AccountPanel
-    InvoicePanel
-}
-
+# Xaml types
 Class cimdbXaml
 {
     Static [String] $Content = @(
@@ -836,11 +187,27 @@ Class cimdbXaml
     '                <Trigger Property="AlternationIndex"',
     '                         Value="0">',
     '                    <Setter Property="Background"',
-    '                            Value="White"/>',
+    '                            Value="#F8FFFFFF"/>',
     '                </Trigger>',
-    '                <Trigger Property="AlternationIndex" Value="1">',
+    '                <Trigger Property="AlternationIndex"',
+    '                         Value="1">',
     '                    <Setter Property="Background"',
-    '                            Value="#FFD6FFFB"/>',
+    '                            Value="#FFF8FFFF"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex"',
+    '                         Value="2">',
+    '                    <Setter Property="Background"',
+    '                            Value="#FFFFF8FF"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex"',
+    '                         Value="3">',
+    '                    <Setter Property="Background"',
+    '                            Value="#F8F8F8FF"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex"',
+    '                         Value="4">',
+    '                    <Setter Property="Background"',
+    '                            Value="#F8FFF8FF"/>',
     '                </Trigger>',
     '                <Trigger Property="IsMouseOver" Value="True">',
     '                    <Setter Property="ToolTip">',
@@ -1205,13 +572,13 @@ Class cimdbXaml
     '                    </DataGrid>',
     '                </Grid>',
     '                <!-- Edit Client Panel -->',
-    '                <Grid Name="EditClientPanel" Visibility="Collapsed">',
+    '                <Grid Name="EditClientPanel" Visibility="Visible">',
     '                    <Grid.RowDefinitions>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="70"/>',
-    '                        <RowDefinition Height="70"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="*"/>',
     '                    </Grid.RowDefinitions>',
     '                    <Grid Grid.Row="0">',
@@ -1236,7 +603,7 @@ Class cimdbXaml
     '                                 Text="&lt;Last&gt;"/>',
     '                        <TextBox Grid.Column="4"',
     '                                 Name="EditClientOther"',
-    '                                 Text="&lt;Title&gt;"/>',
+    '                                 Text="&lt;Other&gt;"/>',
     '                        <Image Grid.Column="5"',
     '                               Name="EditClientNameIcon"/>',
     '                    </Grid>',
@@ -1303,46 +670,74 @@ Class cimdbXaml
     '                        <Image Grid.Column="6"',
     '                               Name="EditClientDobIcon"/>',
     '                    </Grid>',
-    '                    <GroupBox Header="[Phone Number(s)]" Grid.Row="3">',
-    '                        <Grid>',
-    '                            <Grid.ColumnDefinitions>',
-    '                                <ColumnDefinition Width="*"/>',
-    '                                <ColumnDefinition Width="40"/>',
-    '                                <ColumnDefinition Width="*"/>',
-    '                                <ColumnDefinition Width="40"/>',
-    '                            </Grid.ColumnDefinitions>',
-    '                            <TextBox Grid.Column="0"',
+    '                    <Grid Grid.Row="3">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="25"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0"',
+    '                               Content="[Phone]:"/>',
+    '                        <TextBox Grid.Column="1"',
     '                                     Name="EditClientPhoneText"/>',
-    '                            <Button Grid.Column="1"',
+    '                        <Image Grid.Column="2"',
+    '                                   Name="EditClientPhoneIcon"/>',
+    '                        <Button Grid.Column="3"',
     '                                    Name="EditClientPhoneAdd"',
     '                                    Content="+"/>',
-    '                            <ComboBox Grid.Column="2"',
+    '                        <ComboBox Grid.Column="4"',
     '                                      Name="EditClientPhoneList"/>',
-    '                            <Button Grid.Column="3"',
-    '                                    Name="EditClientPhoneRemove"',
-    '                                    Content="-"/>',
-    '                        </Grid>',
-    '                    </GroupBox>',
-    '                    <GroupBox Header="[Email Address(es)]" Grid.Row="4">',
-    '                        <Grid>',
-    '                            <Grid.ColumnDefinitions>',
-    '                                <ColumnDefinition Width="*"/>',
-    '                                <ColumnDefinition Width="40"/>',
-    '                                <ColumnDefinition Width="*"/>',
-    '                                <ColumnDefinition Width="40"/>',
-    '                            </Grid.ColumnDefinitions>',
-    '                            <TextBox Grid.Column="0"',
+    '                        <Button Grid.Column="5"',
+    '                                Name="EditClientPhoneRemove"',
+    '                                Content="-"/>',
+    '                        <Button Grid.Column="6"',
+    '                                Name="EditClientPhoneMoveUp">',
+    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
+    '                        </Button>',
+    '                        <Button Grid.Column="7"',
+    '                                Name="EditClientPhoneMoveDown">',
+    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
+    '                        </Button>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="4">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="25"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                            <ColumnDefinition Width="40"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0"',
+    '                                    Content="[Email]:"/>',
+    '                        <TextBox Grid.Column="1"',
     '                                     Name="EditClientEmailText"/>',
-    '                            <Button Grid.Column="1"',
+    '                        <Image Grid.Column="2"',
+    '                                   Name="EditClientEmailIcon"/>',
+    '                        <Button Grid.Column="3"',
     '                                    Name="EditClientEmailAdd"',
     '                                    Content="+"/>',
-    '                            <ComboBox Grid.Column="2"',
+    '                        <ComboBox Grid.Column="4"',
     '                                      Name="EditClientEmailList"/>',
-    '                            <Button Grid.Column="3"',
+    '                        <Button Grid.Column="5"',
     '                                    Name="EditClientEmailRemove"',
     '                                    Content="-"/>',
-    '                        </Grid>',
-    '                    </GroupBox>',
+    '                        <Button Grid.Column="6"',
+    '                                Name="EditClientEmailMoveUp">',
+    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
+    '                        </Button>',
+    '                        <Button Grid.Column="7"',
+    '                                Name="EditClientEmailMoveDown">',
+    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
+    '                        </Button>',
+    '                    </Grid>',
     '                    <TabControl Grid.Row="5">',
     '                        <TabItem Header="Device(s)">',
     '                            <Grid>',
@@ -1353,11 +748,13 @@ Class cimdbXaml
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
+    '                                        <ColumnDefinition Width="90"/>',
     '                                        <ColumnDefinition Width="120"/>',
     '                                        <ColumnDefinition Width="*"/>',
     '                                        <ColumnDefinition Width="80"/>',
     '                                    </Grid.ColumnDefinitions>',
-    '                                    <ComboBox Grid.Column="0"',
+    '                                    <Label Grid.Column="0" Content="[Search]:"/>',
+    '                                    <ComboBox Grid.Column="1"',
     '                                              Name="EditClientDeviceProperty">',
     '                                        <ComboBoxItem Content="Uid"/>',
     '                                        <ComboBoxItem Content="Index"/>',
@@ -1370,9 +767,9 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Specification"/>',
     '                                        <ComboBoxItem Content="Serial"/>',
     '                                    </ComboBox>',
-    '                                    <TextBox Grid.Column="1"',
+    '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientDeviceFilter"/>',
-    '                                    <Button Grid.Column="2"',
+    '                                    <Button Grid.Column="3"',
     '                                            Name="EditClientDeviceRefresh"',
     '                                            Content="Refresh"/>',
     '                                </Grid>',
@@ -1431,11 +828,13 @@ Class cimdbXaml
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
+    '                                        <ColumnDefinition Width="90"/>',
     '                                        <ColumnDefinition Width="120"/>',
     '                                        <ColumnDefinition Width="*"/>',
     '                                        <ColumnDefinition Width="80"/>',
     '                                    </Grid.ColumnDefinitions>',
-    '                                    <ComboBox Grid.Column="0"',
+    '                                    <Label Grid.Column="0" Content="[Search]:"/>',
+    '                                    <ComboBox Grid.Column="1"',
     '                                              Name="EditClientIssueProperty">',
     '                                        <ComboBoxItem Content="Uid"/>',
     '                                        <ComboBoxItem Content="Index"/>',
@@ -1446,9 +845,9 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Client"/>',
     '                                        <ComboBoxItem Content="Device"/>',
     '                                    </ComboBox>',
-    '                                    <TextBox Grid.Column="1"',
+    '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientIssueFilter"/>',
-    '                                    <Button Grid.Column="2"',
+    '                                    <Button Grid.Column="3"',
     '                                            Name="EditClientIssueRefresh"',
     '                                            Content="Refresh"/>',
     '                                </Grid>',
@@ -1510,11 +909,13 @@ Class cimdbXaml
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
+    '                                        <ColumnDefinition Width="90"/>',
     '                                        <ColumnDefinition Width="120"/>',
     '                                        <ColumnDefinition Width="*"/>',
     '                                        <ColumnDefinition Width="80"/>',
     '                                    </Grid.ColumnDefinitions>',
-    '                                    <ComboBox Grid.Column="0"',
+    '                                    <Label Grid.Column="0" Content="[Search]:"/>',
+    '                                    <ComboBox Grid.Column="1"',
     '                                              Name="EditClientInvoiceProperty">',
     '                                        <ComboBoxItem Content="Uid"/>',
     '                                        <ComboBoxItem Content="Index"/>',
@@ -1524,9 +925,9 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Phone"/>',
     '                                        <ComboBoxItem Content="Email"/>',
     '                                    </ComboBox>',
-    '                                    <TextBox Grid.Column="1"',
+    '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientInvoiceFilter"/>',
-    '                                    <Button Grid.Column="2"',
+    '                                    <Button Grid.Column="3"',
     '                                            Name="EditClientInvoiceSearch"',
     '                                            Content="Search"/>',
     '                                </Grid>',
@@ -3371,6 +2772,681 @@ Class XamlWindow
     }
 }
 
+# Database templates/types
+Enum cimdbSlotType
+{
+    Client
+    Service
+    Device
+    Issue
+    Purchase
+    Inventory
+    Expense
+    Account
+    Invoice
+}
+
+Class cimdbSlotItem
+{
+    [UInt32]       $Index
+    [String]        $Name
+    [String] $Description
+    cimdbSlotItem([String]$Name)
+    {
+        $This.Index = [UInt32][cimdbSlotType]::$Name
+        $This.Name  = [cimdbSlotType]::$Name
+    }
+    [String] ToString()
+    {
+        Return $This.Name
+    }
+}
+
+Class cimdbSlotList
+{
+    [Object] $Output
+    cimdbSlotList()
+    {
+        $This.Refresh()
+    }
+    [Object] cimdbSlotItem([String]$Name)
+    {
+        Return [cimdbSlotItem]::New($Name)
+    }
+    Clear()
+    {
+        $This.Output = @( )
+    }
+    Refresh()
+    {
+        $This.Clear() 
+        ForEach ($Name in [System.Enum]::GetNames([cimdbSlotType]))
+        {
+            $Item             = $This.cimdbSlotItem($Name)
+            $Item.Description = Switch ($Item.Name)
+            {
+                Client     { "Tracks identity, phone(s), email(s), device(s), issue(s), and invoice(s)"  }
+                Service    { "Tracks the name, description, rate/price of labor"                         }
+                Device     { "Information such as make, model, serial number, etc."                      }
+                Issue      { "Particular notes and statuses about a particular device"                   }
+                Purchase   { "Item or service required for an issue or sale"                             }
+                Inventory  { "Item specifically meant for sale"                                          }
+                Expense    { "Good(s), service(s), or bill(s)"                                           }
+                Account    { "Monetary silo or information for a particular vendor or external business" }
+                Invoice    { "Representation of a sale"                                                  }
+            }
+
+            $This.Output += $Item
+        }
+    }
+    [Object] Get([String]$name)
+    {
+        Return $This.Output | ? Name -eq $Name
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdbSlot[List]>"
+    }
+}
+
+Enum cimdbModeType
+{
+    ViewUid
+    EditUid
+    ViewClient
+    EditClient 
+    ViewService
+    EditService
+    ViewDevice 
+    EditDevice
+    ViewIssue
+    EditIssue
+    ViewPurchase
+    EditPurchase
+    ViewInventory
+    EditInventory
+    ViewExpense
+    EditExpense
+    ViewAccount
+    EditAccount
+    ViewInvoice
+    EditInvoice
+}
+
+Class cimdbModeItem
+{
+    [UInt32] $Index
+    [String]  $Name
+    cimdbModeItem([String]$Name)
+    {
+        $This.Index = [UInt32][cimdbModeType]::$Name
+        $This.Name  = [cimdbModeType]::$Name
+    }
+    [String] ToString()
+    {
+        Return $This.Name
+    }
+}
+
+Class cimdbModeList
+{
+    [Object] $Output
+    cimdbModeList()
+    {
+        $This.Refresh()
+    }
+    [Object] cimdbModeItem([String]$Name)
+    {
+        Return [cimdbModeItem]::New($Name)
+    }
+    Clear()
+    {
+        $This.Output = @( )
+    }
+    Refresh()
+    {
+        $This.Clear()
+
+        ForEach ($Name in [System.Enum]::GetNames([cimdbModeType]))
+        {
+            $This.Output += $This.cimdbModeItem($Name)
+        }
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Mode[List]>"
+    }
+}
+
+Class cimdbUid
+{
+    [UInt32]  $Index
+    [Object]   $Date
+    [Object]   $Time
+    [Object]   $Slot
+    [String]    $Uid
+    [Object] $Record
+    cimdbUid([UInt32]$Index,[Object]$Slot)
+    {
+        $This.Index  = $Index
+        $This.Main()
+        $This.Uid    = $This.NewGuid()
+        $This.Slot   = $Slot
+    }
+    Main()
+    {
+        $DateTime    = $This.GetDateTime() -Split " "
+        $This.Date   = $DateTime[0]
+        $This.Time   = $DateTime[1]
+    }
+    Insert([Object]$Record)
+    {
+        $This.Record = $Record
+    }
+    [String] NewGuid()
+    {
+        Return [Guid]::NewGuid()
+    }
+    [String] GetDateTime()
+    {
+        Return [DateTime]::Now.ToString("MM/dd/yyyy HH:mm:ss")
+    }
+    [String] ToString()
+    {
+        Return $This.Slot
+    }
+}
+
+Class cimdbListTemplate
+{
+    [String]   $Name
+    [UInt32]  $Count
+    [Object] $Output
+    cimdbListTemplate([String]$Name)
+    {
+        $This.Name = $Name
+    }
+    Clear()
+    {
+        $This.Output = @( )
+        $This.GetCount()
+    }
+    GetCount()
+    {
+        $This.Count  = $This.Output.Count
+    }
+    Add([Object]$Item)
+    {
+        $This.Output += $Item
+        $This.GetCount()
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.List[Template]>"
+    }
+}
+
+Class cimdbClientTemplate
+{
+    [UInt32]          $Rank
+    [String]   $DisplayName
+    [Object]          $Name
+    [Object]           $Dob
+    [String]        $Gender
+    [Object]      $Location
+    [Object]         $Image
+    [Object]         $Phone
+    [Object]         $Email
+    [Object]        $Device
+    [Object]         $Issue
+    [Object]       $Invoice
+    cimdbClientTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Client[Template]>"
+    }
+}
+
+Class cimdbServiceTemplate
+{
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [String]        $Name
+    [String] $Description
+    [Float]         $Cost
+    cimdbServiceTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Service[Template]>"
+    }
+}
+
+Class cimdbDeviceTemplate
+{
+    [UInt32]          $Rank
+    [String]   $DisplayName
+    [String]       $Chassis
+    [String]        $Vendor
+    [String]         $Model
+    [String] $Specification
+    [String]        $Serial
+    [String]        $Client
+    cimdbDeviceTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Device[Template]>"
+    }
+}
+
+Class cimdbIssueTemplate
+{
+    [UInt32]        $Rank
+    [Object] $DisplayName
+    [Object]      $Status
+    [String] $Description
+    [String]      $Client
+    [String]      $Device
+    [Object]     $Service
+    [Object]     $Invoice
+    cimdbIssueTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Issue[Template]>"
+    }
+}
+
+Class cimdbPurchaseTemplate
+{
+    [UInt32]          $Rank
+    [Object]   $DisplayName
+    [Object]   $Distributor
+    [Object]           $URL
+    [String]        $Vendor
+    [String]         $Model
+    [String] $Specification
+    [String]        $Serial
+    [Bool]        $IsDevice
+    [String]        $Device
+    [Object]          $Cost
+    cimdbPurchaseTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Purchase[Template]>"
+    }
+}
+
+Class cimdbInventoryTemplate
+{
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [String]      $Vendor
+    [String]       $Model
+    [String]      $Serial
+    [Object]       $Title
+    [Object]        $Cost
+    [Bool]      $IsDevice
+    [Object]      $Device
+    cimdbInventoryTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Inventory[Template]>"
+    }
+}
+
+Class cimdbExpenseTemplate
+{
+    [UInt32]        $Rank
+    [Object] $DisplayName
+    [Object]   $Recipient
+    [Object]   $IsAccount
+    [Object]     $Account
+    [Object]        $Cost
+    cimdbExpenseTemplate()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Expense[Template]>"
+    }
+}
+
+Class cimdbAccountTemplate
+{
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [Object]      $Object
+    cimdbAccountTemplate()
+    {
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Account[Template]>"
+    }
+}
+
+Class cimdbInvoiceTemplate
+{
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [UInt32]        $Mode
+    [Object]      $Client
+    [Object]       $Issue
+    [Object]    $Purchase
+    [Object]   $Inventory
+    cimdbInvoiceTemplate()
+    {
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Invoice[Template]>"
+    }
+}
+
+Class cimdbDatabaseController
+{
+    [Object]   $Slot
+    [Object]   $Mode
+    [Object] $Output
+    cimdbDatabaseController()
+    {
+        $This.Slot = $This.cimdbSlotList()
+        $This.Mode = $This.cimdbModeList()
+        $This.Clear()
+    }
+    Clear()
+    {
+        $This.Output = @( )
+    }
+    [Object] cimdbSlotList()
+    {
+        Return [cimdbSlotList]::New()
+    }
+    [Object] cimdbModeList()
+    {
+        Return [cimdbModeList]::New()
+    }
+    [Object] cimdbUid([UInt32]$Index,[Object]$Slot)
+    {
+        Return [cimdbUid]::New($Index,$Slot)
+    }
+    [Object] cimdbClientTemplate()
+    {
+        Return [cimdbClientTemplate]::New()
+    }
+    [Object] cimdbServiceTemplate()
+    {
+        Return [cimdbServiceTemplate]::New()
+    }
+    [Object] cimdbDeviceTemplate()
+    {
+        Return [cimdbDeviceTemplate]::New()
+    }
+    [Object] cimdbIssueTemplate()
+    {
+        Return [cimdbIssueTemplate]::New()
+    }
+    [Object] cimdbPurchaseTemplate()
+    {
+        Return [cimdbPurchaseTemplate]::New()
+    }
+    [Object] cimdbInventoryTemplate()
+    {
+        Return [cimdbInventoryTemplate]::New()
+    }
+    [Object] cimdbExpenseTemplate()
+    {
+        Return [cimdbExpenseTemplate]::New()
+    }
+    [Object] cimdbAccountTemplate()
+    {
+        Return [cimdbAccountTemplate]::New()
+    }
+    [Object] cimdbInvoiceTemplate()
+    {
+        Return [cimdbInvoiceTemplate]::New()
+    }
+    [Object] Entry([String]$Name)
+    {
+        Return $This.cimdbUid($This.Output.Count,$This.Slot.Output[$This.GetIndex($Name)])
+    }
+    [String] GetName([UInt32]$Index)
+    {
+        Return [cimdbSlotType]$Index
+    }
+    [Uint32] GetIndex([String]$Name)
+    {
+        Return [UInt32][cimdbSlotType]::$Name
+    }
+    [Object[]] GetSlot([String]$Name)
+    {
+        Return @($This.Output | ? Slot -match $Name)
+    }
+    [Object] New([String]$Name)
+    {
+        $Uid        = $This.Entry($Name)
+        $Uid.Record = Switch ($Name)
+        {
+            Client    {    $This.cimdbClientTemplate() }
+            Service   {   $This.cimdbServiceTemplate() }
+            Device    {    $This.cimdbDeviceTemplate() }
+            Issue     {     $This.cimdbIssueTemplate() }
+            Purchase  {  $This.cimdbPurchaseTemplate() }
+            Inventory { $This.cimdbInventoryTemplate() }
+            Expense   {   $This.cimdbExpenseTemplate() }
+            Account   {   $This.cimdbAccountTemplate() }
+            Invoice   {   $This.cimdbInvoiceTemplate() }
+        }
+
+        $Uid.Record.Rank = $This.GetSlot($Name).Count
+
+        Return $Uid
+    }
+    Delete([Object]$Uid)
+    {
+        $This.Output = $This.Output | ? Uid -notmatch $Uid.Uid
+        $This.Rerank()
+    }
+    Add([Object]$String)
+    {
+        Switch -Regex ($String)
+        {
+            "^\d$"
+            {
+                $This.Output += $This.New($This.GetName([UInt32]$String))
+            }
+            Default
+            {
+                $This.Output += $This.New($String)
+            }
+        }
+    }
+    Rerank()
+    {
+        Switch ($This.Output.Count)
+        {
+            0
+            {
+
+            }
+            1
+            {
+                $This.Output[0].Index = 0
+            }
+            Default
+            {
+                ForEach ($X in 0..($This.Output.Count-1))
+                {
+                    $This.Output[$X].Index = $X
+                }
+            }
+        }
+    }
+    Generate([UInt32]$Length)
+    {
+        ForEach ($X in 0..($Length-1))
+        {
+            $This.Add($This.GetRandom())
+        }
+    }
+    [UInt32] GetRandom()
+    {
+        Return Get-Random -Max 9
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Database[Controller]>"
+    }
+}
+
+# GUI Enums
+Enum UidPropertyType
+{
+    Index
+    Slot
+    Uid
+    Date
+    Time
+    Record
+}
+
+Enum ClientPropertyType
+{
+    Rank
+    DisplayName
+    Name
+    Dob
+    Gender
+    Location
+    Image
+    Phone
+    Email
+    Device
+    Issue
+    Invoice
+}
+
+Enum ServicePropertyType
+{
+    Rank
+    DisplayName
+    Name
+    Description
+    Cost
+}
+
+Enum DevicePropertyType
+{
+    Rank
+    DisplayName
+    Chassis
+    Vendor
+    Model
+    Specification
+    Serial
+    Client
+}
+
+Enum IssuePropertyType
+{
+    Rank
+    DisplayName
+    Status
+    Description
+    Client
+    Device
+    Service
+    Invoice
+}
+
+Enum PurchasePropertyType
+{
+    Rank
+    DisplayName
+    Distributor
+    URL
+    Vendor
+    Model
+    Specification
+    Serial
+    IsDevice
+    Device
+    Cost
+}
+
+Enum InventoryPropertyType
+{
+    Rank
+    DisplayName
+    Vendor
+    Model
+    Serial
+    Title
+    Cost
+    IsDevice
+    Device
+}
+
+Enum ExpensePropertyType
+{
+    Rank
+    DisplayName
+    Recipient
+    IsAccount
+    Account
+    Cost
+}
+
+Enum AccountPropertyType
+{
+    Rank
+    DisplayName
+    Object
+}
+
+Enum InvoicePropertyType
+{
+    Rank
+    DisplayName
+    Mode
+    Client
+    Issue
+    Purchase
+    Inventory
+}
+
+Enum ButtonPanelType
+{
+    UidPanel
+    ClientPanel
+    ServicePanel
+    DevicePanel
+    IssuePanel
+    PurchasePanel
+    InventoryPanel
+    ExpensePanel
+    AccountPanel
+    InvoicePanel
+}
+
 Class cimdbControllerProperty
 {
     [String]  $Name
@@ -3383,6 +3459,28 @@ Class cimdbControllerProperty
     [String] ToString()
     {
         Return "<FEModule.cimdb.Controller[Property]>"
+    }
+}
+
+Class cimdbCurrentController
+{
+    [Object]   $Mode
+    [Object]    $Uid
+    cimdbCurrentController()
+    {
+
+    }
+    SetMode([Object]$Mode)
+    {
+        $This.Mode = $Mode
+    }
+    SetUid([Object]$Uid)
+    {
+        $This.Uid = $Uid
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Current[Controller]>"
     }
 }
 
@@ -3412,8 +3510,11 @@ Class cimdbController
         # Load the database controller + template
         $This.Database = $This.Get("Database")
 
+        # Load current object
+        $This.Current  = $This.Get("Current")
+        
         # Set Default Mode
-        $This.Current  = $This.CurrentMode("ViewUid")
+        $This.SetCurrentMode("ViewUid")
     }
     Update([Int32]$State,[String]$Status)
     {
@@ -3487,6 +3588,11 @@ Class cimdbController
                 $This.Update(0,"Getting [~] Database Controller")
                 $Item = [cimdbDatabaseController]::New()
             }
+            Current
+            {
+                $This.Update(0,"Getting [~] Current Controller")
+                $Item = [cimdbCurrentController]::New()
+            }
             Default
             {
                 $This.Update(0,"Getting [!] Invalid <$Name>")
@@ -3500,9 +3606,34 @@ Class cimdbController
     {
         Return [cimdbControllerProperty]::New($Property)
     }
+    SetCurrentMode([String]$Mode)
+    {
+        $This.Current.Mode = $This.CurrentMode($Mode)
+    }
+    SetCurrentUid([Object]$Uid)
+    {
+        $This.Current.Uid  = $Uid
+    }
     [Object] CurrentMode([String]$Mode)
     {
         Return $This.Database.Mode.Output | ? Name -eq $Mode
+    }
+    [String] Escape([String]$String)
+    {
+        Return [Regex]::Escape($String)
+    }
+    [String] Graphic([String]$Name)
+    {
+        $Item = Switch ($Name)
+        {
+            up       { "up.png"      }
+            down     { "down.png"    }
+            failure  { "failure.png" }
+            success  { "success.png" }
+            warning  { "warning.png" }
+        }
+
+        Return $This.Module._Control($Item).Fullname
     }
     Generate([UInt32]$Length)
     {
@@ -3575,6 +3706,265 @@ Class cimdbController
 
         $This.Reset($Control,$List)
     }
+    View()
+    {
+        $Ctrl = $This
+
+        Switch -Regex ($Ctrl.Current.Mode.Name)
+        {
+            Uid
+            {
+                $Ctrl.Handle("EditUid")
+                $Ctrl.Reset($Ctrl.Xaml.IO.EditUidOutput,$Ctrl.Current.Uid)
+                $Ctrl.Reset($Ctrl.Xaml.IO.EditUidRecord,$Ctrl.Property($Ctrl.Current.Uid.Record))
+            }
+            Client
+            {
+                $Ctrl.Handle("EditClient")
+            }
+            Service
+            {
+
+            }
+            Device
+            {
+
+            }
+            Issue
+            {
+
+            }
+            Purchase
+            {
+
+            }
+            Inventory
+            {
+
+            }
+            Expense
+            {
+
+            }
+            Account
+            {
+
+            }
+            Invoice
+            {
+
+            }
+        }
+
+        $Ctrl.Xaml.IO.View.IsEnabled = 0
+    }
+    New()
+    {
+        $Ctrl = $This
+        $Ctrl.SetCurrentUid($Null)
+
+        Switch -Regex ($Ctrl.Current.Mode.Name)
+        {
+            Uid
+            {
+                
+            }
+            Client
+            {
+                $Ctrl.Handle("EditClient")
+            }
+            Service
+            {
+
+            }
+            Device
+            {
+
+            }
+            Issue
+            {
+
+            }
+            Purchase
+            {
+
+            }
+            Inventory
+            {
+
+            }
+            Expense
+            {
+
+            }
+            Account
+            {
+
+            }
+            Invoice
+            {
+
+            }
+        }
+
+        $Ctrl.Xaml.IO.New.IsEnabled = 0
+    }
+    Edit()
+    {
+        $Ctrl = $This
+
+        Switch -Regex ($Ctrl.Current.Mode.Name)
+        {
+            Uid
+            {
+                
+            }
+            Client
+            {
+
+            }
+            Service
+            {
+
+            }
+            Device
+            {
+
+            }
+            Issue
+            {
+
+            }
+            Purchase
+            {
+
+            }
+            Inventory
+            {
+
+            }
+            Expense
+            {
+
+            }
+            Account
+            {
+
+            }
+            Invoice
+            {
+
+            }
+        }
+
+        $Ctrl.Xaml.IO.Edit.IsEnabled = 0
+    }
+    Save()
+    {
+        $Ctrl = $This
+
+        Switch -Regex ($Ctrl.Current.Mode.Name)
+        {
+            Uid
+            {
+                
+            }
+            Client
+            {
+
+            }
+            Service
+            {
+
+            }
+            Device
+            {
+
+            }
+            Issue
+            {
+
+            }
+            Purchase
+            {
+
+            }
+            Inventory
+            {
+
+            }
+            Expense
+            {
+
+            }
+            Account
+            {
+
+            }
+            Invoice
+            {
+
+            }
+        }
+
+        $Ctrl.Xaml.IO.Save.IsEnabled = 0
+    }
+    Delete()
+    {
+        $Ctrl = $This
+
+        Switch -Regex ($Ctrl.Current.Mode.Name)
+        {
+            Uid
+            {
+                $Ctrl.Database.Delete($Ctrl.Current.Uid)
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewUidOutput,$Ctrl.Database.Output)
+            }
+            Client
+            {
+
+            }
+            Service
+            {
+
+            }
+            Device
+            {
+
+            }
+            Issue
+            {
+
+            }
+            Purchase
+            {
+
+            }
+            Inventory
+            {
+
+            }
+            Expense
+            {
+
+            }
+            Account
+            {
+
+            }
+            Invoice
+            {
+
+            }
+        }
+
+        # Clear record cache
+        $Ctrl.SetCurrentUid($Null)
+
+        # Clear buttons
+        $Ctrl.Xaml.IO.View.IsEnabled   = 0
+        $Ctrl.Xaml.IO.Delete.IsEnabled = 0
+    }
     Initial([String]$Name)
     {
         $Ctrl = $This
@@ -3597,7 +3987,56 @@ Class cimdbController
             }
             EditClient
             {
+                If ($Ctrl.Current.Uid)
+                {
 
+                }
+
+                $Ctrl.Xaml.IO.EditClientFirst              = 
+                $Ctrl.Xaml.IO.EditClientInitial            = 
+                $Ctrl.Xaml.IO.EditClientLast               = 
+                $Ctrl.Xaml.IO.EditClientOther              = 
+                $Ctrl.Xaml.IO.EditClientNameIcon           = 
+                $Ctrl.Xaml.IO.EditClientAddress            = 
+                $Ctrl.Xaml.IO.EditClientCity               = 
+                $Ctrl.Xaml.IO.EditClientRegion             = 
+                $Ctrl.Xaml.IO.EditClientPostal             = 
+                $Ctrl.Xaml.IO.EditClientCountry            = 
+                $Ctrl.Xaml.IO.EditClientLocationIcon       = 
+                $Ctrl.Xaml.IO.EditClientGender             = 
+                $Ctrl.Xaml.IO.EditClientMonth              = 
+                $Ctrl.Xaml.IO.EditClientDay                = 
+                $Ctrl.Xaml.IO.EditClientYear               = 
+                $Ctrl.Xaml.IO.EditClientDobIcon            = 
+                $Ctrl.Xaml.IO.EditClientPhoneText          = 
+                $Ctrl.Xaml.IO.EditClientPhoneAdd           = 
+                $Ctrl.Xaml.IO.EditClientPhoneList          = 
+                $Ctrl.Xaml.IO.EditClientPhoneRemove        = 
+                $Ctrl.Xaml.IO.EditClientEmailText          = 
+                $Ctrl.Xaml.IO.EditClientEmailAdd           = 
+                $Ctrl.Xaml.IO.EditClientEmailList          = 
+                $Ctrl.Xaml.IO.EditClientEmailRemove        = 
+                $Ctrl.Xaml.IO.EditClientDeviceProperty     = 
+                $Ctrl.Xaml.IO.EditClientDeviceFilter       = 
+                $Ctrl.Xaml.IO.EditClientDeviceRefresh      = 
+                $Ctrl.Xaml.IO.EditClientDeviceOutput       = 
+                $Ctrl.Xaml.IO.EditClientDeviceAdd          = 
+                $Ctrl.Xaml.IO.EditClientDeviceList         = 
+                $Ctrl.Xaml.IO.EditClientDeviceRemove       = 
+                $Ctrl.Xaml.IO.EditClientIssueProperty      = 
+                $Ctrl.Xaml.IO.EditClientIssueFilter        = 
+                $Ctrl.Xaml.IO.EditClientIssueRefresh       = 
+                $Ctrl.Xaml.IO.EditClientIssueOutput        = 
+                $Ctrl.Xaml.IO.EditClientIssueAdd           = 
+                $Ctrl.Xaml.IO.EditClientIssueList          = 
+                $Ctrl.Xaml.IO.EditClientIssueRemove        = 
+                $Ctrl.Xaml.IO.EditClientInvoiceProperty    = 
+                $Ctrl.Xaml.IO.EditClientInvoiceFilter      = 
+                $Ctrl.Xaml.IO.EditClientInvoiceSearch      = 
+                $Ctrl.Xaml.IO.EditClientInvoiceOutput      = 
+                $Ctrl.Xaml.IO.EditClientInvoiceAdd         = 
+                $Ctrl.Xaml.IO.EditClientInvoiceList        = 
+                $Ctrl.Xaml.IO.EditClientInvoiceRemove      = 
             }
             ViewService
             {
@@ -3689,17 +4128,24 @@ Class cimdbController
                                         $Ctrl.Xaml.IO.ViewUidOutput)
                 })
 
+                $Ctrl.Xaml.IO.ViewUidOutput.Add_SelectionChanged(
+                {
+                    $Index = $Ctrl.Xaml.IO.ViewUidOutput.SelectedIndex
+                    If ($Index -ne -1)
+                    {
+                        $Ctrl.Xaml.IO.View.IsEnabled   = 1
+                        $Ctrl.Xaml.IO.Delete.IsEnabled = 1
+                        $Ctrl.SetCurrentUid($Ctrl.Xaml.IO.ViewUidOutput.SelectedItem)
+                    }
+                })
+
                 $Ctrl.Xaml.IO.ViewUidOutput.Add_MouseDoubleClick(
                 {
                     $Index = $Ctrl.Xaml.IO.ViewUidOutput.SelectedIndex
                     If ($Index -ne -1)
                     {
-                        $Ctrl.Handle("EditUid")
-                        $Ctrl.Reset($Ctrl.Xaml.IO.EditUidOutput,
-                                    $Ctrl.Xaml.IO.ViewUidOutput.SelectedItem)
-
-                        $Ctrl.Reset($Ctrl.Xaml.IO.EditUidRecord,
-                                    $Ctrl.Xaml.IO.ViewUidOutput.SelectedItem.Record)
+                        $Ctrl.SetCurrentUid($Ctrl.Xaml.IO.ViewUidOutput.SelectedItem)
+                        $Ctrl.View()
                     }
                 })
 
@@ -3712,18 +4158,28 @@ Class cimdbController
             {
                 $Ctrl.Xaml.IO.EditUidRecordRefresh.Add_Click(
                 {
-                    $Ctrl.Reset($Ctrl.Xaml.IO.EditUidRecord,$Ctrl.Xaml.IO.EditUidOutput.Items[0].Record)
+                    $Ctrl.Reset($Ctrl.Xaml.IO.EditUidRecord,
+                                $Ctrl.Property($Ctrl.Xaml.IO.EditUidOutput.Items.Record))
                 })
             }
             ViewClient
-            {<#
-                $Ctrl.Xaml.IO.ViewClientProperty           = 
-                $Ctrl.Xaml.IO.ViewClientFilter             = 
-                $Ctrl.Xaml.IO.ViewClientRefresh            = 
-                $Ctrl.Xaml.IO.ViewClientOutput             = 
-            #>}
+            {
+                $Ctrl.Xaml.IO.ViewClientFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewClientProperty,
+                                        $Ctrl.Xaml.IO.ViewClientFilter,
+                                        $Ctrl.Database.GetSlot("Client"),
+                                        $Ctrl.Xaml.IO.ViewClientOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewClientRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewClientOutput,$Ctrl.Database.GetSlot("Client"))
+                })
+            }
             EditClient
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditClientFirst              = 
                 $Ctrl.Xaml.IO.EditClientInitial            = 
                 $Ctrl.Xaml.IO.EditClientLast               = 
@@ -3769,29 +4225,49 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditClientInvoiceAdd         = 
                 $Ctrl.Xaml.IO.EditClientInvoiceList        = 
                 $Ctrl.Xaml.IO.EditClientInvoiceRemove      = 
-            #>}
+            #>
+            }
             ViewService
-            {<#
-                $Ctrl.Xaml.IO.ViewServiceProperty          = 
-                $Ctrl.Xaml.IO.ViewServiceFilter            = 
-                $Ctrl.Xaml.IO.ViewServiceRefresh           = 
-                $Ctrl.Xaml.IO.ViewServiceOutput            = 
-            #>}
+            {
+                $Ctrl.Xaml.IO.ViewServiceFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewServiceProperty,
+                                        $Ctrl.Xaml.IO.ViewServiceFilter,
+                                        $Ctrl.Database.GetSlot("Service"),
+                                        $Ctrl.Xaml.IO.ViewServiceOutput)
+                })
+    
+                $Ctrl.Xaml.IO.ViewServiceRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewServiceOutput,$Ctrl.Database.GetSlot("Service"))
+                })
+            }
             EditService
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditServiceName              = 
                 $Ctrl.Xaml.IO.EditServiceDescription       = 
                 $Ctrl.Xaml.IO.EditServiceCost              = 
-            #>}
+            #>
+            }
             ViewDevice
-            {<#
-                $Ctrl.Xaml.IO.ViewDeviceProperty           = 
-                $Ctrl.Xaml.IO.ViewDeviceFilter             = 
-                $Ctrl.Xaml.IO.ViewDeviceRefresh            = 
-                $Ctrl.Xaml.IO.ViewDeviceOutput             = 
-            #>}
+            {
+                $Ctrl.Xaml.IO.ViewDeviceFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewDeviceProperty,
+                                        $Ctrl.Xaml.IO.ViewDeviceFilter,
+                                        $Ctrl.Database.GetSlot("Device"),
+                                        $Ctrl.Xaml.IO.ViewDeviceOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewDeviceRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewDeviceOutput,$Ctrl.Database.GetSlot("Device"))
+                })
+            }
             EditDevice
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditDeviceChassisList        = 
                 $Ctrl.Xaml.IO.EditDeviceVendor             = 
                 $Ctrl.Xaml.IO.EditDeviceModel              = 
@@ -3805,16 +4281,26 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditDeviceClientAdd          = 
                 $Ctrl.Xaml.IO.EditDeviceClientList         = 
                 $Ctrl.Xaml.IO.EditDeviceClientRemove       = 
-            #>}
+            #>
+            }
             ViewIssue
-            {<#
-                $Ctrl.Xaml.IO.ViewIssueProperty            = 
-                $Ctrl.Xaml.IO.ViewIssueFilter              = 
-                $Ctrl.Xaml.IO.ViewIssueRefresh             = 
-                $Ctrl.Xaml.IO.ViewIssueOutput              = 
-            #>}
+            {
+                $Ctrl.Xaml.IO.ViewIssueFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewIssueProperty,
+                                        $Ctrl.Xaml.IO.ViewIssueFilter,
+                                        $Ctrl.Database.GetSlot("Issue"),
+                                        $Ctrl.Xaml.IO.ViewIssueOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewIssueRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewIssueOutput,$Ctrl.Database.GetSlot("Issue"))
+                })
+            }
             EditIssue
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditIssueStatusList          = 
                 $Ctrl.Xaml.IO.EditIssueDescription         = 
                 $Ctrl.Xaml.IO.EditIssueClientProperty      = 
@@ -3841,14 +4327,29 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditIssueRecordList          = 
             #>}
             ViewPurchase
-            {<#
+            {
+                $Ctrl.Xaml.IO.ViewPurchaseFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewPurchaseProperty,
+                                        $Ctrl.Xaml.IO.ViewPurchaseFilter,
+                                        $Ctrl.Database.GetSlot("Purchase"),
+                                        $Ctrl.Xaml.IO.ViewPurchaseOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewPurchaseRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewPurchaseOutput,$Ctrl.Database.GetSlot("Purchase"))
+                })
+            <#
                 $Ctrl.Xaml.IO.ViewPurchaseProperty         = 
                 $Ctrl.Xaml.IO.ViewPurchaseFilter           = 
                 $Ctrl.Xaml.IO.ViewPurchaseRefresh          = 
                 $Ctrl.Xaml.IO.ViewPurchaseOutput           = 
-            #>}
+            #>
+            }
             EditPurchase
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditPurchaseDisplayName      = 
                 $Ctrl.Xaml.IO.EditPurchaseDistributor      = 
                 $Ctrl.Xaml.IO.EditPurchaseURL              = 
@@ -3864,16 +4365,32 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditPurchaseDeviceList       = 
                 $Ctrl.Xaml.IO.EditPurchaseDeviceRemove     = 
                 $Ctrl.Xaml.IO.EditPurchaseCost             = 
-            #>}
+            #>
+            }
             ViewInventory
-            {<#
+            {
+                $Ctrl.Xaml.IO.ViewInventoryFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewInventoryProperty,
+                                        $Ctrl.Xaml.IO.ViewInventoryFilter,
+                                        $Ctrl.Database.GetSlot("Inventory"),
+                                        $Ctrl.Xaml.IO.ViewInventoryOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewInventoryRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewInventoryOutput,$Ctrl.Database.GetSlot("Inventory"))
+                })
+            <#
                 $Ctrl.Xaml.IO.ViewInventoryProperty        = 
                 $Ctrl.Xaml.IO.ViewInventoryFilter          = 
                 $Ctrl.Xaml.IO.ViewInventoryRefresh         = 
                 $Ctrl.Xaml.IO.ViewInventoryOutput          = 
-            #>}
+            #>
+            }
             EditInventory
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditInventoryVendor          = 
                 $Ctrl.Xaml.IO.EditInventoryModel           = 
                 $Ctrl.Xaml.IO.EditInventorySerial          = 
@@ -3886,16 +4403,32 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditInventoryDeviceAdd       = 
                 $Ctrl.Xaml.IO.EditInventoryDeviceList      = 
                 $Ctrl.Xaml.IO.EditInventoryDeviceRemove    = 
-            #>}
+            #>
+            }
             ViewExpense
-            {<#
+            {
+                $Ctrl.Xaml.IO.ViewExpenseFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewExpenseProperty,
+                                        $Ctrl.Xaml.IO.ViewExpenseFilter,
+                                        $Ctrl.Database.GetSlot("Expense"),
+                                        $Ctrl.Xaml.IO.ViewExpenseOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewExpenseRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewExpenseOutput,$Ctrl.Database.GetSlot("Expense"))
+                })
+            <#
                 $Ctrl.Xaml.IO.ViewExpenseProperty          = 
                 $Ctrl.Xaml.IO.ViewExpenseFilter            = 
                 $Ctrl.Xaml.IO.ViewExpenseRefresh           = 
                 $Ctrl.Xaml.IO.ViewExpenseOutput            = 
-            #>}
+            #>
+            }
             EditExpense
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditExpenseDisplayName       = 
                 $Ctrl.Xaml.IO.EditExpenseRecipient         = 
                 $Ctrl.Xaml.IO.EditExpenseIsAccount         = 
@@ -3906,32 +4439,64 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditExpenseAccountList       = 
                 $Ctrl.Xaml.IO.EditExpenseAccountRemove     = 
                 $Ctrl.Xaml.IO.EditExpenseCost              = 
-            #>}
+            #>
+            }
             ViewAccount
-            {<#
+            {
+                $Ctrl.Xaml.IO.ViewAccountFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewAccountProperty,
+                                        $Ctrl.Xaml.IO.ViewAccountFilter,
+                                        $Ctrl.Database.GetSlot("Account"),
+                                        $Ctrl.Xaml.IO.ViewAccountOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewAccountRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewAccountOutput,$Ctrl.Database.GetSlot("Account"))
+                })
+            <#
                 $Ctrl.Xaml.IO.ViewAccountProperty          = 
                 $Ctrl.Xaml.IO.ViewAccountFilter            = 
                 $Ctrl.Xaml.IO.ViewAccountRefresh           = 
                 $Ctrl.Xaml.IO.ViewAccountOutput            = 
-            #>}
+            #>
+            }
             EditAccount
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditAccountObjectProperty    = 
                 $Ctrl.Xaml.IO.EditAccountObjectFilter      = 
                 $Ctrl.Xaml.IO.EditAccountObjectResult      = 
                 $Ctrl.Xaml.IO.EditAccountObjectAdd         = 
                 $Ctrl.Xaml.IO.EditAccountObjectList        = 
                 $Ctrl.Xaml.IO.EditAccountObjectRemove      = 
-            #>}
+            #>
+            }
             ViewInvoice
-            {<#
+            {
+                $Ctrl.Xaml.IO.ViewInvoiceFilter.Add_TextChanged(
+                {
+                    $Ctrl.SearchControl($Ctrl.Xaml.IO.ViewInvoiceProperty,
+                                        $Ctrl.Xaml.IO.ViewInvoiceFilter,
+                                        $Ctrl.Database.GetSlot("Invoice"),
+                                        $Ctrl.Xaml.IO.ViewInvoiceOutput)
+                })
+
+                $Ctrl.Xaml.IO.ViewInvoiceRefresh.Add_Click(
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ViewInvoiceOutput,$Ctrl.Database.GetSlot("Invoice"))
+                })
+            <#
                 $Ctrl.Xaml.IO.ViewInvoiceProperty          = 
                 $Ctrl.Xaml.IO.ViewInvoiceFilter            = 
                 $Ctrl.Xaml.IO.ViewInvoiceRefresh           = 
                 $Ctrl.Xaml.IO.ViewInvoiceOutput            = 
-            #>}
+            #>
+            }
             EditInvoice
-            {<#
+            {
+            <#
                 $Ctrl.Xaml.IO.EditInvoiceModeList          = 
                 $Ctrl.Xaml.IO.EditInvoiceClientProperty    = 
                 $Ctrl.Xaml.IO.EditInvoiceClientFilter      = 
@@ -3962,7 +4527,8 @@ Class cimdbController
                 $Ctrl.Xaml.IO.EditInvoiceInventoryList     = 
                 $Ctrl.Xaml.IO.EditInvoiceInventoryRemove   = 
                 $Ctrl.Xaml.IO.EditInvoiceRecordList        = 
-            #>}
+            #>
+            }
         }
     }
     Handle([String]$Name)
@@ -3970,9 +4536,14 @@ Class cimdbController
         $Ctrl = $This
 
         # [Sets current mode]
-        $Ctrl.Current                               = $Ctrl.CurrentMode($Name)
+        $Ctrl.SetCurrentMode($Name)
 
-        # [Clears all panels]
+        # [Set all panel to default value]
+        ForEach ($Item in $Ctrl.Xaml.Types | ? Name -match "(View|Edit)\w+Panel$")
+        {
+            $Item.Control.Visibility = "Collapsed"
+        }
+        <#
         $Ctrl.Xaml.IO.ViewUidPanel.Visibility       = "Collapsed"
         $Ctrl.Xaml.IO.EditUidPanel.Visibility       = "Collapsed"
         $Ctrl.Xaml.IO.ViewClientPanel.Visibility    = "Collapsed"
@@ -3993,20 +4564,28 @@ Class cimdbController
         $Ctrl.Xaml.IO.EditAccountPanel.Visibility   = "Collapsed"
         $Ctrl.Xaml.IO.ViewInvoicePanel.Visibility   = "Collapsed"
         $Ctrl.Xaml.IO.EditInvoicePanel.Visibility   = "Collapsed"
+        #>
 
-        # [Default all buttons]
+        # [Set all side buttons to default style]
         ForEach ($Item in [System.Enum]::GetNames([ButtonPanelType]))
         {
-            $Ctrl.Xaml.IO.$Item.Background       = "#DFFFBA"
-            $Ctrl.Xaml.IO.$Item.Foreground       = "#000000"
-            $Ctrl.Xaml.IO.$Item.BorderBrush      = "#000000"
+            $Ctrl.Xaml.IO.$Item.Background          = "#DFFFBA"
+            $Ctrl.Xaml.IO.$Item.Foreground          = "#000000"
+            $Ctrl.Xaml.IO.$Item.BorderBrush         = "#000000"
         }
 
-        # [Change current button]
-        $Item                                    = "{0}Panel" -f ($Name -Replace "(View|Edit)","")
-        $Ctrl.Xaml.IO.$Item.Background           = "#4444FF"
-        $Ctrl.Xaml.IO.$Item.Foreground           = "#FFFFFF"
-        $Ctrl.Xaml.IO.$Item.BorderBrush          = "#111111" 
+        # [Set current button to selected style]
+        $Item                                       = "{0}Panel" -f ($Name -Replace "(View|Edit)","")
+        $Ctrl.Xaml.IO.$Item.Background              = "#4444FF"
+        $Ctrl.Xaml.IO.$Item.Foreground              = "#FFFFFF"
+        $Ctrl.Xaml.IO.$Item.BorderBrush             = "#111111" 
+
+        # [Set bottom buttons to default value]
+        $Ctrl.Xaml.IO.View.IsEnabled                = 0
+        $Ctrl.Xaml.IO.New.IsEnabled                 = 0
+        $Ctrl.Xaml.IO.Edit.IsEnabled                = 0
+        $Ctrl.Xaml.IO.Save.IsEnabled                = 0
+        $Ctrl.Xaml.IO.Delete.IsEnabled              = 0
 
         # [Restores visibility on correct item, sets state on objects]
         Switch -Regex ($Name)
@@ -4022,6 +4601,7 @@ Class cimdbController
             ViewClient
             {
                 $Ctrl.Xaml.IO.ViewClientPanel.Visibility    = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditClient
             {
@@ -4030,6 +4610,7 @@ Class cimdbController
             ViewService
             {
                 $Ctrl.Xaml.IO.ViewServicePanel.Visibility   = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditService
             {
@@ -4038,6 +4619,7 @@ Class cimdbController
             ViewDevice
             {
                 $Ctrl.Xaml.IO.ViewDevicePanel.Visibility    = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditDevice
             {
@@ -4046,6 +4628,7 @@ Class cimdbController
             ViewIssue
             {
                 $Ctrl.Xaml.IO.ViewIssuePanel.Visibility     = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditIssue
             {
@@ -4054,6 +4637,7 @@ Class cimdbController
             ViewPurchase
             {
                 $Ctrl.Xaml.IO.ViewPurchasePanel.Visibility  = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditPurchase
             {
@@ -4062,6 +4646,7 @@ Class cimdbController
             ViewInventory
             {
                 $Ctrl.Xaml.IO.ViewInventoryPanel.Visibility = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditInventory
             {
@@ -4070,6 +4655,7 @@ Class cimdbController
             ViewExpense
             {
                 $Ctrl.Xaml.IO.ViewExpensePanel.Visibility   = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditExpense
             {
@@ -4078,32 +4664,28 @@ Class cimdbController
             ViewAccount
             {
                 $Ctrl.Xaml.IO.ViewAccountPanel.Visibility   = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditAccount
             {
-                $Ctrl.Xaml.IO.EditAccountPanel.Visibility = "Visible"
+                $Ctrl.Xaml.IO.EditAccountPanel.Visibility   = "Visible"
             }
             ViewInvoice
             {
-                $Ctrl.Xaml.IO.ViewInvoicePanel.Visibility = "Visible"
+                $Ctrl.Xaml.IO.ViewInvoicePanel.Visibility   = "Visible"
+                $Ctrl.Xaml.IO.New.IsEnabled                 = 1
             }
             EditInvoice
             {
-                $Ctrl.Xaml.IO.EditInvoicePanel.Visibility = "Visible"
+                $Ctrl.Xaml.IO.EditInvoicePanel.Visibility   = "Visible"
             }
         }
-
-        $Ctrl.Xaml.IO.View.IsEnabled   = 0
-        $Ctrl.Xaml.IO.New.IsEnabled    = 0
-        $Ctrl.Xaml.IO.Edit.IsEnabled   = 0
-        $Ctrl.Xaml.IO.Save.IsEnabled   = 0
-        $Ctrl.Xaml.IO.Delete.IsEnabled = 0
     }
     StageXaml()
     {
         $Ctrl = $This
 
-        # [Uid Panel]
+        # [View Uid Panel]
         $Ctrl.Initial("ViewUid")
         $Ctrl.Stage("ViewUid")
         $Ctrl.Xaml.IO.UidPanel.Add_Click(
@@ -4111,61 +4693,142 @@ Class cimdbController
             $Ctrl.Handle("ViewUid")
         })
 
+        # [Edit Uid Panel]
         $Ctrl.Initial("EditUid")
         $Ctrl.Stage("EditUid")
     
-        # [Client Panel]
+        # [View Client Panel]
+        $Ctrl.Initial("ViewClient")
+        $Ctrl.Stage("ViewClient")
         $Ctrl.Xaml.IO.ClientPanel.Add_Click(
         {
             $Ctrl.Handle("ViewClient")
         })
+
+        # [Edit Client Panel]
+        $Ctrl.Initial("EditClient")
+        $Ctrl.Stage("EditClient")
     
-        # [Service Panel]
+        # [View Service Panel]
+        $Ctrl.Initial("ViewService")
+        $Ctrl.Stage("ViewService")
         $Ctrl.Xaml.IO.ServicePanel.Add_Click(
         {
             $Ctrl.Handle("ViewService")
         })
-    
-        # [Device Panel]
+
+        # [Edit Service Panel]
+        $Ctrl.Initial("EditService")
+        $Ctrl.Stage("EditService")
+
+        # [View Device Panel]
+        $Ctrl.Initial("ViewDevice")
+        $Ctrl.Stage("ViewDevice")
         $Ctrl.Xaml.IO.DevicePanel.Add_Click(
         {
             $Ctrl.Handle("ViewDevice")
         })
+
+        # [Edit Device Panel]
+        $Ctrl.Initial("EditDevice")
+        $Ctrl.Stage("EditDevice")
     
-        # [Issue Panel]
+        # [View Issue Panel]
+        $Ctrl.Initial("ViewIssue")
+        $Ctrl.Stage("ViewIssue")
         $Ctrl.Xaml.IO.IssuePanel.Add_Click(
         {
             $Ctrl.Handle("ViewIssue")
         })
+
+        # [Edit Issue Panel]
+        $Ctrl.Initial("EditIssue")
+        $Ctrl.Stage("EditIssue")
     
-        # [Purchase Panel]
+        # [View Purchase Panel]
+        $Ctrl.Initial("ViewPurchase")
+        $Ctrl.Stage("ViewPurchase")
         $Ctrl.Xaml.IO.PurchasePanel.Add_Click(
         {
             $Ctrl.Handle("ViewPurchase")
         })
+
+        # [Edit Purchase Panel]
+        $Ctrl.Initial("EditPurchase")
+        $Ctrl.Stage("EditPurchase")
     
-        # [Inventory Panel]
+        # [View Inventory Panel]
+        $Ctrl.Initial("ViewInventory")
+        $Ctrl.Stage("ViewInventory")
         $Ctrl.Xaml.IO.InventoryPanel.Add_Click(
         {
             $Ctrl.Handle("ViewInventory")
         })
+
+        # [Edit Inventory Panel]
+        $Ctrl.Initial("EditInventory")
+        $Ctrl.Stage("EditInventory")
     
-        # [Expense Panel]
+        # [View Expense Panel]
+        $Ctrl.Initial("ViewExpense")
+        $Ctrl.Stage("ViewExpense")
         $Ctrl.Xaml.IO.ExpensePanel.Add_Click(
         {
             $Ctrl.Handle("ViewExpense")
         })
 
-        # [Account Panel]
+        # [Edit Expense Panel]
+        $Ctrl.Initial("EditExpense")
+        $Ctrl.Stage("EditExpense")
+
+        # [View Account Panel]
+        $Ctrl.Initial("ViewAccount")
+        $Ctrl.Stage("ViewAccount")
         $Ctrl.Xaml.IO.AccountPanel.Add_Click(
         {
             $Ctrl.Handle("ViewAccount")
         })
+
+        # [Edit Account Panel]
+        $Ctrl.Initial("EditAccount")
+        $Ctrl.Stage("EditAccount")
     
-        # [Invoice Panel]
+        # [View Invoice Panel]
+        $Ctrl.Initial("ViewInvoice")
+        $Ctrl.Stage("ViewInvoice")
         $Ctrl.Xaml.IO.InvoicePanel.Add_Click(
         {
             $Ctrl.Handle("ViewInvoice")
+        })
+
+        # [Edit Invoice Panel]
+        $Ctrl.Initial("EditInvoice")
+        $Ctrl.Stage("EditInvoice")
+
+        # [Bottom panel buttons]
+        $Ctrl.Xaml.IO.View.Add_Click(
+        {
+            $Ctrl.View()
+        })
+
+        $Ctrl.Xaml.IO.New.Add_Click(
+        {
+            $Ctrl.New()
+        })
+
+        $Ctrl.Xaml.IO.Edit.Add_Click(
+        {
+            $Ctrl.Edit()
+        })
+
+        $Ctrl.Xaml.IO.Save.Add_Click(
+        {
+            $Ctrl.Save()
+        })
+
+        $Ctrl.Xaml.IO.Delete.Add_Click(
+        {
+            $Ctrl.Delete()
         })
     }
     Invoke()
