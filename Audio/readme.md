@@ -7,10 +7,11 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Last Update       |
 |:------------------|
-| **06/12/23 0935** |
+| **06/12/23 2329** |
 
 | Date         | Length     | File                           | Name                                                                                                   |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **06/12/23** | 0h 40m 12s | **2023_06_12_22_29_28.mp3**    | [Meet Bob](https://drive.google.com/file/d/1xEyYWdeGa0Y78g990KocbcHXiskU4qug)
 | **06/12/23** | 0h 53m 13s | **2023_06_12_08_08_04.mp3**    | [Recurrence](https://drive.google.com/file/d/1wfOvzuVWEO9vxLja5Sa35wF5XoDutjUc)
 | **06/08/23** | 0h 38m 55s | **2023_06_08_08_11_14.mp3**    | [Predictions](https://drive.google.com/file/d/1uMWIclGGhAljUmNtjqdmrsJwLnXWLiRd)
 | **06/07/23** | 0h 56m 22s | **2023_06_07_08_02_39.mp3**    | [Frustration](https://drive.google.com/file/d/1tD9cYIZ8A4KZxzikeF-LUySDN8-yCgaJ)
