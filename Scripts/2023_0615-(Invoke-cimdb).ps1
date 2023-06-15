@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-15 16:09:33                                                                  //
+\\  Date       : 2023-06-15 17:48:01                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
@@ -579,11 +579,12 @@ Class cimdbXaml
     '                    </DataGrid>',
     '                </Grid>',
     '                <!-- Edit Client Panel -->',
-    '                <Grid Name="EditClientPanel" Visibility="Collapsed">',
+    '                <Grid Name="EditClientPanel" Visibility="Visible">',
     '                    <Grid.RowDefinitions>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="10"/>',
     '                        <RowDefinition Height="50"/>',
+    '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
@@ -652,7 +653,7 @@ Class cimdbXaml
     '                    </Grid>',
     '                    <Grid Grid.Row="4">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="120"/>',
     '                            <ColumnDefinition Width="*"/>',
     '                            <ColumnDefinition Width="45"/>',
     '                            <ColumnDefinition Width="*"/>',
@@ -662,53 +663,60 @@ Class cimdbXaml
     '                        <Label Grid.Column="0"',
     '                               Content="[Name]:"/>',
     '                        <TextBox Grid.Column="1"',
-    '                                 Name="EditClientFirst"',
+    '                                 Name="EditClientGivenName"',
     '                                 Text="&lt;First&gt;"/>',
     '                        <TextBox Grid.Column="2"',
-    '                                 Name="EditClientInitial"',
+    '                                 Name="EditClientInitials"',
     '                                 Text="&lt;Mi&gt;"/>',
     '                        <TextBox Grid.Column="3"',
-    '                                 Name="EditClientLast"',
+    '                                 Name="EditClientSurname"',
     '                                 Text="&lt;Last&gt;"/>',
     '                        <TextBox Grid.Column="4"',
-    '                                 Name="EditClientOther"',
+    '                                 Name="EditClientOtherName"',
     '                                 Text="&lt;Other&gt;"/>',
     '                        <Image Grid.Column="5"',
     '                               Name="EditClientNameIcon"/>',
     '                    </Grid>',
     '                    <Grid Grid.Row="5">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                            <ColumnDefinition Width="2*"/>',
-    '                            <ColumnDefinition Width="1*"/>',
-    '                            <ColumnDefinition Width="65"/>',
-    '                            <ColumnDefinition Width="70"/>',
-    '                            <ColumnDefinition Width="75"/>',
+    '                            <ColumnDefinition Width="120"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="225"/>',
     '                            <ColumnDefinition Width="25"/>',
     '                        </Grid.ColumnDefinitions>',
     '                        <Label Grid.Column="0"',
     '                               Content="[Location]:"/>',
     '                        <TextBox Grid.Column="1"',
-    '                                 Name="EditClientAddress"',
+    '                                 Name="EditClientStreetAddress"',
     '                                 Text="&lt;Address&gt;"/>',
-    '                        <TextBox Grid.Column="2"',
-    '                                 Name="EditClientCity"',
-    '                                 Text="&lt;City&gt;"/>',
-    '                        <TextBox Grid.Column="3"',
-    '                                 Name="EditClientRegion"',
-    '                                 Text="&lt;State&gt;"/>',
-    '                        <TextBox Grid.Column="4"',
-    '                                 Name="EditClientPostal"',
-    '                                 Text="&lt;Postal&gt;"/>',
-    '                        <TextBox Grid.Column="5"',
-    '                                 Name="EditClientCountry"',
-    '                                 Text="&lt;Country&gt;"/>',
-    '                        <Image Grid.Column="6"',
-    '                               Name="EditClientLocationIcon"/>',
     '                    </Grid>',
     '                    <Grid Grid.Row="6">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="120"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="75"/>',
+    '                            <ColumnDefinition Width="75"/>',
+    '                            <ColumnDefinition Width="75"/>',
+    '                            <ColumnDefinition Width="25"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                                <TextBox Grid.Column="1"',
+    '                                 Name="EditClientCity"',
+    '                                 Text="&lt;City&gt;"/>',
+    '                                <TextBox Grid.Column="2"',
+    '                                 Name="EditClientRegion"',
+    '                                 Text="&lt;State&gt;"/>',
+    '                                <TextBox Grid.Column="3"',
+    '                                 Name="EditClientPostalCode"',
+    '                                 Text="&lt;Postal&gt;"/>',
+    '                                <TextBox Grid.Column="4"',
+    '                                 Name="EditClientCountry"',
+    '                                 Text="&lt;Country&gt;"/>',
+    '                                <Image Grid.Column="6"',
+    '                               Name="EditClientLocationIcon"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="7">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="120"/>',
     '                            <ColumnDefinition Width="*"/>',
     '                            <ColumnDefinition Width="100"/>',
     '                            <ColumnDefinition Width="65"/>',
@@ -723,7 +731,7 @@ Class cimdbXaml
     '                                  SelectedIndex="2">',
     '                            <ComboBoxItem Content="Male"/>',
     '                            <ComboBoxItem Content="Female"/>',
-    '                            <ComboBoxItem Content="-"/>',
+    '                            <ComboBoxItem Content="Unspecified"/>',
     '                        </ComboBox>',
     '                        <Label Grid.Column="2"',
     '                               Content="[D.O.B.]:"/>',
@@ -739,9 +747,9 @@ Class cimdbXaml
     '                        <Image Grid.Column="6"',
     '                               Name="EditClientDobIcon"/>',
     '                    </Grid>',
-    '                    <Grid Grid.Row="7">',
+    '                    <Grid Grid.Row="8">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="120"/>',
     '                            <ColumnDefinition Width="*"/>',
     '                            <ColumnDefinition Width="25"/>',
     '                            <ColumnDefinition Width="40"/>',
@@ -753,7 +761,8 @@ Class cimdbXaml
     '                        <Label Grid.Column="0"',
     '                               Content="[Phone]:"/>',
     '                        <TextBox Grid.Column="1"',
-    '                                 Name="EditClientPhoneText"/>',
+    '                                 Name="EditClientPhoneText"',
+    '                                 Text="&lt;Enter phone number&gt;"/>',
     '                        <Image Grid.Column="2"',
     '                               Name="EditClientPhoneIcon"/>',
     '                        <Button Grid.Column="3"',
@@ -773,9 +782,9 @@ Class cimdbXaml
     '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
     '                        </Button>',
     '                    </Grid>',
-    '                    <Grid Grid.Row="8">',
+    '                    <Grid Grid.Row="9">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="120"/>',
     '                            <ColumnDefinition Width="*"/>',
     '                            <ColumnDefinition Width="25"/>',
     '                            <ColumnDefinition Width="40"/>',
@@ -785,19 +794,20 @@ Class cimdbXaml
     '                            <ColumnDefinition Width="40"/>',
     '                        </Grid.ColumnDefinitions>',
     '                        <Label Grid.Column="0"',
-    '                                    Content="[Email]:"/>',
+    '                               Content="[Email]:"/>',
     '                        <TextBox Grid.Column="1"',
-    '                                     Name="EditClientEmailText"/>',
+    '                                 Name="EditClientEmailText"',
+    '                                 Text="&lt;Enter email address&gt;"/>',
     '                        <Image Grid.Column="2"',
-    '                                   Name="EditClientEmailIcon"/>',
+    '                               Name="EditClientEmailIcon"/>',
     '                        <Button Grid.Column="3"',
-    '                                    Name="EditClientEmailAdd"',
-    '                                    Content="+"/>',
+    '                                Name="EditClientEmailAdd"',
+    '                                Content="+"/>',
     '                        <ComboBox Grid.Column="4"',
-    '                                      Name="EditClientEmailList"/>',
+    '                                  Name="EditClientEmailList"/>',
     '                        <Button Grid.Column="5"',
-    '                                    Name="EditClientEmailRemove"',
-    '                                    Content="-"/>',
+    '                                Name="EditClientEmailRemove"',
+    '                                Content="-"/>',
     '                        <Button Grid.Column="6"',
     '                                Name="EditClientEmailMoveUp">',
     '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
@@ -807,7 +817,7 @@ Class cimdbXaml
     '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
     '                        </Button>',
     '                    </Grid>',
-    '                    <TabControl Grid.Row="9">',
+    '                    <TabControl Grid.Row="10">',
     '                        <TabItem Header="Device(s)">',
     '                            <Grid>',
     '                                <Grid.RowDefinitions>',
@@ -831,11 +841,13 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Date"/>',
     '                                        <ComboBoxItem Content="Rank"/>',
     '                                        <ComboBoxItem Content="DisplayName"/>',
-    '                                        <ComboBoxItem Content="Chassis"/>',
+    '                                        <ComboBoxItem Content="Type"/>',
+    '                                        <ComboBoxItem Content="Status"/>',
     '                                        <ComboBoxItem Content="Vendor"/>',
     '                                        <ComboBoxItem Content="Model"/>',
     '                                        <ComboBoxItem Content="Specification"/>',
     '                                        <ComboBoxItem Content="Serial"/>',
+    '                                        <ComboBoxItem Content="Client"/>',
     '                                    </ComboBox>',
     '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientDeviceFilter"/>',
@@ -847,29 +859,33 @@ Class cimdbXaml
     '                                          Name="EditClientDeviceOutput">',
     '                                    <DataGrid.Columns>',
     '                                        <DataGridTextColumn Header="DisplayName"',
-    '                                                            Binding="{Binding Record.DisplayName}"',
-    '                                                            Width="400"/>',
-    '                                        <DataGridTextColumn Header="Chassis"',
-    '                                                            Binding="{Binding Record.Chassis}"',
-    '                                                            Width="100"/>',
+    '                                                Binding="{Binding Record.DisplayName}"',
+    '                                                Width="*"/>',
+    '                                        <DataGridTemplateColumn Header="Chassis"',
+    '                                                    Width="100">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="{Binding Record.Chassis}"',
+    '                                                  Style="{StaticResource DGCombo}">',
+    '                                                        <ComboBoxItem Content="Desktop"/>',
+    '                                                        <ComboBoxItem Content="Laptop"/>',
+    '                                                        <ComboBoxItem Content="Smartphone"/>',
+    '                                                        <ComboBoxItem Content="Tablet"/>',
+    '                                                        <ComboBoxItem Content="Console"/>',
+    '                                                        <ComboBoxItem Content="Server"/>',
+    '                                                        <ComboBoxItem Content="Network"/>',
+    '                                                        <ComboBoxItem Content="Other"/>',
+    '                                                        <ComboBoxItem Content="Unspecified"/>',
+    '                                                    </ComboBox>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
     '                                        <DataGridTextColumn Header="Vendor"',
-    '                                                            Binding="{Binding Record.Vendor}"',
-    '                                                            Width="150"/>',
+    '                                                Binding="{Binding Record.Vendor}"',
+    '                                                Width="150"/>',
     '                                        <DataGridTextColumn Header="Model"',
-    '                                                            Binding="{Binding Record.Model}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Specification"',
-    '                                                            Binding="{Binding Record.Specification}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Serial"',
-    '                                                            Binding="{Binding Record.Serial}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Client"',
-    '                                                            Binding="{Binding Record.Client}"',
-    '                                                            Width="350"/>',
-    '                                        <DataGridTextColumn Header="UID"',
-    '                                                            Binding="{Binding Record.UID}"',
-    '                                                            Width="350"/>',
+    '                                                Binding="{Binding Record.Model}"',
+    '                                                Width="150"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
     '                                <Grid Grid.Row="2">',
@@ -911,10 +927,14 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Index"/>',
     '                                        <ComboBoxItem Content="Date"/>',
     '                                        <ComboBoxItem Content="Rank"/>',
+    '                                        <ComboBoxItem Content="DisplayName"/>',
+    '                                        <ComboBoxItem Content="Type"/>',
     '                                        <ComboBoxItem Content="Status"/>',
     '                                        <ComboBoxItem Content="Description"/>',
     '                                        <ComboBoxItem Content="Client"/>',
     '                                        <ComboBoxItem Content="Device"/>',
+    '                                        <ComboBoxItem Content="Service"/>',
+    '                                        <ComboBoxItem Content="Invoice"/>',
     '                                    </ComboBox>',
     '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientIssueFilter"/>',
@@ -926,32 +946,26 @@ Class cimdbXaml
     '                                          Name="EditClientIssueOutput">',
     '                                    <DataGrid.Columns>',
     '                                        <DataGridTextColumn Header="DisplayName"',
-    '                                                            Binding="{Binding Record.DisplayName}"',
-    '                                                            Width="400"/>',
+    '                                                Binding="{Binding Record.DisplayName}"',
+    '                                                Width="*"/>',
     '                                        <DataGridTemplateColumn Header="Status"',
-    '                                                                Width="150">',
+    '                                                    Width="150">',
     '                                            <DataGridTemplateColumn.CellTemplate>',
     '                                                <DataTemplate>',
-    '                                                    <ComboBox SelectedIndex="{Binding Record.Status}"',
+    '                                                    <ComboBox SelectedIndex="{Binding Record.Status.Index}"',
     '                                                              Style="{StaticResource DGCombo}">',
     '                                                        <ComboBoxItem Content="New"/>',
     '                                                        <ComboBoxItem Content="Diagnosed"/>',
     '                                                        <ComboBoxItem Content="Commit"/>',
-    '                                                        <ComboBoxItem Content="Completed"/>',
-    '                                                        <ComboBoxItem Content="-"/>',
+    '                                                        <ComboBoxItem Content="Complete"/>',
+    '                                                        <ComboBoxItem Content="NoGo"/>',
+    '                                                        <ComboBoxItem Content="Fail"/>',
+    '                                                        <ComboBoxItem Content="Transfer"/>',
+    '                                                        <ComboBoxItem Content="Unspecified"/>',
     '                                                    </ComboBox>',
     '                                                </DataTemplate>',
     '                                            </DataGridTemplateColumn.CellTemplate>',
     '                                        </DataGridTemplateColumn>',
-    '                                        <DataGridTextColumn Header="Description"',
-    '                                                            Binding="{Binding Record.Description}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Client"',
-    '                                                            Binding="{Binding Record.Client}"',
-    '                                                            Width="350"/>',
-    '                                        <DataGridTextColumn Header="Device"',
-    '                                                            Binding="{Binding Record.Device}"',
-    '                                                            Width="350"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
     '                                <Grid Grid.Row="2">',
@@ -994,8 +1008,13 @@ Class cimdbXaml
     '                                        <ComboBoxItem Content="Date"/>',
     '                                        <ComboBoxItem Content="Rank"/>',
     '                                        <ComboBoxItem Content="DisplayName"/>',
-    '                                        <ComboBoxItem Content="Phone"/>',
-    '                                        <ComboBoxItem Content="Email"/>',
+    '                                        <ComboBoxItem Content="Type"/>',
+    '                                        <ComboBoxItem Content="Status"/>',
+    '                                        <ComboBoxItem Content="Client"/>',
+    '                                        <ComboBoxItem Content="Issue"/>',
+    '                                        <ComboBoxItem Content="Purchase"/>',
+    '                                        <ComboBoxItem Content="Inventory"/>',
+    '                                        <ComboBoxItem Content="Cost"/>',
     '                                    </ComboBox>',
     '                                    <TextBox Grid.Column="2"',
     '                                             Name="EditClientInvoiceFilter"/>',
@@ -1004,28 +1023,30 @@ Class cimdbXaml
     '                                            Content="Refresh"/>',
     '                                </Grid>',
     '                                <DataGrid Grid.Row="1"',
-    '                                          Name="EditClientInvoiceOutput"',
-    '                                          ItemsSource="{Binding Invoice}"',
-    '                                          Margin="5">',
+    '                                          Name="EditClientInvoiceOutput">',
     '                                    <DataGrid.Columns>',
     '                                        <DataGridTextColumn Header="DisplayName"',
-    '                                                            Binding="{Binding Record.DisplayName}"',
-    '                                                            Width="200"/>',
-    '                                        <DataGridTextColumn Header="Mode"',
-    '                                                            Binding="{Binding Record.Mode}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Date"',
-    '                                                            Binding="{Binding Record.Date}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Name"',
-    '                                                            Binding="{Binding Record.Name}"',
-    '                                                            Width="150"/>',
-    '                                        <DataGridTextColumn Header="Phone"',
-    '                                                            Binding="{Binding Record.Phone}"',
-    '                                                            Width="100"/>',
-    '                                        <DataGridTextColumn Header="Email"',
-    '                                                            Binding="{Binding Record.Email}"',
-    '                                                            Width="150"/>',
+    '                                                Binding="{Binding Record.DisplayName}"',
+    '                                                Width="*"/>',
+    '                                        <DataGridTextColumn Header="Client"',
+    '                                                Binding="{Binding Record.Name}"',
+    '                                                Width="250"/>',
+    '                                        <DataGridTemplateColumn Header="Status"',
+    '                                                    Width="100">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="{Binding Record.Type.Index}"',
+    '                                                  Style="{StaticResource DGCombo}">',
+    '                                                        <ComboBoxItem Content="Paid"/>',
+    '                                                        <ComboBoxItem Content="Unpaid"/>',
+    '                                                        <ComboBoxItem Content="Unspecified"/>',
+    '                                                    </ComboBox>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
+    '                                        <DataGridTextColumn Header="Cost"',
+    '                                                Binding="{Binding Record.Cost}"',
+    '                                                Width="100"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
     '                                <Grid Grid.Row="2">',
@@ -3318,7 +3339,7 @@ Class cimdbXaml
     '                        <Label Grid.Column="0"',
     '                               Content="[Cost]:"/>',
     '                        <TextBox Grid.Column="1"',
-    '                                 Name="EditIssueCost"/>',
+    '                                 Name="EditInvoiceCost"/>',
     '                    </Grid>',
     '                </Grid>',
     '            </Grid>',
@@ -3439,7 +3460,7 @@ Class XamlWindow
     }
     [String] ToString()
     {
-        Return "<FEModule.XamlWindow[VmControllerXaml]>"
+        Return "<FEModule.cimdb.XamlWindow[cimdbXaml]>"
     }
 }
 
@@ -5339,6 +5360,10 @@ Class cimdbSlotController
 
         $This.Refresh()
     }
+    [String[]] Uid()
+    {
+        Return [System.Enum]::GetNames([cimdbUidPropertyType])
+    }
     [Object] cimdbRecordTypeStatusItem([UInt32]$Index,[String]$Name,[Object]$Record,[Object]$Status)
     {
         Return [cimdbRecordTypeStatusItem]::New($Index,$Name,$Record,$Status)
@@ -5456,6 +5481,7 @@ Class cimdbSlotController
     }
 }
 
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -5466,14 +5492,14 @@ Class cimdbSlotController
 
 Enum cimdbValidationType
 {
-    EditClientFirst
-    EditClientInitial
-    EditClientLast
-    EditClientOther
-    EditClientAddress
+    EditClientGivenName
+    EditClientInitials
+    EditClientSurname
+    EditClientOtherName
+    EditClientStreetAddress
     EditClientCity
     EditClientRegion
-    EditClientPostal
+    EditClientPostalCode
     EditClientCountry
     EditClientMonth
     EditClientDay
@@ -5489,12 +5515,20 @@ Enum cimdbValidationType
     EditDeviceSerial
     EditIssueDescription
     EditPurchaseDistributor
+    EditPurchaseCost
+    EditPurchaseURL
     EditPurchaseVendor
     EditPurchaseModel
     EditPurchaseSpecification
-    EditPurchaseUrl
-    EditPurchaseCost
     EditPurchaseSerial
+    EditInventoryVendor
+    EditInventoryModel
+    EditInventorySpecification
+    EditInventorySerial
+    EditInventoryCost
+    EditExpenseRecipient
+    EditExpenseCost
+    EditAccountOrganization
 }
 
 Class cimdbValidationItem
@@ -5503,9 +5537,8 @@ Class cimdbValidationItem
     [String]      $Name
     [Object]   $Control
     [String]   $Default
-    [String]     $Value
+    [String]   $Current
     [Int32]     $Status
-    [String]    $Result
     cimdbValidationItem([String]$Name)
     {
         $This.Index   = [UInt32][cimdbValidationType]::$Name
@@ -5514,17 +5547,18 @@ Class cimdbValidationItem
     SetControl([Object]$Control)
     {
         $This.Control = $Control.Control
+        $This.Check()
     }
     Check()
     {
-        $This.Value   = $This.Control.Text
-        If ($This.Value -eq $This.Default)
+        $This.Current = $This.Control.Text
+        If ($This.Current -eq $This.Default)
         {
             $This.Status = -1
         }
-        If ($This.Value -match "^$")
+        If ($This.Current -match "^$")
         {
-            $This.Value  = $This.Default
+            $This.Current = $This.Default
             $This.Status = -1
         }
     }
@@ -5536,8 +5570,8 @@ Class cimdbValidationItem
 
 Class cimdbValidationController
 {
-    [Object]   $Xaml
-    [Object] $Output
+    Hidden [Object] $Xaml
+    [Object]      $Output
     cimdbValidationController([Object]$Xaml)
     {
         $This.Xaml = $Xaml
@@ -5565,35 +5599,43 @@ Class cimdbValidationController
             $Item.Control = $This.Xaml.Get($Name)
             $Item.Default = Switch ($Name)
             {
-                EditClientFirst           { "<First>"                             }
-                EditClientInitial         { "<Mi> "                               }
-                EditClientLast            { "<Last>"                              }
-                EditClientOther           { "<Other>"                             }
-                EditClientAddress         { "<Address>"                           }
-                EditClientCity            { "<City>"                              }
-                EditClientRegion          { "<State>"                             }
-                EditClientPostal          { "<Postal>"                            }
-                EditClientCountry         { "<Country>"                           }
-                EditClientMonth           { "<Month>"                             }
-                EditClientDay             { "<Day>"                               }
-                EditClientYear            { "<Year>"                              }
-                EditClientPhoneText       { "<Phone Number>"                      }
-                EditClientEmailText       { "<Email Address> "                    }
-                EditServiceName           { "<Enter a name for the service> "     }
-                EditServiceDescription    { "<Enter description of the service> " }
-                EditServiceCost           { "<Enter cost>"                        }
-                EditDeviceVendor          { "<Vendor>"                            }
-                EditDeviceModel           { "<Model>"                             }
-                EditDeviceSpecification   { "<Specification>"                     }
-                EditDeviceSerial          { "<Enter device serial number>"        }
-                EditIssueDescription      { "<Enter description of issue>"        }
-                EditPurchaseDistributor   { "<Enter distributor>"                 }
-                EditPurchaseVendor        { "<Vendor>"                            }
-                EditPurchaseModel         { "<Model>"                             }
-                EditPurchaseSpecification { "<Specification>"                     }
-                EditPurchaseUrl           { "<Enter purchase URL>"                }
-                EditPurcahseCost          { "<Cost>"                              }
-                EditPurchaseSerial        { "<Enter device serial number> "       }
+               EditClientGivenName        { "<First>"                            }
+               EditClientInitials         { "<Mi>"                               }
+               EditClientSurname          { "<Last>"                             }
+               EditClientOtherName        { "<Other>"                            }
+               EditClientStreetAddress    { "<Address>"                          }
+               EditClientCity             { "<City>"                             }
+               EditClientRegion           { "<State>"                            }
+               EditClientPostalCode       { "<Postal>"                           }
+               EditClientCountry          { "<Country>"                          }
+               EditClientMonth            { "<Month>"                            }
+               EditClientDay              { "<Day>"                              }
+               EditClientYear             { "<Year>"                             }
+               EditClientPhoneText        { "<Enter phone number>"               }
+               EditClientEmailText        { "<Enter email address>"              }
+               EditServiceName            { "<Enter a name for the service>"     }
+               EditServiceDescription     { "<Enter description of the service>" }
+               EditServiceCost            { "<Enter cost>"                       }
+               EditDeviceVendor           { "<Vendor>"                           }
+               EditDeviceModel            { "<Model>"                            }
+               EditDeviceSpecification    { "<Specification>"                    }
+               EditDeviceSerial           { "<Enter device serial number>"       }
+               EditIssueDescription       { "<Enter description of issue>"       }
+               EditPurchaseDistributor    { "<Enter distributor>"                }
+               EditPurchaseCost           { "<Cost>"                             }
+               EditPurchaseURL            { "<Enter purchase URL>"               }
+               EditPurchaseVendor         { "<Vendor>"                           }
+               EditPurchaseModel          { "<Model>"                            }
+               EditPurchaseSpecification  { "<Specification>"                    }
+               EditPurchaseSerial         { "<Enter device serial number>"       }
+               EditInventoryVendor        { "<Vendor>"                           }
+               EditInventoryModel         { "<Model>"                            }
+               EditInventorySpecification { "<Specification>"                    }
+               EditInventorySerial        { "<Enter device serial number>"       }
+               EditInventoryCost          { "<Cost>"                             }
+               EditExpenseRecipient       { "<Enter recipient>"                  }
+               EditExpenseCost            { "<Cost>"                             }
+               EditAccountOrganization    { "<Enter Organization>"               }
             }
 
             $This.Output += $Item
@@ -5601,7 +5643,7 @@ Class cimdbValidationController
     }
     [String] ToString()
     {
-        Return "<FEModule.Validation[Controller]>"
+        Return "<FEModule.cimdb.Validation[Controller]>"
     }
 }
 
@@ -5877,8 +5919,8 @@ Class cimdbInvoiceTemplate
 
 Class cimdbDatabaseController
 {
-    [Object]   $Slot
-    [Object] $Output
+    Hidden [Object] $Slot
+    [Object]      $Output
     cimdbDatabaseController([Object]$Slot)
     {
         $This.Slot = $Slot
@@ -5931,6 +5973,10 @@ Class cimdbDatabaseController
     [Object] Entry([String]$Name)
     {
         Return $This.cimdbUid($This.Output.Count,$This.Slot.Category.Output[$This.GetIndex($Name)])
+    }
+    [String] GetName([UInt32]$Index)
+    {
+        Return $This.Slot.Category.Output[$Index].Name
     }
     [UInt32] GetIndex([String]$Name)
     {
@@ -6017,25 +6063,18 @@ Class cimdbDatabaseController
     }
 }
 
-Class cimdbControllerProperty
-{
-    [String]  $Name
-    [Object] $Value
-    cimdbControllerProperty([Object]$Property)
-    {
-        $This.Name  = $Property.Name
-        $This.Value = $Property.Value -join ", "
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.Controller[Property]>"
-    }
-}
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Controller [+]                                                                                 ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
 
 Class cimdbCurrentController
 {
-    [Object]   $Mode
-    [Object]    $Uid
+    [Object] $Mode
+    [Object]  $Uid
     cimdbCurrentController()
     {
 
@@ -6054,13 +6093,29 @@ Class cimdbCurrentController
     }
 }
 
+Class cimdbControllerProperty
+{
+    [String]  $Name
+    [Object] $Value
+    cimdbControllerProperty([Object]$Property)
+    {
+        $This.Name  = $Property.Name
+        $This.Value = $Property.Value -join ", "
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Controller[Property]>"
+    }
+}
+
 Class cimdbController
 {
     [Object]     $Module
     [Object]       $Xaml
+    [Object]       $Slot
+    [Object] $Validation
     [Object]   $Database
     [Object]    $Current
-    [Object] $Validation
     cimdbController([Object]$Module)
     {
         # Assign FEModule, this will allow module/console to be imported
@@ -6203,7 +6258,7 @@ Class cimdbController
     }
     [Object] CurrentMode([String]$Mode)
     {
-        Return $This.Database.Mode.Output | ? Name -eq $Mode
+        Return $This.Slot.Mode.Output | ? Name -eq $Mode
     }
     [String] Escape([String]$String)
     {
@@ -6560,68 +6615,28 @@ Class cimdbController
         {
             ViewUid
             {
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewUidProperty,$Ctrl.Slot.Uid())
                 $Ctrl.Xaml.IO.ViewUidProperty.SelectedIndex = 0
                 $Ctrl.Xaml.IO.ViewUidFilter.Text            = ""
             }
             EditUid
             {
-
+                <# 
+                    N/A, placeholder
+                    - may add "copy to clipboard" or something
+                #>
             }
             ViewClient
             {
+                $List = @($Ctrl.Slot.Uid();$Ctrl.Slot.Get("Client","Property").Name)
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewClientProperty,$List)
+
                 $Ctrl.Xaml.IO.ViewClientProperty.SelectedIndex = 0
                 $Ctrl.Xaml.IO.ViewClientFilter.Text            = ""
             }
             EditClient
             {
 
-            <#
-                $Ctrl.Xaml.IO.EditClientFirst              = 
-                $Ctrl.Xaml.IO.EditClientInitial            = 
-                $Ctrl.Xaml.IO.EditClientLast               = 
-                $Ctrl.Xaml.IO.EditClientOther              = 
-                $Ctrl.Xaml.IO.EditClientNameIcon           = 
-                $Ctrl.Xaml.IO.EditClientAddress            = 
-                $Ctrl.Xaml.IO.EditClientCity               = 
-                $Ctrl.Xaml.IO.EditClientRegion             = 
-                $Ctrl.Xaml.IO.EditClientPostal             = 
-                $Ctrl.Xaml.IO.EditClientCountry            = 
-                $Ctrl.Xaml.IO.EditClientLocationIcon       = 
-                $Ctrl.Xaml.IO.EditClientGender             = 
-                $Ctrl.Xaml.IO.EditClientMonth              = 
-                $Ctrl.Xaml.IO.EditClientDay                = 
-                $Ctrl.Xaml.IO.EditClientYear               = 
-                $Ctrl.Xaml.IO.EditClientDobIcon            = 
-                $Ctrl.Xaml.IO.EditClientPhoneText          = 
-                $Ctrl.Xaml.IO.EditClientPhoneAdd           = 
-                $Ctrl.Xaml.IO.EditClientPhoneList          = 
-                $Ctrl.Xaml.IO.EditClientPhoneRemove        = 
-                $Ctrl.Xaml.IO.EditClientEmailText          = 
-                $Ctrl.Xaml.IO.EditClientEmailAdd           = 
-                $Ctrl.Xaml.IO.EditClientEmailList          = 
-                $Ctrl.Xaml.IO.EditClientEmailRemove        = 
-                $Ctrl.Xaml.IO.EditClientDeviceProperty     = 
-                $Ctrl.Xaml.IO.EditClientDeviceFilter       = 
-                $Ctrl.Xaml.IO.EditClientDeviceRefresh      = 
-                $Ctrl.Xaml.IO.EditClientDeviceOutput       = 
-                $Ctrl.Xaml.IO.EditClientDeviceAdd          = 
-                $Ctrl.Xaml.IO.EditClientDeviceList         = 
-                $Ctrl.Xaml.IO.EditClientDeviceRemove       = 
-                $Ctrl.Xaml.IO.EditClientIssueProperty      = 
-                $Ctrl.Xaml.IO.EditClientIssueFilter        = 
-                $Ctrl.Xaml.IO.EditClientIssueRefresh       = 
-                $Ctrl.Xaml.IO.EditClientIssueOutput        = 
-                $Ctrl.Xaml.IO.EditClientIssueAdd           = 
-                $Ctrl.Xaml.IO.EditClientIssueList          = 
-                $Ctrl.Xaml.IO.EditClientIssueRemove        = 
-                $Ctrl.Xaml.IO.EditClientInvoiceProperty    = 
-                $Ctrl.Xaml.IO.EditClientInvoiceFilter      = 
-                $Ctrl.Xaml.IO.EditClientInvoiceSearch      = 
-                $Ctrl.Xaml.IO.EditClientInvoiceOutput      = 
-                $Ctrl.Xaml.IO.EditClientInvoiceAdd         = 
-                $Ctrl.Xaml.IO.EditClientInvoiceList        = 
-                $Ctrl.Xaml.IO.EditClientInvoiceRemove      = 
-            #>
             }
             ViewService
             {
@@ -6630,7 +6645,65 @@ Class cimdbController
             }
             EditService
             {
+                <#
 
+                $Ctrl.Xaml.IO.EditClientPanel
+                $Ctrl.Xaml.IO.EditClientOutput
+                $Ctrl.Xaml.IO.EditClientType
+                $Ctrl.Xaml.IO.EditClientStatus
+                $Ctrl.Xaml.IO.EditClientGivenName
+                $Ctrl.Xaml.IO.EditClientInitials
+                $Ctrl.Xaml.IO.EditClientSurname
+                $Ctrl.Xaml.IO.EditClientOtherName
+                $Ctrl.Xaml.IO.EditClientNameIcon
+                $Ctrl.Xaml.IO.EditClientStreetAddress
+                $Ctrl.Xaml.IO.EditClientCity
+                $Ctrl.Xaml.IO.EditClientRegion
+                $Ctrl.Xaml.IO.EditClientPostalCode
+                $Ctrl.Xaml.IO.EditClientCountry
+                $Ctrl.Xaml.IO.EditClientLocationIcon
+                $Ctrl.Xaml.IO.EditClientGender
+                $Ctrl.Xaml.IO.EditClientMonth
+                $Ctrl.Xaml.IO.EditClientDay
+                $Ctrl.Xaml.IO.EditClientYear
+                $Ctrl.Xaml.IO.EditClientDobIcon
+                $Ctrl.Xaml.IO.EditClientPhoneText
+                $Ctrl.Xaml.IO.EditClientPhoneIcon
+                $Ctrl.Xaml.IO.EditClientPhoneAdd
+                $Ctrl.Xaml.IO.EditClientPhoneList
+                $Ctrl.Xaml.IO.EditClientPhoneRemove
+                $Ctrl.Xaml.IO.EditClientPhoneMoveUp
+                $Ctrl.Xaml.IO.EditClientPhoneMoveDown
+                $Ctrl.Xaml.IO.EditClientEmailText
+                $Ctrl.Xaml.IO.EditClientEmailIcon
+                $Ctrl.Xaml.IO.EditClientEmailAdd
+                $Ctrl.Xaml.IO.EditClientEmailList
+                $Ctrl.Xaml.IO.EditClientEmailRemove
+                $Ctrl.Xaml.IO.EditClientEmailMoveUp
+                $Ctrl.Xaml.IO.EditClientEmailMoveDown
+                $Ctrl.Xaml.IO.EditClientDeviceProperty
+                $Ctrl.Xaml.IO.EditClientDeviceFilter
+                $Ctrl.Xaml.IO.EditClientDeviceRefresh
+                $Ctrl.Xaml.IO.EditClientDeviceOutput
+                $Ctrl.Xaml.IO.EditClientDeviceAdd
+                $Ctrl.Xaml.IO.EditClientDeviceList
+                $Ctrl.Xaml.IO.EditClientDeviceRemove
+                $Ctrl.Xaml.IO.EditClientIssueProperty
+                $Ctrl.Xaml.IO.EditClientIssueFilter
+                $Ctrl.Xaml.IO.EditClientIssueRefresh
+                $Ctrl.Xaml.IO.EditClientIssueOutput
+                $Ctrl.Xaml.IO.EditClientIssueAdd
+                $Ctrl.Xaml.IO.EditClientIssueList
+                $Ctrl.Xaml.IO.EditClientIssueRemove
+                $Ctrl.Xaml.IO.EditClientInvoiceProperty
+                $Ctrl.Xaml.IO.EditClientInvoiceFilter
+                $Ctrl.Xaml.IO.EditClientInvoiceRefresh
+                $Ctrl.Xaml.IO.EditClientInvoiceOutput
+                $Ctrl.Xaml.IO.EditClientInvoiceAdd
+                $Ctrl.Xaml.IO.EditClientInvoiceList
+                $Ctrl.Xaml.IO.EditClientInvoiceRemove
+
+                #>
             }
             ViewDevice
             {
@@ -7416,6 +7489,7 @@ $Ctrl.Invoke()
 
 ###########
 
+<#
 Class cimdbClientName
 {
     [String] $DisplayName
@@ -7496,20 +7570,20 @@ Class cimdbClientLocation
 {
     [String] $StreetAddress
     [String]          $City
-    [String]         $State
+    [String]        $Region
     [String]    $PostalCode
     [String]       $Country
-    cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$State,[String]$PostalCode,[String]$Country)
+    cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$Region,[String]$PostalCode,[String]$Country)
     {
         $This.StreetAddress = $StreetAddress
         $This.City          = $City
-        $This.State         = $State
+        $This.Region        = $Region
         $This.PostalCode    = $PostalCode
         $This.Country       = $Country
     }
     [String] ToString()
     {
-        Return "{0}`n{1}, {2} {3}" -f $This.StreetAddress, $This.City, $This.State, $This.PostalCode
+        Return "{0}`n{1}, {2} {3}" -f $This.StreetAddress, $This.City, $This.Region, $This.PostalCode
     }
 }
 
