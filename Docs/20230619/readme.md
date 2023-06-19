@@ -1,4 +1,4 @@
-# https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230619/Pics/01.jpg [06/19/2023]
+# Jen-Hsun Huang [06/19/2023]
 
 | Description |
 |:------------|
