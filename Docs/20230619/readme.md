@@ -14,7 +14,7 @@
 
 | Index | Date         | Name/Link                                                                                     | Duration      |
 |:------|:-------------|:----------------------------------------------------------------------------------------------|:--------------|
-| 0     | `XX/XX/XXXX` | **[Is the CEO of Nvidia a good public speaker?](https://www.youtube.com/shorts/_DBvPUT9Kiw)** | `00h 00m 37s` |
+| 0     | `03/20/2023` | **[Is the CEO of Nvidia a good public speaker?](https://www.youtube.com/shorts/_DBvPUT9Kiw)** | `00h 00m 37s` |
 
 ## Document
 
