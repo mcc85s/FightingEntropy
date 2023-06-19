@@ -2,9 +2,13 @@
 
 | Description |
 |:------------|
-| Yeh, [**Jen-Hsun Huang**] is a good public speaker, but is sort of a bullshit artist. |
+| In response to the video below, a dude who dedicates his channel to providing tips for being a good speaker. Yeh, [**Jen-Hsun Huang**] is a good public speaker. However, he is sort of a [**bullshit artist**], and I'll explain since I've been using [**Nvidia**] products since the company made their first flagship product, the [**Riva TNT**]. |
 
 [[Video](#video)] - [[Document](#document)] - [[Picture](#picture)]
+
+<p align="center" width="100%">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230619/thumbnail.jpg">
+</p>
 
 ## Video
 
