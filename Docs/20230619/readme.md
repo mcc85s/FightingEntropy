@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In response to the video below, a dude who dedicates his channel to providing tips for being a good speaker. Yeh, [**Jen-Hsun Huang**] is a good public speaker. However, he is sort of a [**bullshit artist**], and I'll explain since I've been using [**Nvidia**] products since the company made their first flagship product, the [**Riva TNT**]. |
+| In response to the video below, a dude who dedicates his channel to providing tips for being a good speaker. Yeh, [**Jen-Hsun Huang**] is a good public speaker. However, he is sort of a [**bullshit artist**], and I'll explain since I've been using [**Nvidia**] products since the company made their first flagship product, the [**Riva TNT**] to play [**Half Life**] which was released by [**Sierra Studios**] in (1998). I didn't actually own the [**Riva TNT**], but I had a friend who did, and I had a [**Voodoo 3 2000**] which had rather comparable performance, and [**Nvidia**] actually purchased [**Voodoo**] and acquired their [**SLI/scalable link interface**] technology. |
 
 [[Video](#video)] - [[Document](#document)] - [[Picture](#picture)]
 
