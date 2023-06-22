@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-22 11:03:39                                                                  //
+\\  Date       : 2023-06-22 17:41:12                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
@@ -543,7 +543,7 @@ Class cimdbXaml
     '                                <DataGridTemplateColumn.CellTemplate>',
     '                                    <DataTemplate>',
     '                                        <ComboBox SelectedIndex="0"',
-    '                                                  ItemsSource="{Binding Record.Phone}"',
+    '                                                  ItemsSource="{Binding Record.Phone.Output.Number}"',
     '                                                  Style="{StaticResource DGCombo}"/>',
     '                                    </DataTemplate>',
     '                                </DataGridTemplateColumn.CellTemplate>',
@@ -553,7 +553,7 @@ Class cimdbXaml
     '                                <DataGridTemplateColumn.CellTemplate>',
     '                                    <DataTemplate>',
     '                                        <ComboBox SelectedIndex="0"',
-    '                                                  ItemsSource="{Binding Record.Email}"',
+    '                                                  ItemsSource="{Binding Record.Email.Output.Handle}"',
     '                                                  Style="{StaticResource DGCombo}"/>',
     '                                    </DataTemplate>',
     '                                </DataGridTemplateColumn.CellTemplate>',
@@ -562,13 +562,11 @@ Class cimdbXaml
     '                    </DataGrid>',
     '                </Grid>',
     '                <!-- Edit Client Panel -->',
-    '                <Grid Name="EditClientPanel" Visibility="Visible">',
+    '                <Grid Name="EditClientPanel" Visibility="Collapsed">',
     '                    <Grid.RowDefinitions>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="10"/>',
     '                        <RowDefinition Height="50"/>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="40"/>',
@@ -600,7 +598,7 @@ Class cimdbXaml
     '                                <DataGridTemplateColumn.CellTemplate>',
     '                                    <DataTemplate>',
     '                                        <ComboBox SelectedIndex="0"',
-    '                                                  ItemsSource="{Binding Record.Phone}"',
+    '                                                  ItemsSource="{Binding Record.Phone.Output.Number}"',
     '                                                  Style="{StaticResource DGCombo}"/>',
     '                                    </DataTemplate>',
     '                                </DataGridTemplateColumn.CellTemplate>',
@@ -610,7 +608,7 @@ Class cimdbXaml
     '                                <DataGridTemplateColumn.CellTemplate>',
     '                                    <DataTemplate>',
     '                                        <ComboBox SelectedIndex="0"',
-    '                                                  ItemsSource="{Binding Record.Email}"',
+    '                                                  ItemsSource="{Binding Record.Email.Output.Handle}"',
     '                                                  Style="{StaticResource DGCombo}"/>',
     '                                    </DataTemplate>',
     '                                </DataGridTemplateColumn.CellTemplate>',
@@ -713,87 +711,228 @@ Class cimdbXaml
     '                        <Image Grid.Column="6"',
     '                               Name="EditClientDobIcon"/>',
     '                    </Grid>',
-    '                    <Grid Grid.Row="8">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="120"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="25"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0"',
-    '                               Content="[Phone]:"/>',
-    '                        <ComboBox Grid.Column="1"',
-    '                                  Name="EditClientPhoneType"/>',
-    '                        <TextBox Grid.Column="2"',
-    '                                 Name="EditClientPhoneText"/>',
-    '                        <Image Grid.Column="3"',
-    '                               Name="EditClientPhoneIcon"/>',
-    '                        <Button Grid.Column="4"',
-    '                                Name="EditClientPhoneAdd"',
-    '                                Content="+"/>',
-    '                        <ComboBox Grid.Column="5"',
-    '                                  Name="EditClientPhoneList"/>',
-    '                        <Button Grid.Column="6"',
-    '                                Name="EditClientPhoneRemove"',
-    '                                Content="-"/>',
-    '                        <Button Grid.Column="7"',
-    '                                Name="EditClientPhoneMoveUp">',
-    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
-    '                        </Button>',
-    '                        <Button Grid.Column="8"',
-    '                                Name="EditClientPhoneMoveDown">',
-    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
-    '                        </Button>',
-    '                    </Grid>',
-    '                    <Grid Grid.Row="9">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="120"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="25"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                            <ColumnDefinition Width="40"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0"',
-    '                               Content="[Email]:"/>',
-    '                        <ComboBox Grid.Column="1"',
-    '                                  Name="EditClientEmailType"/>',
-    '                        <TextBox Grid.Column="2"',
-    '                                 Name="EditClientEmailText"/>',
-    '                        <Image Grid.Column="3"',
-    '                               Name="EditClientEmailIcon"/>',
-    '                        <Button Grid.Column="4"',
-    '                                Name="EditClientEmailAdd"',
-    '                                Content="+"/>',
-    '                        <ComboBox Grid.Column="5"',
-    '                                  Name="EditClientEmailList"/>',
-    '                        <Button Grid.Column="6"',
-    '                                Name="EditClientEmailRemove"',
-    '                                Content="-"/>',
-    '                        <Button Grid.Column="7"',
-    '                                Name="EditClientEmailMoveUp">',
-    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
-    '                        </Button>',
-    '                        <Button Grid.Column="8"',
-    '                                Name="EditClientEmailMoveDown">',
-    '                            <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
-    '                        </Button>',
-    '                    </Grid>',
-    '                    <TabControl Grid.Row="10">',
+    '                    <TabControl Grid.Row="8">',
+    '                        <TabItem Header="Phone">',
+    '                            <Grid>',
+    '                                <Grid.RowDefinitions>',
+    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="*"/>',
+    '                                    <RowDefinition Height="160"/>',
+    '                                </Grid.RowDefinitions>',
+    '                                <Grid Grid.Row="0">',
+    '                                    <Grid.ColumnDefinitions>',
+    '                                        <ColumnDefinition Width="120"/>',
+    '                                        <ColumnDefinition Width="120"/>',
+    '                                        <ColumnDefinition Width="*"/>',
+    '                                        <ColumnDefinition Width="25"/>',
+    '                                        <ColumnDefinition Width="40"/>',
+    '                                    </Grid.ColumnDefinitions>',
+    '                                    <Label Grid.Column="0"',
+    '                                           Content="[Phone]:"/>',
+    '                                    <ComboBox Grid.Column="1"',
+    '                                              Name="EditClientPhoneType"/>',
+    '                                    <TextBox Grid.Column="2"',
+    '                                             Name="EditClientPhoneText"/>',
+    '                                    <Button Grid.Column="4"',
+    '                                            Name="EditClientPhoneAdd"',
+    '                                            Content="+"/>',
+    '                                    <Image Grid.Column="3"',
+    '                                           Name="EditClientPhoneIcon"/>',
+    '                                </Grid>',
+    '                                <DataGrid Grid.Row="1" Name="EditClientPhoneOutput">',
+    '                                    <DataGrid.Columns>',
+    '                                        <DataGridTextColumn Header="DisplayName"',
+    '                                                            Binding="{Binding Record.DisplayName}"',
+    '                                                            Width="*"/>',
+    '                                        <DataGridTemplateColumn Header="Phone"',
+    '                                                                Width="125">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="0"',
+    '                                                              ItemsSource="{Binding Record.Phone.Output.Number}"',
+    '                                                              Style="{StaticResource DGCombo}"/>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
+    '                                        <DataGridTemplateColumn Header="Email"',
+    '                                                                Width="175">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="0"',
+    '                                                              ItemsSource="{Binding Record.Email.Output.Handle}"',
+    '                                                              Style="{StaticResource DGCombo}"/>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
+    '                                    </DataGrid.Columns>',
+    '                                </DataGrid>',
+    '                                <GroupBox Grid.Row="2"',
+    '                                          Header="[Current]">',
+    '                                    <Grid>',
+    '                                        <Grid.ColumnDefinitions>',
+    '                                            <ColumnDefinition Width="*"/>',
+    '                                            <ColumnDefinition Width="40"/>',
+    '                                        </Grid.ColumnDefinitions>',
+    '                                        <DataGrid Grid.Column="0" Name="EditClientPhoneList">',
+    '                                            <DataGrid.Columns>',
+    '                                                <DataGridTextColumn Header="Index"',
+    '                                                                Binding="{Binding Index}"',
+    '                                                                Width="40"/>',
+    '                                                <DataGridTemplateColumn Header="Type"',
+    '                                                                Width="100">',
+    '                                                    <DataGridTemplateColumn.CellTemplate>',
+    '                                                        <DataTemplate>',
+    '                                                            <ComboBox SelectedIndex="{Binding Type}"',
+    '                                                                  Style="{StaticResource DGCombo}">',
+    '                                                                <ComboBoxItem Content="Home"/>',
+    '                                                                <ComboBoxItem Content="Mobile"/>',
+    '                                                                <ComboBoxItem Content="Office"/>',
+    '                                                                <ComboBoxItem Content="Unspecified"/>',
+    '                                                            </ComboBox>',
+    '                                                        </DataTemplate>',
+    '                                                    </DataGridTemplateColumn.CellTemplate>',
+    '                                                </DataGridTemplateColumn>',
+    '                                                <DataGridTextColumn Header="Number"',
+    '                                                                    Binding="{Binding Number}"',
+    '                                                                    Width="*"/>',
+    '                                            </DataGrid.Columns>',
+    '                                        </DataGrid>',
+    '                                        <Grid Grid.Column="1">',
+    '                                            <Grid.RowDefinitions>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                            </Grid.RowDefinitions>',
+    '                                            <Button Grid.Row="0"',
+    '                                                Name="EditClientPhoneRemove"',
+    '                                                Content="-"/>',
+    '                                            <Button Grid.Row="2"',
+    '                                                Name="EditClientPhoneMoveUp">',
+    '                                                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
+    '                                            </Button>',
+    '                                            <Button Grid.Row="4"',
+    '                                                Name="EditClientPhoneMoveDown">',
+    '                                                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
+    '                                            </Button>',
+    '                                        </Grid>',
+    '                                    </Grid>',
+    '                                </GroupBox>',
+    '                            </Grid>',
+    '                        </TabItem>',
+    '                        <TabItem Header="Email">',
+    '                            <Grid>',
+    '                                <Grid.RowDefinitions>',
+    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="80"/>',
+    '                                    <RowDefinition Height="160"/>',
+    '                                </Grid.RowDefinitions>',
+    '                                <Grid Grid.Row="0">',
+    '                                    <Grid.ColumnDefinitions>',
+    '                                        <ColumnDefinition Width="120"/>',
+    '                                        <ColumnDefinition Width="120"/>',
+    '                                        <ColumnDefinition Width="*"/>',
+    '                                        <ColumnDefinition Width="25"/>',
+    '                                        <ColumnDefinition Width="40"/>',
+    '                                    </Grid.ColumnDefinitions>',
+    '                                    <Label Grid.Column="0"',
+    '                                           Content="[Email]:"/>',
+    '                                    <ComboBox Grid.Column="1"',
+    '                                              Name="EditClientEmailType"/>',
+    '                                    <TextBox Grid.Column="2"',
+    '                                             Name="EditClientEmailText"/>',
+    '                                    <Button Grid.Column="4"',
+    '                                            Name="EditClientEmailAdd"',
+    '                                            Content="+"/>',
+    '                                    <Image Grid.Column="3"',
+    '                                           Name="EditClientEmailIcon"/>',
+    '                                </Grid>',
+    '                                <DataGrid Grid.Row="1" Name="EditClientEmailOutput">',
+    '                                    <DataGrid.Columns>',
+    '                                        <DataGridTextColumn Header="DisplayName"',
+    '                                                            Binding="{Binding Record.DisplayName}"',
+    '                                                            Width="*"/>',
+    '                                        <DataGridTemplateColumn Header="Phone"',
+    '                                                                Width="125">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="0"',
+    '                                                              ItemsSource="{Binding Record.Phone.Output.Number}"',
+    '                                                              Style="{StaticResource DGCombo}"/>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
+    '                                        <DataGridTemplateColumn Header="Email"',
+    '                                                                Width="175">',
+    '                                            <DataGridTemplateColumn.CellTemplate>',
+    '                                                <DataTemplate>',
+    '                                                    <ComboBox SelectedIndex="0"',
+    '                                                              ItemsSource="{Binding Record.Email.Output.Handle}"',
+    '                                                              Style="{StaticResource DGCombo}"/>',
+    '                                                </DataTemplate>',
+    '                                            </DataGridTemplateColumn.CellTemplate>',
+    '                                        </DataGridTemplateColumn>',
+    '                                    </DataGrid.Columns>',
+    '                                </DataGrid>',
+    '                                <GroupBox Grid.Row="2"',
+    '                                          Header="[Current]">',
+    '                                    <Grid>',
+    '                                        <Grid.ColumnDefinitions>',
+    '                                            <ColumnDefinition Width="*"/>',
+    '                                            <ColumnDefinition Width="40"/>',
+    '                                        </Grid.ColumnDefinitions>',
+    '                                        <DataGrid Grid.Column="0" Name="EditClientEmailList">',
+    '                                            <DataGrid.Columns>',
+    '                                                <DataGridTemplateColumn Header="Type"',
+    '                                                                        Width="100">',
+    '                                                    <DataGridTemplateColumn.CellTemplate>',
+    '                                                        <DataTemplate>',
+    '                                                            <ComboBox SelectedIndex="{Binding Type}"',
+    '                                                                      Style="{StaticResource DGCombo}">',
+    '                                                                <ComboBoxItem Content="Personal"/>',
+    '                                                                <ComboBoxItem Content="Office"/>',
+    '                                                                <ComboBoxItem Content="Company"/>',
+    '                                                                <ComboBoxItem Content="Unspecified"/>',
+    '                                                            </ComboBox>',
+    '                                                        </DataTemplate>',
+    '                                                    </DataGridTemplateColumn.CellTemplate>',
+    '                                                </DataGridTemplateColumn>',
+    '                                                <DataGridTextColumn Header="Handle"',
+    '                                                                    Binding="{Binding Handle}"',
+    '                                                                    Width="*"/>',
+    '                                            </DataGrid.Columns>',
+    '                                        </DataGrid>',
+    '                                        <Grid Grid.Column="1">',
+    '                                            <Grid.RowDefinitions>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                            </Grid.RowDefinitions>',
+    '                                            <Button Grid.Row="0"',
+    '                                                    Name="EditClientEmailRemove"',
+    '                                                    Content="-"/>',
+    '                                            <Button Grid.Row="2"',
+    '                                                    Name="EditClientEmailMoveUp">',
+    '                                                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\up.png"/>',
+    '                                            </Button>',
+    '                                            <Button Grid.Row="4"',
+    '                                                    Name="EditClientEmailMoveDown">',
+    '                                                <Image Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Control\down.png"/>',
+    '                                            </Button>',
+    '                                        </Grid>',
+    '                                    </Grid>',
+    '                                </GroupBox>',
+    '                            </Grid>',
+    '                        </TabItem>',
     '                        <TabItem Header="Device(s)">',
     '                            <Grid>',
     '                                <Grid.RowDefinitions>',
     '                                    <RowDefinition Height="40"/>',
     '                                    <RowDefinition Height="*"/>',
-    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="120"/>',
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
@@ -845,21 +984,60 @@ Class cimdbXaml
     '                                                            Width="150"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
-    '                                <Grid Grid.Row="2">',
-    '                                    <Grid.ColumnDefinitions>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                        <ColumnDefinition Width="*"/>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                    </Grid.ColumnDefinitions>',
-    '                                    <Button Grid.Column="0"',
-    '                                            Name="EditClientDeviceAdd"',
-    '                                            Content="+"/>',
-    '                                    <ComboBox Grid.Column="1"',
-    '                                              Name="EditClientDeviceList"/>',
-    '                                    <Button Grid.Column="2"',
-    '                                            Name="EditClientDeviceRemove"',
-    '                                            Content="-"/>',
-    '                                </Grid>',
+    '                                <GroupBox Grid.Row="2" Header="[Current]">',
+    '                                    <Grid>',
+    '                                        <Grid.ColumnDefinitions>',
+    '                                            <ColumnDefinition Width="*"/>',
+    '                                            <ColumnDefinition Width="40"/>',
+    '                                        </Grid.ColumnDefinitions>',
+    '                                        <DataGrid Grid.Column="0"',
+    '                                              Name="EditClientDeviceList">',
+    '                                            <DataGrid.Columns>',
+    '                                                <DataGridTextColumn Header="DisplayName"',
+    '                                                            Binding="{Binding Record.DisplayName}"',
+    '                                                            Width="*"/>',
+    '                                                <DataGridTemplateColumn Header="Type"',
+    '                                                                Width="100">',
+    '                                                    <DataGridTemplateColumn.CellTemplate>',
+    '                                                        <DataTemplate>',
+    '                                                            <ComboBox SelectedIndex="{Binding Record.Type}"',
+    '                                                                  Style="{StaticResource DGCombo}">',
+    '                                                                <ComboBoxItem Content="Desktop"/>',
+    '                                                                <ComboBoxItem Content="Laptop"/>',
+    '                                                                <ComboBoxItem Content="Smartphone"/>',
+    '                                                                <ComboBoxItem Content="Tablet"/>',
+    '                                                                <ComboBoxItem Content="Console"/>',
+    '                                                                <ComboBoxItem Content="Server"/>',
+    '                                                                <ComboBoxItem Content="Network"/>',
+    '                                                                <ComboBoxItem Content="Other"/>',
+    '                                                                <ComboBoxItem Content="Unspecified"/>',
+    '                                                            </ComboBox>',
+    '                                                        </DataTemplate>',
+    '                                                    </DataGridTemplateColumn.CellTemplate>',
+    '                                                </DataGridTemplateColumn>',
+    '                                                <DataGridTextColumn Header="Vendor"',
+    '                                                            Binding="{Binding Record.Vendor}"',
+    '                                                            Width="150"/>',
+    '                                                <DataGridTextColumn Header="Model"',
+    '                                                            Binding="{Binding Record.Model}"',
+    '                                                            Width="150"/>',
+    '                                            </DataGrid.Columns>',
+    '                                        </DataGrid>',
+    '                                        <Grid Grid.Column="1">',
+    '                                            <Grid.RowDefinitions>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                            </Grid.RowDefinitions>',
+    '                                            <Button Grid.Column="0"',
+    '                                                    Name="EditClientDeviceAdd"',
+    '                                                    Content="+"/>',
+    '                                            <Button Grid.Row="2"',
+    '                                                    Name="EditClientDeviceRemove"',
+    '                                                    Content="-"/>',
+    '                                        </Grid>',
+    '                                    </Grid>',
+    '                                </GroupBox>',
     '                            </Grid>',
     '                        </TabItem>',
     '                        <TabItem Header="Issue(s)">',
@@ -867,7 +1045,7 @@ Class cimdbXaml
     '                                <Grid.RowDefinitions>',
     '                                    <RowDefinition Height="40"/>',
     '                                    <RowDefinition Height="*"/>',
-    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="120"/>',
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
@@ -912,21 +1090,53 @@ Class cimdbXaml
     '                                        </DataGridTemplateColumn>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
-    '                                <Grid Grid.Row="2">',
-    '                                    <Grid.ColumnDefinitions>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                        <ColumnDefinition Width="*"/>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                    </Grid.ColumnDefinitions>',
-    '                                    <Button Grid.Column="0"',
-    '                                            Name="EditClientIssueAdd"',
-    '                                            Content="+"/>',
-    '                                    <ComboBox Grid.Column="1"',
-    '                                              Name="EditClientIssueList"/>',
-    '                                    <Button Grid.Column="2"',
-    '                                            Name="EditClientIssueRemove"',
-    '                                            Content="-"/>',
-    '                                </Grid>',
+    '                                <GroupBox Grid.Row="2" Header="[Current]">',
+    '                                    <Grid>',
+    '                                        <Grid.ColumnDefinitions>',
+    '                                            <ColumnDefinition Width="*"/>',
+    '                                            <ColumnDefinition Width="40"/>',
+    '                                        </Grid.ColumnDefinitions>',
+    '                                        <DataGrid Grid.Column="0"',
+    '                                                  Name="EditClientIssueList">',
+    '                                            <DataGrid.Columns>',
+    '                                                <DataGridTextColumn Header="DisplayName"',
+    '                                                                    Binding="{Binding Record.DisplayName}"',
+    '                                                                    Width="*"/>',
+    '                                                <DataGridTemplateColumn Header="Status"',
+    '                                                                        Width="150">',
+    '                                                    <DataGridTemplateColumn.CellTemplate>',
+    '                                                        <DataTemplate>',
+    '                                                            <ComboBox SelectedIndex="{Binding Record.Status.Index}"',
+    '                                                                      Style="{StaticResource DGCombo}">',
+    '                                                                <ComboBoxItem Content="New"/>',
+    '                                                                <ComboBoxItem Content="Diagnosed"/>',
+    '                                                                <ComboBoxItem Content="Commit"/>',
+    '                                                                <ComboBoxItem Content="Complete"/>',
+    '                                                                <ComboBoxItem Content="NoGo"/>',
+    '                                                                <ComboBoxItem Content="Fail"/>',
+    '                                                                <ComboBoxItem Content="Transfer"/>',
+    '                                                                <ComboBoxItem Content="Unspecified"/>',
+    '                                                            </ComboBox>',
+    '                                                        </DataTemplate>',
+    '                                                    </DataGridTemplateColumn.CellTemplate>',
+    '                                                </DataGridTemplateColumn>',
+    '                                            </DataGrid.Columns>',
+    '                                        </DataGrid>',
+    '                                        <Grid Grid.Column="1">',
+    '                                            <Grid.RowDefinitions>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                            </Grid.RowDefinitions>',
+    '                                            <Button Grid.Column="0"',
+    '                                                    Name="EditClientIssueAdd"',
+    '                                                    Content="+"/>',
+    '                                            <Button Grid.Row="2"',
+    '                                                    Name="EditClientIssueRemove"',
+    '                                                    Content="-"/>',
+    '                                        </Grid>',
+    '                                    </Grid>',
+    '                                </GroupBox>',
     '                            </Grid>',
     '                        </TabItem>',
     '                        <TabItem Header="Invoice(s)">',
@@ -934,7 +1144,7 @@ Class cimdbXaml
     '                                <Grid.RowDefinitions>',
     '                                    <RowDefinition Height="40"/>',
     '                                    <RowDefinition Height="*"/>',
-    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="120"/>',
     '                                </Grid.RowDefinitions>',
     '                                <Grid Grid.Row="0">',
     '                                    <Grid.ColumnDefinitions>',
@@ -980,21 +1190,53 @@ Class cimdbXaml
     '                                                Width="100"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
-    '                                <Grid Grid.Row="2">',
-    '                                    <Grid.ColumnDefinitions>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                        <ColumnDefinition Width="*"/>',
-    '                                        <ColumnDefinition Width="40"/>',
-    '                                    </Grid.ColumnDefinitions>',
-    '                                    <Button Grid.Column="0"',
-    '                                            Name="EditClientInvoiceAdd"',
-    '                                            Content="+"/>',
-    '                                    <ComboBox Grid.Column="1"',
-    '                                              Name="EditClientInvoiceList"/>',
-    '                                    <Button Grid.Column="2"',
-    '                                            Name="EditClientInvoiceRemove"',
-    '                                            Content="-"/>',
-    '                                </Grid>',
+    '                                <GroupBox Grid.Row="2" Header="[Current]">',
+    '                                    <Grid>',
+    '                                        <Grid.ColumnDefinitions>',
+    '                                            <ColumnDefinition Width="*"/>',
+    '                                            <ColumnDefinition Width="40"/>',
+    '                                        </Grid.ColumnDefinitions>',
+    '                                        <DataGrid Grid.Column="0"',
+    '                                                  Name="EditClientInvoiceList">',
+    '                                            <DataGrid.Columns>',
+    '                                                <DataGridTextColumn Header="DisplayName"',
+    '                                                                    Binding="{Binding Record.DisplayName}"',
+    '                                                                    Width="*"/>',
+    '                                                <DataGridTemplateColumn Header="Status"',
+    '                                                                        Width="150">',
+    '                                                    <DataGridTemplateColumn.CellTemplate>',
+    '                                                        <DataTemplate>',
+    '                                                            <ComboBox SelectedIndex="{Binding Record.Status.Index}"',
+    '                                                                      Style="{StaticResource DGCombo}">',
+    '                                                                <ComboBoxItem Content="New"/>',
+    '                                                                <ComboBoxItem Content="Diagnosed"/>',
+    '                                                                <ComboBoxItem Content="Commit"/>',
+    '                                                                <ComboBoxItem Content="Complete"/>',
+    '                                                                <ComboBoxItem Content="NoGo"/>',
+    '                                                                <ComboBoxItem Content="Fail"/>',
+    '                                                                <ComboBoxItem Content="Transfer"/>',
+    '                                                                <ComboBoxItem Content="Unspecified"/>',
+    '                                                            </ComboBox>',
+    '                                                        </DataTemplate>',
+    '                                                    </DataGridTemplateColumn.CellTemplate>',
+    '                                                </DataGridTemplateColumn>',
+    '                                            </DataGrid.Columns>',
+    '                                        </DataGrid>',
+    '                                        <Grid Grid.Column="1">',
+    '                                            <Grid.RowDefinitions>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                                <RowDefinition Height="*"/>',
+    '                                                <RowDefinition Height="40"/>',
+    '                                            </Grid.RowDefinitions>',
+    '                                            <Button Grid.Column="0"',
+    '                                                    Name="EditClientInvoiceAdd"',
+    '                                                    Content="+"/>',
+    '                                            <Button Grid.Row="2"',
+    '                                                    Name="EditClientInvoiceRemove"',
+    '                                                    Content="-"/>',
+    '                                        </Grid>',
+    '                                    </Grid>',
+    '                                </GroupBox>',
     '                            </Grid>',
     '                        </TabItem>',
     '                    </TabControl>',
@@ -3263,6 +3505,80 @@ Class XamlWindow
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Generic [+]                                                                                    ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+Class cimdbListTemplate
+{
+    [String]   $Name
+    [UInt32]  $Count
+    [Object] $Output
+    cimdbListTemplate([String]$Name)
+    {
+        $This.Name = $Name
+        $This.Clear()
+    }
+    Clear()
+    {
+        $This.Output = @( )
+        $This.GetCount()
+    }
+    GetCount()
+    {
+        $This.Count  = $This.Output.Count
+    }
+    Add([Object]$Item)
+    {
+        $This.Output += $Item
+        $This.GetCount()
+    }
+    Remove([UInt32]$Index)
+    {
+        If ($Index -le $This.Count)
+        {
+            $This.Output = $This.Output | ? Index -ne $Index
+            $This.Rerank()
+            $This.GetCount()
+        }
+    }
+    MoveUp([UInt32]$Index)
+    {
+        If ($Index -gt 0 -and $This.Count -gt 1)
+        {
+            $This.Output[$Index-1].Index ++
+            $This.Output[$Index].Index --
+        }
+    }
+    MoveDown([UInt32]$Index)
+    {
+        If ($Index -lt ($This.Count-1) -and $This.Count -gt 1)
+        {
+            $This.Output[$Index].Index ++
+            $This.Output[$Index+1].Index --
+        }
+    }
+    Rerank()
+    {
+        $X = 0
+        ForEach ($Item in $This.Output)
+        {
+            $Item.Index = $X
+            $X ++
+        }
+
+        $This.Output = $This.Output | Sort-Object Index
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.{0}.List[Template]>" -f $This.Name
+    }
+}
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
    \\__//¯¯¯ Uid Category [+]                                                                               ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
@@ -3353,7 +3669,7 @@ Class cimdbUidCategoryList
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Client Property, Record, Status [+]                                                            ___//¯¯\\   
+   \\__//¯¯¯ Client Property, Record, Status, Validation [+]                                                ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -3365,9 +3681,9 @@ Enum cimdbClientPropertyType
     Type
     Status
     Name
-    Dob
-    Gender
     Location
+    Gender
+    Dob
     Image
     Phone
     Email
@@ -3497,10 +3813,270 @@ Class cimdbClientStatusList
     }
 }
 
+Class cimdbClientName
+{
+    [String] $DisplayName
+    [String]   $GivenName
+    [String]    $Initials
+    [String]     $Surname
+    [String]   $OtherName
+    cimdbClientName([String]$GivenName,[String]$Initials,[String]$Surname,[String]$OtherName)
+    {
+        $This.GivenName   = $GivenName
+        $This.Initials    = $Initials
+        $This.Surname     = $Surname
+        $This.OtherName   = $OtherName
+        $This.DisplayName = $This.ToDisplayName()
+    }
+    [String] ToDisplayName()
+    {
+        $Item = $Null
+
+        # Last, First, Middle, Other
+        If ($This.Initials -ne "" -and $This.OtherName -ne "")
+        {
+            $Item = "{0}, {1} {2} {3}" -f $This.Surname,
+                                           $This.GivenName,
+                                           $This.Initials,
+                                            $This.OtherName
+        }
+
+        # Last, First, Other
+        ElseIf ($This.Initials -eq "" -and $This.Othername -ne "")
+        {
+            $Item = "{0}, {1} {2}" -f $This.Surname,
+                                       $This.GivenName,
+                                       $This.OtherName
+        }
+        # Last, First, Middle
+        ElseIf ($This.Initials -ne "" -and $This.Othername -eq "")
+        {
+            $Item = "{0}, {1} {2}" -f $This.Surname,
+                                       $This.GivenName,
+                                       $This.Initials
+        }
+        # Last, First
+        Else
+        {
+            $Item = "{0}, {1}" -f $This.Surname, 
+                                  $This.GivenName
+        }
+
+        Return $Item
+    }
+    [String] ToString()
+    {
+        Return $This.DisplayName
+    }
+}
+
+Class cimdbClientDob
+{
+    [String]   $Dob
+    [UInt32] $Month
+    [UInt32]   $Day
+    [UInt32]  $Year
+    cimdbClientDob([UInt32]$Month,[UInt32]$Day,[UInt32]$Year)
+    {
+        $Item = $Null
+        Try
+        {
+            $Item = [DateTime]"$Month/$Day/$Year"
+            If (!!$Item)
+            {
+                $This.Month = $Month
+                $This.Day   = $Day
+                $This.Year  = $Year
+                $This.Dob   = "{0:d2}/{1:d2}/{2:d4}" -f $This.Month, $This.Day, $This.Year
+            }
+        }
+        Catch
+        {
+
+        }
+    }
+    [String] ToString()
+    {
+        Return $This.Dob
+    }
+}
+
+Class cimdbClientLocation
+{
+    [String] $StreetAddress
+    [String]          $City
+    [String]        $Region
+    [String]    $PostalCode
+    [String]       $Country
+    cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$Region,[String]$PostalCode,[String]$Country)
+    {
+        $This.StreetAddress = $StreetAddress
+        $This.City          = $City
+        $This.Region        = $Region
+        $This.PostalCode    = $PostalCode
+        $This.Country       = $Country
+    }
+    [String] ToString()
+    {
+        Return "{0}`n{1}, {2} {3}" -f $This.StreetAddress, $This.City, $This.Region, $This.PostalCode
+    }
+}
+
+Class cimdbClientPhone
+{
+    [UInt32]  $Index
+    [UInt32]   $Type
+    [String] $Number
+    [String] $Client
+    cimdbClientPhone([Object]$Client,[UInt32]$Type,[String]$Number)
+    {
+        $This.Index  = $Client.Phone.Count
+        $This.Type   = $Type
+        $This.Number = $Number
+        $This.Client = $Client.DisplayName
+    }
+    [String] ToString()
+    {
+        Return $This.Number
+    }
+}
+
+Class cimdbClientEmail
+{
+    [UInt32]  $Index
+    [UInt32]   $Type
+    [String] $Handle
+    [String] $Client
+    cimdbClientEmail([Object]$Client,[UInt32]$Type,[String]$Handle)
+    {
+        $This.Index  = $Client.Email.Count
+        $This.Type   = $Type
+        $This.Handle = $Handle
+        $This.Client = $Client.DisplayName
+    }
+    [String] ToString()
+    {
+        Return $This.Handle
+    }
+}
+
+Class cimdbClientValidation
+{
+    [Object]         $Uid
+    [Int32]         $Pass
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [UInt32]        $Type
+    [UInt32]      $Status
+    [Object]        $Name
+    [Object]    $Location
+    [Object]      $Gender
+    [Object]         $Dob
+    [Object]       $Phone
+    [Object]       $Email
+    [Object]      $Device
+    [Object]       $Issue
+    [Object]     $Invoice
+    cimdbClientValidation()
+    {
+
+    }
+    SetUid([Object]$Uid)
+    {
+        $This.Uid                    = $Uid
+        $This.Uid.Record.Rank        = $Uid.Record.Rank
+        $This.Uid.Record.DisplayName = $This.DisplayName
+        $This.Uid.Record.Type        = $This.Type
+        $This.Uid.Record.Status      = $This.Status
+        $This.Uid.Record.Name        = $This.Name
+        $This.Uid.Record.Location    = $This.Location
+        $This.Uid.Record.Gender      = $This.Gender
+        $This.Uid.Record.Dob         = $This.Dob
+        $This.Uid.Record.Phone       = $This.Phone
+        $This.Uid.Record.Email       = $This.Email
+        $This.Uid.Record.Device      = $This.Device
+        $This.Uid.Record.Issue       = $This.Issue
+        $This.Uid.Record.Invoice     = $This.Invoice
+    }
+    [String] StringName()
+    {
+        Return "{0}, {1}" -f $This.Name.Surname, $This.Name.GivenName
+    }
+    [String] StringEmail()
+    {
+        Return "({0})" -f ($This.Email.Output.Handle -join "|")
+    }
+    [String] StringPhone()
+    {
+        Return "({0})" -f ($This.Phone.Output.Handle -join "|")
+    }
+    SetName([Object]$Name)
+    {
+        $This.Name        = $Name
+        $This.DisplayName = $Name.DisplayName
+    }
+    SetLocation([Object]$Location)
+    {
+        $This.Location    = $Location
+    }
+    SetGender([UInt32]$Gender)
+    {
+        $This.Gender      = $Gender
+    }
+    SetDob([Object]$Dob)
+    {
+        $This.Dob = $Dob
+    }
+    AddPhone([Object]$Phone)
+    {
+        $This.Phone.Add($Phone)
+    }
+    RemovePhone([UInt32]$Index)
+    {
+        $this.Phone
+    }
+    AddEmail([String]$Type,[String]$Email)
+    {
+
+    }
+    RemoveEmail([UInt32]$Index)
+    {
+        
+    }
+    AddDevice([Object]$Device)
+    {
+        
+    }
+    RemoveDevice([UInt32]$Index)
+    {
+
+    }
+    AddIssue([Object]$Issue)
+    {
+        
+    }
+    RemoveIssue([UInt32]$Index)
+    {
+        
+    }
+    AddInvoice([Object]$Invoice)
+    {
+        
+    }
+    RemoveInvoice([UInt32]$Index)
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Client[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Service Property, Record, Status [+]                                                           ___//¯¯\\   
+   \\__//¯¯¯ Service Property, Record, Status, Validation [+]                                               ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -3639,10 +4215,42 @@ Class cimdbServiceStatusList
     }
 }
 
+Class cimdbServiceValidation
+{
+    [Object]         $Uid
+    [Int32]         $Pass
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [UInt32]        $Type
+    [UInt32]      $Status
+    [String]        $Name
+    [String] $Description
+    [Float]         $Cost
+    cimdbServiceValidation()
+    {
+
+    }
+    SetUid([Object]$Uid)
+    {
+        $This.Uid                    = $Uid
+        $This.Rank                   = $Uid.Record.Rank
+        $This.Uid.Record.DisplayName = $This.DisplayName
+        $This.Uid.Record.Type        = $This.Type
+        $This.Uid.Record.Status      = $This.Status
+        $This.Uid.Record.Name        = $This.Name
+        $This.Uid.Record.Description = $This.Description
+        $This.Uid.Record.Cost        = $This.Cost
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Service[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Device Property, Record, Status [+]                                                            ___//¯¯\\   
+   \\__//¯¯¯ Device Property, Record, Status, Validation [+]                                                ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -3791,10 +4399,33 @@ Class cimdbDeviceStatusList
     }
 }
 
+Class cimdbDeviceValidation
+{
+    [Object]           $Uid
+    [Int32]           $Pass
+    [UInt32]          $Rank
+    [String]   $DisplayName
+    [UInt32]          $Type
+    [UInt32]        $Status
+    [String]        $Vendor
+    [String]         $Model
+    [String] $Specification
+    [String]        $Serial
+    [Object]        $Client
+    cimdbDeviceValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Device[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Issue Property, Record, Status [+]                                                             ___//¯¯\\   
+   \\__//¯¯¯ Issue Property, Record, Status, Validation [+]                                                 ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -3953,10 +4584,33 @@ Class cimdbIssueStatusList
     }
 }
 
+Class cimdbIssueValidation
+{
+    [Object]         $Uid
+    [Int32]         $Pass
+    [UInt32]        $Rank
+    [Object] $DisplayName
+    [UInt32]        $Type
+    [UInt32]      $Status
+    [String] $Description
+    [Object]      $Client
+    [Object]      $Device
+    [Object]     $Service
+    [Object]        $List
+    cimdbIssueValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Issue[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Purchase Property, Record, Status [+]                                                          ___//¯¯\\   
+   \\__//¯¯¯ Purchase Property, Record, Status, Validation [+]                                              ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -4107,10 +4761,37 @@ Class cimdbPurchaseStatusList
     }
 }
 
+Class cimdbPurchaseValidation
+{
+    [Object]           $Uid
+    [Int32]           $Pass
+    [UInt32]          $Rank
+    [Object]   $DisplayName
+    [UInt32]          $Type
+    [UInt32]        $Status
+    [Object]   $Distributor
+    [String]           $Url
+    [String]        $Vendor
+    [String]         $Model
+    [String] $Specification
+    [String]        $Serial
+    [UInt32]      $IsDevice
+    [Object]        $Device
+    [Float]           $Cost
+    cimdbPurchaseValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Purchase[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Inventory Property, Record, Status [+]                                                         ___//¯¯\\   
+   \\__//¯¯¯ Inventory Property, Record, Status, Validation [+]                                             ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -4256,10 +4937,35 @@ Class cimdbInventoryStatusList
     }
 }
 
+Class cimdbInventoryValidation
+{
+    [Object]           $Uid
+    [Int32]           $Pass
+    [UInt32]          $Rank
+    [String]   $DisplayName
+    [UInt32]          $Type
+    [UInt32]        $Status
+    [String]        $Vendor
+    [String]         $Model
+    [String] $Specification
+    [String]        $Serial
+    [Object]          $Cost
+    [UInt32]      $IsDevice
+    [Object]        $Device
+    cimdbInventoryValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Inventory[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Expense Property, Record, Status [+]                                                           ___//¯¯\\   
+   \\__//¯¯¯ Expense Property, Record, Status, Validation [+]                                               ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -4399,10 +5105,32 @@ Class cimdbExpenseStatusList
     }
 }
 
+Class cimdbExpenseValidation
+{
+    [Object]         $Uid
+    [Int32]         $Pass
+    [UInt32]        $Rank
+    [Object] $DisplayName
+    [UInt32]        $Type
+    [UInt32]      $Status
+    [Object]   $Recipient
+    [UInt32]   $IsAccount
+    [Object]     $Account
+    [Float]         $Cost
+    cimdbExpenseValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Expense[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Account Property, Record, Status [+]                                                           ___//¯¯\\   
+   \\__//¯¯¯ Account Property, Record, Status, Validation [+]                                               ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -4545,10 +5273,30 @@ Class cimdbAccountStatusList
     }
 }
 
+Class cimdbAccountValidation
+{
+    [Object]          $Uid
+    [Int32]          $Pass
+    [UInt32]         $Rank
+    [String]  $DisplayName
+    [UInt32]         $Type
+    [UInt32]       $Status
+    [String] $Organization
+    [Object]       $Object
+    cimdbAccountValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Account[Validation]>"
+    }
+}
+
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-   \\__//¯¯¯ Invoice Property, Record, Status [+]                                                           ___//¯¯\\   
+   \\__//¯¯¯ Invoice Property, Record, Status, Validation [+]                                               ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 #>
@@ -4694,6 +5442,27 @@ Class cimdbInvoiceStatusList
     [String] ToString()
     {
         Return "<FEModule.cimdb.Invoice.Status[List]>"
+    }
+}
+
+Class cimdbInvoiceValidation
+{
+    [Object]         $Uid
+    [Int32]         $Pass
+    [UInt32]        $Rank
+    [String] $DisplayName
+    [UInt32]        $Mode
+    [Object]      $Client
+    [Object]       $Issue
+    [Object]    $Purchase
+    [Object]   $Inventory
+    cimdbInvoiceValidation()
+    {
+
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Invoice[Validation]>"
     }
 }
 
@@ -5016,9 +5785,9 @@ Class cimdbPropertyList
         (1,1,1,"Type"),
         (1,1,1,"Status"),
         (1,1,1,"Name"),
-        (1,1,1,"Dob"),
-        (1,0,1,"Gender"),
         (1,1,1,"Location"),
+        (1,0,1,"Gender"),
+        (1,1,1,"Dob"),
         (1,0,1,"Image"),
         (1,1,1,"Phone"),
         (1,1,1,"Email"),
@@ -5738,46 +6507,16 @@ Class cimdbUid
     }
 }
 
-Class cimdbListTemplate
-{
-    [String]   $Name
-    [UInt32]  $Count
-    [Object] $Output
-    cimdbListTemplate([String]$Name)
-    {
-        $This.Name = $Name
-    }
-    Clear()
-    {
-        $This.Output = @( )
-        $This.GetCount()
-    }
-    GetCount()
-    {
-        $This.Count  = $This.Output.Count
-    }
-    Add([Object]$Item)
-    {
-        $This.Output += $Item
-        $This.GetCount()
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.cimdb.List[{0}]>" -f $This.Name
-    }
-}
-
 Class cimdbClientTemplate
 {
     [UInt32]        $Rank
     [String] $DisplayName
-    [Object]        $Type
-    [Object]      $Status
+    [UInt32]        $Type
+    [UInt32]      $Status
     [Object]        $Name
-    [Object]         $Dob
-    [String]      $Gender
     [Object]    $Location
-    [Object]       $Image
+    [UInt32]      $Gender
+    [Object]         $Dob
     [Object]       $Phone
     [Object]       $Email
     [Object]      $Device
@@ -5797,8 +6536,8 @@ Class cimdbServiceTemplate
 {
     [UInt32]        $Rank
     [String] $DisplayName
-    [Object]        $Type
-    [Object]      $Status
+    [UInt32]        $Type
+    [UInt32]      $Status
     [String]        $Name
     [String] $Description
     [Float]         $Cost
@@ -5816,8 +6555,8 @@ Class cimdbDeviceTemplate
 {
     [UInt32]          $Rank
     [String]   $DisplayName
-    [Object]          $Type
-    [Object]        $Status
+    [UInt32]          $Type
+    [UInt32]        $Status
     [String]        $Vendor
     [String]         $Model
     [String] $Specification
@@ -5837,8 +6576,8 @@ Class cimdbIssueTemplate
 {
     [UInt32]        $Rank
     [Object] $DisplayName
-    [Object]        $Type
-    [Object]      $Status
+    [UInt32]        $Type
+    [UInt32]      $Status
     [String] $Description
     [String]      $Client
     [String]      $Device
@@ -5858,13 +6597,13 @@ Class cimdbPurchaseTemplate
 {
     [UInt32]          $Rank
     [Object]   $DisplayName
-    [Object]          $Type
-    [Object]        $Status
+    [UInt32]          $Type
+    [UInt32]        $Status
     [String]   $Distributor
+    [String]           $Url
     [String]        $Vendor
     [String]         $Model
     [String] $Specification
-    [Object]           $URL
     [String]        $Serial
     [UInt32]      $IsDevice
     [String]        $Device
@@ -5883,8 +6622,8 @@ Class cimdbInventoryTemplate
 {
     [UInt32]          $Rank
     [String]   $DisplayName
-    [Object]          $Type
-    [Object]        $Status
+    [UInt32]          $Type
+    [UInt32]        $Status
     [String]        $Vendor
     [String]         $Model
     [String] $Specification
@@ -5906,8 +6645,8 @@ Class cimdbExpenseTemplate
 {
     [UInt32]        $Rank
     [Object] $DisplayName
-    [Object]        $Type
-    [Object]      $Status
+    [UInt32]        $Type
+    [UInt32]      $Status
     [Object]   $Recipient
     [UInt32]   $IsAccount
     [Object]     $Account
@@ -5926,8 +6665,8 @@ Class cimdbAccountTemplate
 {
     [UInt32]         $Rank
     [String]  $DisplayName
-    [Object]         $Type
-    [Object]       $Status
+    [UInt32]         $Type
+    [UInt32]       $Status
     [Object] $Organization
     [Object]       $Object
     cimdbAccountTemplate()
@@ -5944,12 +6683,13 @@ Class cimdbInvoiceTemplate
 {
     [UInt32]        $Rank
     [String] $DisplayName
-    [Object]        $Type
-    [Object]      $Status
+    [UInt32]        $Type
+    [UInt32]      $Status
     [Object]      $Client
     [Object]       $Issue
     [Object]    $Purchase
     [Object]   $Inventory
+    [Object]        $List
     [Float]         $Cost
     cimdbInvoiceTemplate()
     {
@@ -6117,19 +6857,41 @@ Class cimdbDatabaseController
 
 Class cimdbCurrentController
 {
-    [Object] $Mode
-    [Object]  $Uid
+    [Object]     $Mode
+    [Object]      $Uid
+    [Object] $Validate
     cimdbCurrentController()
     {
 
     }
     SetMode([Object]$Mode)
     {
-        $This.Mode = $Mode
+        $This.Mode     = $Mode
     }
     SetUid([Object]$Uid)
     {
-        $This.Uid = $Uid
+        $This.Uid      = $Uid
+    }
+    SetValidate([Object]$Validate)
+    {
+        $This.Validate = $Validate
+    }
+    [String] Slot()
+    {
+        $Item = Switch -Regex ($This.Validate.GetType().Name)
+        {
+            Client    { "Client"    }
+            Service   { "Service"   }
+            Device    { "Device"    }
+            Issue     { "Issue"     }
+            Purchase  { "Purchase"  }
+            Inventory { "Inventory" }
+            Expense   { "Expense"   }
+            Account   { "Account"   }
+            Invoice   { "Invoice"   }
+        }
+
+        Return $Item
     }
     [String] ToString()
     {
@@ -6288,9 +7050,69 @@ Class cimdbController
 
         Return $Item
     }
+    [Object] cimdbClientName([String]$GivenName,[String]$Initials,[String]$Surname,[String]$OtherName)
+    {
+        Return [cimdbClientName]::New($GivenName,$Initials,$Surname,$OtherName)
+    }
+    [Object] cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$Region,[String]$PostalCode,[String]$Country)
+    {
+        Return [cimdbClientLocation]::New($StreetAddress,$City,$Region,$PostalCode,$Country)
+    }
+    [Object] cimdbClientDob([UInt32]$Month,[UInt32]$Date,[UInt32]$Year)
+    {
+        Return [cimdbClientDob]::New($Month,$Date,$Year)
+    }
+    [Object] cimdbClientPhone([Object]$Client,[UInt32]$Type,[String]$Number)
+    {
+        Return [cimdbClientPhone]::New($Client,$Type,$Number)
+    }
+    [Object] cimdbClientEmail([Object]$Client,[UInt32]$Type,[String]$Email)
+    {
+        Return [cimdbClientEmail]::New($Client,$Type,$Email)
+    }
     [Object] cimdbControllerProperty([Object]$Property)
     {
         Return [cimdbControllerProperty]::New($Property)
+    }
+    [Object] cimdbClientValidation()
+    {
+        Return [cimdbClientValidation]::New()
+    }
+    [Object] cimdbServiceValidation()
+    {
+        Return [cimdbServiceValidation]::New()
+    }
+    [Object] cimdbDeviceValidation()
+    {
+        Return [cimdbDeviceValidation]::New()
+    }
+    [Object] cimdbIssueValidation()
+    {
+        Return [cimdbIssueValidation]::New()
+    }
+    [Object] cimdbPurchaseValidation()
+    {
+        Return [cimdbPurchaseValidation]::New()
+    }
+    [Object] cimdbInventoryValidation()
+    {
+        Return [cimdbInventoryValidation]::New()
+    }
+    [Object] cimdbExpenseValidation()
+    {
+        Return [cimdbExpenseValidation]::New()
+    }
+    [Object] cimdbAccountValidation()
+    {
+        Return [cimdbAccountValidation]::New()
+    }
+    [Object] cimdbInvoiceValidation()
+    {
+        Return [cimdbInvoiceValidation]::New()
+    }
+    [Object] cimdbListTemplate([String]$Name)
+    {
+        Return [cimdbListTemplate]::New($Name)
     }
     SetCurrentMode([String]$Mode)
     {
@@ -6577,7 +7399,7 @@ Class cimdbController
             }
             Client
             {
-
+                
             }
             Service
             {
@@ -6670,6 +7492,226 @@ Class cimdbController
         # Clear buttons
         $Ctrl.Xaml.IO.View.IsEnabled   = 0
         $Ctrl.Xaml.IO.Delete.IsEnabled = 0
+    }
+    [Object] Validate([String]$Type)
+    {
+        $Item = $Null
+        Switch ($Type)
+        {
+            Client
+            {
+                $Item         = $This.cimdbClientValidation()
+                $Item.Phone   = $This.cimdbListTemplate("Phone")
+                $Item.Email   = $This.cimdbListTemplate("Email")
+                $Item.Device  = $This.cimdbListTemplate("Device")
+                $Item.Issue   = $This.cimdbListTemplate("Issue")
+                $Item.Invoice = $This.cimdbListTemplate("Invoice")
+            }
+            Service
+            {
+                $Item         = $This.cimdbServiceValidation()
+            }
+            Device
+            {
+                $Item         = $This.cimdbDeviceValidation()
+            }
+            Issue
+            {
+                $Item         = $This.cimdbIssueValidation()
+                $Item.Client  = $This.cimdbListTemplate("Client")
+                $Item.Device  = $This.cimdbListTemplate("Device")
+                $Item.Service = $This.cimdbListTemplate("Service")
+                $Item.List    = $This.cimdbListTemplate("List")
+            }
+            Purchase
+            {
+                $Item         = $This.cimdbPurchaseValidation()
+                $Item.Device  = $This.cimdbListTemplate("Device")
+            }
+            Inventory
+            {
+                $Item         = $This.cimdbInventoryValidation()
+                $Item.Device  = $This.cimdbListTemplate("Device")
+            }
+            Expense
+            {
+                $Item         = $This.cimdbExpenseValidation()
+            }
+            Account
+            {
+                $Item         = $This.cimdbAccountValidation()
+            }
+            Invoice
+            {
+                $Item         = $This.cimdbInvoiceValidation()
+                $Item.Client    = $This.cimdbListTemplate("Client")
+                $Item.Issue     = $This.cimdbListTemplate("Issue")
+                $Item.Purchase  = $This.cimdbListTemplate("Purchase")
+                $Item.Inventory = $This.cimdbListTemplate("Inventory")
+                $Item.List      = $This.cimdbListTemplate("List")
+            }
+        }
+
+        Return $Item
+    }
+    ClientCheckEntry([Object]$Client)
+    {
+        If ($Client.GetType().Name -notmatch "(cimdbClientValidation|cimdbClientTemplate)")
+        {
+            Throw "Invalid client template"
+        }
+    }
+    ClientSetName([Object]$Client,[String]$GivenName,[String]$Initials,[String]$Surname,[String]$Othername)
+    {
+        $This.ClientCheckEntry($Client)
+
+        $Name = $This.cimdbClientName($GivenName,$Initials,$Surname,$OtherName)
+
+        If (!!$Name)
+        {
+            # Set name
+            $Client.SetName($Name)
+        }
+    }
+    ClientSetLocation([Object]$Client,[String]$StreetAddress,[String]$City,[String]$Region,[String]$PostalCode,[String]$Country)
+    {
+        $This.ClientCheckEntry($Client)
+
+        $Location = $This.cimdbClientLocation($StreetAddress,$City,$Region,$PostalCode,$Country)
+
+        If (!!$Location)
+        {
+            # Set location
+            $Client.SetLocation($Location)
+        }
+    }
+    ClientSetGender([Object]$Client,[UInt32]$Index)
+    {
+        $This.ClientCheckEntry($Client)
+
+        If ($Index -notin 0..2)
+        {
+            Throw "Invalid gender type"
+        }
+
+        # Set Gender
+        $Client.SetGender($Index)
+    }
+    ClientSetDob([Object]$Client,[UInt32]$Month,[UInt32]$Day,[UInt32]$Year)
+    {
+        $This.ClientCheckEntry($Client)
+
+        $Dob = $This.cimdbClientDob($Month,$Day,$Year)
+
+        If (!!$Dob)
+        {
+            # Set DOB
+            $Client.SetDob($Dob)
+        }
+    }
+    ClientAddPhone([Object]$Client,[UInt32]$Type,[String]$Number)
+    {
+        $This.ClientCheckEntry($Client)
+
+        $Phone = $This.cimdbClientPhone($Client,$Type,$Number)
+
+        If (!!$Phone)
+        {
+            # Add phone
+            $Client.AddPhone($Phone)
+        }
+    }
+    ClientRemovePhone([Object]$Client,[UInt32]$Index)
+    {
+        $This.ClientCheckEntry($Client)
+
+        If ($Index -gt $Client.Phone.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        ElseIf ($Client.Phone.Count -eq 1)
+        {
+            Throw "Cannot remove the only phone number"
+        }
+
+        $Client.Phone.Remove($Index)
+    }
+    ClientAddEmail([Object]$Client,[UInt32]$Type,[String]$Address)
+    {
+        $This.ClientCheckEntry($Client)
+
+        $Email = $This.cimdbClientEmail($Client,$Type,$Address)
+
+        If (!!$Email)
+        {
+            # Add Email
+            $Client.Email.Add($Email)
+        }
+    }
+    ClientRemoveEmail([Object]$Client,[UInt32]$Index)
+    {
+        $This.ClientCheckEntry($Client)
+
+        If ($Index -gt $Client.Phone.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        ElseIf ($Client.Phone.Count -eq 1)
+        {
+            Throw "Cannot remove the only phone number"
+        }
+
+        $Client.Email.Remove($Index)
+    }
+    ClientValidate([Object]$Client)
+    {
+        $ClientList = $This.Database.GetRecordSlot("Client")
+
+        # [Check email]
+        $Person     = $ClientList | ? { $_.Record.Email.Output.Handle -match $Client.StringEmail() }
+        If (!!$Person)
+        {
+            $Client.Pass --
+        }
+
+        # [Check phone number]
+        If ($Client.Pass -ge 0)
+        {
+            $Person = $ClientList | ? { $_.Record.DisplayName -match $Client.StringName() }
+            If (!!$Person)
+            {
+                $Client.Pass --
+            }
+        }
+
+        # [Check name]
+        If ($Client.Pass -ge 0)
+        {
+            $Person = $ClientList | ? { $_.Record.DisplayName -match $Client.StringName() }
+            If (!!$Person)
+            {
+                If ($Client.Dob -in $Person.Record.Dob)
+                {
+                    $Client.Pass --
+                }
+            }
+        }
+
+        # [Final]
+        If ($Client.Pass -ge 0)
+        {
+            $Client.Pass = 1
+        }
+    }
+    ClientToggleSave([Object]$Client)
+    {
+        $This.ClientValidate($Client)
+        If ($Client.Pass -eq 1)
+        {
+            $This.Xaml.IO.Save.IsEnabled = 1
+        }
     }
     Initial([String]$Name)
     {
@@ -7922,652 +8964,119 @@ Class cimdbController
             $This.Module.Write(-1,"Exception [!] Either the user cancelled, or the dialog failed")
         }
     }
-}
-
-###########
-
-$Ctrl = [cimdbController]::New()
-$Ctrl.Module.Mode = 2
-
-
-Class cimdbClientName
-{
-    [String] $DisplayName
-    [String]   $GivenName
-    [String]    $Initials
-    [String]     $Surname
-    [String]   $OtherName
-    cimdbClientName([String]$GivenName,[String]$Initials,[String]$Surname,[String]$OtherName)
-    {
-        $This.GivenName   = $GivenName
-        $This.Initials    = $Initials
-        $This.Surname     = $Surname
-        $This.OtherName   = $OtherName
-        $This.DisplayName = $This.ToDisplayName()
-    }
-    [String] ToDisplayName()
-    {
-        $Item = $Null
-
-        # Last, First, Middle, Other
-        If ($This.Initials -ne "" -and $This.OtherName -ne "")
-        {
-            $Item = "{0}, {1} {2} {3}" -f $This.Surname,
-                                           $This.GivenName,
-                                           $This.Initials,
-                                            $This.OtherName
-        }
-
-        # Last, First, Other
-        ElseIf ($This.Initials -eq "" -and $This.Othername -ne "")
-        {
-            $Item = "{0}, {1} {2}" -f $This.Surname,
-                                       $This.GivenName,
-                                       $This.OtherName
-        }
-        # Last, First, Middle
-        ElseIf ($This.Initials -ne "" -and $This.Othername -eq "")
-        {
-            $Item = "{0}, {1} {2}" -f $This.Surname,
-                                       $This.GivenName,
-                                       $This.Initials
-        }
-        # Last, First
-        Else
-        {
-            $Item = "{0}, {1}" -f $This.Surname, 
-                                  $This.GivenName
-        }
-
-        Return $Item
-    }
     [String] ToString()
     {
-        Return $This.DisplayName
-    }
-}
-Class cimdbClientDob
-{
-    [String]   $Dob
-    [UInt32] $Month
-    [UInt32]  $Date
-    [UInt32]  $Year
-    cimdbClientDob([UInt32]$Month,[UInt32]$Date,[UInt32]$Year)
-    {
-        $This.Month = $Month
-        $This.Date  = $Date
-        $This.Year  = $Year
-        $This.Dob   = "{0:d2}/{1:d2}/{2:d4}" -f $This.Month, $This.Date, $This.Year
-    }
-    [String] ToString()
-    {
-        Return $This.Dob
+        Return "<FEModule.cimdb[Controller]>"
     }
 }
 
-Class cimdbClientLocation
-{
-    [String] $StreetAddress
-    [String]          $City
-    [String]        $Region
-    [String]    $PostalCode
-    [String]       $Country
-    cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$Region,[String]$PostalCode,[String]$Country)
-    {
-        $This.StreetAddress = $StreetAddress
-        $This.City          = $City
-        $This.Region        = $Region
-        $This.PostalCode    = $PostalCode
-        $This.Country       = $Country
-    }
-    [String] ToString()
-    {
-        Return "{0}`n{1}, {2} {3}" -f $This.StreetAddress, $This.City, $This.Region, $This.PostalCode
-    }
-}
 
-Class cimdbClientPhone
-{
-    [UInt32]  $Index
-    [UInt32]   $Type
-    [String] $Number
-    cimdbClientPhone([UInt32]$Index,[UInt32]$Type,[String]$Number)
-    {
-        $This.Index  = $Index
-        $This.Type   = $Type
-        $This.Number = $Number
-    }
-    [String] ToString()
-    {
-        Return $This.Number
-    }
-}
-
-Class cimdbClientEmail
-{
-    [UInt32] $Index
-    [UInt32]  $Type
-    [String] $Email
-    cimdbClientEmail([UInt32]$Index,[UInt32]$Type,[String]$Email)
-    {
-        $This.Index = $Index
-        $This.Type  = $Type
-        $This.Email = $Email
-    }
-    [String] ToString()
-    {
-        Return $This.Email
-    }
-}
-
-Class cimdbClientValidate
-{
-    [Object]         $Uid
-    [UInt32]        $Rank
-    [String] $DisplayName
-    [Object]        $Name
-    [Object]    $Location
-    [Object]      $Gender
-    [Object]         $Dob
-    [Object]       $Phone
-    [Object]       $Email
-    [Object]      $Device
-    [Object]       $Issue
-    [Object]     $Invoice
-    cimdbClientValidate([Object]$Uid)
-    {
-        $This.Uid     = $Uid
-        $This.Prime()
-    }
-    Prime()
-    {
-        $This.Phone   = $This.cimdbListTemplate("Phone")
-        $This.Email   = $This.cimdbListTemplate("Email")
-        $This.Device  = $This.cimdbListTemplate("Device")
-        $This.Issue   = $This.cimdbListTemplate("Issue")
-        $This.Invoice = $This.cimdbListTemplate("Invoice")
-    }
-    [Object] cimdbListTemplate([String]$Name)
-    {
-        Return [cimdbListTemplate]::New($Name)
-    }
-    [Object] cimdbClientName([String]$GivenName,[String]$Initials,[String]$Surname,[String]$OtherName)
-    {
-        Return [cimdbClientName]::New($GivenName,$Initials,$Surname,$OtherName)
-    }
-    [Object] cimdbClientLocation([String]$StreetAddress,[String]$City,[String]$State,[String]$PostalCode,[String]$Country)
-    {
-        Return [cimdbClientLocation]::New($StreetAddress,$City,$State,$PostalCode,$Country)
-    }
-    [Object] cimdbClientDob([UInt32]$Month,[UInt32]$Date,[UInt32]$Year)
-    {
-        Return [cimdbClientDob]::New($Month,$Date,$Year)
-    }
-    [Object] cimdbClientPhone([UInt32]$Index,[String]$Type,[String]$Number)
-    {
-        Return [cimdbClientPhone]::New($Index,$Type,$Number)
-    }
-    [Object] cimdbClientEmail([UInt32]$Index,[String]$Type,[String]$Email)
-    {
-        Return [cimdbClientEmail]::New($Index,$Type,$Email)
-    }
-    SetName([String]$GivenName,[String]$Initials,[String]$Surname,[String]$OtherName)
-    {
-        $This.Name        = $This.cimdbClientName($GivenName,$Initials,$Surname,$OtherName)
-        $This.DisplayName = $This.Name.DisplayName
-    }
-    SetLocation([String]$StreetAddress,[String]$City,[String]$State,[String]$PostalCode,[String]$Country)
-    {
-        $This.Location    = $This.cimdbClientLocation($StreetAddress,$City,$State,$PostalCode,$Country)
-    }
-    SetGender([Object]$Gender)
-    {
-        $This.Gender      = $Gender
-    }
-    SetDob([UInt32]$Month,[UInt32]$Day,[UInt32]$Year)
-    {
-        # [Validation]
-        $Item = $Null
-        
-        Try
-        {
-            $Item = [DateTime]"$Month/$Day/$Year"
-        }
-        Catch
-        {
-            [System.Windows.MessageBox]::Show("Invalid date entered","Exception [!] Date Entry")
-        }
-
-        # [Assignment]
-        If (!!$Item)
-        {
-            $This.Dob = $This.cimdbClientDob($Month,$Day,$Year)
-        }
-    }
-    AddPhone([String]$Type,[String]$Number)
-    {
-        
-    }
-    RemovePhone([UInt32]$Index)
-    {
-        
-    }
-    AddEmail([String]$Type,[String]$Email)
-    {
-
-    }
-    RemoveEmail([UInt32]$Index)
-    {
-        
-    }
-    AddDevice([Object]$Device)
-    {
-        
-    }
-    RemoveDevice([UInt32]$Index)
-    {
-
-    }
-    AddIssue([Object]$Issue)
-    {
-        
-    }
-    RemoveIssue([UInt32]$Index)
-    {
-        
-    }
-    AddInvoice([Object]$Invoice)
-    {
-        
-    }
-    RemoveInvoice([UInt32]$Index)
-    {
-
-    }
-}
-
-# Add a record
-$Ctrl.Database.Add(0)
-
-# Set Uid to the record
-$Uid    = $Ctrl.Database.Output[0]
-
-# Create a client object
-$Client = [cimdbClient]::New($Uid)
-
-$Client.SetName("Michael","C","Cook","Sr")
-$Client.SetDob(5,24,1985)
-$Client.SetGender(0)
-$Client.SetLocation("201D Halfmoon Circle","Clifton Park","NY",12065,"US")
-$Client.AddPhone("Home","518-406-8569")
-$Client.AddEmail("Personal","michael.c.cook.85@gmail.com")
-
-$Ctrl.Database.Output | ? Uid -match $Client.Uid.Uid
 <#
+    Testing area
 
-Class DatabaseService
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank # Numerical index in all client objects
-    [String]   $DisplayName # Certain formula for displaying the unique content of the object
-    [String]          $Name # Service name
-    [String]   $Description # Description
-    [Float]           $Cost # How much the service costs
-    DatabaseService([Object]$Uid)
+    ClientSetUid([Object]$Client,[String]$Uid)
     {
-        $This.Uid = $Uid
+        $Record = $Ctrl.Database.Output | ? Uid -eq $Uid.Uid
     }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseService>"
-    }
-}
-
-Class DatabaseDevice
-{
-    [UInt32]          $Rank
-    [String]   $DisplayName
-    [String]       $Chassis
-    [String]        $Vendor
-    [String]         $Model
-    [String] $Specification
-    [String]        $Serial
-    [String]        $Client
-    DatabaseDevice([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseDevice>"
-    }
-}
-
-Class DatabaseIssue
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank # 
-    [Object]   $DisplayName # 
-    [Object]        $Status # 
-    [String]   $Description # 
-    [String]        $Client # Uid/reference to the client object
-    [String]        $Device # Uid/reference to the client object
-    [Object]       $Service # Object -> List of services,  may be empty               (no requirements)
-    [Object]          $List # Object -> List of purchases, may be empty               (no requirements)
-    DatabaseIssue([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseIssue>"
-    }
-}
-
-Class DatabasePurchase
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank # 
-    [Object]   $DisplayName # 
-    [Object]   $Distributor # 
-    [Object]           $URL # 
-    [String]        $Vendor # 
-    [String]         $Model # 
-    [String] $Specification # 
-    [String]        $Serial # 
-    [Bool]        $IsDevice # 
-    [String]        $Device # 
-    [Object]          $Cost # 
-    DatabasePurchase([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabasePurchase>"
-    }
-}
-
-Class DatabaseInventory
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank #
-    [String]   $DisplayName #
-    [String]        $Vendor #
-    [String]         $Model #
-    [String]        $Serial #
-    [Object]         $Title #
-    [Object]          $Cost #
-    [Bool]        $IsDevice #
-    [Object]        $Device #
-    DatabaseInventory([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseInventory>"
-    }
-}
-
-Class DatabaseExpense
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank #
-    [Object]   $DisplayName #
-    [Object]     $Recipient #
-    [Object]     $IsAccount #
-    [Object]       $Account #
-    [Object]          $Cost #
-    DatabaseExpense([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseExpense>"
-    }
-}
-
-Class DatabaseAccount
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank #
-    [String]   $DisplayName #
-    [Object]        $Object #
-    DatabaseAccount([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseAccount>"
-    }
-}
-
-Class DatabaseInvoice
-{
-    [Object]           $Uid # (Uid, Type, Index, Date, Time, Sort, Record will be this object)
-    [UInt32]          $Rank #
-    [String]   $DisplayName #
-    [UInt32]          $Mode #
-    [Object]        $Client #
-    [Object]         $Issue #
-    [Object]      $Purchase #
-    [Object]     $Inventory #
-    DatabaseInvoice([Object]$Uid)
-    {
-        $This.Uid = $Uid
-    }
-    [String] ToString()
-    {
-        Return "<FEModule.DatabaseInvoice>"
-    }
-}
-
-Class DatabaseUid
-{
-    [Object]    $Uid
-    [Object]   $Type
-    [UInt32]  $Index
-    [Object]   $Date
-    [Object]   $Time
-    [UInt32]   $Sort
-    [UInt32]   $Rank
-    [Object] $Record
-    DatabaseUid([Object]$Slot,[UInt32]$Index)
-    {
-        $This.Uid    = $This.NewGuid()
-        $This.Type   = $Slot
-        $This.Index  = $Index
-        $This.Date   = $This.GetDate()
-        $This.Time   = $This.GetTime()
-        $This.Sort   = 0
-    }
-    [Object] GetDate()
-    {
-        Return [DateTime]::Now.ToString("MM/d/yyyy")
-    }
-    [Object] GetTime()
-    {
-        Return [DateTime]::Now.ToString("HH:mm:ss")
-    }
-    [Object] NewGuid()
-    {
-        Return [Guid]::NewGuid()
-    }
-    [String] ToString()
-    {
-        Return $This.Uid
-    }
-}
-
-# [Start development controller]
-
-Class DevelController
-{
-    [Object]   $List
-    [Object] $Output
-    DevelController()
-    {
-        $This.List = $This.DatabaseList()
-        $This.Clear()
-    }
-    Clear()
-    {
-        $This.Output = @()
-    }
-    [Object] DatabaseList()
-    {
-        Return DatabaseList
-    }
-    [Object] Uid([UInt32]$Slot,[UInt32]$Index)
-    {
-        If ($Slot -notin $This.List.Index)
-        {
-            Throw "Invalid slot"
-        }
-
-        Return [DatabaseUid]::New($This.List[$Slot],$Index)
-    }
-    [Object] DatabaseClient([Object]$Uid)
-    {
-        Return [DatabaseClient]::New($Uid)
-    }
-    [Object] TemplateClient()
-    {
-        Return [TemplateClient]::New()
-    }
-    [Object] DatabaseService([Object]$Uid)
-    {
-        Return [DatabaseService]::New($Uid)
-    }
-    [Object] DatabaseDevice([Object]$Uid)
-    {
-        Return [DatabaseDevice]::New($Uid)
-    }
-    [Object] DatabaseIssue([Object]$Uid)
-    {
-        Return [DatabaseIssue]::New($Uid)
-    }
-    [Object] DatabasePurchase([Object]$Uid)
-    {
-        Return [DatabasePurchase]::New($Uid)
-    }
-    [Object] DatabaseInventory([Object]$Uid)
-    {
-        Return [DatabaseInventory]::New($Uid)
-    }
-    [Object] DatabaseExpense([Object]$Uid)
-    {
-        Return [DatabaseExpense]::New($Uid)
-    }
-    [Object] DatabaseAccount([Object]$Uid)
-    {
-        Return [DatabaseAccount]::New($Uid)
-    }
-    [Object] DatabaseInvoice([Object]$Uid)
-    {
-        Return [DatabaseInvoice]::New($Uid)
-    }
-    [Object] GetUid([UInt32]$Index)
-    {
-        If ($Index -gt $This.Output.Count)
-        {
-            Throw "Invalid index"
-        }
-
-        Return $This.Output[$Index]
-    }
-    [Object] GetUid([String]$Uid)
-    {
-        If ($Uid -notin $This.Output.Uid)
-        {
-            Throw "Invalid UID"
-        }
-
-        Return $This.Output | ? Uid -eq $Uid
-    }
-    [UInt32] GetCount([String]$Type)
-    {
-        Return ($This.Output | ? Type -match $Type).Count
-    }
-    NewUid([UInt32]$Slot)
-    {
-        If ($Slot -gt $This.List.Count)
-        {
-            Throw "Invalid slot"
-        }
-
-        $Item         = $This.Uid($Slot,$This.Count)
-        $This.Output += $Item
-        $This.Count   = $This.Output.Count
-    }
-    New([Object]$Uid)
-    {
-        $Slot         = $Uid.Type
-        $Uid.Record   = $This.$Slot($Uid)
-    }
-    NewClient([Object]$Client)
-    {
-        If ($Client.Status() -ne 1)
-        {
-            Throw "Client template status not complete"
-        }
-
-        $Count        = $This.GetCount("Client")
-        $Uid          = $This.Uid(0,$Count)
-        $Uid.Record   = $This.DatabaseClient($Uid)
-        $Uid.Record.Apply($Client)
-
-        $This.Output += $Uid
-    }
-    NewService([Object]$Uid)
-    {
-
-    }
-    NewDevice([Object]$Uid)
-    {
-
-    }
-    NewIssue([Object]$Uid)
-    {
-
-    }
-    NewPurchase([Object]$Uid)
-    {
-
-    }
-    NewInventory([Object]$Uid)
-    {
-
-    }
-    NewExpense([Object]$Uid)
-    {
-
-    }
-    NewAccount([Object]$Uid)
-    {
-
-    }
-    NewInvoice([Object]$Uid)
-    {
-
-    }
-}
-
-    $Ctrl     = [DevelController]::New()
-    $Template = $Ctrl.TemplateClient()
-    $Template.SetPerson("Michael","C","Cook","Sr.")
-    $Template.SetDob(5,24,1985)
-    $Template.SetGender(0)
-    $Template.SetLocation("201D Halfmoon Circle","Clifton Park","NY",12065,"US")
-    $Template.AddPhone("Home","518-406-8569")
-    $Template.AddEmail("Personal","michael.c.cook.85@gmail.com")
-    $Ctrl.NewClient($Template)
-
 #>
 
-$Ctrl.Generate(100)
+# Instantiate the controller
+$Ctrl = [cimdbController]::New()
+
+# Set to debugging mode
+$Ctrl.Module.Mode = 2
+
+# Create a client object
+$Ctrl.Current.SetValidate($Ctrl.Validate("Client"))
+
+# Set (name/location/gender/DOB/phone/email)
+$Client = $Ctrl.Current.Validate
+
+# Set up event handlers for all of the [EditClient] text fields
+$Client.Type     = 0
+$Client.Status   = 0
+$Ctrl.ClientSetName($Client,"Michael","C","Cook","Sr")
+$Ctrl.ClientSetLocation($Client,"201D Halfmoon Circle","Clifton Park","NY",12065,"US")
+$Ctrl.ClientSetGender($Client,0)
+$Ctrl.ClientSetDob($Client,5,24,1985)
+$Ctrl.ClientAddPhone($Client,0,"518-406-8569")
+$Ctrl.ClientAddEmail($Client,0,"michael.c.cook.85@gmail.com")
+
+# Validation
+$Ctrl.ClientValidate($Ctrl.Current.Validate)
+
+# Create blank record
+$Ctrl.Database.Add(0)
+
+# Set current Uid to that blank record
+$Ctrl.SetCurrentUid($Ctrl.Database.Output[-1])
+
+# Insert valid properties into the record
+$Client.SetUid($Ctrl.Current.Uid)
+
+# Clear the current UID object
+$Ctrl.Current.Uid      = $Null
+
+# Clear the current validation object
+$Ctrl.Current.Validate = $Null
+
+<#
+    [Generate random client names]
+#>
+
+ForEach ($X in 0..47)
+{
+    $P = $Out[$X]
+
+    # Create a client object
+    $Ctrl.Current.SetValidate($Ctrl.Validate("Client"))
+
+    # Set shortcut to validation object
+    $Client = $Ctrl.Current.Validate
+
+    # Set up event handlers for all of the [EditClient] text fields
+    $Client.Type     = 0
+    $Client.Status   = 0
+
+    # Set name
+    $N = $P.Name
+    $Ctrl.ClientSetName($Client,$N[0],$N[1],$N[2],"")
+
+    # Set location
+    $A = $P.StreetAddress
+    $Ctrl.ClientSetLocation($Client,$A[0],$A[1],$A[2],$A[3],$A[4])
+
+    # Set gender
+    $Ctrl.ClientSetGender($Client,$P.Gender)
+
+    # Set DOB
+    $D = $P.Dob
+    $Ctrl.ClientSetDob($Client,$D[0],$D[1],$D[2])
+
+    # Set Phone
+    $Ctrl.ClientAddPhone($Client,0,$P.Phone)
+
+    # Set Email
+    $Ctrl.ClientAddEmail($Client,0,$P.Email)
+
+    # Validate
+    $Ctrl.ClientValidate($Ctrl.Current.Validate)
+
+    # Create blank record
+    $Ctrl.Database.Add(0)
+
+    # Set current Uid to that blank record
+    $Ctrl.SetCurrentUid($Ctrl.Database.Output[-1])
+
+    # Insert valid properties into the record
+    $Client.SetUid($Ctrl.Current.Uid)
+
+    # Clear the current UID object
+    $Ctrl.Current.Uid      = $Null
+
+    # Clear the current validation object
+    $Ctrl.Current.Validate = $Null
+}
+
 $Ctrl.StageXaml()
 $Ctrl.Invoke()
