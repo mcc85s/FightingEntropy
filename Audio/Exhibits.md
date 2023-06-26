@@ -1,8 +1,8 @@
 # Audio (Exhibits/Evidence)
 
-| Date         | Length      | File                              | Url/Name                                                                                       |
-|:-------------|:------------|:----------------------------------|:-----------------------------------------------------------------------------------------------|
-| **07/29/20** | 00h 09m 31s | **2020_0729-200 McCarty Ave.m4a** | [200 McCarty Ave](https://drive.google.com/file/d/1IHISY3w94uPiFnOAY68iISMYfe3w68S4) [They don't get it.](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf) |
+| Date         | Length      | File                                           | Url/Name                                                                                       |
+|:-------------|:------------|:-----------------------------------------------|:-----------------------------------------------------------------------------------------------|
+| **07/29/20** | 00h 09m 31s | **2020_0729-200 McCarty Ave.m4a**              | [200 McCarty Ave](https://drive.google.com/file/d/1IHISY3w94uPiFnOAY68iISMYfe3w68S4) |
 | **02/01/21** | 00h 14m 41s | **2021_0201-(Family Court).m4a**               | [Family Court Receptionist](https://drive.google.com/file/d/12rvHS3-pZ1AB8wp0EpY4aP0cFh6TgNP_) | 
 | **02/01/21** | 00h 05m 49s | **2021_0201-(County Sheriff Office).mp3**      | [SCSO Zurlo's Office](https://drive.google.com/file/d/1kYRXSvoWLruRVCUSCOyahuxbaVCGwwA1) |
 | **02/02/21** | 00h 20m 01s | **2021_0202-(SCSO).m4a**                       | [SCSO JEFFREY BROWN](https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8) |
