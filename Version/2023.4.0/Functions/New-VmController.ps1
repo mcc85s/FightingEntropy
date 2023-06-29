@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-06 19:59:16                                                                  //
+\\  Date       : 2023-06-29 17:03:40                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-06-06
+    Modified   : 2023-06-29
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -3302,6 +3302,7 @@ Function New-VmController
         [UInt32]     $Architecture
         [String]  $DestinationName
         [String]            $Label
+        [UInt32]          $Profile
         ImageEdition([Object]$Path,[Object]$Image,[Object]$Slot)
         {
             $This.ImageFile    = $Path
