@@ -7,10 +7,11 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Last Update       |
 |:------------------|
-| **06/24/23 2344** |
+| **07/01/23 1652** |
 
 | Date         | Length     | File                           | Name                                                                                                   |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **06/30/23** | 1h 03m 32s | **2023_06_30_20_56_50.mp3** | [Hailey Voorhees](https://drive.google.com/file/d/13g8cf3ZwSFeqHFvMxBcao0v4-vqNbscJ)
 | **06/24/23** | 1h 20m 59s | **2023_06_24_18_48_05.mp3** | [Friendship](https://drive.google.com/file/d/11WNiEetXMtTReilpVedAfiJPDMefUCp7) |
 | **06/21/23** | 0h 47m 12s | **2023_06_21_08_32_31.mp3**    | [Cyberattacks](https://drive.google.com/file/d/1zvFboRohvA_QuZAqtsUoTIgdyVQBlQFb)
 | **06/13/23** | 0h 36m 47s | **2023_06_13_07_59_33.mp3**    | [Survival](https://drive.google.com/file/d/1xawyW1VeRCN4REHqo1sdz7WVREcb-5Lq)
