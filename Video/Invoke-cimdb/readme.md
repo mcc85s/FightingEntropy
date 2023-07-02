@@ -4,7 +4,7 @@
 |:------------|
 | In this series of videos, I am rewriting a function called the [**Company Information Management Database**]. I'm making it very clear, that I'm not using something like [**ChatGPT**] to write this entire function, as well as the rest of the module, and I have not been working on this utility without recording footage of me working on it, as a [**CHALLENGE**]. |
 
-[[Video](#video)]
+[[Video](#video)] - [[Script](#script)]
 
 ## Video
 
@@ -24,3 +24,9 @@
 | 11    | `06/29/23` | **[2023_0629-(Invoke-cimdb (Part XII))](https://youtu.be/SeR_FqwKioM)**  | `03h 43m 13s` |
 | 12    | `06/30/23` | **[2023_0630-(Invoke-cimdb (Part XIII))](https://youtu.be/HTkN1bKkKk0)** | `04h 32m 41s` |
 | 13    | `07/01/23` | **[2023_0701-(Invoke-cimdb (Part XIV))](https://youtu.be/_t_Bt_Ni_aY)**  | `01h 33m 08s` |
+
+## Script
+
+| Index | Date       | Name/Link                                                                                                                   |
+|:------|:-----------|:----------------------------------------------------------------------------------------------------------------------------|
+| 0     | `07/02/23` | **[VideoDescriptionList](https://github.com/mcc85s/FightingEntropy/blob/main/Video/Invoke-cimdb/VideoDescriptionList.ps1)** |
