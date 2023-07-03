@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-07-03 11:50:36                                                                  //
+\\  Date       : 2023-07-03 15:04:21                                                                  //
  \\==================================================================================================// 
 
     FileName   : Invoke-cimdb.ps1
@@ -7311,6 +7311,405 @@ Class cimdbDatabaseController
 <#
     ____    ____________________________________________________________________________________________________        
    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+   \\__//¯¯¯ Active Directory Integration [+]                                                               ___//¯¯\\   
+    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+#>
+
+Class cimdbClientAdUser
+{
+    [Object]                                 $Client
+    [String]                            $DisplayName
+    [String]                              $GivenName
+    [String]                               $Initials
+    [String]                                $Surname
+    [String]                              $OtherName
+    [String]                                   $Name
+    [String]                          $StreetAddress
+    [String]                                   $City
+    [String]                                  $State
+    [String]                             $PostalCode
+    [String]                                $Country
+    [String]                                  $POBox
+    [String]                           $EmailAddress
+    [String]                              $HomePhone
+    [String]                            $MobilePhone
+    [String]                            $OfficePhone
+    [String]                           $Organization
+    [String]                                  $Title
+    [String]                                $Company
+    [String]                               $Division
+    [String]                             $Department
+    [Object]                                $Manager
+    [String]                             $EmployeeID
+    [String]                         $EmployeeNumber
+    [String]                            $Description
+    [DateTime]                $AccountExpirationDate
+    [UInt32]                    $AccountNotDelegated
+    [SecureString]                  $AccountPassword
+    [UInt32]      $AllowReversiblePasswordEncryption
+    [Object]                   $AuthenticationPolicy
+    [Object]               $AuthenticationPolicySilo
+    [Switch]                               $AuthType
+    [UInt32]                   $CannotChangePassword
+    [Object[]]                         $Certificates
+    [UInt32]                  $ChangePasswordAtLogon
+    [UInt32]              $CompoundIdentitySupported
+    [Object]                             $Credential
+    [UInt32]                                $Enabled
+    [String]                                    $Fax
+    [String]                          $HomeDirectory
+    [String]                              $HomeDrive
+    [String]                               $HomePage
+    [Object]                               $Instance
+    [Switch]                 $KerberosEncryptionType
+    [String]                      $LogonWorkstations
+    [String]                                 $Office
+    [Hashtable]                     $OtherAttributes
+    [Switch]                               $PassThru
+    [UInt32]                   $PasswordNeverExpires
+    [UInt32]                    $PasswordNotRequired
+    [String]                                   $Path
+    [Object[]] $PrincipalsAllowedToDelegateToAccount
+    [String]                            $ProfilePath
+    [String]                         $SamAccountName
+    [String]                             $ScriptPath
+    [String]                                 $Server
+    [String[]]                $ServicePrincipalNames
+    [UInt32]                 $SmartcardLogonRequired
+    [UInt32]                   $TrustedForDelegation
+    [String]                                   $Type
+    [String]                      $UserPrincipalName
+    [Object]                                    $Dob
+    [UInt32]                                 $Exists
+    [String]                      $DistinguishedName
+    cimdbClientAdUser([Object]$Client)
+    {
+        # Record
+        $This.Client          = $Client
+
+        # Name
+        $This.DisplayName     = $Client.Record.Name.DisplayName
+        $This.GivenName       = $Client.Record.Name.GivenName
+        $This.Initials        = $Client.Record.Name.Initials
+        $This.Surname         = $Client.Record.Name.Surname
+        $This.OtherName       = $Client.Record.Name.OtherName
+        $This.Name            = $Client.Record.Name.DisplayName
+
+        # Location
+        $This.StreetAddress   = $Client.Record.Location.StreetAddress
+        $This.City            = $Client.Record.Location.City
+        $This.State           = $Client.Record.Location.Region
+        $This.PostalCode      = $Client.Record.Location.PostalCode
+        $This.Country         = $Client.Record.Location.Country
+        $This.POBox           = $Null
+
+        # Gender <In @{OtherAttributes}> Do not implement for now
+        # Dob <In @{OtherAttributes}>
+        $This.Dob             = $Client.Record.Dob
+
+        # Contact
+        If (0 -in $Client.Record.Phone.Output.Type)
+        {
+            $This.HomePhone   = ($Client.Record.Phone.Output | ? Type -eq 0)[0].Number
+        }
+
+        If (1 -in $Client.Record.Phone.Output.Type)
+        {
+            $This.OfficePhone = ($Client.Record.Phone.Output | ? Type -eq 1)[0].Number
+        }
+
+        If (2 -in $Client.Record.Phone.Output.Type)
+        {
+            $This.MobilePhone = ($Client.Record.Phone.Output | ? Type -eq 2)[0].Number
+        }
+
+        $This.EmailAddress    = ($Client.Record.Email.Output)[0].Handle
+
+        # Company <Yet to implement>
+        $This.Organization    = $Null
+        $This.Title           = $Null
+        $This.Company         = $Null
+        $This.Division        = $Null
+        $This.Department      = $Null
+        $This.Manager         = $Null
+        $This.EmployeeID      = $Null
+        $This.EmployeeNumber  = $Null
+    }
+    Irrelevant()
+    {
+        $This.Description                          = $Null
+        $This.AccountExpirationDate                = $Null
+        $This.AccountNotDelegated                  = $Null
+        $This.AccountPassword                      = $Null
+        $This.AllowReversiblePasswordEncryption    = $Null
+        $This.AuthenticationPolicy                 = $Null
+        $This.AuthenticationPolicySilo             = $Null
+        $This.AuthType                             = $Null
+        $This.CannotChangePassword                 = $Null
+        $This.Certificates                         = $Null
+        $This.ChangePasswordAtLogon                = $Null
+        $This.CompoundIdentitySupported            = $Null
+        $This.Credential                           = $Null
+        $This.Enabled                              = $Null
+        $This.Fax                                  = $Null
+        $This.HomeDirectory                        = $Null
+        $This.HomeDrive                            = $Null
+        $This.HomePage                             = $Null
+        $This.Instance                             = $Null
+        $This.KerberosEncryptionType               = $Null
+        $This.LogonWorkstations                    = $Null
+        $This.Office                               = $Null
+        $This.OtherAttributes                      = $Null
+        $This.PassThru                             = $Null
+        $This.PasswordNeverExpires                 = $Null
+        $This.PasswordNotRequired                  = $Null
+        $This.Path                                 = $Null
+        $This.PrincipalsAllowedToDelegateToAccount = $Null
+        $This.ProfilePath                          = $Null
+        $This.SamAccountName                       = $Null
+        $This.ScriptPath                           = $Null
+        $This.Server                               = $Null
+        $This.ServicePrincipalNames                = $Null
+        $This.SmartcardLogonRequired               = $Null
+        $This.TrustedForDelegation                 = $Null
+        $This.Type                                 = $Null
+        $This.UserPrincipalName                    = $Null
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.cimdb.Client[AdUser]>"
+    }
+}
+
+Class cimdbAdObject
+{
+    [String]              $Name
+    Hidden [Object]     $Object
+    [Object]              $Slot
+    [String]    $SamAccountName
+    [String] $UserPrincipalName
+    [Object] $DistinguishedName
+    [String]       $Description
+    cimdbAdObject([Object]$Object)
+    {
+        $This.Name              = $Object.Name
+        $This.Object            = $Object
+        $This.SamAccountName    = $object.SamAccountName
+        $This.UserPrincipalName = $Object.UserPrincipalName
+        $This.DistinguishedName = $Object.DistinguishedName
+        $This.Description       = $Object.Description
+    }
+    [String] ToString()
+    {
+        Return $This.Name
+    }
+}
+
+Class cimdbAddsController
+{
+    [Object]      $Module
+    [Object]        $Slot
+    [Object]   $Directory
+    [String]        $Path
+    [Object]      $Import
+    cimdbAddsController([Object]$Module,[Object]$Slot)
+    {
+        $This.Module = $Module
+        $This.Slot   = $Slot
+    }
+    Update([Int32]$State,[String]$Status)
+    {
+        $This.Module.Update($State,$Status)
+    }
+    [String] Domain()
+    {
+        Return [Environment]::GetEnvironmentVariable("USERDNSDOMAIN").ToLower()
+    }
+    [Object] cimdbAdObject([Object]$Object)
+    {
+        Return [cimdbAdObject]::New($Object)
+    }
+    [Object] cimdbClientAdUser([Object]$Client)
+    {
+        Return [cimdbClientAdUser]::New($Client)
+    }
+    [String[]] OtherAttributes()
+    {
+        # Could use enum types for this
+        Return "Description",
+               "StreetAddress",
+               "City",
+               "State",
+               "PostalCode",
+               "Country",
+               "HomePhone",
+               "MobilePhone",
+               "OfficePhone",
+               "EmailAddress"
+    }
+    [Object[]] GetObject()
+    {
+        Return Get-AdObject -Properties * -Filter * | Sort-Object Name
+    }
+    Clear()
+    {
+        $This.Directory = @( )
+    }
+    Refresh()
+    {
+        $This.Update(0,"Refreshing [~] Directory[]")
+
+        $This.Clear()
+
+        # Using a hashtable instead of an array is a LOT faster
+        $Hash = @{ }
+
+        ForEach ($Object in $This.GetObject())
+        {
+            $Item         = $This.cimdbAdObject($Object)
+            $Item.Slot    = $This.Slot.AdNode.Output | ? DisplayName -eq $Item.Object.ObjectClass
+            $Hash.Add($Hash.Count,$Item)
+        }
+
+        # Assign the hashtable entries to the array
+        $This.Directory   = $Hash[0..($Hash.Count-1)]
+        $This.Path        = $This.Directory | ? Slot -match Org | ? Name -eq Client | % DistinguishedName
+    }
+    GenerateSam([Object]$Item)
+    {
+        # [Attempt #1]
+        $Hash = @{ }
+        $Hash.Add(0,$Item.Client.Record.Name.GivenName.ToLower().SubString(0,1))
+        $Hash.Add(1,$Item.Client.Record.Name.Surname.ToLower())
+        $Hash.Add(2,$Item.Client.Record.Dob.Dob.Substring(8,2))
+
+        $String = $Hash[0..2] -join ""
+        $Ad     = $This.Directory | ? SamAccountName -match $String
+
+        If (!$Ad)
+        {
+            $Item.Exists            = 0
+            $Item.SamAccountName    = $String
+            $Item.UserPrincipalName = "{0}@{1}" -f $String, $This.Domain()
+        }
+        ElseIf (!!$Ad)
+        {
+            $Item.Exists            = 1
+            $Item.SamAccountName    = $Ad.SamAccountName
+            $Item.UserPrincipalName = $Ad.UserPrincipalName
+            $Item.DistinguishedName = $Ad.DistinguishedName
+        }
+        Else
+        {
+            Throw "Probable conflict with an existing user account"
+        }
+    }
+    Check([Object]$Item)
+    {
+        If (!$Item.UserPrincipalName)
+        {
+            Throw "No user principal name set"
+        }
+
+        $Item.Exists = [UInt32]($This.UserPrincipalName -in $This.Directory.UserPrincipalName)
+    }
+    Create([Object]$Item)
+    {
+        If (!$Item.Exists)
+        {
+            $Splat                  = @{
+
+                Name                = $Item.Name
+                DisplayName         = $Item.DisplayName
+                GivenName           = $Item.GivenName
+                Initials            = $Item.Initials
+                Surname             = $Item.Surname
+                SamAccountName      = $Item.SamAccountName
+                UserPrincipalName   = $Item.UserPrincipalName
+                Path                = $This.Path
+            }
+
+            $Result = New-AdUser @Splat -PassThru -Verbose
+            If ($?)
+            {
+                $Item.Exists            = 1
+                $Item.DistinguishedName = $Result.DistinguishedName
+
+                $Splat                  = @{ }
+                ForEach ($Property in $This.OtherAttributes())
+                {
+                    $Splat.Add($Property,$Item.$Property)
+                }
+                
+                Set-AdUser -Identity $Item.DistinguishedName @Splat -Verbose -EA 0
+            }
+
+        }
+    }
+    ImportList([Object[]]$ClientList)
+    {
+        $This.Import = @( )
+
+        $This.Refresh()
+
+        ForEach ($Client in $ClientList)
+        {
+            $This.Update(0,"Processing [~] $($Client.Record.DisplayName)")
+
+            $Item         = $This.cimdbClientAdUser($Client)
+            $Item.Country = $This.Slot.Country.Output[$Item.Country]
+            $This.GenerateSam($Item)
+
+            $Item.Exists  = [UInt32]($Item.UserPrincipalName -in $This.Directory.UserPrincipalName)
+
+            Switch ($Item.Exists)
+            {
+                0
+                {
+                    $This.Import += $Item
+                } 
+                1
+                {
+                    [Console]::WriteLine("[$($Item.Name)] [!] Exists")
+                }
+            }
+        }
+    }
+    CreateList()
+    {
+        $This.Refresh()
+
+        ForEach ($Client in $This.Import)
+        {
+            $This.Create($Client)
+
+            $This.Update($Client.Exists,("{0} [{1}]" -f @("Failed [!]","Success [+]")[$Client.Exists], $Client.DisplayName))
+        }
+
+        $This.Import = @($This.Import | ? Exists -eq 0)
+
+        $This.Refresh()
+    }
+    RemoveList([String[]]$ClientList)
+    {
+        $This.Refresh()
+
+        ForEach ($Client in $This.Directory | ? Name -in $ClientList)
+        {
+            Remove-AdUser -Identity $Client.DistinguishedName -Confirm:0 -Verbose
+            $This.Update([UInt32]$?,$Client.Name)
+        }
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.AdObject[Controller]>"
+    }
+}
+
+<#
+    ____    ____________________________________________________________________________________________________        
+   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
    \\__//¯¯¯ Controller [+]                                                                                 ___//¯¯\\   
     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
@@ -7380,12 +7779,13 @@ Class cimdbControllerProperty
 Class cimdbController
 {
     [Object]     $Module
+    [UInt32]       $Mode
     [Object]       $Xaml
     [Object]       $Slot
     [Object] $Validation
     [Object]   $Database
     [Object]    $Current
-    [UInt32]       $Mode
+    [Object]       $Adds
     cimdbController([Object]$Module)
     {
         # Assign FEModule, this will allow module/console to be imported
@@ -7417,6 +7817,9 @@ Class cimdbController
 
         # Load the validation controller
         $This.Validation = $This.Get("Validation")
+
+        # Load the Adds Controller
+        $This.Adds       = $This.Get("Adds")
     }
     Update([Int32]$State,[String]$Status)
     {
@@ -7541,6 +7944,11 @@ Class cimdbController
                 $This.Update(0,"Getting [~] Validation Controller")
                 $Item = [cimdbValidationController]::New($This.Xaml)
             }
+            Adds
+            {
+                $This.Update(0,"Getting [~] Adds Controller")
+                $Item = [cimdbAddsController]::New($This.Module,$This.Slot)
+            }
             Default
             {
                 $This.Update(0,"Getting [!] Invalid <$Name>")
@@ -7572,7 +7980,25 @@ Class cimdbController
     }
     [Object] ClientIdentity()
     {
-        Return [cimdbClientIdentity]::New($This.Xaml)
+        $List = $This.Validation.Output | ? Source -eq Client
+        $List.Check()
+        If ($This.Current.Validate.Phone.Count -ne 0)
+        {
+            $List[11].Status = 1
+        }
+        If ($This.Current.Validate.Email.Count -gt 0)
+        {
+            $List[12].Status = 1
+        }
+
+        If (-1 -in $List.Status)    
+        {
+            Return $Null
+        }
+        Else
+        {
+            Return [cimdbClientIdentity]::New($This.Xaml)
+        }
     }
     [Object] cimdbControllerProperty([Object]$Property)
     {
@@ -8034,8 +8460,18 @@ Class cimdbController
     }
     CheckIdentity()
     {
-        $This.Current.Target         = $This.ClientIdentity().GetHash().Hash
-        $This.Xaml.IO.Save.IsEnabled = [UInt32]($This.Current.Source -ne $This.Current.Target)
+        $Item = $This.ClientIdentity()
+
+        If (!$Item)
+        {
+            $This.Current.Target         = $Null
+            $This.Xaml.IO.Save.IsEnabled = 0
+        }
+        Else
+        {
+            $This.Current.Target         = $Item.GetHash().Hash
+            $this.Xaml.IO.Save.IsEnabled = [UInt32]($This.Current.Source -ne $This.Current.Target)
+        }
     }
     ClientToggleSave([Object]$Client)
     {
@@ -8063,6 +8499,8 @@ Class cimdbController
                 $Ctrl.Handle("EditClient")
 
                 $Ctrl.Reset($Ctrl.Xaml.IO.EditClientOutput,$Ctrl.Current.Uid)
+
+                $Ctrl.Current.SetValidate($Ctrl.Validate("Client"))
 
                 # Type
                 $Ctrl.Xaml.IO.EditClientType.IsEnabled            = 1
@@ -8571,48 +9009,100 @@ Class cimdbController
 
         $Ctrl.Update(0,"Delete [~] $($Ctrl.Current.Mode.Name)")
 
+        # Implement further logic for record deletion so that it goes to crypt category
+        $Ctrl.Database.Delete($Ctrl.Current.Uid)
+
         Switch -Regex ($Ctrl.Current.Mode.Name)
         {
             Uid
             {
-                $Ctrl.Database.Delete($Ctrl.Current.Uid)
-                $Ctrl.Reset($Ctrl.Xaml.IO.ViewUidOutput,$Ctrl.Database.Output)
+                # [Changes the panel to ViewUid]
+                $Ctrl.Handle("ViewUid")
+
+                # [Resets the ViewUid DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewUidOutput,
+                            $Ctrl.Database.Output)
             }
             Client
             {
+                # [Changes the panel to ViewClient]
+                $Ctrl.Handle("ViewClient")
 
+                # [Resets the ViewClient DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewClientOutput,
+                            $Ctrl.Database.GetRecordSlot("Client"))
             }
             Service
             {
+                # [Changes the panel to ViewService]
+                $Ctrl.Handle("ViewService")
 
+                # [Resets the ViewService DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewServiceOutput,
+                            $Ctrl.Database.GetRecordSlot("Service"))
             }
             Device
             {
+                # [Changes the panel to ViewDevice]
+                $Ctrl.Handle("ViewDevice")
 
+                # [Resets the ViewDevice DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewDeviceOutput,
+                            $Ctrl.Database.GetRecordSlot("Device"))
             }
             Issue
             {
+                # [Changes the panel to ViewIssue]
+                $Ctrl.Handle("ViewIssue")
 
+                # [Resets the ViewIssue DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewIssueOutput,
+                            $Ctrl.Database.GetRecordSlot("Issue"))
             }
             Purchase
             {
+                # [Changes the panel to ViewPurchase]
+                $Ctrl.Handle("ViewPurchase")
 
+                # [Resets the ViewPurchase DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewPurchaseOutput,
+                            $Ctrl.Database.GetRecordSlot("Purchase"))
             }
             Inventory
             {
+                # [Changes the panel to ViewInventory]
+                $Ctrl.Handle("ViewInventory")
 
+                # [Resets the ViewInventory DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewInventoryOutput,
+                            $Ctrl.Database.GetRecordSlot("Inventory"))
             }
             Expense
             {
+                # [Changes the panel to ViewExpense]
+                $Ctrl.Handle("ViewExpense")
 
+                # [Resets the ViewExpense DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewExpenseOutput,
+                            $Ctrl.Database.GetRecordSlot("Expense"))
             }
             Account
             {
+                # [Changes the panel to ViewAccount]
+                $Ctrl.Handle("ViewAccount")
 
+                # [Resets the ViewAccount DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewAccountOutput,
+                            $Ctrl.Database.GetRecordSlot("Account"))
             }
             Invoice
             {
+                # [Changes the panel to ViewInvoice]
+                $Ctrl.Handle("ViewInvoice")
 
+                # [Resets the ViewInvoice DataGrid]
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewInvoiceOutput,
+                            $Ctrl.Database.GetRecordSlot("Invoice"))
             }
         }
 
@@ -9334,7 +9824,8 @@ Class cimdbController
                     $Index = $Ctrl.Xaml.IO.ViewClientOutput.SelectedIndex
                     If ($Index -ne -1)
                     {
-                        $Ctrl.Xaml.IO.View.IsEnabled = 1
+                        $Ctrl.Xaml.IO.View.IsEnabled   = 1
+                        $Ctrl.Xaml.IO.Delete.IsEnabled = 1
                     }
                 })
             }
@@ -9691,17 +10182,23 @@ Class cimdbController
                 {
                     If ($Ctrl.Mode -gt 0)
                     {
-                        $Item  = $Ctrl.Validation.Get("ditClientPhoneText")
+                        $Item  = $Ctrl.Validation.Get("EditClientPhoneText")
+                        $Item.Check()
                         $Phone = $Item.Control.Text
-                        $List  = $Ctrl.Database.GetRecordSlot("Client") | ? { $_.Record.Phone.Output.Number -match $Phone }
-    
-                        $Ctrl.Reset($Ctrl.Xaml.IO.EditClientPhoneOutput,$List)
-    
-                        If ($Phone -notin $Ctrl.Xaml.IO.EditClientPhoneOutput.Number)
+
+                        If ($Phone -match $Ctrl.Regex("Phone"))
                         {
-                            If ($Phone -notin $Ctrl.Xaml.IO.EditClientPhoneList.Number)
+                            $Item.Status = 1
+                        }
+
+                        If ($Item.Status -eq 1)
+                        {
+                            $List  = $Ctrl.Database.GetRecordSlot("Client") | ? { $_.Record.Phone.Output.Number -match $Phone }
+                            $Ctrl.Reset($Ctrl.Xaml.IO.EditClientPhoneOutput,$List)
+
+                            If ($Phone -notin $Ctrl.Xaml.IO.EditClientPhoneOutput)
                             {
-                                If ($Phone -match "\d{3}\-\d{3]\-\d{4}")
+                                If ($Phone -notin $Ctrl.Xaml.IO.EditClientPhoneList.Number)
                                 {
                                     $Ctrl.Xaml.IO.EditClientPhoneAdd.IsEnabled = 1
                                 }
@@ -9732,34 +10229,137 @@ Class cimdbController
                     }
                 })
 
+                $Ctrl.Xaml.IO.EditClientPhoneAdd.Add_Click(
+                {
+                    $Item = $Ctrl.Validation.Get("EditClientPhoneText")
+
+                    $Ctrl.ClientAddPhone($Ctrl.Current.Validate,
+                                         $Ctrl.Xaml.IO.EditClientPhoneType.SelectedIndex,
+                                         $Item.Control.Text)
+                    
+                    $Ctrl.Reset($Ctrl.Xaml.IO.EditClientPhoneList,$Ctrl.Current.Validate.Phone.Output)
+
+                    $Ctrl.Mode         = 0
+                    $Item.Control.Text = $Item.Default
+                    $Ctrl.Mode         = 1
+
+                    If ($Ctrl.Xaml.IO.EditClientPhoneList.Items.Count -gt 0)
+                    {
+                        $Ctrl.Xaml.IO.EditClientPhoneRemove.IsEnabled = 1
+                    }
+                })
+
                 $Ctrl.Xaml.IO.EditClientPhoneRemove.Add_Click(
                 {
-                    If ($Ctrl.Xaml.IO.EditClientPhoneList.Items.Count -eq 1)
+                    $Index = $Ctrl.Xaml.IO.EditClientPhoneList.SelectedIndex
+                    If ($Index -gt -1)
                     {
-                        [System.Windows.MessageBox]::Show("Must have at least (1) phone number","Phone number [+] Error")
+                        If ($Ctrl.Xaml.IO.EditClientPhoneList.Items.Count -lt 2)
+                        {
+                            [System.Windows.MessageBox]::Show("Must have at least (1) phone number","Phone number [+] Error")
+                        }
+                        Else
+                        {
+                            $Ctrl.ClientRemovePhone($Ctrl.Current.Validate,$Index)
+                            
+                            $Ctrl.Reset($Ctrl.Xaml.IO.EditClientPhoneList,
+                                        $Ctrl.Current.Validate.Phone.Output)
+                        }
                     }
                 })
 
                 # Email event handlers
                 $Ctrl.Xaml.IO.EditClientEmailText.Add_TextChanged(
                 {
-                    $Email = $Ctrl.Xaml.IO.EditClientEmailText.Text
-                    $List  = $This.Database.GetRecordSlot("Client") | ? { $_.Record.Email.Output.Handle -match $Email }
-
-                    $Ctrl.Reset($Ctrl.Xaml.IO.EditClientEmailOutput,$List)
-
-                    If ($Email -notin $Ctrl.Xaml.IO.EditClientEmailOutput.Items.Handle)
+                    If ($Ctrl.Mode -gt 0)
                     {
-                        If ($Email -notin $Ctrl.Xaml.IO.EditClientEmailList.Items.Handle)
+                        $Item  = $Ctrl.Validation.Get("EditClientEmailText")
+                        $Item.Check()
+                        $Email = $Item.Control.Text
+
+                        If ($Email -match $Ctrl.Regex("Email"))
                         {
-                            If ($Email -match $Ctrl.RegexEmail())
+                            $Item.Status = 1
+                        }
+
+                        If ($Item.Status -eq 1)
+                        {
+                            $List  = $Ctrl.Database.GetRecordSlot("Client") | ? { $_.Record.Email.Output.Number -match $Email }
+                            $Ctrl.Reset($Ctrl.Xaml.IO.EditClientEmailOutput,$List)
+
+                            If ($Email -notin $Ctrl.Xaml.IO.EditClientEmailOutput)
                             {
-                                $Ctrl.Xaml.IO.EditClientEmailAdd.IsEnabled = 1
+                                If ($Email -notin $Ctrl.Xaml.IO.EditClientEmailList.Number)
+                                {
+                                    $Ctrl.Xaml.IO.EditClientEmailAdd.IsEnabled = 1
+                                }
                             }
                         }
                     }
                 })
 
+                $Ctrl.Xaml.IO.EditClientEmailText.Add_GotFocus(
+                {
+                    $Item                  = $Ctrl.Validation.Get("EditClientEmailText")
+                    If ($Item.Control.Text -eq $Item.Default)
+                    {
+                        $Ctrl.Mode         = 0
+                        $Item.Control.Text = ""
+                        $Ctrl.Mode         = 1
+                    }
+                })
+
+                $Ctrl.Xaml.IO.EditClientEmailText.Add_LostFocus(
+                {
+                    $Item                  = $Ctrl.Validation.Get("EditClientEmailText")
+                    If ($Item.Control.Text -eq "")
+                    {
+                        $Ctrl.Mode         = 0
+                        $Item.Control.Text = $Item.Default
+                        $Ctrl.Mode         = 1
+                    }
+                })
+
+                $Ctrl.Xaml.IO.EditClientEmailAdd.Add_Click(
+                {
+                    $Item = $Ctrl.Validation.Get("EditClientEmailText")
+
+                    $Ctrl.ClientAddEmail($Ctrl.Current.Validate,
+                                         $Ctrl.Xaml.IO.EditClientEmailType.SelectedIndex,
+                                         $Item.Control.Text)
+                    
+                    $Ctrl.Reset($Ctrl.Xaml.IO.EditClientEmailList,$Ctrl.Current.Validate.Email.Output)
+
+                    $Ctrl.Mode         = 0
+                    $Item.Control.Text = $Item.Default
+                    $Ctrl.Mode         = 1
+
+                    If ($Ctrl.Xaml.IO.EditClientEmailList.Items.Count -gt 0)
+                    {
+                        $Ctrl.Xaml.IO.EditClientEmailRemove.IsEnabled = 1
+                    }
+                })
+
+                $Ctrl.Xaml.IO.EditClientEmailRemove.Add_Click(
+                {
+                    $Index = $Ctrl.Xaml.IO.EditClientEmailList.SelectedIndex
+                    If ($Index -gt -1)
+                    {
+                        If ($Ctrl.Xaml.IO.EditClientEmailList.Items.Count -lt 2)
+                        {
+                            [System.Windows.MessageBox]::Show("Must have at least (1) phone number","Email address [+] Error")
+                        }
+                        Else
+                        {
+                            $Ctrl.ClientRemoveEmail($Ctrl.Current.Validate,$Index)
+                            
+                            $Ctrl.Reset($Ctrl.Xaml.IO.EditClientEmailList,
+                                        $Ctrl.Current.Validate.Email.Output)
+                        }
+                    }
+                })
+
+                # [Device]
                 $Ctrl.Xaml.IO.EditClientDeviceFilter.Add_TextChanged(
                 {
                     $Ctrl.SearchControl($Ctrl.Xaml.IO.EditClientDeviceProperty,
@@ -10440,117 +11040,92 @@ Class cimdbController
     }
 }
 
-
-<#
-    Testing area
-
-    ClientSetUid([Object]$Client,[String]$Uid)
-    {
-        $Record = $Ctrl.Database.Output | ? Uid -eq $Uid.Uid
-    }
-#>
-
-# Instantiate the controller
+# // [Instantiate the controller]
 $Ctrl = [cimdbController]::New()
 
-# Set to debugging mode
+# // [Set to debugging mode]
 $Ctrl.Module.Mode = 2
 
-# ---------------------
-# [Client] record entry
-# ---------------------
-
-# Create a client object
-$Ctrl.Current.SetValidate($Ctrl.Validate("Client"))
-
-# Set (name/location/gender/DOB/phone/email)
-$Client = $Ctrl.Current.Validate
-
-# Set up event handlers for all of the [EditClient] text fields
-$Client.Type     = 0
-$Client.Status   = 0
-$Ctrl.ClientSetName($Client,"Michael","C","Cook","Sr")
-$Ctrl.ClientSetLocation($Client,"201D Halfmoon Circle","Clifton Park","NY",12065,238)
-$Ctrl.ClientSetGender($Client,0)
-$Ctrl.ClientSetDob($Client,5,24,1985)
-$Ctrl.ClientAddPhone($Client,0,"518-406-8569")
-$Ctrl.ClientAddEmail($Client,0,"michael.c.cook.85@gmail.com")
-
-# Validation
-$Ctrl.ClientValidate()
-
-# Create blank record
-$Ctrl.Database.Add(0)
-
-# Set current Uid to that blank record
-$Ctrl.SetCurrentUid($Ctrl.Database.Output[-1])
-
-# Insert valid properties into the record
-$Client.SetUid($Ctrl.Current.Uid)
-
-# Clear the current UID object
-$Ctrl.Current.Uid      = $Null
-
-# Clear the current validation object
-$Ctrl.Current.Validate = $Null
-
-<#
-    [Generate random client names]
-#>
-
+# // [Generate random client names]
 ForEach ($X in 0..47)
 {
     $P = $Out[$X]
 
-    # Create a client object
+    # // [Create a client object]
     $Ctrl.Current.SetValidate($Ctrl.Validate("Client"))
 
-    # Set shortcut to validation object
+    # // [Set shortcut to validation object]
     $Client = $Ctrl.Current.Validate
 
-    # Set up event handlers for all of the [EditClient] text fields
+    # // [Set up event handlers for all of the [EditClient] text fields]
     $Client.Type     = 0
     $Client.Status   = 0
 
-    # Set name
+    # // [Set name]
     $N = $P.Name
     $Ctrl.ClientSetName($Client,$N[0],$N[1],$N[2],$Null)
 
-    # Set location
+    # // [Set location]
     $A = $P.StreetAddress
     $Ctrl.ClientSetLocation($Client,$A[0],$A[1],$A[2],$A[3],$A[4])
 
-    # Set gender
+    # // [Set gender]
     $Ctrl.ClientSetGender($Client,$P.Gender)
 
-    # Set DOB
+    # // [Set DOB]
     $D = $P.Dob
     $Ctrl.ClientSetDob($Client,$D[0],$D[1],$D[2])
 
-    # Set Phone
+    # // [Set Phone]
     $Ctrl.ClientAddPhone($Client,0,$P.Phone)
 
-    # Set Email
+    # // [Set Email]
     $Ctrl.ClientAddEmail($Client,0,$P.Email)
 
-    # Validate
+    # // [Validate]
     $Ctrl.ClientValidate()
 
-    # Create blank record
+    # // [Create blank record]
     $Ctrl.Database.Add(0)
 
-    # Set current Uid to that blank record
+    # // [Set current Uid to that blank record]
     $Ctrl.SetCurrentUid($Ctrl.Database.Output[-1])
 
-    # Insert valid properties into the record
+    # // [Insert valid properties into the record]
     $Client.SetUid($Ctrl.Current.Uid)
 
-    # Clear the current UID object
+    # // [Clear the current UID object]
     $Ctrl.Current.Uid      = $Null
 
-    # Clear the current validation object
+    # // [Clear the current validation object]
     $Ctrl.Current.Validate = $Null
 }
 
 $Ctrl.StageXaml()
 $Ctrl.Invoke()
+
+<#
+# // [Prompts for choice to import client list into Active Directory]
+$Import = (Host).UI.PromptForChoice("Import clients","Do you wish to import client list into Active Directory?",@("&No","&Yes"),0)
+
+If ($Import)
+{
+    # // [Import the client list]
+    $Ctrl.Adds.ImportList($Ctrl.Database.GetRecordSlot("Client"))
+
+    # // [Create the client list]
+    $Ctrl.Adds.CreateList()
+}
+
+If ($Import)
+{
+    # // [Prompts for choice to delete client list from Active Directory]
+    $Delete = (Host).UI.PromptForChoice("Delete clients","Do you wish to delete client list from Active Directory?",@("&No","&Yes"),0)
+}
+
+If ($Delete)
+{
+    # // [Removes the client list from Active Directory]
+    $Ctrl.Adds.RemoveList($Ctrl.Database.GetRecordSlot("Client").Record.DisplayName)
+}
+#>
