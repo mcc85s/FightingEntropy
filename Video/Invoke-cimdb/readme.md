@@ -1,5 +1,5 @@
 # Invoke-cimdb [06/09/2023]
-#### Last updated [07/03/2023]
+#### Last updated [07/06/2023]
 
 | Description |
 |:------------|
@@ -26,6 +26,7 @@
 | 12    | `06/30/23` | **[2023_0630-(Invoke-cimdb (Part XIII))](https://youtu.be/HTkN1bKkKk0)** | `04h 32m 41s` |
 | 13    | `07/01/23` | **[2023_0701-(Invoke-cimdb (Part XIV))](https://youtu.be/_t_Bt_Ni_aY)**  | `01h 33m 08s` |
 | 14    | `07/03/23` | **[2023_0703-(Invoke-cimdb (Part XV))](https://youtu.be/cHmr6nOBuMc)**   | `02h 55m 06s` |
+| 15    | 107/06/23` | **[2023_0706-(Invoke-cimdb (Part XVI)](https://youtu.be/ONexPjMMNME)**   | `02h 02m 23s` |
 
 ## Script
 
