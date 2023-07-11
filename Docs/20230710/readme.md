@@ -3,9 +3,9 @@
 
 | Description |
 |:------------|
-| In this particular lesson, I'm going to cover:<br>
+| In this particular lesson, I'm going to cover: |
 - [**GtkRadiant**]: A level editor that is used to make game levels for various [**idTech**] based games<br>
-- [**<I3FG20K>'s Shopping Maul**]: A mapping website that I used to manage on [**PlanetQuake.com**] |
+- [**&gt;I3FG20K&lt;'s Shopping Maul**]: A mapping website that I used to manage on [**PlanetQuake.com**] |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)]
 
