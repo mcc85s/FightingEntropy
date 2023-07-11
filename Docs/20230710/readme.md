@@ -4,8 +4,10 @@
 | Description |
 |:------------|
 | In this particular lesson, I'm going to cover: |
-- [**GtkRadiant**]: A level editor that is used to make game levels for various [**idTech**] based games<br>
-- [**&lt;I3FG20K&gt;'s Shopping Maul**]: A mapping website that I used to manage on [**PlanetQuake.com**]
+- [**GtkRadiant**](https://icculus.org/gtkradiant/): A level editor that is used to make game levels for various [**idTech**] based games<br>
+- [**&lt;I3FG20K&gt;'s Shopping Maul**](http://web.archive.org/web/20010716191646/http://www.planetquake.com/bfg20k): A mapping website that I used to manage on [**PlanetQuake.com**]
+
+
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)]
 
