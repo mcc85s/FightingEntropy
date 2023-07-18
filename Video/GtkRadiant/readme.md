@@ -16,7 +16,7 @@
 | Index | Date         | Name/Link                                                    | Duration      |
 |:------|:-------------|:-------------------------------------------------------------|:--------------|
 | 0     | `07/16/2023` | **[2023_0716-(Q3A Practice)](https://youtu.be/OpDG2mYlYM8)** | `02h 22m 36s` |
-| 1     | `07/17/2023` | **[2023_0717-(GtkRadiant)](https://youtu.be/-tGdz6oxXZI)**   | `06h 00m 00s` |
+| 1     | `07/17/2023` | **[2023_0717-(GtkRadiant)](https://youtu.be/-tGdz6oxXZI)**   | `06h 05m 05s` |
 | 2     | `07/17/2023` | **[2023_0717-(Test Map)](https://youtu.be/cbdJ-rWJbVI)**     | `00h 03m 35s` |
 
 ## Document
