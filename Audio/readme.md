@@ -7,13 +7,14 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Last Update       |
 |:------------------|
-| **07/22/23 1012** |
+| **07/23/23 2140** |
 
 | Date         | Length     | File                           | Name                                                                                                   |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
-| **07/21/23** | 0h 43m 54s | **2023_07_21_12_27_43.mp3** | [Consciousness](https://drive.google.com/file/d/1OrIJAvolFQnUhpWxxmRsofN9JMx37mpW)
-| **07/14/23** | 0h 40m 44s | **2023_07_14_17_56_03.mp3** | [Indifference](https://drive.google.com/file/d/18CM1yV2jvOtrUJM65uTmqpQy0PkKa7vB)
-| **07/09/23** | 0h 36m 43s | **2023_07_09_02_00_26.mp3** | [Birdface](https://drive.google.com/file/d/14zQ27M3QZViZ65GVZIShWniDhjgZBDpJ)
+| **07/23/23** | 0h 54m 02s | **2023_07_23_20_29_32.mp3**    | [Minion Mentality](https://drive.google.com/file/d/1MIMow_pFRCnxasfyhMtbcHC8Tg9_AxTu)
+| **07/21/23** | 0h 43m 54s | **2023_07_21_12_27_43.mp3**    | [Consciousness](https://drive.google.com/file/d/1OrIJAvolFQnUhpWxxmRsofN9JMx37mpW)
+| **07/14/23** | 0h 40m 44s | **2023_07_14_17_56_03.mp3**    | [Indifference](https://drive.google.com/file/d/18CM1yV2jvOtrUJM65uTmqpQy0PkKa7vB)
+| **07/09/23** | 0h 36m 43s | **2023_07_09_02_00_26.mp3**    | [Birdface](https://drive.google.com/file/d/14zQ27M3QZViZ65GVZIShWniDhjgZBDpJ)
 | **07/06/23** | 0h 22m 48s | **2023_07_06_08_52_31.mp3**    | [ChatGPT](https://drive.google.com/file/d/14uQ06zzKA_pHIxLxpiW9hovFl99sfCSp)
 | **07/05/23** | 0h 47m 31s | **2023_07_05_20_42_59.mp3**    | [Attention](https://drive.google.com/file/d/14t91nb4sDsvh46kqn94yaBfG9LdV6JCp)
 | **07/04/23** | 1h 32m 44s | **2023_07_04_09_39_16.mp3**    | [Mass Manipulation](https://drive.google.com/file/d/13zcMcDC4X4DQ9erF7vAN1PpF0BEFgd5s)
