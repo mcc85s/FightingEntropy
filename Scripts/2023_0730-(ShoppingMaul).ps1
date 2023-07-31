@@ -1,6 +1,29 @@
-    
-# Function Invoke-ShoppingMaul
-# {
+<#
+.SYNOPSIS
+.DESCRIPTION
+.LINK
+.NOTES
+
+ //==================================================================================================\\ 
+//  Script                                                                                            \\
+\\  Date       : 2023-07-30 21:54:31                                                                  //
+ \\==================================================================================================// 
+
+    FileName   : Invoke-ShoppingMaul.ps1
+    Solution   : [FightingEntropy()][2023.4.0]
+    Purpose    : For managing Michael C. "<|3FG20K>" Cook's [Quake III] mapping portfolio
+    Author     : Michael C. Cook Sr.
+    Contact    : @mcc85s
+    Primary    : @mcc85s
+    Created    : 2023-07-30
+    Modified   : 2023-07-30
+    Demo       : N/A
+    Version    : 0.0.0 - () - Finalized functional version 1
+.Example
+#>
+
+Function Invoke-ShoppingMaul
+{
     Class NewsEntryItem
     {
         [UInt32]         $Index
@@ -94,7 +117,7 @@
         }
         Rerank()
         {
-            $This.Output     = @($This.Output | Sort-Object Real)
+            $This.Output     = @($This.Output | Sort-Object Real -Descending)
 
             For ($X = 0; $X -lt $This.Output.Count; $X ++)
             {
@@ -460,16 +483,55 @@
 
     Class VideoEntryItem
     {
-        [UInt32]    $Index
-        [String]     $Date
-        [String]    $Title
-        [String] $Resource
-        NewsEntryItem([UInt32]$Index,[String]$Date,[String]$Title,[String]$Resource)
+        [UInt32]         $Index
+        Hidden [DateTime] $Real
+        [String]          $Date
+        [String]         $Title
+        [String]      $Resource
+        Hidden [String]     $Id
+        [TimeSpan]    $Duration
+        [String]     $Thumbnail
+        [String[]] $Description
+        VideoEntryItem([UInt32]$Index,[String]$Date,[String]$Title,[String]$Resource,[String]$Duration)
         {
-            $This.Index   = $Index
-            $This.Date    = $Date
-            $This.Title   = $Title
+            $This.Index    = $Index
+            $This.Real     = [DateTime]$Date
+            $This.Date     = $Date
+            $This.Title    = $Title
+            $This.SetId($Resource)
+            $This.Duration = [TimeSpan]$Duration
+        }
+        VideoEntryItem([Object]$Item)
+        {
+            $This.Index    = $Item.Index
+            $This.Real     = [DateTime]$Item.Date
+            $This.Date     = $Item.Date
+            $This.Title    = $Item.Title
+            $This.SetId($Item.Resource)
+            $This.Duration = [TimeSpan]::FromSeconds($Item.Duration.TotalSeconds)
+
+            If ($Item.Thumbnail)
+            {
+                $This.SetThumbnail($Item.Thumbnail)
+            }
+
+            If ($Item.Description)
+            {
+                $This.SetDescription($Item.Description)
+            }
+        }
+        SetId([String]$Resource)
+        {
             $This.Resource = $Resource
+            $This.Id       = Split-Path -Leaf $Resource
+        }
+        SetThumbnail([String]$Fullname)
+        {
+            $This.Thumbnail = $Fullname
+        }
+        SetDescription([String[]]$Description)
+        {
+            $This.Description = $Description
         }
         [String] ToString()
         {
@@ -495,17 +557,74 @@
         {
             $This.Output = @( )
         }
-        [Object] VideoEntryItem([UInt32]$Index,[String]$Date,[String]$Title,[String]$Resource)
+        [Object] VideoEntryItem([UInt32]$Index,[String]$Date,[String]$Title,[String]$Resource,[String]$Duration)
         {
-            Return [VideoEntryItem]::New($Index,$Date,$Title,$Resource)
+            Return [VideoEntryItem]::New($Index,$Date,$Title,$Resource,$Duration)
         }
-        Add([String]$Date,[String]$Title,[String]$Resource)
+        [Object] VideoEntryItem([Object]$Item)
         {
-            $This.Output += $This.VideoEntryItem($This.Output.Count,$Date,$Title,$Resource)
+            Return [VideoEntryItem]::New($Item)
+        }
+        Add([String]$Date,[String]$Title,[String]$Resource,[String]$Duration)
+        {
+            $This.Output += $This.VideoEntryItem($This.Output.Count,$Date,$Title,$Resource,$Duration)
+        }
+        Export([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $Item    = $This.Output[$Index]
+            $Target  = "{0}\{1}-{2}.txt" -f $This.Path, ([DateTime]$Item.Date).ToString("yyyyMMdd"), $Item.Id
+            $Content = $Item | ConvertTo-Json
+
+            [System.IO.File]::WriteAllLines($Target,$Content)
+        }
+        ExportAll()
+        {
+            For ($X = 0; $X -lt $This.Output.Count; $X ++)
+            {
+                $This.Export($X)
+            }
+        }
+        Import([String]$Fullname)
+        {
+            If ($Fullname -notmatch ".+\.txt")
+            {
+                Throw "Invalid file type"
+            }
+
+            $Content      = [System.IO.File]::ReadAllLines($Fullname) | ConvertFrom-Json
+
+            $This.Output += $This.VideoEntryItem($Content)
+
+            $This.Rerank()
+        }
+        ImportAll()
+        {
+            $This.Clear()
+
+            $List = Get-ChildItem $This.Path *.txt
+
+            For ($X = 0; $X -lt $List.Count; $X ++)
+            {
+                $This.Import($List[$X].Fullname)
+            }
+        }
+        Rerank()
+        {
+            $This.Output     = @($This.Output | Sort-Object Real -Descending)
+
+            For ($X = 0; $X -lt $This.Output.Count; $X ++)
+            {
+                $This.Output[$X].Index = $X
+            }
         }
         [String] ToString()
         {
-            Return "<ShoppingMaul.MapEntry[List]>"
+            Return "<ShoppingMaul.VideoEntry[List]>"
         }
     }
 
@@ -1074,8 +1193,156 @@
         '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="Videos">',
+        '                <Grid>',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="100"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Grid Grid.Column="0">',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="*"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Label Content="[Entry]:"/>',
+        '                        <DataGrid Grid.Row="1"',
+        '                                  Name="VideoList"',
+        '                                  HeadersVisibility="None"',
+        '                                  HorizontalScrollBarVisibility="Hidden">',
+        '                            <DataGrid.RowStyle>',
+        '                                <Style TargetType="{x:Type DataGridRow}">',
+        '                                    <Style.Triggers>',
+        '                                        <Trigger Property="IsMouseOver" Value="True">',
+        '                                            <Setter Property="ToolTip">',
+        '                                                <Setter.Value>',
+        '                                                    <TextBlock Text="{Binding Title}"',
+        '                                                               TextWrapping="Wrap"',
+        '                                                               FontFamily="Consolas"',
+        '                                                               Background="#000000"',
+        '                                                               Foreground="#00FF00"/>',
+        '                                                </Setter.Value>',
+        '                                            </Setter>',
+        '                                        </Trigger>',
+        '                                    </Style.Triggers>',
+        '                                </Style>',
+        '                            </DataGrid.RowStyle>',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Date"',
+        '                                                    Binding="{Binding Date}"',
+        '                                                    Width="100"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                    </Grid>',
+        '                    <Grid Grid.Column="1">',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="90"/>',
+        '                            <RowDefinition Height="350"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Grid Grid.Row="0">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="100"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label Grid.Column="0"',
+        '                                   Content="[Title]:"/>',
+        '                            <TextBox Grid.Column="1"',
+        '                                     Name="VideoTitle"/>',
+        '                        </Grid>',
+        '                        <Grid Grid.Row="1">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="100"/>',
+        '                                <ColumnDefinition Width="250"/>',
+        '                                <ColumnDefinition Width="100"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="100"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Label Grid.Column="0"',
+        '                                   Content="[Resource]:"/>',
+        '                            <TextBox Grid.Column="1"',
+        '                                     Name="VideoResource"/>',
+        '                            <Label Grid.Column="2"',
+        '                                   Content="[Duration]:"/>',
+        '                            <TextBox Grid.Column="3"',
+        '                                     Name="VideoDuration"/>',
+        '                            <Button  Grid.Column="4"',
+        '                                     Name="VideoLaunch"',
+        '                                     Content="Launch"/>',
+        '                        </Grid>',
+        '                        <TextBox Grid.Row="2"',
+        '                                 Name="VideoDescription"',
+        '                                 Height="80"',
+        '                                 Padding="5"',
+        '                                 IsReadOnly="True"',
+        '                                 TextWrapping="NoWrap"',
+        '                                 VerticalAlignment="Top"',
+        '                                 VerticalContentAlignment="Top"/>',
+        '                        <Image Grid.Row="3"',
+        '                               Name="VideoThumbnail"',
+        '                               Margin="10"/>',
+        '                    </Grid>',
+        '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="About">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="10"/>',
+        '                        <RowDefinition Height="240"/>',
+        '                        <RowDefinition Height="50"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Border Grid.Row="0"',
+        '                            Background="Black"',
+        '                            Margin="4"/>',
+        '                    <Grid Grid.Row="1">',
+        '                        <Grid.Background>',
+        '                            <ImageBrush Stretch="UniformToFill"',
+        '                                        ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
+        '                        </Grid.Background>',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="*"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Image Grid.Row="0"',
+        '                               Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\banner.png"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="2"',
+        '                              Name="Module">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Author}"',
+        '                                                           TextWrapping="Wrap"',
+        '                                                           FontFamily="Consolas"',
+        '                                                           Background="#000000"',
+        '                                                           Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Company"',
+        '                                                Binding="{Binding Company}"',
+        '                                                Width="155"/>',
+        '                            <DataGridTextColumn Header="Module Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="140"/>',
+        '                            <DataGridTextColumn Header="Version"',
+        '                                                Binding="{Binding Version}"',
+        '                                                Width="75"/>',
+        '                            <DataGridTextColumn Header="Date"',
+        '                                                Binding="{Binding Date}"',
+        '                                                Width="135"/>',
+        '                            <DataGridTextColumn Header="Guid"',
+        '                                                Binding="{Binding Guid}"',
+        '                                                Width="*"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </Grid>',
         '            </TabItem>',
         '        </TabControl>',
         '    </Grid>',
@@ -1213,9 +1480,9 @@
             $This.Maps.Add($Date,$Title,$Image,$Resource)
             $This.Update(1,"Added [+] <Map: ($Date/$Title)>")
         }
-        AddVideo([String]$Date,[String]$Title,[String]$Resource)
+        AddVideo([String]$Date,[String]$Title,[String]$Resource,[String]$Duration)
         {
-            $This.Videos.Add($Date,$Title,$Resource)
+            $This.Videos.Add($Date,$Title,$Resource,$Duration)
             $This.Update(1,"Added [+] <Video: ($Date/$Title)>")
         }
         Reset([Object]$xSender,[Object]$List)
@@ -1232,12 +1499,10 @@
         }
     }
 
- #   [ShoppingMaulController]::New()
-#}
+    [ShoppingMaulController]::New()
+}
 
-#$Ctrl = Invoke-ShoppingMaul
-
-$Ctrl = [ShoppingMaulController]::New()
+$Ctrl = Invoke-ShoppingMaul
 
 <# News -> Create mode
 $Ctrl.AddNews("09/12/2005","End of summer (2005)",@"
@@ -2369,13 +2634,144 @@ ForEach ($Item in $Ctrl.Maps.Output)
 $Ctrl.Maps.ExportAll()
 #>
 
-<# Maps -> Import mode
-$Ctrl.Maps.ImportAll()
+<# Videos -> Create mode
+
+$Ctrl.AddVideo("07/28/2023","2023_0728-(Q3A Practice)","https://youtu.be/2376LUpG3_0","01:50:16")
+$Ctrl.AddVideo("07/29/2023","2023_0729-(Q3A Practice)","https://youtu.be/F4HvOosnnG4","01:37:17")
+$Ctrl.AddVideo("07/28/2023","2023_0728-(Q3A Practice - Test Map)","https://youtu.be/efn3SmNPWS8","00:15:35")
+$Ctrl.AddVideo("07/17/2023","2023_0717-(GtkRadiant)","https://youtu.be/-tGdz6oxXZI","06:05:05")
+$Ctrl.AddVideo("07/17/2023","2023_0717-(Test Map)","https://youtu.be/cbdJ-rWJbVI","00:03:45")
+$Ctrl.AddVideo("07/16/2023","2023_0716-(Q3A Practice)","https://youtu.be/OpDG2mYlYM8","02:22:36")
+$Ctrl.AddVideo("07/15/2023","2023_0715-(Q3A + GtkRadiant)","https://youtu.be/aoS1HEDay4o","00:32:07")
+$Ctrl.AddVideo("07/10/2023","2023_0710-(Q3A Practice (Custom Maps 2/2))","https://youtu.be/_siuaph1_vc","00:28:34")
+$Ctrl.AddVideo("07/10/2023","2023_0710-(Q3A Practice (Custom Maps 1/2))","https://youtu.be/bQ46Pvp0tOo","00:44:15")
+$Ctrl.AddVideo("07/08/2023","2023_0708-(Q3A Practice)","https://youtu.be/RCkI2OFtCB4","03:13:28")
+$Ctrl.AddVideo("05/28/2021","2021 05 28 06 01 57","https://youtu.be/Hj8TaUgUh64","00:34:44")
+$Ctrl.AddVideo("06/05/2021","2021_0605-(20KDM2 - Return to Castle: Quake (2002))","https://youtu.be/xN53K9oGCME","00:05:16")
+$Ctrl.AddVideo("06/05/2021","2021_0605-(20KDM1 - Tempered Graveyard (2001))","https://youtu.be/dyHwm9AdkQs","00:10:33")
+$Ctrl.AddVideo("06/05/2021","2021_0605-(20KCTF1 - Out Of My Head (2002))","https://youtu.be/rwyHCNnwlkM","00:16:16")
+$Ctrl.AddVideo("06/05/2021","2021_0605-(20KDM3 - Insane Products (2006))","https://youtu.be/EG8UyJSMK3Y","00:11:25")
+
+ForEach ($Item in $Ctrl.Videos.Output)
+{
+    $Description = Switch ($Item.Id)
+    {
+        F4HvOosnnG4 # 2023_0729-(Q3A Practice)
+        {
+            "Practicing running through Q3A in the least time."
+        }
+        efn3SmNPWS8 # 2023_0728-(Q3A Practice - Test Map)
+        {
+            "Practicing running through Q3A in the least time."
+        }
+        2376LUpG3_0 # 2023_0728-(Q3A Practice)
+        {
+            @("Quick video with commentary regarding the map built on [07/17/2023]",
+            "which can be found in this GitHub repo link:",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant")
+        }
+        cbdJ-rWJbVI # 2023_0717-(Test Map)
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant")
+        }
+        -tGdz6oxXZI # 2023_0717-(GtkRadiant)
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant")
+        }
+        OpDG2mYlYM8 # 2023_0716-(Q3A Practice)
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+            "",
+            "[Quake III Arena] beaten on Nightmare difficulty in 2h 26m etc.",
+            "Not even close to the world record or anything like that, but I'm practicing"
+            "in order to develop a guide to building levels for [Quake III Arena].")
+        }
+        aoS1HEDay4o # 2023_0715-(Q3A + GtkRadiant)
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+            "",
+            "[Document Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Docs/20230710")
+        }
+        bQ46Pvp0tOo # 2023_0710-(Q3A Practice (Custom Maps 1/2))
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+            "",
+            "[Document Information]",
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230710",
+            "",
+            "This video will be part of another video that provides commentary and",
+            "documentation in relation to Quake III Arena, and its gameplay and mapping,",
+            "GtkRadiant, game design, and programming.")
+        }
+        _siuaph1_vc # 2023_0710-(Q3A Practice (Custom Maps 2/2))
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+            "",
+            "[Document Information]",
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230710",
+            "",
+            "This video will be part of another video that provides commentary and",
+            "documentation in relation to Quake III Arena, and its gameplay and mapping,",
+            "GtkRadiant, game design, and programming.")
+        }
+        RCkI2OFtCB4 # 2023_0708-(Q3A Practice)
+        {
+            @("[Video Information]",
+            "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+            "",
+            "[Document Information]",
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230710",
+            "",
+            "This video will be part of another video that provides commentary and",
+            "documentation in relation to Quake III Arena, and its gameplay and mapping,",
+            "GtkRadiant, game design, and programming.")
+        }
+        rwyHCNnwlkM # 2021_0605-(20KCTF1 - Out Of My Head (2002))
+        {
+            "Recorded [06/05/2021]"
+        }
+        EG8UyJSMK3Y # 2021_0605-(20KDM3 - Insane Products (2006))
+        {
+            "Recorded [06/05/2021]"
+        }
+        dyHwm9AdkQs # 2021_0605-(20KDM1 - Tempered Graveyard (2001))
+        {
+            "Recorded [06/05/2021]"
+        }
+        xN53K9oGCME # 2021_0605-(20KDM2 - Return to Castle: Quake (2002))
+        {
+            "Recorded [06/05/2021]"
+        }
+        Hj8TaUgUh64 # 2021 05 28 06 01 57
+        {
+            @("Playing Q3A on several custom maps that I created about (20) years ago.",
+            "I also briefly talk about these maps in this document:",
+            "https://github.com/mcc85sx/FightingEntropy/blob/master/Documentation/2021_0128-A_Deep_Dive.pdf")
+        }
+    }
+
+    $Item.SetDescription($Description)
+
+    $Thumbnail = "{0}\{1}\thumbnail.jpg" -f $Ctrl.Videos.Path, $Item.Id
+    $Item.SetThumbnail($Thumbnail)
+}
+#>
+
+<# Videos -> Export Mode
+$Ctrl.Videos.ExportAll()
 #>
 
 # Import News + Maps (files must exist)
 $Ctrl.News.ImportAll()
 $Ctrl.Maps.ImportAll()
+$Ctrl.Videos.ImportAll()
 #>
 
 $Ctrl.Reset($Ctrl.Xaml.IO.NewsList,$Ctrl.News.Output)
@@ -2442,5 +2838,36 @@ $Ctrl.Xaml.IO.MapImageList.Add_SelectionChanged(
     }
 })
 
+$Ctrl.Reset($Ctrl.Xaml.IO.VideoList,$Ctrl.Videos.Output)
+
+$Ctrl.Xaml.IO.VideoList.Add_SelectionChanged(
+{
+    $Index                              = $Ctrl.Xaml.IO.VideoList.SelectedIndex
+    $Ctrl.Xaml.IO.VideoTitle.Text       = $Null
+    $Ctrl.Xaml.IO.VideoResource.Text    = $Null
+    $Ctrl.Xaml.IO.VideoDuration.Text    = $Null
+    $Ctrl.Xaml.IO.VideoLaunch.IsEnabled = 0
+    $Ctrl.Xaml.IO.VideoDescription.Text = $Null
+    $Ctrl.Xaml.IO.VideoThumbnail.Source = $Null
+
+    If ($Index -ne -1)
+    {
+        $Item                               = $Ctrl.Videos.Output[$Index]
+        $Ctrl.Xaml.IO.VideoTitle.Text       = $Item.Title
+        $Ctrl.Xaml.IO.VideoResource.Text    = $Item.Resource
+        $Ctrl.Xaml.IO.VideoDuration.Text    = $Item.Duration
+        $Ctrl.Xaml.IO.VideoLaunch.IsEnabled = 1
+        $Ctrl.Xaml.IO.VideoDescription.Text = $Item.Description -join "`n"
+        $Ctrl.Xaml.IO.VideoThumbnail.Source = $Item.Thumbnail
+    }
+})
+
+$Ctrl.Xaml.IO.VideoLaunch.Add_Click(
+{
+    $Item = $Ctrl.Xaml.IO.VideoList.SelectedItem
+    Start-Process $Item.Resource
+})
+
+$Ctrl.Reset($Ctrl.Xaml.IO.Module,$Ctrl.Module)
+
 $Ctrl.Xaml.Invoke()
-#>
