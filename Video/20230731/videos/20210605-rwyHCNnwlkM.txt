@@ -1,0 +1,25 @@
+{
+    "Index":  13,
+    "Real":  "\/Date(1622865600000)\/",
+    "Date":  "06/05/2021",
+    "Title":  "2021_0605-(20KCTF1 - Out Of My Head (2002))",
+    "Resource":  "https://youtu.be/rwyHCNnwlkM",
+    "Id":  "rwyHCNnwlkM",
+    "Duration":  {
+                     "Ticks":  9760000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  16,
+                     "Seconds":  16,
+                     "TotalDays":  0.011296296296296296,
+                     "TotalHours":  0.27111111111111108,
+                     "TotalMilliseconds":  976000,
+                     "TotalMinutes":  16.266666666666666,
+                     "TotalSeconds":  976
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\rwyHCNnwlkM\\thumbnail.jpg",
+    "Description":  [
+                        "Recorded [06/05/2021]"
+                    ]
+}

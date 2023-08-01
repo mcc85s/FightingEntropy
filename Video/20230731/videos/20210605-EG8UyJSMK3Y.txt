@@ -1,0 +1,25 @@
+{
+    "Index":  14,
+    "Real":  "\/Date(1622865600000)\/",
+    "Date":  "06/05/2021",
+    "Title":  "2021_0605-(20KDM3 - Insane Products (2006))",
+    "Resource":  "https://youtu.be/EG8UyJSMK3Y",
+    "Id":  "EG8UyJSMK3Y",
+    "Duration":  {
+                     "Ticks":  6850000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  11,
+                     "Seconds":  25,
+                     "TotalDays":  0.0079282407407407409,
+                     "TotalHours":  0.19027777777777777,
+                     "TotalMilliseconds":  685000,
+                     "TotalMinutes":  11.416666666666666,
+                     "TotalSeconds":  685
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\EG8UyJSMK3Y\\thumbnail.jpg",
+    "Description":  [
+                        "Recorded [06/05/2021]"
+                    ]
+}

@@ -1,0 +1,26 @@
+{
+    "Index":  4,
+    "Real":  "\/Date(1689566400000)\/",
+    "Date":  "07/17/2023",
+    "Title":  "2023_0717-(Test Map)",
+    "Resource":  "https://youtu.be/cbdJ-rWJbVI",
+    "Id":  "cbdJ-rWJbVI",
+    "Duration":  {
+                     "Ticks":  2250000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  3,
+                     "Seconds":  45,
+                     "TotalDays":  0.0026041666666666665,
+                     "TotalHours":  0.0625,
+                     "TotalMilliseconds":  225000,
+                     "TotalMinutes":  3.75,
+                     "TotalSeconds":  225
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\cbdJ-rWJbVI\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant"
+                    ]
+}

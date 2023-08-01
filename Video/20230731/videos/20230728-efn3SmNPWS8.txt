@@ -1,0 +1,25 @@
+{
+    "Index":  2,
+    "Real":  "\/Date(1690516800000)\/",
+    "Date":  "07/28/2023",
+    "Title":  "2023_0728-(Q3A Practice - Test Map)",
+    "Resource":  "https://youtu.be/efn3SmNPWS8",
+    "Id":  "efn3SmNPWS8",
+    "Duration":  {
+                     "Ticks":  9350000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  15,
+                     "Seconds":  35,
+                     "TotalDays":  0.010821759259259258,
+                     "TotalHours":  0.25972222222222219,
+                     "TotalMilliseconds":  935000,
+                     "TotalMinutes":  15.583333333333334,
+                     "TotalSeconds":  935
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\efn3SmNPWS8\\thumbnail.jpg",
+    "Description":  [
+                        "Practicing running through Q3A in the least time."
+                    ]
+}

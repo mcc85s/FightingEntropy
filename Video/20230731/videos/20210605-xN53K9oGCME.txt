@@ -1,0 +1,25 @@
+{
+    "Index":  11,
+    "Real":  "\/Date(1622865600000)\/",
+    "Date":  "06/05/2021",
+    "Title":  "2021_0605-(20KDM2 - Return to Castle: Quake (2002))",
+    "Resource":  "https://youtu.be/xN53K9oGCME",
+    "Id":  "xN53K9oGCME",
+    "Duration":  {
+                     "Ticks":  3160000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  5,
+                     "Seconds":  16,
+                     "TotalDays":  0.0036574074074074074,
+                     "TotalHours":  0.087777777777777774,
+                     "TotalMilliseconds":  316000,
+                     "TotalMinutes":  5.2666666666666666,
+                     "TotalSeconds":  316
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\xN53K9oGCME\\thumbnail.jpg",
+    "Description":  [
+                        "Recorded [06/05/2021]"
+                    ]
+}

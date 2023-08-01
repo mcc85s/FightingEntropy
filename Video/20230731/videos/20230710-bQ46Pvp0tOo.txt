@@ -1,0 +1,33 @@
+{
+    "Index":  8,
+    "Real":  "\/Date(1688961600000)\/",
+    "Date":  "07/10/2023",
+    "Title":  "2023_0710-(Q3A Practice (Custom Maps 1/2))",
+    "Resource":  "https://youtu.be/bQ46Pvp0tOo",
+    "Id":  "bQ46Pvp0tOo",
+    "Duration":  {
+                     "Ticks":  26550000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  44,
+                     "Seconds":  15,
+                     "TotalDays":  0.030729166666666665,
+                     "TotalHours":  0.73749999999999993,
+                     "TotalMilliseconds":  2655000,
+                     "TotalMinutes":  44.25,
+                     "TotalSeconds":  2655
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\bQ46Pvp0tOo\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+                        "",
+                        "[Document Information]",
+                        "https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230710",
+                        "",
+                        "This video will be part of another video that provides commentary and",
+                        "documentation in relation to Quake III Arena, and its gameplay and mapping,",
+                        "GtkRadiant, game design, and programming."
+                    ]
+}

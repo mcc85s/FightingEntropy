@@ -1,0 +1,25 @@
+{
+    "Index":  1,
+    "Real":  "\/Date(1690603200000)\/",
+    "Date":  "07/29/2023",
+    "Title":  "2023_0729-(Q3A Practice)",
+    "Resource":  "https://youtu.be/F4HvOosnnG4",
+    "Id":  "F4HvOosnnG4",
+    "Duration":  {
+                     "Ticks":  58370000000,
+                     "Days":  0,
+                     "Hours":  1,
+                     "Milliseconds":  0,
+                     "Minutes":  37,
+                     "Seconds":  17,
+                     "TotalDays":  0.067557870370370365,
+                     "TotalHours":  1.6213888888888888,
+                     "TotalMilliseconds":  5837000,
+                     "TotalMinutes":  97.283333333333331,
+                     "TotalSeconds":  5837
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\F4HvOosnnG4\\thumbnail.jpg",
+    "Description":  [
+                        "Practicing running through Q3A in the least time."
+                    ]
+}

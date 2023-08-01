@@ -1,0 +1,29 @@
+{
+    "Index":  6,
+    "Real":  "\/Date(1689393600000)\/",
+    "Date":  "07/15/2023",
+    "Title":  "2023_0715-(Q3A + GtkRadiant)",
+    "Resource":  "https://youtu.be/aoS1HEDay4o",
+    "Id":  "aoS1HEDay4o",
+    "Duration":  {
+                     "Ticks":  19270000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  32,
+                     "Seconds":  7,
+                     "TotalDays":  0.022303240740740742,
+                     "TotalHours":  0.53527777777777774,
+                     "TotalMilliseconds":  1927000,
+                     "TotalMinutes":  32.116666666666667,
+                     "TotalSeconds":  1927
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\aoS1HEDay4o\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+                        "",
+                        "[Document Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Docs/20230710"
+                    ]
+}

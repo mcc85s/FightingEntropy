@@ -1,0 +1,26 @@
+{
+    "Index":  3,
+    "Real":  "\/Date(1689566400000)\/",
+    "Date":  "07/17/2023",
+    "Title":  "2023_0717-(GtkRadiant)",
+    "Resource":  "https://youtu.be/-tGdz6oxXZI",
+    "Id":  "-tGdz6oxXZI",
+    "Duration":  {
+                     "Ticks":  219050000000,
+                     "Days":  0,
+                     "Hours":  6,
+                     "Milliseconds":  0,
+                     "Minutes":  5,
+                     "Seconds":  5,
+                     "TotalDays":  0.25353009259259257,
+                     "TotalHours":  6.0847222222222221,
+                     "TotalMilliseconds":  21905000,
+                     "TotalMinutes":  365.08333333333331,
+                     "TotalSeconds":  21905
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\-tGdz6oxXZI\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant"
+                    ]
+}

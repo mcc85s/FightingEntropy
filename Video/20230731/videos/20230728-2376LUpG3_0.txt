@@ -1,0 +1,27 @@
+{
+    "Index":  0,
+    "Real":  "\/Date(1690516800000)\/",
+    "Date":  "07/28/2023",
+    "Title":  "2023_0728-(Q3A Practice)",
+    "Resource":  "https://youtu.be/2376LUpG3_0",
+    "Id":  "2376LUpG3_0",
+    "Duration":  {
+                     "Ticks":  66160000000,
+                     "Days":  0,
+                     "Hours":  1,
+                     "Milliseconds":  0,
+                     "Minutes":  50,
+                     "Seconds":  16,
+                     "TotalDays":  0.076574074074074072,
+                     "TotalHours":  1.8377777777777777,
+                     "TotalMilliseconds":  6616000,
+                     "TotalMinutes":  110.26666666666667,
+                     "TotalSeconds":  6616
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\2376LUpG3_0\\thumbnail.jpg",
+    "Description":  [
+                        "Quick video with commentary regarding the map built on [07/17/2023]",
+                        "which can be found in this GitHub repo link:",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant"
+                    ]
+}

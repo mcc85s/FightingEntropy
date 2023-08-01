@@ -1,0 +1,27 @@
+{
+    "Index":  10,
+    "Real":  "\/Date(1622174400000)\/",
+    "Date":  "05/28/2021",
+    "Title":  "2021 05 28 06 01 57",
+    "Resource":  "https://youtu.be/Hj8TaUgUh64",
+    "Id":  "Hj8TaUgUh64",
+    "Duration":  {
+                     "Ticks":  20840000000,
+                     "Days":  0,
+                     "Hours":  0,
+                     "Milliseconds":  0,
+                     "Minutes":  34,
+                     "Seconds":  44,
+                     "TotalDays":  0.024120370370370368,
+                     "TotalHours":  0.5788888888888889,
+                     "TotalMilliseconds":  2084000,
+                     "TotalMinutes":  34.733333333333334,
+                     "TotalSeconds":  2084
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\Hj8TaUgUh64\\thumbnail.jpg",
+    "Description":  [
+                        "Playing Q3A on several custom maps that I created about (20) years ago.",
+                        "I also briefly talk about these maps in this document:",
+                        "https://github.com/mcc85sx/FightingEntropy/blob/master/Documentation/2021_0128-A_Deep_Dive.pdf"
+                    ]
+}

@@ -1,0 +1,33 @@
+{
+    "Index":  9,
+    "Real":  "\/Date(1688788800000)\/",
+    "Date":  "07/08/2023",
+    "Title":  "2023_0708-(Q3A Practice)",
+    "Resource":  "https://youtu.be/RCkI2OFtCB4",
+    "Id":  "RCkI2OFtCB4",
+    "Duration":  {
+                     "Ticks":  116080000000,
+                     "Days":  0,
+                     "Hours":  3,
+                     "Milliseconds":  0,
+                     "Minutes":  13,
+                     "Seconds":  28,
+                     "TotalDays":  0.13435185185185183,
+                     "TotalHours":  3.2244444444444444,
+                     "TotalMilliseconds":  11608000,
+                     "TotalMinutes":  193.46666666666667,
+                     "TotalSeconds":  11608
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\RCkI2OFtCB4\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+                        "",
+                        "[Document Information]",
+                        "https://github.com/mcc85s/FightingEntropy/blob/main/Docs/20230710",
+                        "",
+                        "This video will be part of another video that provides commentary and",
+                        "documentation in relation to Quake III Arena, and its gameplay and mapping,",
+                        "GtkRadiant, game design, and programming."
+                    ]
+}

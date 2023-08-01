@@ -1,0 +1,30 @@
+{
+    "Index":  5,
+    "Real":  "\/Date(1689480000000)\/",
+    "Date":  "07/16/2023",
+    "Title":  "2023_0716-(Q3A Practice)",
+    "Resource":  "https://youtu.be/OpDG2mYlYM8",
+    "Id":  "OpDG2mYlYM8",
+    "Duration":  {
+                     "Ticks":  85560000000,
+                     "Days":  0,
+                     "Hours":  2,
+                     "Milliseconds":  0,
+                     "Minutes":  22,
+                     "Seconds":  36,
+                     "TotalDays":  0.09902777777777777,
+                     "TotalHours":  2.3766666666666665,
+                     "TotalMilliseconds":  8556000,
+                     "TotalMinutes":  142.6,
+                     "TotalSeconds":  8556
+                 },
+    "Thumbnail":  "C:\\ShoppingMaul\\videos\\OpDG2mYlYM8\\thumbnail.jpg",
+    "Description":  [
+                        "[Video Information]",
+                        "https://github.com/mcc85s/FightingEntropy/tree/main/Video/GtkRadiant",
+                        "",
+                        "[Quake III Arena] beaten on Nightmare difficulty in 2h 26m etc.",
+                        "Not even close to the world record or anything like that, but I\u0027m practicing",
+                        "in order to develop a guide to building levels for [Quake III Arena]."
+                    ]
+}
