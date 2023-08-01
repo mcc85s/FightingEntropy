@@ -1,0 +1,70 @@
+  
+  		----------------------------------------
+  		| BBBBB  FFFFF  GGG  DDDD  M   M 3333  |
+  		| B    B F     G     D   D MM MM     3 |
+  		| BBBBB  FFFF  G GGG D   D M M M  333  |
+  		| B    B F     G   G D   D M   M     3 |
+  		| BBBBB  F      GGGG DDDD  M   M 3333  |
+  		----------------------------------------
+
+-=( Map Information )=- ------------------------------------------------
+
+<Title>			: Space Station 1138 - Color!
+<Date>			: 5/5/1
+<Filename>		: bfgdm3.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: bfg20k@nycap.rr.com
+<Website>		: http://home.nycap.rr.com/ucgc
+			  http://malakili.2y.net/~HELL
+
+<Description>		: This is not just a regular space map... It is
+			  Space Station 1138! The gameplay is best with
+			  4 or more players (IMO) but it sports cool 1v1
+			  matches as well.
+
+<Additional Credits>	: Nunuk for putting together the Q3 Geometry
+			  Challenge texture set... This map is going to
+			  be submitted!
+
+-=( Construction )=- ---------------------------------------------------
+
+<Base>			: BFGDM3
+<Editor(s) Used>	: Q3Radiant - Build 202 & Q3Build
+<Known Bugs>		: Absolutely none.
+<Construction Time>	: 2 hours + One week for the original
+<Compile Machine>	: 866 MHZ - Pentium III, 512mb - RAM
+
+-=( Play Information )=- -----------------------------------------------
+
+<Free For All>		: Recommended!
+<Tournament>		: It is fun... Railwhores might win.
+<Capture the Flag>	: No.
+<Team Deathmatch>	: No.
+<Player Load>		: 2-6 Players
+<Bots>			: They navigate the level very well
+
+-={ Installation }=- ---------------------------------------------------
+
+<Installation>		: Unzip the contents of the file bfgdm3a.zip into
+			  your "Quake III Arena\baseq3" directory
+
+<Playing>		: Load Quake III Arena, click on Single Player,
+			  go to skirmish, keep pressing the arrow until
+			  BFGDM3A appears...
+
+			  ***OR***
+
+			  Load Quake III Arena, pull down the console
+			  (~) and type the following... "/map bfgdm3a"
+
+-=( Copyright / Permissions )=- ----------------------------------------
+
+<Copyright> 		: You not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author.  You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- ------------------------------------------------
