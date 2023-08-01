@@ -1,0 +1,7 @@
+{
+    "Index":  7,
+    "Real":  "\/Date(993614400000)\/",
+    "Date":  "06/27/2001",
+    "Title":  "Silence and Wisdom",
+    "Content":  "I mapped a little something while I was getting stressed with the [Clan Arena], and here it is...\r\n[Silence and Wisdom] [arena5.zip]. \r\n\r\nIt\u0027s a (1v1) arena I will place in the [hell-ra3map1] multi-arena so it will contain a total of (5)\r\narenas! Anyway, have fun with that, let me finish building the clan arena.\r\n\r\n\u003c|3FG20K\u003e"
+}

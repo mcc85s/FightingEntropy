@@ -1,0 +1,7 @@
+{
+    "Index":  18,
+    "Real":  "\/Date(1036818000000)\/",
+    "Date":  "11/09/2002",
+    "Title":  "Collaboration",
+    "Content":  "I\u0027m working hard putting brushes together and stuff, I almost have my CTF map completed.\r\nShortly after, me and [Zer0_Co0l] will co-release a map that I think is the most fun [Quake III Arena]\r\nhas to offer.\r\n[+] Small arena\r\n[+] Quad respawn (10) seconds\r\n[+] G_quadfactor (9999)\r\n\r\nWith that being said, I must now make a departure for WORK!\r\nI\u0027m trying to put a (P4) system together, if anyone has any motherboards or processors they want to\r\nget rid of, e-mail me at [bfg20k@nycap.rr.com]\r\n\r\n\u003c|3FG20K\u003e"
+}

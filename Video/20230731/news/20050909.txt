@@ -1,0 +1,7 @@
+{
+    "Index":  36,
+    "Real":  "\/Date(1126238400000)\/",
+    "Date":  "09/09/2005",
+    "Title":  "Insane Products (Release)",
+    "Content":  "Ladies and gentlemen, children of all ages, take a look inside the most bastardly level ever to be\r\nbrought forth from the [Shopping Maul], only known as [Insane Products].\r\n\r\nThat\u0027s right everybody, this map is [done].\r\nFinished.\r\nMade.\r\nComplete.\r\nReady for your stamp of approval.\r\n\r\nIf there\u0027s anybody that would like to host this map on their server(s) please let me know so that I\r\ncan get a bunch of my friends connected if there aren\u0027t a lot already - my email address is \r\n[mykalcook@gmail.com].\r\n\r\nHere is a direct download link that skips past the coolest screenshots ever to be seen on the\r\n[Shopping Maul] to your fingertips! \"Insane Products - 20kdm3.zip.\"\r\n\u003c|3FG20K\u003e"
+}

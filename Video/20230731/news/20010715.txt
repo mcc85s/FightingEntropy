@@ -1,0 +1,7 @@
+{
+    "Index":  9,
+    "Real":  "\/Date(995169600000)\/",
+    "Date":  "07/15/2001",
+    "Title":  "hellra3map1 Beta",
+    "Content":  "Good news everyone... [hell-ra3map1-beta5.zip] is available to download.\r\nHave fun playing it =)\r\n\r\nBad news...\r\nThere are some minor problems in some of the arena\u0027s so it may not look finished...\r\n(which is why it is BETA)\r\n\r\n\u003c|3FG20K\u003e"
+}

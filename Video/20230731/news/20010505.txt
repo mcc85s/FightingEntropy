@@ -1,0 +1,7 @@
+{
+    "Index":  3,
+    "Real":  "\/Date(989035200000)\/",
+    "Date":  "05/05/2001",
+    "Title":  "BFGDM4",
+    "Content":  "Just a quick little rundown of what\u0027s done and what I\u0027m working on...\r\n[BFGDM4] is now FINISHED, you can check it out on the maps page.\r\n\r\nFor a little twist on making it a *little* more interesting, I\u0027ve optimized the lighting in [BFGDM3],\r\nand a few other things to make up [BFGDM3A].\r\n\r\nFeel free to check that out too.\r\nI\u0027m trying to figure out what kind of additions I can make to [BFGDM1], and it should not be too long\r\nuntil I release that. [BFGDM2A] is kind of one of those projects I don\u0027t really want to finish but I\r\nknow I have to...\r\n\r\nI\u0027ll probably finish that sometime soon. [HELL-RA3MAP1-BETA5] will be released next month... and\r\n[HELL-RA3MAP2-BETA1] will be released sometime this weekend. Note that this map will only have two\r\narenas, [Suspended Animation], and [Space Station 1138].\r\n\r\nThe multi-arena as I\u0027m thinking it should be, will probably be [Q3DM17]...\r\nGo figure =)\r\n\r\n\u003c|3FG20K\u003e"
+}

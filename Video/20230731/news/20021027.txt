@@ -1,0 +1,7 @@
+{
+    "Index":  16,
+    "Real":  "\/Date(1035691200000)\/",
+    "Date":  "10/27/2002",
+    "Title":  "Revisions",
+    "Content":  "I haven\u0027t made anything since the other day, but I have been editing this web page and making\r\n[revisations (meant revisions)] of the layout...\r\n\r\nI plan to revamp this after I get a few maps finished.\r\nI plan on moving on from [Quake III Arena], but hopefully that won\u0027t be for a few more months until\r\nI get my new computer up and running, I need a bunch of parts for a new one.\r\n\r\nBy all means folks, stick around and I\u0027ll give you some entertainment you\u0027ll enjoy.\r\nThanks!\r\n\r\n\u003c|3FG20K\u003e"
+}

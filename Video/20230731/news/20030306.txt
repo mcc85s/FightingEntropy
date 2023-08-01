@@ -1,0 +1,7 @@
+{
+    "Index":  27,
+    "Real":  "\/Date(1046926800000)\/",
+    "Date":  "03/06/2003",
+    "Title":  "BFGCTF1 or 20KCTF1...?",
+    "Content":  "Great news... [BFGCTF1] has crapped out on me but I fixed it.\r\n\r\nSince the [bfg] maps I are old, and I already have a consistent quality in the [20k] series,\r\nI have altered the maps format to be [20KCTF1].\r\n\r\nThere are virtually no changes anyone will notice, but they seem to fix the problems encountered\r\nby some [sermianto] guy or something on [..::LvL] who\u0027s never reviewed a map before.\r\n\r\nSince I have no other beef, I have fixed what he bitched about and am willing to put it in the past.\r\nBecause frankly, I will not get held up over just one of my maps...\r\n\r\nThat\u0027s right folks, I\u0027m making [Tower of Oblivion] completely \"cool\".\r\n\r\nAs one of my friends said when he saw the preview, he said it was totally radical and he wanted it\r\non his hard drive immediately. It\u0027s not ready to play yet, and it uses an extensive array of jaw\r\ndropping textures, made by none other than [Sock] himself.\r\n\r\nLike no other time, I know what I\u0027m doing with this map and this could potentially mark [Q3] history\r\nas far as my expectations go (it\u0027s getting there...).\r\n\r\n[ZTN], [Charon], [Luneran], mind moving over a lil bit? =P\r\n\r\n\u003c|3FG20K\u003e"
+}

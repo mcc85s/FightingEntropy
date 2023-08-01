@@ -1,0 +1,7 @@
+{
+    "Index":  11,
+    "Real":  "\/Date(996120000000)\/",
+    "Date":  "07/26/2001",
+    "Title":  "Dude, You Can Go To Hell",
+    "Content":  "[hellra3map1] is finally complete.\r\nAfter (10) months of construction, it\u0027s a great relief to know that finally the map is finished.\r\n\r\nThere are (3) [Rocket Arenas], (1) [Red Rover Arena], and (1) [Clan Arena].\r\n\r\nThe main selection room has a few extra goodies I decided to throw in for a few brownie points =)\r\nAnyway, go have fun with [hellra3map1.zip] \r\n\r\nSome guy on the [MAHQ] team asked me to do a [recompile] on the map, so if you downloaded the [RA3]\r\nmap earlier today, you\u0027re gonna have to download it again.\r\n\r\n[BREMAN] of clan [PoT] is hosting the new [RA3] map at this kick ass server: [63.162.63.19:27965]\r\n\r\n\u003c|3FG20K\u003e"
+}

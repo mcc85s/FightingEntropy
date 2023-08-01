@@ -1,0 +1,7 @@
+{
+    "Index":  30,
+    "Real":  "\/Date(1073797200000)\/",
+    "Date":  "01/11/2004",
+    "Title":  "20kdm3 (Beta)",
+    "Content":  "Brand new map is ready for beta. I have to tell everybody that there are no bots supported in this\r\nmap because they are just really dumb.\r\n\r\n[RAILMEAT\u0027s RA3 Server] may probably be hosting this map file soon, and already hosts [HELLRA3MAP1].\r\n\r\nStop on by and get the fragging going on at [RAILMEAT]. [20kdm3beta.zip]\r\n\r\n\u003c|3FG20K\u003e"
+}

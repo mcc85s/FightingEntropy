@@ -1,0 +1,7 @@
+{
+    "Index":  20,
+    "Real":  "\/Date(1037422800000)\/",
+    "Date":  "11/16/2002",
+    "Title":  "Quad Machine",
+    "Content":  "WE LOVE THE QUAD!\r\nWE NEED THE QUAD!\r\nWE BREATHE THE QUAD!\r\nDownload [QUADMACHINE]!\r\n\r\nIt is over (3mb), because of the [COOL MUSIC] that is included.\r\nBut we all love [Sonic Mayhem], and we ALL LOVE THE QUAD, so download this map, extract it, run it,\r\n[set /g_quadfactor] to (100) or something REALLY CRAZY, GET SOME FRAGBAIT... \r\n...AND BLAST THE HELL OUT OF EVERYBODY!\r\n\r\nSecond Update: I have modified the maps page.\r\nVisitors may now traverse through each level\u0027s screenshot gallery to see whether or not the download\r\nis worth their effort. I will soon add more features to the page, particularly ones that are user\r\nfriendly and expand their functionality.\r\n\r\nLast Update: Due to increasing demand, I will revive the [Return to Castle: Quake] map, as soon as I\r\nget a chance. I am deciding whether or not to expand the map, or leave it as is and push for a final.\r\n\r\nYou decide folks, drop me a line: [bfg20k@nycap.rr.com]\r\n\r\n\u003c|3FG20K\u003e"
+}

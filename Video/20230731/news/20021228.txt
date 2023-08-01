@@ -1,0 +1,7 @@
+{
+    "Index":  23,
+    "Real":  "\/Date(1041051600000)\/",
+    "Date":  "12/28/2002",
+    "Title":  "Out of My Head (Release)",
+    "Content":  "Guess what folks?\r\nNew map, finally released out of beta, is my first CTF map, [Out of My Head].\r\n\r\nI\u0027ve included lots of new features, more eye candy, and more routes for the [Capture the Flag]\r\nexperience that everyone is going to leave as a winner.\r\n\r\nI created it with [Threewave] in mind, but despite this it is still a good level for [Free-For-All],\r\nand [Team Deathmatch]. Overall, I enjoyed making this level and it was a good experience for me to\r\nmake a fully functional level for my favorite mod.\r\n\r\nI can\u0027t wait to see it on servers =P\r\nHere is the map... [Out of My Head]\r\n\r\n\u003c|3FG20K\u003e"
+}

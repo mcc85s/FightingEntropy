@@ -1,0 +1,7 @@
+{
+    "Index":  10,
+    "Real":  "\/Date(995688000000)\/",
+    "Date":  "07/21/2001",
+    "Title":  "Tempered Graveyard",
+    "Content":  "Great news everyone!\r\n[Tempered Graveyard] is a finished DM level!\r\n\r\nYou can grab it here... [map-20kdm1.zip]\r\nAs it is, you can play [Free-For-All] with (7) other players and still have a normal game,\r\nor (11) other players and have a blast...\r\n\r\nYou can have a nice game of [TDM] with (4) player teams pitted against each other...\r\nOr you can try it out as a [Tournament map] - It is a very big tourney map =)\r\n\r\n\u003c|3FG20K\u003e"
+}

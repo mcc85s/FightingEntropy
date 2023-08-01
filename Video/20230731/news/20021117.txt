@@ -1,0 +1,7 @@
+{
+    "Index":  21,
+    "Real":  "\/Date(1037509200000)\/",
+    "Date":  "11/17/2002",
+    "Title":  "Return to Castle: Quake",
+    "Content":  "All of my maps are on the maps page.\r\nI have added [Return to Castle: Quake].\r\n\r\nThis compile is the same as the one distributed in [February] as [rtcq-test].\r\n\r\nThere\u0027s nothing wrong with it, I just don\u0027t have the (*.map) file anymore and I wanted to save myself\r\nsome time rather than just [decompile] it and [retexture] everything.\r\n\r\nAnyway, here\u0027s the map (you can also get it on the maps page).\r\nThis puts the total map amount at (11) maps!\r\n\r\nI will pump out more!\r\nSo, just stay tuned folks.\r\n\r\nBy the way, I would like to introduce my friend, [Alex Welsh], to the site.\r\nHe has efforts in mapping as well, not as well developed yet, but I am helping him out in polishing\r\nhis maps, so hopefully the map stream will double up. Until next time! Latez =P\r\n\r\nSecond Update: There\u0027s some very minor problems with the [RTCQ] map that I can\u0027t fix, but there is\r\none missing texture that I forgot to extract from [mapmedia.pk3].\r\n\r\nHere is the fix, it is very small.\r\nPut this in the same directory as [map-20kdm2.pk3]\r\n\r\n\u003c|3FG20K\u003e"
+}

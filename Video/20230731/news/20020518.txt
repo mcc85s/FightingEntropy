@@ -1,0 +1,7 @@
+{
+    "Index":  14,
+    "Real":  "\/Date(1021694400000)\/",
+    "Date":  "05/18/2002",
+    "Title":  "Temporary Withdrawal",
+    "Content":  "Yeah, it\u0027s been a while since I\u0027ve updated anything, so alas here is my update.\r\nI have done NOTHING for the past few months.\r\n\r\nYeah, that\u0027s right - I haven\u0027t touched [Q3Radiant] with any good feeling or ideas for a while.\r\nI will get [RTCQ] out of the door.\r\n\r\nAfter that is whatever I had written down, or drawn down,\r\nor maybe I\u0027ll just improvise the whole thing.\r\n\r\nAnyway, just let it be known I\u0027m not dead and being a disciple might not be a bad thing if I can\r\nrelease some promising material =O\r\n\r\n\u003c|3FG20K\u003e"
+}

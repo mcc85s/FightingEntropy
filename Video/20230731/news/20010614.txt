@@ -1,0 +1,7 @@
+{
+    "Index":  6,
+    "Real":  "\/Date(992491200000)\/",
+    "Date":  "06/14/2001",
+    "Title":  "End of 10th grade",
+    "Content":  "Sorry for the severe lack of updates...\r\nIt\u0027s been the end of the school year, hectic and uninspiring.\r\n\r\nAnyway, I want everyone to know that I haven\u0027t forgotten about my mapping duties,\r\nalthough I have broken the promises about having some maps done when I said they\u0027d be...\r\n\r\nRight now I have [bfgdm2a/the clan arena] for [hell-ra3map1] (50%) finished...\r\nIt looks pretty good in some spots, here\u0027s a link to some screenshots I took.\r\n\r\nI\u0027m trying to recapture the feel of [q3dm6], so don\u0027t feel like you\u0027re an idiot if the map feels\r\nreminiscent of it =)\r\n\r\n\u003c|3FG20K\u003e"
+}

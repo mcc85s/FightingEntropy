@@ -1,0 +1,7 @@
+{
+    "Index":  2,
+    "Real":  "\/Date(988948800000)\/",
+    "Date":  "05/04/2001",
+    "Title":  "Website Launched",
+    "Content":  "Hurrah!\r\nIt\u0027s launched!\r\nThe site is launched!\r\n\r\nFor you people who are just wondering who the hell I am, if you don\u0027t already know me...\r\nI\u0027m a (15) year old who will be (16) on the (24th) of this month...\r\n...and I play [Quake III Arena] to no end.\r\n\r\nNot only do I [play] the game, but I [map] for it too.\r\nYes, some people say, it\u0027s [difficult] to be a [great mapper] and a [great player], well, forget it.\r\nI\u0027d rather be a [jack of all trades] than someone who\u0027s [consistently doing the same thing]...\r\n\r\nI get bored quickly =(.\r\nAnything else you want to know you might find on this site...\r\nIf not, just e-mail me at [bfg20k@planetquake.com].\r\n\r\nFinally, if anyone wants to play [hell-ra3map1-beta4], there\u0027s a healthy server with a [T3] running\r\nit at [208.136.2.13:27960] - [Crunch-N-Munch RA3 1.5].\r\n\r\nBe sure to check in often though, I try to pump out a map every week or two =).\r\n\r\nLater Update: [bfgdm4] is ready to roll.\r\nGo to the maps section to get it =)\r\nIf you were here earlier today, there was a previous post which said I would release this later...\r\n\r\nWell, later is now, so if you really want the final version which clocks around (2mb), go ahead and\r\nhave fun d/lin\u0027 this fine map.\r\n\r\n\u003c|3FG20K\u003e"
+}

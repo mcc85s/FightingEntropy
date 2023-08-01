@@ -1,0 +1,7 @@
+{
+    "Index":  24,
+    "Real":  "\/Date(1043902800000)\/",
+    "Date":  "01/30/2003",
+    "Title":  "Tower of Oblivion (50%)",
+    "Content":  "I\u0027ve got a new map in the works called [Tower of Oblivion].\r\n\r\nCurrently it is approximately (50%) done structurally, but when it is done I need to tinker with the\r\nother stuff:\r\n[+] [lighting]\r\n[+] [item placement]\r\n[+] [ambient sounds]... etc.\r\n\r\nI\u0027m going to bet that this is going to be an awesome [tourney map] because the layout of the map\r\npromotes the players to keep moving in a smallish-medium sized arena.\r\n\r\nI should post some screenshots when it is done, but to keep you wondering, I\u0027m using [Sock]\u0027s base\r\ntextures to create this incarnation and there will be a lot of balanced aesthetics and brushwork...\r\n...as if there isn\u0027t enough already...\r\n\r\n\u003c|3FG20K\u003e"
+}

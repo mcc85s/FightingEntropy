@@ -1,0 +1,7 @@
+{
+    "Index":  22,
+    "Real":  "\/Date(1037854800000)\/",
+    "Date":  "11/21/2002",
+    "Title":  "Out of My Head (Beta 2)",
+    "Content":  "I have drastically updated the [CTF] map which is still in BETA, but may not be for very long.\r\nThis version is slightly smaller than [Beta 1], and packs a few more features as well as a major jump\r\nin [performance] and [detail].\r\n\r\nHave fun fraggin in this one folks!\r\n[Out of My Head (BETA 2)]\r\n\r\n\u003c|3FG20K\u003e"
+}

@@ -1,0 +1,7 @@
+{
+    "Index":  29,
+    "Real":  "\/Date(1072933200000)\/",
+    "Date":  "01/01/2004",
+    "Title":  "New Year (2004) + [Doom 3] anticipation",
+    "Content":  "Great news folks.\r\nSince the new year is here, I wanted to release this project I\u0027ve been working on \u0027indefinitely\u0027?\r\n\r\nThis year is going to be great because we\u0027ve got [Doom 3] coming out really soon and computers will\r\nbe able to run it and all, oh I really am crapping my pants in waiting for this son of a bitch to be\r\nborn!\r\n\r\nSo, without further ado, I have for you to take a look at these screenshots of this level which is\r\ntechnically finished. I\u0027ve done alot of tinkering to the map and feel that it supports the gameplay\r\nI want it to have.\r\n\r\nI suggest anyone running a decent system can have it run rather flowish, anyone with a lower end\r\ncomputer will definitely be able to run it.\r\n\r\n\u003c|3FG20K\u003e"
+}

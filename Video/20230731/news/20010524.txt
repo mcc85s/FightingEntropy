@@ -1,0 +1,7 @@
+{
+    "Index":  5,
+    "Real":  "\/Date(990676800000)\/",
+    "Date":  "05/24/2001",
+    "Title":  "16th Birthday",
+    "Content":  "I felt it was my duty to proclaim...\r\nIT IS MY BIRTHDAY!\r\n\r\nI know, I know, I\u0027m not important enough for anyone to care...\r\nHowever, I just needed to let everyone know instead of having a blank for a news update.\r\n\r\nI haven\u0027t mapped in a week, and you can blame it all on my friends and my NOW ex-girlfriend.\r\n\r\nI\u0027m going to a LAN party this weekend so I will probably get back into mapping heavily next week.\r\n\r\n\u003c|3FG20K\u003e"
+}

@@ -1,0 +1,7 @@
+{
+    "Index":  34,
+    "Real":  "\/Date(1125720000000)\/",
+    "Date":  "09/03/2005",
+    "Title":  "Q3Map2.exe",
+    "Content":  "For all you people who like great lighting, I have a surprise in store for you all when the final\r\nversion of the map comes out. The beta version of [Insane Products] was compiled using ID\u0027s qmap.exe.\r\n\r\nI decided to install the q3map2 by ydnar at [Shaderlab] and *whistles* how friggen candylike can you\r\nmake a game look?\r\n\r\nI previously compiled this map with this utility, but with the gap of time made it slip my mind.\r\nThe whole level is just about finished but i\u0027m just waiting on the communities\u0027 input on how to make\r\nit better:\r\n\r\n[+] [gameplay]\r\n[+] [item placement] (should I swap item positions) \r\n[+] [brush improvements] (geometry)...\r\n\r\n...before I give it the OK for removing that \u0027beta\u0027 in the name.\r\n\r\n\u003c|3FG20K\u003e"
+}

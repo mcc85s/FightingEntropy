@@ -1,0 +1,7 @@
+{
+    "Index":  26,
+    "Real":  "\/Date(1046408400000)\/",
+    "Date":  "02/28/2003",
+    "Title":  "Insane Product AKA Tower of Oblivion",
+    "Content":  "Level is almost ready for pre-beta, post-alpha testing and I will load the level\u0027s screenshots and\r\npreview (*.pk3) very soon.\r\n\r\nChill out for a little while so I can get some things straightened out.\r\nI\u0027ll make it nice, clean, and smooth, which is what everyone really wants when they play a new quake\r\nmap right?\r\n\r\nThis is all for now...\r\nPrepare to see a very monstrous beast...an [Insane Product by \u003c|3FG20K\u003e, Tower of Oblivion]!\r\n\r\n\u003c|3FG20K\u003e"
+}

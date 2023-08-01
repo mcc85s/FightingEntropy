@@ -1,0 +1,7 @@
+{
+    "Index":  17,
+    "Real":  "\/Date(1036213200000)\/",
+    "Date":  "11/02/2002",
+    "Title":  "Zer0_Co0l",
+    "Content":  "Good News: I have been hanging out with my buddy [Zer0_Co0l], and I must say that he may eventually\r\nbe making some of the maps here!\r\n\r\nHe has a bunch of various computer skills:\r\n[+] [coding]\r\n[+] [playing games]\r\n[+] [content]\r\n[+] [graphics], etc...\r\n...and I would like to welcome him aboard.\r\n\r\nI am also going to finish a [ctf] level I have been working on for a while as a [free for all] map\r\nand tourney, but it will have (2) bases because as of right now I have a version ready for people\r\nto play. I need to make some adjustments, and recompile, then I will load it up.\r\n\r\nSee you real soon folks.\r\n\r\n\u003c|3FG20K\u003e"
+}

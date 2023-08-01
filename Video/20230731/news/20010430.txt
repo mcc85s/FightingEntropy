@@ -1,0 +1,7 @@
+{
+    "Index":  1,
+    "Real":  "\/Date(988603200000)\/",
+    "Date":  "04/30/2001",
+    "Title":  "Website Online",
+    "Content":  "Yes!\r\nThe site is up!\r\nHurray for PQ!\r\n\r\nRight now, I have about (10) pages of graph paper with level plans on them...\r\nEvery project that I have on beta, or if finished, I\u0027ll leave it up for grabs.\r\n\r\nRight now, my collection may not seem impressive.\r\nThat will change quickly when I get the five maps I\u0027m working on completed.\r\nTo make things even more interesting, I\u0027m going to start naming my maps like so... \r\n- [20kdm1]\r\n- [20kdm2]\r\n- [20kdm3], etc... \r\n\r\nThe reason being is that my upcoming work will be a lot better, and I don\u0027t want people to think that\r\nby releasing [bfgdm5], I have previously released (4) equally efficient maps.\r\n\r\nThat is all I must say for now...\r\nThis begins the dawn of a new generation of cool maps for [Q3A].\r\nPrepare to be rocked!\r\n\r\nLater Update: I have [hell-ra3map1-beta4] ready for everyone to play!\r\nIt has three [Rocket Arena]\u0027s...\r\nThat\u0027s it for now.\r\nI hope you like those shaders that I made, it took me a little while to come up with them all.\r\nGrab it here!\r\n[hell-ra3map1-beta4.zip]\r\n\r\nJust to let anyone who wants to know, know... I will transfer the files from my friend [Malakili]\u0027s\r\nserver to [Fileplanet] as soon as [Gamespy] fixes the [directory permissions].\r\n\r\n\u003c|3FG20K\u003e"
+}

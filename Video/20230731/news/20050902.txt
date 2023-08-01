@@ -1,0 +1,7 @@
+{
+    "Index":  33,
+    "Real":  "\/Date(1125633600000)\/",
+    "Date":  "09/02/2005",
+    "Title":  "Insane Products (Back to work)",
+    "Content":  "Ok, ladies and gentlemen.\r\nFollowing the wake of the yearly [Quakecon] (which did not make me decide to work on this),\r\nI have a brand new present for all of you.\r\n\r\nAfter being thoroughly impressed by the footage from [Quake 4], I have decided to polish up this\r\nlittle gem of a map.\r\n\r\nI previously released this map before on this site and felt that it needed a bit of improvement,\r\nso here it is. This is the most killer map I have ever made - so the name suits it well.\r\n\r\n[Insane Products - 20kdm3beta.zip] \r\nFor some obsolete screenshots, you can check the map\u0027s (95%) unchanged layout here in these pictures:\r\n[20kdm3beta]\r\n\r\n\u003c|3FG20K\u003e"
+}

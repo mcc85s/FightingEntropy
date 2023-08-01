@@ -1,0 +1,7 @@
+{
+    "Index":  8,
+    "Real":  "\/Date(993787200000)\/",
+    "Date":  "06/29/2001",
+    "Title":  "Updated Screenshots",
+    "Content":  "I updated the screenshots yet again.\r\nTry not to have too much fun looking at the screenshots, it might ruin the entertainment of the actual\r\nmap when I finish up (35%) of the level =)\r\n\r\n[BFGDM2A/The Clan Arena]\r\n\r\n\u003c|3FG20K\u003e"
+}

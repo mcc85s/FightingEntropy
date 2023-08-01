@@ -1,0 +1,7 @@
+{
+    "Index":  4,
+    "Real":  "\/Date(990158400000)\/",
+    "Date":  "05/18/2001",
+    "Title":  "BFGDM2A",
+    "Content":  "I am heavily reconstructing [BFGDM2A], which will be large enough to fit in my Gothic themed RA3 map,\r\n[HELL-RA3MAP1] as a [clan arena]. \r\n\r\nRight now it is approximately (25-30%) completed, and I want to say I\u0027ll finish it by the end of May,\r\nbut I\u0027m not too sure. I have plans for releasing [HELL-RA3MAP2] (The space map) sometime within the\r\nnext month, and what\u0027s this...?\r\n\r\n[HELL-RA3MAP3]?\r\nYep.\r\nThat\u0027s right.\r\nYou heard me.\r\n\r\nI\u0027m going to make yet a third and probably final ra3 map with a base texture theme.\r\nAfter this I\u0027m going to chill by making a few DM maps...\r\n\r\nBut be aware, I am making no promises that they will all be released when I say they\u0027ll be...\r\nThere might be some unknown problems along the way, for instance if I get too carried away, my\r\ngirlfriend might have a kid (I\u0027d have to have a girlfriend first, right?) and I might O/D on\r\nMinocycline!\r\n\r\nAnyway, be prepared for some good stuff to emerge.\r\n\r\n\u003c|3FG20K\u003e"
+}

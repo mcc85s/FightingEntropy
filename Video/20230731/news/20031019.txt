@@ -1,0 +1,7 @@
+{
+    "Index":  28,
+    "Real":  "\/Date(1066536000000)\/",
+    "Date":  "10/19/2003",
+    "Title":  "(2003) Summary",
+    "Content":  "This years been a flop for game design in my opinion.\r\n\r\nI\u0027ve decided to halt all of my projects until a newer game comes out so that instead of investing the\r\ntime I\u0027ve put into some of these maps I\u0027m making for an older game, it would be much more appreciated,\r\nnot only by me, but to you as well, for me to hold off on these plans...\r\n\r\nYa know what I\u0027m saying, DUDES...?\r\n\r\nWell anyway, besides all of that, I have been away working full time ever since I turned (18) back in\r\n[May], so that has halted much of my activity around the [PQ] Hood but hey, what can I say?\r\n\r\nI know [Doom 3] and [Quake 4] are just around the corner, and when they come out, we will surely see\r\nnot only a spur of new mods, games, and maps, but a new mode of fun as well.\r\n\r\n\u003c|3FG20K\u003e\r\n\r\nP.S. I\u0027ve written a little collaboration of imagination into a scripted out idea for something that\r\nmight actually be god damned cool if brought to life. You\u0027re welcome to read it =P\r\n\r\n[DUEL Operations Prologue]"
+}

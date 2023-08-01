@@ -1,0 +1,7 @@
+{
+    "Index":  13,
+    "Real":  "\/Date(1012539600000)\/",
+    "Date":  "02/01/2002",
+    "Title":  "Return to Castle: Quake",
+    "Content":  "Awesome news indeed!\r\n[Return to Castle: Quake] is a finished for testing form!\r\n\r\nYou can grab it here... [Return to Castle: Quake (Test)]\r\nAs it is, you can play [Free-For-All] with up to (4) players, or you could play in Tourney mode.\r\nI\u0027ve had to rebuild the entire map, with help from [q3map.exe] of course, so I haven\u0027t gotten to\r\nplacing any detail outside of the castle.\r\n\r\nAnyway, it\u0027s promising as it is - It\u0027s not [ZTN], or [Charon], but maybe the next best thing.\r\nHave fun fraggers!\r\n\r\nAlternate download site: [Return to Castle: Quake (Test)]\r\n\r\n\u003c|3FG20K\u003e"
+}

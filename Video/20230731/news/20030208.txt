@@ -1,0 +1,7 @@
+{
+    "Index":  25,
+    "Real":  "\/Date(1044680400000)\/",
+    "Date":  "02/08/2003",
+    "Title":  "Tower of Oblivion (Short update)",
+    "Content":  "[Tower of Oblivion], still in the works.\r\nLooking great so far, need more time to construct.\r\n\r\nI will keep informed until release of a beta form.\r\n\r\n\u003c|3FG20K\u003e"
+}
