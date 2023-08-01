@@ -1,0 +1,49 @@
+ 
+-=( Map Information )=- -----------------------------------------------
+
+<Title>			: Tempered Graveyard
+<Date>			: 7/21/1
+<Filename>		: map-20kdm1.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: bfg20k@nycap.rr.com / bfg20k@planetquake.com
+<Website>		: http://www.planetquake.com/bfg20k
+<Description>		: Gothic Castle with different themes throughout
+			  the map. Best for 4-8 player DM, and good for
+			  TDM.
+
+<Additional Credits>	: Luke Maddigan for hints on item placement.
+
+-=( Construction )=- --------------------------------------------------
+
+<Base>			: The main atrium from BFGDM2 - Breakthru, the rest
+			  is completely new.
+<Editor(s) Used>	: Q3Radiant - Build 202 & Q3Build
+<Known Bugs>		: None.
+<Construction Time>	: 4 weeks
+<Compile Machine>	: 866mhz PIII, 512mb RAM, GeForce 2 GTS
+
+-=( Play Information )=- ----------------------------------------------
+
+<Mod> 			: Any Deathmatch mod, RA3 for Clan Arena
+<Players>		: 4-8 Players
+<Bots>			: They're fine, but a little slow
+
+-={ Installation }=- --------------------------------------------------
+
+<Installation>		: Unzip the the zip file map-20kdm1.zip into
+			  your "Quake III Arena\baseq3" directory
+			  Run Quake III Arena, and under console type
+			  "/map 20kdm1" or select under Skirmish in
+			  SIngle Player mode.
+
+-=( Copyright / Permissions )=- ---------------------------------------
+
+<Copyright> 		: You not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author.  You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- -----------------------------------------------
