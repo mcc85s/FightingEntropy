@@ -1,0 +1,82 @@
+   -------------------------------------------
+  | H   H EEEEE L     L     RRRR    A   3333  |
+  | H   H E     L     L     R   R  A A      3 |
+  | HHHHH EEEE  L     L     RRRR  AAAAA  333  |
+  | H   H E     L     L     R   R A   A     3 |
+  | H   H EEEEE LLLLL LLLLL R   R A   A 3333  |
+  |                                           |
+   -------------------------------------------
+
+-=( Map Information )=- -----------------------------------------------
+
+Title			: Dude, You Can Go To Hell
+Date			: 7/26/1 - 3 days after the 1-year Anniversary =P
+Filename		: hellra3map1.pk3
+Author			: Michael "<|3FG20K>" Cook
+Email Address		: bfg20k@nycap.rr.com / bfg20k@planetquake.com
+Website			: http://www.planetquake.com/bfg20k
+Description		: This is a Rocket Arena 3 map. Like others,
+			  it contains some 1v1 arenas, and a Clan Arena.
+
+			  *NOTE* : The team locations in the Clan Arena
+			  are the same as the team locations in the DM
+			  version of Tempered Graveyard.
+
+Additional Credits	: Zer0_Co0l for the inspiration of
+			  Tranquil Equilibrium
+			  
+			  Lier/MaTRiX for playtesting the levels as they
+			  were in development.
+			  
+			  Brandon James of ID Software... I know your
+			  cousin Hunter, we go to Shen together =)
+
+			  RA3 Clans - HELL, PoT, fxn, v0/o5, isb, and zs
+
+			  Luke "Impy" Maddigan for ideas in Tempered
+			  Graveyard
+
+			  MAHQ for hosting custom RA3 maps
+
+-=( Construction )=- --------------------------------------------------
+
+Base			: 20KDM1 - Tempered Graveyard / The rest is from scratch.
+Editor(s) Used		: Q3Radiant - Build 202 & Q3Build
+Known Bugs		: The cameras bug the **** out of me...
+Construction Time	: 10 months (With lots of inactivity)
+Compile Machine		: 866mhz PIII, 512mb RAM
+
+-=( Play Information )=- ----------------------------------------------
+
+Mod 			: Rocket Arena 3 - www.planetquake.com/arena
+Players			: Arena 1-3 for 1v1, Arena 4 for Red Rover and
+			  Arena 5 is the clan arena
+Bots			: None work in RA3
+
+-=( Rocket Arena Information )=- --------------------------------------
+
+Arena -1-		: Blend of Hatred	(1v1)
+Arena -2-		: Silence and Wisdom	(1v1)
+Arena -3-		: Self Destruction	(1v1)
+Arena -4-		: Tranquil Equilibrium	(Red Rover)
+Arena -5-		: Tempered Graveyard	(Clan Arena)
+
+-={ Installation }=- --------------------------------------------------
+
+Installation		: Unzip the the zip file hellra3map1.zip into
+			  your "Quake III Arena\arena" directory
+
+			  *NOTE* : It is recommended that if you have downloaded
+			  a previous beta of this map, that you should delete it.
+
+-=( Copyright / Permissions )=- ---------------------------------------
+
+Copyright 		: You not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author.  You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- -----------------------------------------------
