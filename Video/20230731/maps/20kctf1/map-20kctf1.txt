@@ -1,0 +1,46 @@
+ 
+-=( Map Information )=- -----------------------------------------------
+
+<Title>			: Out of My Head
+<Date>			: 12/28/2002
+<Filename>		: map-20kctf1.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: bfg20k@nycap.rr.com / bfg20k@planetquake.com
+<Website>		: http://www.planetquake.com/bfg20k
+<Description>		: Unique Concrete/Snow style level, great for medium\large sized games.
+
+<Additional Credits>	: HFX Evil
+
+-=( Construction )=- --------------------------------------------------
+
+<Base>			: None.
+<Editor(s) Used>	: GTK ALL THE WAY
+<Known Bugs>		: Beetles, Bees, Spiders...
+<Construction Time>	: Five weeks.
+<Compile Machine>	: AMD 2100+ XP, 256mb RAM
+
+-=( Play Information )=- ----------------------------------------------
+
+<Mod> 			: Capture the Flag variations, particularly Threewave!
+<Players>		: 8-16
+<Bots>			: Somewhat intelligent...
+
+-={ Installation }=- --------------------------------------------------
+
+<Installation>		: Extract the the zip file bfgctf1.zip into
+			  your "Quake III Arena\baseq3" directory.
+			  Run Quake III Arena, and under console type
+			  "/map bfgctf1" or select under Skirmish in
+			  Single Player mode.
+
+-=( Copyright / Permissions )=- ---------------------------------------
+
+<Copyright> 		: You may not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author. You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- -----------------------------------------------
