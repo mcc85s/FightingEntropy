@@ -1,0 +1,56 @@
+ 
+-=( Map Information )=- -----------------------------------------------
+
+<Title>			: Insane Products
+<Date>			: 9/9/2005
+<Filename>		: 20kdm3.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: mykalcook@gmail.com
+<Website>		: http://www.planetquake.com/bfg20k
+<Description>		: Industrial Slime Pump, great for medium/large
+			  sized games. Many routes to take in both FFA and
+			  Tournament modes.
+
+<Additional Credits>	: HFX Evil (Texture Set)
+			  ID Software's Textures/Shaders/Sound
+				(DOOM 3 ELEVATOR SOUND USED!!!)
+			  ydnar's Q3Map2 Compiler
+			  Infernis leveldesign.nl Moderator
+			  stjartmunnen leveldesign.nl Moderator
+			  
+
+-=( Construction )=- --------------------------------------------------
+
+<Base>			: Level base, none. Shader bases, I used many of
+			  the default shaders by ID and fleshed them up to 			  accomodate their surroundings. Also had to fix
+			  Evil's shaders too.
+<Editor(s) Used>	: Q3Radiant 202 - used GTK, either works.
+<Known Bugs>		: Bots aren't humans.
+<Construction Time>	: Overall time 3 years. Condensed time 3 months.
+<Compile Machine>	: AMD 2100+ XP, 2x512mb+1x256mb RAM
+
+-=( Play Information )=- ----------------------------------------------
+
+<Mod> 			: Deathmatch, Tournament, Team Deathmatch
+<Players>		: 2 - 12
+<Bots>			: They'll still kill you.
+
+-=( Installation )=- --------------------------------------------------
+
+<Installation>		: Extract the the zip file 20kdm3beta2.zip into
+			  your "Quake III Arena\baseq3" directory.
+			  Run Quake III Arena, and under console type
+			  "/map 20kdm3beta2" or select under Skirmish in
+			  Single Player mode.
+
+-=( Copyright / Permissions )=- ---------------------------------------
+
+<Copyright> 		: You may not include or distribute this map in
+			  any sort of commercial product without permiss-
+			  ion from Mast3r BFG20K. You may not mass distr-
+			  ibute this level via any non-electronic means
+			  including but not limited to compact disks, and
+			  floppy disks without permission from ME. Please
+			  contact me at mykalcook@gmail.com before you 			  decide to use this in *any* project.
+
+-=( This is the End )=- -----------------------------------------------
