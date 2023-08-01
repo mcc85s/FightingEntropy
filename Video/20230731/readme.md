@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| [**Shopping Maul (XAML)**]: An idea I had that uses [**PowerShell**] and [**XAML/Extensible Application Markup Language**] to recreate aspects of my old [**Quake III Arena**] mapping website: [**I3FG20K&gt;'s Shopping Maul**]. |
+| [**Shopping Maul (XAML)**]: An idea I had that uses [**PowerShell**] and [**XAML/Extensible Application Markup Language**] to recreate aspects of my old [**Quake III Arena**] mapping website: [**&lt;I3FG20K&gt;'s Shopping Maul**]. |
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)]
 
