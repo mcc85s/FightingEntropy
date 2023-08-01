@@ -1,0 +1,69 @@
+  
+  		----------------------------------------
+  		| BBBBB  FFFFF  GGG  DDDD  M   M 4   4 |
+  		| B    B F     G     D   D MM MM 4   4 |
+  		| BBBBB  FFFF  G GGG D   D M M M 44444 |
+  		| B    B F     G   G D   D M   M     4 |
+  		| BBBBB  F      GGGG DDDD  M   M     4 |
+  		----------------------------------------
+
+-=( Map Information )=- ------------------------------------------------
+
+<Title>			: Suspended Animation
+<Date>			: 5/4/1
+<Filename>		: bfgdm4.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: bfg20k@planetquake.com
+<Website>		: http://www.planetquake.com/bfg20k
+
+<Description>		: Another map to my scheme of...
+			  "Drifting Platform Complex in space"
+
+<Additional Credits>	: HFX, for the awesome textures.
+			  Whoever made Q3Radiant so good
+			  Clan N0B - Died around 1 year ago
+
+-=( Construction )=- ---------------------------------------------------
+
+<Base>			: No.
+<Editor(s) Used>	: Q3Radiant - Build 202 & Q3Build
+<Known Bugs>		: Right now, the r_speeds are too high... i'll cut
+			  them down and release this map fully tomorrow
+
+<Construction Time>	: Two Days - Procrastinator-wise
+<Compile Machine>	: 866 MHZ - Pentium III, 512mb - RAM
+
+-=( Play Information )=- -----------------------------------------------
+
+<Free For All>		: Recommended!
+<Tournament>		: Not built for it, but cool 1v1 matches.
+<Capture the Flag>	: No.
+<Team Deathmatch>	: No.
+<Player Load>		: 2-4 Players
+<Bots>			: Just like any other map
+
+-={ Installation }=- ---------------------------------------------------
+
+<Installation>		: Unzip the contents of the file bfgdm4.zip into
+			  your "Quake III Arena\baseq3" directory
+
+<Playing>		: Load Quake III Arena, click on Single Player,
+			  go to skirmish, keep pressing the arrow until
+			  BFGDM4 appears...
+
+			  ***OR***
+
+			  Load Quake III Arena, pull down the console
+			  (~) and type the following... "/map bfgdm4"
+
+-=( Copyright / Permissions )=- ----------------------------------------
+
+<Copyright> 		: You not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author.  You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- ------------------------------------------------
