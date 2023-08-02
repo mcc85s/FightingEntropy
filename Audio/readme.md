@@ -7,10 +7,13 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Last Update       |
 |:------------------|
-| **07/28/23 1410** |
+| **08/01/23 2015** |
 
 | Date         | Length     | File                           | Name                                                                                                   |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **08/01/23** | 0h 32m 38s | **2023_08_01_15_55_06.mp3** |
+[PowerShell Subreddit](https://drive.google.com/file/d/1CbcyMV1pkmkD9tlDeVet0R0VLSaDkaJw)
+| **08/01/23** | 0h 56m 23s | **2023_08_01_12_41_44.mp3** | [Worthiness](https://drive.google.com/file/d/1BserLDGQvsYSYea3CkE_gtnz25RVVt4h)
 | **07/28/23** | 1h 02m 01s | **2023_07_28_10_36_28.mp3** | [Discrimination](https://drive.google.com/file/d/19UW1DOmXX8dn2MI5gCQNmilJo_G1zvAK)
 | **07/23/23** | 0h 54m 02s | **2023_07_23_20_29_32.mp3**    | [Control](https://drive.google.com/file/d/1MIMow_pFRCnxasfyhMtbcHC8Tg9_AxTu)
 | **07/21/23** | 0h 43m 54s | **2023_07_21_12_27_43.mp3**    | [Consciousness](https://drive.google.com/file/d/1OrIJAvolFQnUhpWxxmRsofN9JMx37mpW)
