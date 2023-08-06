@@ -7,10 +7,11 @@ Then people will understand my motivations a lot more clearly.<br>
 
 | Last Update       |
 |:------------------|
-| **08/03/23 2133** |
+| **08/05/23 2326** |
 
 | Date         | Length     | File                           | Name                                                                                                   |
 |:-------------|:-----------|:-------------------------------|:-------------------------------------------------------------------------------------------------------|
+| **08/05/23** | 0h 58m 56s | **2023_08_05_q4_26_16.mp3** | [Order](https://drive.google.com/file/d/1E1-kVJXtI8i2YYoZLIwdvDrCIDcXdMTe)
 | **08/03/23** | 0h 26m 49s | **2023_08_03_20_58_54.mp3** | [Turning Point](https://drive.google.com/file/d/1DZSmeua_8GnXbYUWkARXlWrB-AGc-OS9)
 | **08/02/23** | 0h 21m 45s | **2023_08_02_18_25_37.mp3** | [Michael B.T.D.T. Pompeo](https://drive.google.com/file/d/1DGLxFHaMmzn6_LSzxDhb7TE4TQPadpGe)
 | **08/02/23** | 0h 50m 32s | **2023_08_02_12_31_08.mp3** | [Waste](https://drive.google.com/file/d/1D92svxYq0bfKFEeM4qsI6gO-JaOHwIwJ)
