@@ -25,6 +25,7 @@
 
 .Example
 #>
+
 Function Write-Theme
 {
     [CmdLetBinding(DefaultParameterSetName=0)]Param(
