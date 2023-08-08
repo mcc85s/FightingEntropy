@@ -44,6 +44,7 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 # Versions
 | Version       | Date                  | Guid                                   |
 |:--------------|:----------------------|:---------------------------------------|
+| [**2023.8.0**](https://github.com/mcc85s/FightingEntropy/tree/main/Version/2023.8.0) | `08/07/2023 20:52:08` | `4b564727-b84b-4033-a716-36d1c5e3e62d` |
 | [**2023.4.0**](https://github.com/mcc85s/FightingEntropy/tree/main/Version/2023.4.0) | `04/03/2023 18:53:49` | `75f64b43-3b02-46b1-b6a2-9e86cccf4811` |
 
 # Prerequisites
@@ -83,7 +84,7 @@ You're rollin'.
 # Author
 | Name                | Motto                                          | Contact                    | Resume           |
 |:--------------------|:-----------------------------------------------|:---------------------------|:-----------------|
-| **Michael C. Cook Sr.** | Sometimes you gotta take the throttle in life. | securedigitsplus@gmail.com | [Short](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf)/[Full]( https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Full%20Resume).pdf) |
+| **Michael C. Cook Sr.** | Sometimes you gotta take the throttle in life. | securedigitsplus@gmail.com | [Link](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf) |
 
 # Videos
 These various videos demonstrate some portion of [**FightingEntropy(π)**]
