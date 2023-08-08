@@ -25,6 +25,7 @@
 
 .Example
 #>
+
 Function Copy-FileStream
 {
     [CmdLetBinding()]
