@@ -2,22 +2,23 @@
 .SYNOPSIS
 .DESCRIPTION
 .LINK
-          Source: https://stackoverflow.com/questions/37678996/setting-screen-resolution-on-windows-10
+    [Original]: 
+    https://stackoverflow.com/questions/37678996/setting-screen-resolution-on-windows-10
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:19:29                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:48:22                                                                  //
  \\==================================================================================================// 
 
     FileName   : Set-ScreenResolution.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Allows changing the PXE environment screen resolution, as well as in Windows
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
