@@ -5,19 +5,19 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:46:11                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 12:41:09                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-EventLogRecordExtension.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : This function extends the functionality of the default EventLogRecord class, 
                  and (imports/exports) that information. 
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -34,41 +34,78 @@ Function Get-EventLogRecordExtension
         [Parameter(Mandatory,ParameterSetName=1)][UInt32]$Index,
         [Parameter(Mandatory,ParameterSetName=1)][Object]$Entry)
 
+    Enum EventLogRecordFilterType
+    {
+        Index
+        Name
+        DateTime
+        Date
+        Log
+        Rank
+        Provider
+        Id
+        Type
+        Message
+        Content
+        Version
+        Qualifiers
+        Level
+        Task
+        Opcode
+        Keywords
+        RecordId
+        ProviderId
+        LogName
+        ProcessId
+        ThreadId
+        MachineName
+        UserID
+        ActivityID
+        RelatedActivityID
+        ContainerLog
+        MatchedQueryIds
+        Bookmark
+        OpcodeDisplayName
+        TaskDisplayName
+        KeywordsDisplayNames
+        Properties
+    }
+
     Class EventLogRecordExtension
     {
-        [UInt32]   $Index
-        Hidden [String] $Name
-        Hidden [Object] $DateTime
-        [String]   $Date
-        [String]   $Log
-        [UInt32]   $Rank
-        [String]   $Provider
-        [UInt32]   $Id
-        [String]   $Type
-        [String]   $Message
-        Hidden [String[]] $Content
-        Hidden [Object] $Version
-        Hidden [Object] $Qualifiers
-        Hidden [Object] $Level
-        Hidden [Object] $Task
-        Hidden [Object] $Opcode
-        Hidden [Object] $Keywords
-        Hidden [Object] $RecordId
-        Hidden [Object] $ProviderId
-        Hidden [Object] $LogName
-        Hidden [Object] $ProcessId
-        Hidden [Object] $ThreadId
-        Hidden [Object] $MachineName
-        Hidden [Object] $UserID
-        Hidden [Object] $ActivityID
-        Hidden [Object] $RelatedActivityID
-        Hidden [Object] $ContainerLog
-        Hidden [Object] $MatchedQueryIds
-        Hidden [Object] $Bookmark
-        Hidden [Object] $OpcodeDisplayName
-        Hidden [Object] $TaskDisplayName
+        [UInt32]                       $Index
+        Hidden [String]                 $Name
+        Hidden [Object]             $DateTime
+        [String]                        $Date
+        [String]                         $Log
+        [UInt32]                        $Rank
+        [String]                    $Provider
+        [UInt32]                          $Id
+        [String]                        $Type
+        [String]                     $Message
+        Hidden [String[]]            $Content
+        Hidden [Object]              $Version
+        Hidden [Object]           $Qualifiers
+        Hidden [Object]                $Level
+        Hidden [Object]                 $Task
+        Hidden [Object]               $Opcode
+        Hidden [Object]             $Keywords
+        Hidden [Object]             $RecordId
+        Hidden [Object]           $ProviderId
+        Hidden [Object]              $LogName
+        Hidden [Object]            $ProcessId
+        Hidden [Object]             $ThreadId
+        Hidden [Object]          $MachineName
+        Hidden [Object]               $UserID
+        Hidden [Object]           $ActivityID
+        Hidden [Object]    $RelatedActivityID
+        Hidden [Object]         $ContainerLog
+        Hidden [Object]      $MatchedQueryIds
+        Hidden [Object]             $Bookmark
+        Hidden [Object]    $OpcodeDisplayName
+        Hidden [Object]      $TaskDisplayName
         Hidden [Object] $KeywordsDisplayNames
-        Hidden [Object] $Properties
+        Hidden [Object]           $Properties
         EventLogRecordExtension([Object]$Record)
         {
             $This.Index       = $Record.Index
@@ -151,10 +188,7 @@ Function Get-EventLogRecordExtension
         }
         [Object] Config()
         {
-            Return $This | Select-Object Index,Name,DateTime,Date,Log,Rank,Provider,Id,Type,Message,Content,
-            Version,Qualifiers,Level,Task,Opcode,Keywords,RecordId,ProviderId,LogName,ProcessId,ThreadId,MachineName,
-            UserID,ActivityID,RelatedActivityID,ContainerLog,MatchedQueryIds,Bookmark,OpcodeDisplayName,TaskDisplayName,
-            KeywordsDisplayNames,Properties
+            Return $This | Select-Object ([System.Enum]::GetNames([EventLogRecordFilterType]))
         }
         [Void] SetContent([String]$Path)
         {
