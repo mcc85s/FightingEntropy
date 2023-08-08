@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:51:05                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 13:11:52                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Extensive and elaborate utility meant to obtain and organize:
                  [+] hardware vendors
                  [+] (ARP/address resolution protocol) information
@@ -29,7 +29,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : NBT scan remote addresses
