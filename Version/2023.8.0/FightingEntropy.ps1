@@ -1,14 +1,14 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.4.0]: 2023-06-29 17:06:56                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2023-08-07 21:18:53                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
   About /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯                                                                                                                 
     ____________________________________________________________________________________________
-    | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/FightingEntropy.ps1 |
+    | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0/FightingEntropy.ps1 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     [FightingEntropy(π)] is a modification for [Windows PowerShell] that is meant for various tasks related to:
 
@@ -64,10 +64,11 @@
     It is effectively a [shell] of the [entire module], and can be used to implement [updates] to the [module itself],
     in a similar manner to how (Continuous Integration/Continuous Development) works (still a work in progress).
     __________________________________________________________________________
-    | [FightingEntropy(π)][2023.4.0]                                         |
+    | [FightingEntropy(π)][2023.8.0]                                         |
     |========================================================================|
     | Version   | Date                | Guid                                 |
     |-----------|---------------------|--------------------------------------|
+    | 2023.8.0  | 08/07/2023 20:52:08 | 4b564727-b84b-4033-a716-36d1c5e3e62d |
     | 2023.4.0  | 04/03/2023 18:53:49 | 75f64b43-3b02-46b1-b6a2-9e86cccf4811 |
     | 2022.12.0 | 12/14/2022 14:26:18 | 5e6c9634-1c88-49a2-8794-2970095d8793 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -1481,9 +1482,9 @@ Function FightingEntropy.Module
         [String]         $Author = "Michael C. Cook Sr."
         [String]        $Company = "Secure Digits Plus LLC"
         [String]      $Copyright = "(c) 2023 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [Guid]             $Guid = "75f64b43-3b02-46b1-b6a2-9e86cccf4811"
-        [DateTime]         $Date = "04/03/2023 18:53:49"
-        [Version]       $Version = "2023.4.0"
+        [Guid]             $Guid = "4b564727-b84b-4033-a716-36d1c5e3e62d"
+        [DateTime]         $Date = "08/07/2023 20:52:08"
+        [Version]       $Version = "2023.8.0"
         [Object]             $OS
         [Object]           $Root
         [Object]       $Manifest
@@ -1742,9 +1743,11 @@ Function FightingEntropy.Module
                     ("Get-EventLogXaml.ps1"            , "89F96497DD3050104A63D536602F12864A8FEDA7E95E4DDB39B85E30A1F9FB80") ,
                     ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
                     ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
+                    ("Get-FEDevice.ps1"                , "D596EB09FDECD404DF366CC4F9DE6E17EF92D118B90A4C62196A19A87E333B2E") ,
                     ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
                     ("Get-FEModule.ps1"                , "A16347FC8DE7D901F02157D1B7DACE36388319340C5943361947508F819F9183") ,
                     ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
+                    ("Get-FEProcess.ps1"               , "A1B6B98CFE32CEAD0BC983BBD8B635B0B5B133C52CCB4ACF05055B0E022D771D") ,
                     ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
                     ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
                     ("Get-MDTModule.ps1"               , "AA9BB135FADFC5D2FA3FEF4B7258EFC01CCAA42100134725AFF9D6273782ADF9") ,
@@ -1762,7 +1765,7 @@ Function FightingEntropy.Module
                     ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
                     ("Install-IISServer.ps1"           , "CAFE22024A7B0E398CDB9BA556EC1B5ED776F38FEACF35FBFB4C38C311E1EBE2") ,
                     ("Install-PSD.ps1"                 , "7CA2FFB284B9D9A12CC43D43E324FC71C77CF07412E0B5EC47D241965DEEACD0") ,
-                    ("Invoke-cimdb.ps1"                , "97134F3F6918288B0AB177615F5CC7F78C5F188E8368F1CF8B597419E272C435") ,
+                    ("Invoke-cimdb.ps1"                , "1C58F4807F446CB0D13AB5B477C581D1B0415BCC66FB20FCCF32373F1970F4EC") ,
                     ("New-Document.ps1"                , "7B21B34EB98C96A93A54639F0A05028B7B1738399EBB391B86EFB0404F851D10") ,
                     ("New-EnvironmentKey.ps1"          , "9577B80E2A2309C1A100859370B7979FBDC504F78BCD8ECF0E4A110585F9C848") ,
                     ("New-FEConsole.ps1"               , "6909B10D29F99EC565B714F31BBD5BE04E5FAE350DC397FE94018988E056E2F1") ,
@@ -2532,9 +2535,9 @@ $Module = FightingEntropy.Module -Mode 0
     | Author      : Michael C. Cook Sr.                                 |
     | Company     : Secure Digits Plus LLC                              |
     | Copyright   : (c) 2023 (mcc85s/mcc85sx/sdp). All rights reserved. |
-    | Guid        : 75f64b43-3b02-46b1-b6a2-9e86cccf4811                |
-    | Date        : 04/03/2023 18:53:49                                 |
-    | Version     : 2023.4.0                                            |
+    | Guid        : 4b564727-b84b-4033-a716-36d1c5e3e62d                |
+    | Date        : 08/07/2023 20:52:08                                 |
+    | Version     : 2023.8.0                                            |
     | OS          : <FightingEntropy.Module.OS>                         |
     | Root        : <FightingEntropy.Module.Root>                       |
     | Manifest    : <FightingEntropy.Module.Manifest>                   |
@@ -2547,15 +2550,14 @@ $Module = FightingEntropy.Module -Mode 0
 
     Version  Date                Guid
     -------  ----                ----
-    2023.4.0 04/03/2023 18:53:49 75f64b43-3b02-46b1-b6a2-9e86cccf4811
+    2023.8.0 08/07/2023 20:52:08 4b564727-b84b-4033-a716-36d1c5e3e62d
                                                                                                                _________/
 \_____________________________________________________________________________________________________________/ Example  
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-06-29 17:06:56 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-08-07 21:18:53 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 #>
-
