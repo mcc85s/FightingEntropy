@@ -5,24 +5,25 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-15 20:26:53                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:05:51                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-WhoisUtility.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For obtaining information related to a particular IP address
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-05-15
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
 
 .Example
 #>
+
 Function Get-WhoisUtility
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -329,7 +330,7 @@ Function Get-WhoisUtility
         '        Width="800"',
         '        Height="480"',
         '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\icon.ico"',
         '        HorizontalAlignment="Center"',
         '        WindowStartupLocation="CenterScreen"',
         '        FontFamily="Consolas"',
