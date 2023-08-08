@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:48:59                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 13:07:00                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For the promotion of a FightingEntropy (ADDS/Various) Domain Controller
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Implement the multiple functions (FEDCPromo/FEDCFound/FEADLogin)
@@ -152,7 +152,7 @@ Function Get-FEDCPromo
         '        Height="450"',
         '        Topmost="True"',
         '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\icon.ico"',
         '        HorizontalAlignment="Center"',
         '        WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
