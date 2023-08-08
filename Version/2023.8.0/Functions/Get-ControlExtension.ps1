@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:41:53                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 11:59:12                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-ControlExtension.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Extends the graphical user interface controls handed off to the threading dispatcher
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
@@ -34,13 +34,13 @@ Function Get-ControlExtension
 
     Class ControlExtension
     {
-        [UInt32] $Index
-        [String] $Name
-        [String] $Type
-        [Object] $Control
+        [UInt32]      $Index
+        [String]       $Name
+        [String]       $Type
+        [Object]    $Control
         [Object] $Dispatcher
-        [Object] $Thread
-        [Object] $Data
+        [Object]     $Thread
+        [Object]       $Data
         ControlExtension([UInt32]$Index,[String]$Name,[Object]$Control,[String]$Type)
         {
             $This.Index      = $Index
