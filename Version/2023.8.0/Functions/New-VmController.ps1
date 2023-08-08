@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-29 17:03:40                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:44:23                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Creates a [PowerShell] object that can optionally initialize a 
                  (GUI/graphical user interface) to orchestrate the networking, credentials,
                  imaging, templatization, deployment and configuration of (a single/multiple)
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-06-29
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -474,7 +474,7 @@ Function New-VmController
         '        Width="640"',
         '        Topmost="True"',
         '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\icon.ico"',
         '        HorizontalAlignment="Center"',
         '        WindowStartupLocation="CenterScreen"',
         '        FontFamily="Consolas"',
@@ -5910,7 +5910,7 @@ Function New-VmController
             '    RemotePort  = {0}' -f $This.Network.Transmit;
             '}';
             'New-NetFirewallRule @Splat -Direction Outbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
-            '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0"'
+            '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0"'
             '$Url = "$Base/FightingEntropy.ps1?raw=true"';
             'Invoke-RestMethod $Url | Invoke-Expression';
             '$Module.Latest()')
@@ -6102,7 +6102,7 @@ Function New-VmController
             $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
             '[Net.ServicePointManager]::SecurityProtocol = 3072';
             'Set-ExecutionPolicy Bypass -Scope Process -Force';
-            '$Install = "https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.4.0/FightingEntropy.ps1?raw=true"';
+            '$Install = "https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0/FightingEntropy.ps1?raw=true"';
             'Invoke-RestMethod $Install | Invoke-Expression';
             '$Module.Latest()';
             '<Idle[5,5]>';
@@ -8281,4 +8281,3 @@ Function New-VmController
 
     [VmControllerMaster]::New()
 }
-
