@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-25 18:19:43                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:04:53                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-ViperBomb.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For managing system details, Windows services, and controls
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-05-25
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : AKA "System Control Extension Utility"
@@ -48,7 +48,7 @@ Function Get-ViperBomb
         '        Height="640"',
         '        Width="800"',
         '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\icon.ico"',
         '        HorizontalAlignment="Center"',
         '        WindowStartupLocation="CenterScreen"',
         '        FontFamily="Consolas"',
@@ -360,7 +360,7 @@ Function Get-ViperBomb
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
         '                        <Image Grid.Row="0"',
-        '                               Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\banner.png"/>',
+        '                               Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\banner.png"/>',
         '                    </Grid>',
         '                    <DataGrid Grid.Row="2" Name="Module">',
         '                        <DataGrid.RowStyle>',
