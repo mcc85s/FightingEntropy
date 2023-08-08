@@ -5,59 +5,67 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                       \\
-\\  Date       : 2023-04-05 09:57:52                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                       \\
+\\  Date       : 2023-08-08 14:58:09                                                                  //
  \\==================================================================================================// 
 
-    FileName   : Get-PSDModule.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
-    Purpose    : Retrieves the PowerShell Deployment modification by FriendsOfMDT,
+    FileName   : Get-PsdModule.ps1
+    Solution   : [FightingEntropy()][2023.8.0]
+    Purpose    : Retrieves the PowerShell Deployment modification by FriendsOfMdt,
                  and inserts [FightingEntropy()] (enhancements/customizations)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
     
 .Example
 #>
-Function Get-PSDModule
+Function Get-PsdModule
 {
-    Class PSDObject
+    Class PsdObject
     {
-        [String] $Type
-        [String] $Name
+        [String]     $Type
+        [String]     $Name
         [String] $Fullname
-        [String] $Source
-        PSDObject([String]$Type,[String]$Name,[String]$Target,[String]$Source)
+        [String]   $Source
+        PsdObject([String]$Type,[String]$Name,[String]$Target,[String]$Source)
         {
             $This.Type     = $Type
             $This.Name     = $Name
             $This.Fullname = $Target
             $This.Source   = "{0}/{1}?raw=true" -f $Source, $Name
         }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
     }
 
-    Class PSDManifest
+    Class PsdManifest
     {
         [String] $FriendsOfMdt = "https://github.com/FriendsOfMDT/PSD"
-        [String] $PSDSource    = "https://github.com/FriendsOfMDT/PSD/archive/refs/heads/master.zip"
+        [String] $PsdSource    = "https://github.com/FriendsOfMDT/PSD/archive/refs/heads/master.zip"
         [String] $Mdt
         [String] $Psd
         [String] $Base
         [Object] $Output
-        PSDManifest([String]$Base)
+        PsdManifest([String]$Base)
         {
-            $This.MDT    = $Base
+            $This.Mdt    = $Base
             $This.Main()
         }
-        PSDManifest()
+        PsdManifest()
         {
-            $This.MDT    = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | % Install_Dir | % TrimEnd \
+            $This.Mdt    = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | % Install_Dir | % TrimEnd \
             $This.Main()
+        }
+        [Object] PsdObject([String]$Type,[String]$Name,[String]$Target,[String]$Source)
+        {
+            Return [PsdObject]::New($Type,$Name,$Target,$Source)
         }
         Main()
         {
@@ -65,7 +73,7 @@ Function Get-PSDModule
             # // | Assign variables |
             # // ====================
             
-            $This.PSD    = "{0}\PSD" -f $This.MDT
+            $This.Psd    = "{0}\PSD" -f $This.Mdt
             $This.Base   = "https://gitub.com/mcc85s/FightingEntropy/blob/main/PSD"
 
             $This.Output = @( )
@@ -84,17 +92,17 @@ Function Get-PSDModule
         }
         Download()
         {
-            If ((Get-ChildItem $This.PSD -EA 0).Count -eq 0)
+            If ((Get-ChildItem $This.Psd -EA 0).Count -eq 0)
             {
                 # // ========================================
                 # // | Download/Extract/Delete the zip file |
                 # // ========================================
 
-                $Outfile = "$($This.PSD).zip"
+                $Outfile = "$($This.Psd).zip"
                 Invoke-RestMethod "$($This.PSDSource)?raw=true" -OutFile $Outfile -Verbose
                 Expand-Archive -Path $Outfile -DestinationPath $This.MDT -Force
                 Remove-Item $Outfile -Confirm:$False -Force
-                Rename-Item "$($This.PSD)-master" -Newname $This.PSD -Verbose
+                Rename-Item "$($This.Psd)-master" -Newname $This.PSD -Verbose
 
                 # // ====================
                 # // | Obtain all files |
@@ -108,7 +116,11 @@ Function Get-PSDModule
         }
         Add([String]$Type,[String]$Name,[String]$Target)
         {
-            $This.Output += [PSDObject]::New($Type,$Name,"$($This.PSD)\$Target",$This.Base)
+            $This.Output += $This.PsdObject($Type,$Name,"$($This.PSD)\$Target",$This.Base)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Psd[Manifest]>"
         }
     }
 
@@ -118,9 +130,8 @@ Function Get-PSDModule
 
     If (!(Test-Path "HKLM:\Software\Microsoft\Deployment 4"))
     {
-        Throw "MDT not installed"
+        Throw "Mdt not installed"
     }
 
-    $Item = [PSDManifest]::New()
-    $Item.PSD
+    [PsdManifest]::New()
 }
