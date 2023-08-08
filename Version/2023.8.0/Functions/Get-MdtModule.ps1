@@ -6,10 +6,10 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.8.0]                                                       \\
-\\  Date       : 2023-08-08 14:27:23                                                                  //
+\\  Date       : 2023-08-08 14:30:04                                                                  //
  \\==================================================================================================// 
 
-    FileName   : Get-MdtModule.ps1
+    FileName   : Get-MDTModule.ps1
     Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Retrieves the location of the main MDTToolkit.psd file, and installs
                  (MDT/WinADK/WinPE) if they are not present
@@ -24,7 +24,6 @@
 
 .Example
 #>
-
 Function Get-MdtModule
 {
     Enum MdtDependencyType
@@ -165,32 +164,35 @@ Function Get-MdtModule
 
             $List = $This.Output | ? IsInstalled -eq 0
 
-            ForEach ($Item in $List)
+            If ($List.Count -gt 0)
             {
                 [Net.ServicePointManager]::SecurityProtocol = 3072
 
-                If (![System.IO.Directory]::Exists($Item.Path))
+                ForEach ($Item in $List)
                 {
-                    [System.IO.Directory]::Create($Item.Path)
-                }
-
-                If (![System.IO.File]::Exists($Item.FilePath()))
-                {
-                    Invoke-RestMethod -URI $Item.Resource -OutFile $Item.FilePath()
-                }
-
-                $Process = Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
-
-                While (!$Process.HasExited)
-                {
-                    For ($X = 0; $X -le 100; $X++)
+                    If (![System.IO.Directory]::Exists($Item.Path))
                     {
-                        Write-Progress -Activity "[Installing] @: $($Item.Name)" -PercentComplete $X
-                        Start-Sleep -Milliseconds 50
+                        [System.IO.Directory]::Create($Item.Path)
                     }
+    
+                    If (![System.IO.File]::Exists($Item.FilePath()))
+                    {
+                        Invoke-RestMethod -URI $Item.Resource -OutFile $Item.FilePath()
+                    }
+    
+                    $Process = Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
+    
+                    While (!$Process.HasExited)
+                    {
+                        For ($X = 0; $X -le 100; $X++)
+                        {
+                            Write-Progress -Activity "[Installing] @: $($Item.Name)" -PercentComplete $X
+                            Start-Sleep -Milliseconds 50
+                        }
+                    }
+    
+                    $Item.IsInstalled ++
                 }
-
-                $Item.IsInstalled ++
             }
         }
         [String] InstallPath()
