@@ -2,25 +2,26 @@
 .SYNOPSIS
 .DESCRIPTION
 .LINK
-          Original: https://stackoverflow.com/questions/2434133/progress-during-large-file-copy-copy-item-write-progress
+    [Original]
+    https://stackoverflow.com/questions/2434133/progress-during-large-file-copy-copy-item-write-progress
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:39:07                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 11:56:49                                                                  //
  \\==================================================================================================// 
 
     FileName   : Copy-FileStream.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For copying larger files with a progress indicator.
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1.
-    TODO       : N/A
+    TODO       : Get working with SMB mapping and PS Drive for other computers
 
 .Example
 #>
