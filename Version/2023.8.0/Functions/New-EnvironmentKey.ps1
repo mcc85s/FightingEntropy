@@ -23,6 +23,7 @@
 
 .Example
 #>
+
 Function New-EnvironmentKey
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
