@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:45:52                                                                  //
+\\  Date       : 2023-08-08 12:36:22                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-EventLogProject.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -35,11 +35,11 @@ Function Get-EventLogProject
 
     Class Percent
     {
-        [Uint32] $Index
-        [Uint32] $Step
-        [Uint32] $Total
+        [Uint32]   $Index
+        [Uint32]    $Step
+        [Uint32]   $Total
         [UInt32] $Percent
-        [String] $String
+        [String]  $String
         Percent([UInt32]$Index,[UInt32]$Step,[Uint32]$Total)
         {
             $This.Index   = $Index
@@ -222,9 +222,9 @@ Function Get-EventLogProject
 
     Class ProjectFileEntry
     {
-        [String] $Name
+        [String]  $Name
         [Object] $Entry
-        [String] $Path
+        [String]  $Path
         ProjectFileEntry([String]$Name,[Object]$Archive,[String]$Path)
         {
             $This.Name  = $Name
@@ -243,10 +243,10 @@ Function Get-EventLogProject
 
     Class ProjectConsoleLine
     {
-        [UInt32] $Index
-        [String] $Phase
-        [String] $Type
-        [String] $Time
+        [UInt32]   $Index
+        [String]   $Phase
+        [String]    $Type
+        [String]    $Time
         [String] $Message
         ProjectConsoleLine([UInt32]$Index,[String]$Phase,[UInt32]$Type,[String]$Time,[String]$Message)
         {
@@ -624,20 +624,20 @@ Function Get-EventLogProject
 
     Class Project
     {
-        [Object]              $Console
-        [Object]                 $Time
-        [DateTime]              $Start
-        [Object]               $System
-        [String]          $DisplayName
-        [UInt32]              $Threads
-        [Guid]                   $Guid
-        [String]                 $Base
-        [Object]                 $Logs = @( )
-        [Object]               $Output = @( )
-        Hidden [Object]       $Archive
-        Hidden [Object]           $Zip
-        Hidden [Object]    $ThreadSlot
-        Hidden [UInt32]    $MaxThreads
+        [Object]           $Console
+        [Object]              $Time
+        [DateTime]           $Start
+        [Object]            $System
+        [String]       $DisplayName
+        [UInt32]           $Threads
+        [Guid]                $Guid
+        [String]              $Base
+        [Object]              $Logs = @( )
+        [Object]            $Output = @( )
+        Hidden [Object]    $Archive
+        Hidden [Object]        $Zip
+        Hidden [Object] $ThreadSlot
+        Hidden [UInt32] $MaxThreads
         Project()
         {
             $This.Time           = [System.Diagnostics.Stopwatch]::New()
@@ -893,11 +893,11 @@ Function Get-EventLogProject
 
     Class ShellPercent
     {
-        [Uint32] $Index
-        [Uint32] $Step
-        [Uint32] $Total
+        [Uint32]   $Index
+        [Uint32]    $Step
+        [Uint32]   $Total
         [UInt32] $Percent
-        [String] $String
+        [String]  $String
         ShellPercent([UInt32]$Index,[UInt32]$Step,[Uint32]$Total)
         {
             $This.Index   = $Index
@@ -924,13 +924,13 @@ Function Get-EventLogProject
     Class ShellProgress
     {
         [String] $Activity
-        [String] $Status
-        [UInt32] $Percent
-        [Uint32] $Total
-        [Uint32] $Depth
-        [Uint32] $Step
-        [Object[]] $Slot
-        [Uint32[]] $Range
+        [String]   $Status
+        [UInt32]  $Percent
+        [Uint32]    $Total
+        [Uint32]    $Depth
+        [Uint32]     $Step
+        [Object[]]   $Slot
+        [Uint32[]]  $Range
         ShellProgress([String]$Activity,[UInt32]$Total)
         {
             $This.Activity      = $Activity
@@ -963,20 +963,20 @@ Function Get-EventLogProject
     
     Class Project2
     {
-        [Object]              $Console
-        [Object]                 $Time
-        [DateTime]              $Start
-        [Object]               $System
-        [String]          $DisplayName
-        [UInt32]              $Threads
-        [Guid]                   $Guid
-        [ProjectBase]            $Base
-        [Object]                 $Logs = @( )
-        [Object]               $Output = @( )
-        Hidden [Object]       $Archive
-        Hidden [Object]           $Zip
-        Hidden [Object]    $ThreadSlot
-        Hidden [UInt32]    $MaxThreads
+        [Object]           $Console
+        [Object]              $Time
+        [DateTime]           $Start
+        [Object]            $System
+        [String]       $DisplayName
+        [UInt32]           $Threads
+        [Guid]                $Guid
+        [ProjectBase]         $Base
+        [Object]              $Logs = @( )
+        [Object]            $Output = @( )
+        Hidden [Object]    $Archive
+        Hidden [Object]        $Zip
+        Hidden [Object] $ThreadSlot
+        Hidden [UInt32] $MaxThreads
         Project2([Object]$ThreadSlot)
         {
             # Start system snapshot, count threads / max runspace pool size
