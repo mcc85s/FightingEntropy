@@ -5,19 +5,19 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:45:00                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 12:14:38                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-EventLogConfigExtension.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : This function extends the functionality of the default EventLogConfig class,
                  and (imports/exports) that information
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -33,32 +33,57 @@ Function Get-EventLogConfigExtension
         [Parameter(Mandatory,ParameterSetName=0)][String]$Name,
         [Parameter(Mandatory,ParameterSetName=1)][Object]$Config)
 
+    Enum EventLogConfigFilterType
+    {
+        Rank
+        LogName
+        LogType
+        LogIsolation
+        IsEnabled
+        IsClassicLog
+        SecurityDescriptor
+        LogFilePath
+        MaximumSizeInBytes
+        Maximum
+        Current
+        LogMode
+        OwningProviderName
+        ProviderNames
+        ProviderLevel
+        ProviderKeywords
+        ProviderBufferSize
+        ProviderMinimumNumberOfBuffers
+        ProviderMaximumNumberOfBuffers
+        ProviderLatency
+        ProviderControlGuid
+    }
+
     Class EventLogConfigExtension
     {
-        [UInt32] $Rank
-        [String] $LogName
-        [Object] $LogType
-        [Object] $LogIsolation
-        [Boolean] $IsEnabled
-        [Boolean] $IsClassicLog
-        Hidden [String] $SecurityDescriptor
-        [String] $LogFilePath
-        Hidden [Int64] $MaximumSizeInBytes
-        [Object] $Maximum
-        [Object] $Current
-        [Object] $LogMode
-        Hidden [String] $OwningProviderName
-        [Object] $ProviderNames
-        Hidden [Object] $ProviderLevel
-        Hidden [Object] $ProviderKeywords
-        Hidden [Object] $ProviderBufferSize
+        [UInt32]                                  $Rank
+        [String]                               $LogName
+        [Object]                               $LogType
+        [Object]                          $LogIsolation
+        [Boolean]                            $IsEnabled
+        [Boolean]                         $IsClassicLog
+        Hidden [String]             $SecurityDescriptor
+        [String]                           $LogFilePath
+        Hidden [Int64]              $MaximumSizeInBytes
+        [Object]                               $Maximum
+        [Object]                               $Current
+        [Object]                               $LogMode
+        Hidden [String]             $OwningProviderName
+        [Object]                         $ProviderNames
+        Hidden [Object]                  $ProviderLevel
+        Hidden [Object]               $ProviderKeywords
+        Hidden [Object]             $ProviderBufferSize
         Hidden [Object] $ProviderMinimumNumberOfBuffers
         Hidden [Object] $ProviderMaximumNumberOfBuffers
-        Hidden [Object] $ProviderLatency
-        Hidden [Object] $ProviderControlGuid
-        Hidden [Object[]] $EventLogRecord
-        [Object[]] $Output
-        [UInt32] $Total
+        Hidden [Object]                $ProviderLatency
+        Hidden [Object]            $ProviderControlGuid
+        Hidden [Object[]]               $EventLogRecord
+        [Object[]]                              $Output
+        [UInt32]                                 $Total
         EventLogConfigExtension([UInt32]$Rank,[Object]$Name)
         {
             $This.Rank                           = $Rank
@@ -72,7 +97,16 @@ Function Get-EventLogConfigExtension
             $This.LogFilePath                    = $Event.LogFilePath -Replace "%SystemRoot%", [Environment]::GetEnvironmentVariable("SystemRoot")
             $This.MaximumSizeInBytes             = $Event.MaximumSizeInBytes
             $This.Maximum                        = "{0:n2} MB" -f ($Event.MaximumSizeInBytes/1MB) 
-            $This.Current                        = If (!(Test-Path $This.LogFilePath)) { "0.00 MB" } Else { "{0:n2} MB" -f (Get-Item $This.LogFilePath | % { $_.Length/1MB }) }
+            
+            If (!(Test-Path $This.LogFilePath)) 
+            { 
+                $This.Current = "0.00 MB"
+            } 
+            Else
+            { 
+                $This.Current = "{0:n2} MB" -f (Get-Item $This.LogFilePath | % { $_.Length/1MB }) 
+            }
+
             $This.LogMode                        = $Event.LogMode
             $This.OwningProviderName             = $Event.OwningProviderName
             $This.ProviderNames                  = $Event.ProviderNames 
@@ -133,9 +167,9 @@ Function Get-EventLogConfigExtension
             $Return = Switch ($Index)
             {
                 0 { [System.Diagnostics.Eventing.Reader.EventLogType]::Administrative }
-                1 { [System.Diagnostics.Eventing.Reader.EventLogType]::Operational }
-                2 { [System.Diagnostics.Eventing.Reader.EventLogType]::Analytical }
-                3 { [System.Diagnostics.Eventing.Reader.EventLogType]::Debug }  
+                1 { [System.Diagnostics.Eventing.Reader.EventLogType]::Operational    }
+                2 { [System.Diagnostics.Eventing.Reader.EventLogType]::Analytical     }
+                3 { [System.Diagnostics.Eventing.Reader.EventLogType]::Debug          }  
             }
             Return $Return
         }
@@ -144,8 +178,8 @@ Function Get-EventLogConfigExtension
             $Return = Switch ($Index)
             {
                 0 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::Application }
-                1 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::System }
-                2 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::Custom }
+                1 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::System      }
+                2 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::Custom      }
             }
             Return $Return
         }
@@ -161,9 +195,7 @@ Function Get-EventLogConfigExtension
         }
         [Object] Config()
         {
-            Return $This | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,MaximumSizeInBytes,Maximum,Current,LogMode,
-            OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,
-            ProviderControlGuid
+            Return $This | Select-Object ([System.Enum]::GetNames([EventLogConfigFilterType]))
         }
         [String] ToString()
         {
