@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:10:07                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:30:14                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-Document.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For writing a document with the [FightingEntropy()] styling
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
