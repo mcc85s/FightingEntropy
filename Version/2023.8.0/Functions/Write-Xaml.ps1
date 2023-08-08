@@ -5,24 +5,25 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-24 17:37:39                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 16:00:03                                                                  //
  \\==================================================================================================// 
 
     FileName   : Write-Xaml.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Converts a (*.xaml) file into a class.
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2023-05-24
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
 
 .Example
 #>
+
 Function Write-Xaml
 {
     [CmdLetBinding()]Param([Parameter()][String]$Path)
@@ -65,4 +66,3 @@ Function Write-Xaml
 
     [WriteXaml]::New($Path).Output()
 }
-
