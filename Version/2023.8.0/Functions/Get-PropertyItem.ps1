@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:55:48                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 14:32:11                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-PropertyItem.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Essentially geared for a graphical user interface
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
