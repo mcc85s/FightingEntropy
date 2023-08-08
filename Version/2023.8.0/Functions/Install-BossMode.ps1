@@ -5,24 +5,25 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:05:19                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:09:59                                                                  //
  \\==================================================================================================// 
 
     FileName   : Install-BossMode.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
-    Purpose    : Installs custom theme for Visual Studio Code (cross platform...)
+    Solution   : [FightingEntropy()][2023.8.0]
+    Purpose    : Installs custom theme for [Visual Studio Code] (cross platform...)
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
-    TODO       : N/A
+    TODO       : Has an issue deploying to some systems
 
 .Example
 #>
+
 Function Install-BossMode
 {
     # // ====================================================
