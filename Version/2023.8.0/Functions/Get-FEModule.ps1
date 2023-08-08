@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-06-29 17:05:55                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 13:10:50                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
-   Solution   : [FightingEntropy()][2023.4.0]
+   Solution   : [FightingEntropy()][2023.8.0]
    Purpose    : Loads the FightingEntropy module
    Author     : Michael C. Cook Sr.
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2023-06-29
+   Modified   : 2023-08-08
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1396,9 +1396,9 @@ Function Get-FEModule
         [String]         $Author = "Michael C. Cook Sr."
         [String]        $Company = "Secure Digits Plus LLC"
         [String]      $Copyright = "(c) 2023 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [Guid]             $Guid = "75f64b43-3b02-46b1-b6a2-9e86cccf4811"
-        [DateTime]         $Date = "04/03/2023 18:53:49"
-        [Version]       $Version = "2023.4.0"
+        [Guid]             $Guid = "4b564727-b84b-4033-a716-36d1c5e3e62d"
+        [DateTime]         $Date = "08/07/2023 20:52:08"
+        [Version]       $Version = "2023.8.0"
         [Object]             $OS
         [Object]           $Root
         [Object]       $Manifest
