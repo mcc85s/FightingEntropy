@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:45:20                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 12:31:24                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-EventLogController.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : Controller for the EventLog Utility (Xaml/Threading/GUI/Logging).
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -71,11 +71,11 @@ Function Get-EventLogController
 
     Class ProjectStatusBank
     {
-        [Object]    $Start
-        [Object]      $End
-        [String]     $Span
-        [Object]   $Status
-        [Object]   $Output
+        [Object]  $Start
+        [Object]    $End
+        [String]   $Span
+        [Object] $Status
+        [Object] $Output
         ProjectStatusBank()
         {
             $This.Reset()
@@ -88,13 +88,27 @@ Function Get-EventLogController
                 1 { [Timespan]($This.End.Time-$This.Start.Time) }
             })         
         }
+        [Object] ProjectStatus ([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
+        {
+            Return [ProjectStatus]::New($Index,$Time,$State,$Status)
+        }
+        [Object] ProjectTime([String]$Status)
+        {
+            Return [ProjectTime]::New($Status)
+        }
         [Void] SetStatus()
         {
-            $This.Status = [ProjectStatus]::New($This.Output.Count,$This.Elapsed(),$This.Status.State,$This.Status.Status)
+            $This.Status = $This.ProjectStatus($This.Output.Count,
+                                               $This.Elapsed(),
+                                               $This.Status.State,
+                                               $This.Status.Status)
         }
         [Void] SetStatus([Int32]$State,[String]$Status)
         {
-            $This.Status = [ProjectStatus]::New($This.Output.Count,$This.Elapsed(),$State,$Status)
+            $This.Status = $This.ProjectStatus($This.Output.Count,
+                                               $This.Elapsed(),
+                                               $State,
+                                               $Status)
         }
         Initialize()
         {
@@ -117,8 +131,8 @@ Function Get-EventLogController
         }
         Reset()
         {
-            $This.Start  = [ProjectTime]::New("Start")
-            $This.End    = [ProjectTime]::New("End")
+            $This.Start  = $This.ProjectTime("Start")
+            $This.End    = $This.ProjectTime("End")
             $This.Span   = $Null
             $This.Status = $Null
             $This.Output = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -157,12 +171,12 @@ Function Get-EventLogController
 
     Class ProjectEventSlot
     {
-        [String] $Type
-        [Int32]  $Index    = -1
+        [String]     $Type
+        [Int32]     $Index = -1
         [Object] $Property
-        [Object] $Filter
-        [Object] $Result
-        [Object] $Hash     = @{ }
+        [Object]   $Filter
+        [Object]   $Result
+        [Object]     $Hash = @{ }
         ProjectEventSlot([Object]$Types,[String]$Type)
         {
             $This.Type     = $Type
@@ -183,9 +197,9 @@ Function Get-EventLogController
 
     Class ProjectEventTree
     {
-        [Object] $LogMain
+        [Object]   $LogMain
         [Object] $LogOutput
-        [Object] $Output
+        [Object]    $Output
         ProjectEventTree([Object]$Types)
         {
             $This.LogMain   = [ProjectEventSlot]::New($Types,"LogMain")
@@ -196,63 +210,63 @@ Function Get-EventLogController
 
     Class ProjectController
     {
-        [String] $Begin
-        [Bool]   $Started
-        [Object] $Event
-        [Object] $Types
-        Hidden [Hashtable] $Hash
-        [Object] $Window
-        [Object] $MainTab
-        [Object] $LogTab
-        [Object] $OutputTab
-        [Object] $ViewTab
-        [Object] $MainPanel
-        [Object] $Time
-        [Object] $Start
-        [Object] $Section
-        [Object] $Slot
-        [Object] $Throttle
-        [Object] $AutoThrottle
-        [Object] $Threads
-        [Object] $DisplayName
-        [Object] $Guid
-        [Object] $Archive
-        [Object] $Base
-        [Object] $Browse
-        [Object] $Export
-        [Object] $System
-        [Object] $ConsoleSlot
-        [Object] $Console
-        [Object] $TableSlot
-        [Object] $Table
-        [Object] $Mode
-        [Object] $Continue
-        [Object] $Progress
-        [Object] $ConsoleSet
-        [Object] $TableSet
-        [Object] $LogPanel
-        [Object] $LogMainProperty
-        [Object] $LogMainFilter
-        [Object] $LogMainRefresh
-        [Object] $LogMainResult
-        [Object] $LogSelected
-        [Object] $LogTotal
-        [Object] $LogClear
+        [String]             $Begin
+        [Bool]             $Started
+        [Object]             $Event
+        [Object]             $Types
+        Hidden [Hashtable]    $Hash
+        [Object]            $Window
+        [Object]           $MainTab
+        [Object]            $LogTab
+        [Object]         $OutputTab
+        [Object]           $ViewTab
+        [Object]         $MainPanel
+        [Object]              $Time
+        [Object]             $Start
+        [Object]           $Section
+        [Object]              $Slot
+        [Object]          $Throttle
+        [Object]      $AutoThrottle
+        [Object]           $Threads
+        [Object]       $DisplayName
+        [Object]              $Guid
+        [Object]           $Archive
+        [Object]              $Base
+        [Object]            $Browse
+        [Object]            $Export
+        [Object]            $System
+        [Object]       $ConsoleSlot
+        [Object]           $Console
+        [Object]         $TableSlot
+        [Object]             $Table
+        [Object]              $Mode
+        [Object]          $Continue
+        [Object]          $Progress
+        [Object]        $ConsoleSet
+        [Object]          $TableSet
+        [Object]          $LogPanel
+        [Object]   $LogMainProperty
+        [Object]     $LogMainFilter
+        [Object]    $LogMainRefresh
+        [Object]     $LogMainResult
+        [Object]       $LogSelected
+        [Object]          $LogTotal
+        [Object]          $LogClear
         [Object] $LogOutputProperty
-        [Object] $LogOutputFilter
-        [Object] $LogOutputRefresh
-        [Object] $LogOutputResult
-        [Object] $OutputPanel
-        [Object] $OutputProperty
-        [Object] $OutputFilter
-        [Object] $OutputRefresh
-        [Object] $OutputResult
-        [Object] $ViewPanel
-        [Object] $ViewResult
-        [Object] $ViewCopy
-        [Object] $ViewClear
-        [Object] $Status
-        [Object] $Last
+        [Object]   $LogOutputFilter
+        [Object]  $LogOutputRefresh
+        [Object]   $LogOutputResult
+        [Object]       $OutputPanel
+        [Object]    $OutputProperty
+        [Object]      $OutputFilter
+        [Object]     $OutputRefresh
+        [Object]      $OutputResult
+        [Object]         $ViewPanel
+        [Object]        $ViewResult
+        [Object]          $ViewCopy
+        [Object]         $ViewClear
+        [Object]            $Status
+        [Object]              $Last
         ProjectController()
         {
             $This.Begin                  = $Null
@@ -392,12 +406,12 @@ Function Get-EventLogController
         {
             $This.Reset($This.System.Items,$This.Section.Slot[$This.Slot.SelectedIndex])
         }
-        [Void] Reset([Object]$Sender,[Object[]]$Content)
+        [Void] Reset([Object]$xSender,[Object[]]$Content)
         {
-            $Sender.Clear()
+            $xSender.Clear()
             ForEach ($Item in $Content)
             {
-                $Sender.Add($Item)
+                $xSender.Add($Item)
             }
         }
         [Void] SetBegin()
@@ -407,7 +421,8 @@ Function Get-EventLogController
                 Throw "Begin already set"
             }
     
-            $This.Begin = "{0}-{1}" -f [DateTime]::Now.ToString("yyyy-MMdd-HHmmss"), [Environment]::MachineName
+            $This.Begin = "{0}-{1}" -f [DateTime]::Now.ToString("yyyy-MMdd-HHmmss"), 
+                                       [Environment]::MachineName
         }
         [Void] SetEvent()
         {
@@ -434,21 +449,26 @@ Function Get-EventLogController
         }
         [String] LogProperty([String]$Slot)
         {
-            Return @( Switch ($Slot)
+            $Item = Switch ($Slot)
             {
-                Rank { "Rank" } Name { "LogName" } Type { "LogType" } Path { "LogFilePath" }
-            })
+                Rank { "Rank"        } 
+                Name { "LogName"     } 
+                Type { "LogType"     } 
+                Path { "LogFilePath" }
+            }
+
+            Return $Item
         }
         [Object] ViewCopy()
         {
-            $Return                             = @( )
-            $Buffer                             = ($This.ViewResult.Items | % Name | Sort-Object Length)[-1].Length
+            $Return = @( )
+            $Buffer = ($This.ViewResult.Items | % Name | Sort-Object Length)[-1].Length
             ForEach ($Item in $This.ViewResult.Items)
             {
-                $Split                          = $Item.Value -Split "`n"
+                $Split = $Item.Value -Split "`n"
                 If ($Split.Count -eq 1)
                 {
-                    $Return                    += "{0}{1} : {2}" -f $Item.Name,(@(" ")*($Buffer-$Item.Name.Length) -join ''), $Item.Value
+                    $Return += "{0}{1} : {2}" -f $Item.Name,(@(" ")*($Buffer-$Item.Name.Length) -join ''), $Item.Value
                 }
                 If ($Split.Count -gt 1)
                 {
@@ -456,11 +476,11 @@ Function Get-EventLogController
                     {
                         If ($X -eq 0)
                         {
-                            $Return            += "{0}{1} : {2}" -f $Item.Name,(@(" ")*($Buffer-$Item.Name.Length) -join ''),$Split[$X]
+                            $Return += "{0}{1} : {2}" -f $Item.Name,(@(" ")*($Buffer-$Item.Name.Length) -join ''),$Split[$X]
                         }
                         Else
                         {
-                            $Return            += "{0}   {1}" -f ( " " * $Buffer -join ""), $Split[$X]
+                            $Return += "{0}   {1}" -f ( " " * $Buffer -join ""), $Split[$X]
                         }
                     }
                 }
@@ -473,10 +493,10 @@ Function Get-EventLogController
         }
         ClearArchive()
         {
-            $Item                               = Get-EventLogArchive -New
-            $Type                               = $This.Types | ? Name -eq Archive
-            $Type.Data                          = $Null
-            $This.Reset($This.Archive.Items     , $Item.PSObject.Properties)
+            $Item      = Get-EventLogArchive -New
+            $Type      = $This.Types | ? Name -eq Archive
+            $Type.Data = $Null
+            $This.Reset($This.Archive.Items,$Item.PSObject.Properties)
         }
         SetArchive([String]$Path)
         {
@@ -485,10 +505,10 @@ Function Get-EventLogController
                 Throw "Invalid path specified"
             }
             
-            $Item                               = Get-EventLogArchive -Path $Path
-            $Type                               = $This.Types | ? Name -eq Archive
-            $Type.Data                          = $Item
-            $This.Reset($This.Archive.Items     , $Item.PSObject.Properties)
+            $Item      = Get-EventLogArchive -Path $Path
+            $Type      = $This.Types | ? Name -eq Archive
+            $Type.Data = $Item
+            $This.Reset($This.Archive.Items,$Item.PSObject.Properties)
         }
         GetLogOutput()
         {
