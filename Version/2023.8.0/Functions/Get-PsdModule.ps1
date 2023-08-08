@@ -24,6 +24,7 @@
     
 .Example
 #>
+
 Function Get-PsdModule
 {
     Class PsdObject
