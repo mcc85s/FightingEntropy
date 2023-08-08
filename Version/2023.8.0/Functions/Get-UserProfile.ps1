@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-05-15 11:33:11                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:04:01                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-UserProfile.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For collecting information and profiles from a given system.
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s 
     Primary    : @mcc85s 
     Created    : 2023-04-05
-    Modified   : 2023-05-15
+    Modified   : 2023-08-08
     Demo       : N/A 
     Version    : 0.0.0 - () - Finalized functional version 1.
     TODO       : 
