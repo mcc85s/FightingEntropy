@@ -44,6 +44,8 @@ using the [ComputerName] argument. If omitted, the [local workstation] is assume
 .PARAMETER ListSIDs
 Don't enumerate any settings, just list default SIDs and their groups.
 For reference only.
+
+.Example
 #>
 
 Function Get-DcomSecurity
