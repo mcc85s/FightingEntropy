@@ -5,12 +5,12 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 10:05:38                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 15:11:40                                                                  //
  \\==================================================================================================// 
 
     FileName   : Install-IISServer.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : To (install/stage/configure) an IIS Server for:
                  [-] Microsoft Deployment Toolkit
                  [-] PowerShell Deployment modification
@@ -20,13 +20,14 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Edited 12/14/22
 
 .Example
 #>
+
 Function Install-IISServer
 {
     [CmdLetBinding()]
@@ -43,7 +44,7 @@ Function Install-IISServer
 
     $OS = Get-CimInstance Win32_OperatingSystem
     $ID = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
-    If (!($ID.IsInRole("Administrator") -or $ID.IsInRole("Administrators")))
+    If (!$ID.IsInRole("Administrator") -or !$ID.IsInRole("Administrators"))
     {
         If ([UInt32]$OS.BuildNumber -ge 6000)
         {
