@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
-    (Enumerates + Maps) [DCOM (Access + Launch) ACL Settings]
+    (Enumerates + Maps) [Dcom (Access + Launch) ACL Settings]
     
 .DESCRIPTION
     This script is used to enumerate security settings based on WMI information from:
-    [+] Win32_DCOMApplication
-    [+] Win32_DCOMApplicationAccessAllowedSetting
-    [+] Win32_DCOMApplicationLaunchAllowedSetting
+    [+] Win32_DcomApplication
+    [+] Win32_DcomApplicationAccessAllowedSetting
+    [+] Win32_DcomApplicationLaunchAllowedSetting
 
     For detecting potential avenues for [lateral movement] or [persistence]
 
-    For more information on [DCOM-based lateral movement concept], refer to: 
+    For more information on [Dcom-based lateral movement concept], refer to: 
     https://enigma0x3.net/2017/01/23/lateral-movement-via-dcom-round-2/
 
     For more informaiton about [Known SID]s, refer to: 
@@ -20,18 +20,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:42:37                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 12:00:34                                                                  //
  \\==================================================================================================// 
 
-    FileName   : Get-DCOMSecurity.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
-    Purpose    : (Enumerates + Maps) [DCOM (Access + Launch) ACL Settings]
+    FileName   : Get-DcomSecurity.ps1
+    Solution   : [FightingEntropy()][2023.8.0]
+    Purpose    : (Enumerates + Maps) [Dcom (Access + Launch) ACL Settings]
     Author     : Michael C. Cook Sr. (Originally written by Matt Pichelmayer)
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Integrate with Active Directory, and implement original switches like -ResolveSid
@@ -46,11 +46,11 @@ Don't enumerate any settings, just list default SIDs and their groups.
 For reference only.
 #>
 
-Function Get-DCOMSecurity
+Function Get-DcomSecurity
 {
     [CmdletBinding(DefaultParametersetName=0)]
     Param(
-    [Parameter(ParameterSetName=0)][String] $ComputerName = $env:COMPUTERNAME ,
+    [Parameter(ParameterSetName=0)][String] $ComputerName = $env:ComputerName,
     [Parameter(ParameterSetName=1)][Switch]    $ListSIDs)
 
     # // ==============================================
@@ -185,7 +185,7 @@ Function Get-DCOMSecurity
             ("S-1-5-21 domain -571"       , "Allowed RODC Password Replication Group"),
             ("S-1-5- 21 domain -572"      , "Denied RODC Password Replication Group"),
             ("S-1-5-32-573"               , "BUILTIN\Event Log Readers"),
-            ("S-1-5-32-574"               , "BUILTIN\Certificate Service DCOM Access"),
+            ("S-1-5-32-574"               , "BUILTIN\Certificate Service Dcom Access"),
             ("S-1-5-21-domain-522"        , "Cloneable Domain Controllers"),
             ("S-1-5-32-575"               , "BUILTIN\RDS Remote Access Servers"),
             ("S-1-5-32-576"               , "BUILTIN\RDS Endpoint Servers"),
@@ -200,17 +200,17 @@ Function Get-DCOMSecurity
     }
 
     # // ==================================================
-    # // | The collection class for Win32_DCOMApplication |
+    # // | The collection class for Win32_DcomApplication |
     # // ==================================================
 
-    Class DCOMApp
+    Class DcomApp
     {
         [UInt32]       $Index
         Hidden [Object]  $Wmi
         [String]       $AppId
         [String]        $Name
         [Object]    $Property
-        DCOMApp([UInt32]$Index,[Object]$Wmi)
+        DcomApp([UInt32]$Index,[Object]$Wmi)
         {
             $This.Index       = $Index
             $This.Wmi         = $Wmi
@@ -228,7 +228,7 @@ Function Get-DCOMSecurity
     # // | Converts the WMI Element/Settings strings into objects, w/ parsing |
     # // ======================================================================
 
-    Class DCOMProperty
+    Class DcomProperty
     {
         Hidden [String] $Path
         Hidden [String] $Root
@@ -236,7 +236,7 @@ Function Get-DCOMSecurity
         [String]        $Name
         [String]   $Reference
         [String]       $Value
-        DCOMProperty([String]$Path)
+        DcomProperty([String]$Path)
         {
             $This.Path      = $Path
             $S              = $Path -Split "(\\|:|\.|=|\`")" | ? Length -gt 1
@@ -252,48 +252,48 @@ Function Get-DCOMSecurity
     }
 
     # // =====================================================================
-    # // | Specifically meant for Win32_DCOMApplicationAccessSetting objects |
+    # // | Specifically meant for Win32_DcomApplicationAccessSetting objects |
     # // =====================================================================
 
-    Class DCOMAccess
+    Class DcomAccess
     {
         [UInt32]      $Index
         Hidden [Object] $Wmi
         [Object]    $Element
         [Object]    $Setting
-        DCOMAccess([UInt32]$Index,[Object]$Wmi)
+        DcomAccess([UInt32]$Index,[Object]$Wmi)
         {
             $This.Index   = $Index
             $This.Wmi     = $Wmi
-            $This.Element = $This.DCOMProperty($Wmi.Element)
-            $This.Setting = $This.DCOMProperty($Wmi.Setting)
+            $This.Element = $This.DcomProperty($Wmi.Element)
+            $This.Setting = $This.DcomProperty($Wmi.Setting)
         }
-        [Object] DCOMProperty([String]$Path)
+        [Object] DcomProperty([String]$Path)
         {
-            Return [DCOMProperty]::New($Path)
+            Return [DcomProperty]::New($Path)
         }
     }
 
     # // =====================================================================
-    # // | Specifically meant for Win32_DCOMApplicationLaunchSetting objects |
+    # // | Specifically meant for Win32_DcomApplicationLaunchSetting objects |
     # // =====================================================================
 
-    Class DCOMLaunch
+    Class DcomLaunch
     {
         [UInt32]      $Index
         Hidden [Object] $Wmi
         [Object]    $Element
         [Object]    $Setting
-        DCOMLaunch([UInt32]$Index,[Object]$Wmi)
+        DcomLaunch([UInt32]$Index,[Object]$Wmi)
         {
             $This.Index   = $Index
             $This.Wmi     = $Wmi
-            $This.Element = $This.DCOMProperty($Wmi.Element)
-            $This.Setting = $This.DCOMProperty($Wmi.Setting)
+            $This.Element = $This.DcomProperty($Wmi.Element)
+            $This.Setting = $This.DcomProperty($Wmi.Setting)
         }
-        [Object] DCOMProperty([String]$Path)
+        [Object] DcomProperty([String]$Path)
         {
-            Return [DCOMProperty]::New($Path)
+            Return [DcomProperty]::New($Path)
         }
     }
 
@@ -301,7 +301,7 @@ Function Get-DCOMSecurity
     # // | This is meant to combine all of the above information |
     # // =========================================================
 
-    Class DCOMReference
+    Class DcomReference
     {
         [UInt32]           $Index
         [String]            $Type
@@ -309,7 +309,7 @@ Function Get-DCOMSecurity
         [Object]           $AppID
         [Object]             $Sid
         Hidden [Object] $Property
-        DCOMReference([UInt32]$Index,[String]$Type,[Object]$Object)
+        DcomReference([UInt32]$Index,[String]$Type,[Object]$Object)
         {
             $This.Index       = $Index
             $This.Type        = $Type
@@ -332,19 +332,19 @@ Function Get-DCOMSecurity
     # // | This is the class factory for the entire process |
     # // ====================================================
 
-    Class DCOMController
+    Class DcomController
     {
         [String] $ComputerName
         [Object] $Reference
         [Object] $Apps
         [Object] $Access
         [Object] $Launch
-        DCOMController()
+        DcomController()
         {
             $This.ComputerName = $This.EnvComputerName()
             $This.Main()
         }
-        DCOMController([String]$ComputerName)
+        DcomController([String]$ComputerName)
         {
             $This.ComputerName = $ComputerName
             $This.Main()
@@ -370,25 +370,25 @@ Function Get-DCOMSecurity
         {
             Return [System.Security.Principal.SecurityIdentifier]::New($Sid)
         }
-        [Object] DCOMApp([UInt32]$Index,[Object]$Wmi)
+        [Object] DcomApp([UInt32]$Index,[Object]$Wmi)
         {
-            Return [DCOMApp]::New($Index,$Wmi)
+            Return [DcomApp]::New($Index,$Wmi)
         }
-        [Object] DCOMAccess([UInt32]$Index,[Object]$Wmi)
+        [Object] DcomAccess([UInt32]$Index,[Object]$Wmi)
         {
-            Return [DCOMAccess]::New($Index,$Wmi)
+            Return [DcomAccess]::New($Index,$Wmi)
         }
-        [Object] DCOMLaunch([UInt32]$Index,[Object]$Wmi)
+        [Object] DcomLaunch([UInt32]$Index,[Object]$Wmi)
         {
-            Return [DCOMLaunch]::New($Index,$Wmi)
+            Return [DcomLaunch]::New($Index,$Wmi)
         }
-        [Object] DCOMReference([UInt32]$Index,[String]$Type,[Object]$Object)
+        [Object] DcomReference([UInt32]$Index,[String]$Type,[Object]$Object)
         {
-            Return [DCOMReference]::New($Index,$Type,$Object)
+            Return [DcomReference]::New($Index,$Type,$Object)
         }
-        [Object[]] DCOM([UInt32]$Mode)
+        [Object[]] Dcom([UInt32]$Mode)
         {
-            $Name = "Win32_DCOMApplication{0}" -f @("","AccessAllowedSetting","LaunchAllowedSetting")[$Mode]
+            $Name = "Win32_DcomApplication{0}" -f @("","AccessAllowedSetting","LaunchAllowedSetting")[$Mode]
             $Path = "\\{0}\Root\CimV2:$Name" -f $This.ComputerName
             $List = @([WmiClass]::New($Path).GetInstances())
             $Out  = @{ }
@@ -399,9 +399,9 @@ Function Get-DCOMSecurity
             {
                 $Item = Switch ($Mode)
                 {
-                    0 { $This.DCOMApp($Out.Count,$List[$X]) }
-                    1 { $This.DCOMAccess($Out.Count,$List[$X]) }
-                    2 { $This.DCOMLaunch($Out.Count,$List[$X]) }
+                    0 { $This.DcomApp($Out.Count,$List[$X]) }
+                    1 { $This.DcomAccess($Out.Count,$List[$X]) }
+                    2 { $This.DcomLaunch($Out.Count,$List[$X]) }
                 }
 
                 $Out.Add($Out.Count,$Item)
@@ -436,7 +436,7 @@ Function Get-DCOMSecurity
             ForEach ($Object in $This.Access)
             {
                 $Target           = $List[$Object.Element.Reference]
-                $Item             = $This.DCOMReference($Target.Property.Count,"Access",$Object)
+                $Item             = $This.DcomReference($Target.Property.Count,"Access",$Object)
                 $AppID            = $Item.Property | ? Name -eq AppID
                 $Item.AppID       = $AppId.Value   = $Target.Name
         
@@ -450,7 +450,7 @@ Function Get-DCOMSecurity
             ForEach ($Object in $This.Launch)
             {
                 $Target           = $List[$Object.Element.Reference]
-                $Item             = $This.DCOMReference($Target.Property.Count,"Launch",$Object)
+                $Item             = $This.DcomReference($Target.Property.Count,"Launch",$Object)
                 $AppID            = $Item.Property | ? Name -eq AppID
                 $Item.AppID       = $AppId.Value   = $Target.Name
         
@@ -589,6 +589,6 @@ Function Get-DCOMSecurity
     }
     Else
     {
-        [DCOMController]::New($ComputerName)
+        [DcomController]::New($ComputerName)
     }
 }
