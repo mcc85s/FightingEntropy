@@ -5,18 +5,18 @@
 .NOTES
 
  //==================================================================================================\\ 
-//  Module     : [FightingEntropy()][2023.4.0]                                                        \\
-\\  Date       : 2023-04-05 09:57:18                                                                  //
+//  Module     : [FightingEntropy()][2023.8.0]                                                        \\
+\\  Date       : 2023-08-08 14:54:47                                                                  //
  \\==================================================================================================// 
 
-    FileName   : Get-PSDLogGUI.ps1
-    Solution   : [FightingEntropy()][2023.4.0]
+    FileName   : Get-PsdLogGUI.ps1
+    Solution   : [FightingEntropy()][2023.8.0]
     Purpose    : For parsing the PowerShell Deployment log items into GUI objects
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2023-04-05
+    Modified   : 2023-08-08
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -24,22 +24,22 @@
 .Example
 #>
 
-Function Get-PSDLogGUI
+Function Get-PsdLogGUI
 {
     Param ($Path)
 
-    Class PSDLogItem
+    Class PsdLogItem
     {
-        [UInt32] $Index
-        [String] $Message
-        [String] $Time
-        [String] $Date
+        [UInt32]     $Index
+        [String]   $Message
+        [String]      $Time
+        [String]      $Date
         [String] $Component
-        [String] $Context
-        [String] $Type
-        [String] $Thread
-        [String] $File
-        PSDLogItem([UInt32]$Index,[String]$Line)
+        [String]   $Context
+        [String]      $Type
+        [String]    $Thread
+        [String]      $File
+        PsdLogItem([UInt32]$Index,[String]$Line)
         {
             $InputObject      = $Line -Replace "(\>\<)", ">`n<" -Split "`n"
             $This.Index       = $Index
@@ -59,10 +59,10 @@ Function Get-PSDLogGUI
         }
     }
     
-    Class PSDLog
+    Class PsdLog
     {
         [Object] $Output
-        PSDLog([UInt32]$Index,[String]$Path)
+        PsdLog([UInt32]$Index,[String]$Path)
         {
             If (!(Test-Path $Path))
             {
@@ -78,14 +78,14 @@ Function Get-PSDLogGUI
         }
         [Object] Line([Uint32]$Index,[String]$Line)
         {
-            Return [PSDLogItem]::New($Index,$Line)
+            Return [PsdLogItem]::New($Index,$Line)
         }
     }
 
-    Class PSDProcedure
+    Class PsdProcedure
     {
         [Object] $Output
-        PSDProcedure([String]$Path)
+        PsdProcedure([String]$Path)
         {
             $Swap        = @( )
             $Last        = @( )
@@ -95,7 +95,7 @@ Function Get-PSDLogGUI
             ForEach ($Item in Get-Childitem $Path *.Log)
             {
                 Write-Host "Loading [~] ($($Item.Name))"
-                $File = [PSDLog]::New($Swap.Count,$Item.FullName).Output
+                $File = [PsdLog]::New($Swap.Count,$Item.FullName).Output
                 ForEach ($Item in $File)
                 {
                     $Swap += $Item
@@ -117,18 +117,18 @@ Function Get-PSDLogGUI
     }
     Else
     {
-        [PSDProcedure]::New($Path)
+        [PsdProcedure]::New($Path)
     }
 }
 
-Function Publish-PSDLog
+Function Publish-PsdLog
 {
     Param([String]$Path)
 
     Class EntryList
     {
-        [UInt32] $Index
-        [String] $Path
+        [UInt32]   $Index
+        [String]    $Path
         [Object] $Content
         EntryList([UInt32]$Index,[String]$Path)
         {
@@ -143,13 +143,13 @@ Function Publish-PSDLog
 
     $Stack = @( )
     # Get extract path
-    ForEach ($Directory in Get-Childitem $Path | ? PSIsContainer | ? Name -match "\d{4}_\d{4}")
+    ForEach ($Directory in Get-ChildItem $Path | ? PSIsContainer | ? Name -match "\d{4}_\d{4}")
     {
         Write-Host "[=] ($($Directory.Fullname))"
-        ForEach ($Entry in Get-Childitem $Directory.FullName)
+        ForEach ($Entry in Get-ChildItem $Directory.FullName)
         {
             "[+] $($Entry.Fullname)"
-            $Stack += Get-PSDLog $Entry.Fullname
+            $Stack += Get-PsdLog $Entry.Fullname
         }
     }
 
@@ -167,7 +167,7 @@ Function Publish-PSDLog
     $List
 }
 
-Function Show-PSDLog
+Function Show-PsdLog
 {
     Class DGList
     {
@@ -238,209 +238,227 @@ Function Show-PSDLog
         }
     }
 
-    Class PSDLogsGUI
+    Class PsdLogsXaml
     {
-        Static [String] $Tab = @('    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
-        '            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
-        '            Title="PSDLogs" Height="450" Width="800">',
-        '        <Window.Resources>',
-        '            <Style x:Key="DropShadow">',
-        '                <Setter Property="TextBlock.Effect">',
-        '                    <Setter.Value>',
-        '                        <DropShadowEffect ShadowDepth="1"/>',
-        '                    </Setter.Value>',
-        '                </Setter>',
-        '            </Style>',
-        '            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-        '                <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-        '                <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '                <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '                <Setter Property="Height" Value="24"/>',
-        '                <Setter Property="Margin" Value="4"/>',
-        '                <Setter Property="FontSize" Value="12"/>',
-        '                <Setter Property="Foreground" Value="#000000"/>',
-        '                <Setter Property="TextWrapping" Value="Wrap"/>',
-        '                <Style.Resources>',
-        '                    <Style TargetType="Border">',
-        '                        <Setter Property="CornerRadius" Value="2"/>',
-        '                    </Style>',
-        '                </Style.Resources>',
-        '            </Style>',
-        '            <Style TargetType="Button">',
-        '                <Setter Property="Margin" Value="5"/>',
-        '                <Setter Property="Padding" Value="5"/>',
-        '                <Setter Property="Height" Value="30"/>',
-        '                <Setter Property="FontWeight" Value="Semibold"/>',
-        '                <Setter Property="FontSize" Value="12"/>',
-        '                <Setter Property="Foreground" Value="Black"/>',
-        '                <Setter Property="Background" Value="#DFFFBA"/>',
-        '                <Setter Property="BorderThickness" Value="2"/>',
-        '                <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '                <Style.Resources>',
-        '                    <Style TargetType="Border">',
-        '                        <Setter Property="CornerRadius" Value="5"/>',
-        '                    </Style>',
-        '                </Style.Resources>',
-        '            </Style>',
-        '            <Style TargetType="ComboBox">',
-        '                <Setter Property="Height" Value="24"/>',
-        '                <Setter Property="Margin" Value="5"/>',
-        '                <Setter Property="FontSize" Value="12"/>',
-        '                <Setter Property="FontWeight" Value="Normal"/>',
-        '            </Style>',
-        '            <Style TargetType="DataGrid">',
-        '                <Setter Property="Margin" Value="5"/>',
-        '                <Setter Property="AutoGenerateColumns" Value="False"/>',
-        '                <Setter Property="AlternationCount" Value="3"/>',
-        '                <Setter Property="HeadersVisibility" Value="Column"/>',
-        '                <Setter Property="CanUserResizeRows" Value="False"/>',
-        '                <Setter Property="CanUserAddRows" Value="False"/>',
-        '                <Setter Property="IsReadOnly" Value="True"/>',
-        '                <Setter Property="IsTabStop" Value="True"/>',
-        '                <Setter Property="IsTextSearchEnabled" Value="True"/>',
-        '                <Setter Property="SelectionMode" Value="Extended"/>',
-        '                <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
-        '                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
-        '                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
-        '            </Style>',
-        '            <Style TargetType="DataGridRow">',
-        '                <Setter Property="BorderBrush" Value="Black"/>',
-        '                <Style.Triggers>',
-        '                    <Trigger Property="AlternationIndex" Value="0">',
-        '                        <Setter Property="Background" Value="White"/>',
-        '                    </Trigger>',
-        '                    <Trigger Property="AlternationIndex" Value="1">',
-        '                        <Setter Property="Background" Value="#FFC5E5EC"/>',
-        '                    </Trigger>',
-        '                    <Trigger Property="AlternationIndex" Value="2">',
-        '                        <Setter Property="Background" Value="#FFFDE1DC"/>',
-        '                    </Trigger>',
-        '                </Style.Triggers>',
-        '            </Style>',
-        '            <Style TargetType="DataGridColumnHeader">',
-        '                <Setter Property="FontSize"   Value="10"/>',
-        '                <Setter Property="FontWeight" Value="Medium"/>',
-        '                <Setter Property="Margin" Value="2"/>',
-        '                <Setter Property="Padding" Value="2"/>',
-        '            </Style>',
-        '            <Style TargetType="Label">',
-        '                <Setter Property="Margin" Value="5"/>',
-        '                <Setter Property="FontWeight" Value="Bold"/>',
-        '                <Setter Property="Background" Value="Black"/>',
-        '                <Setter Property="Foreground" Value="White"/>',
-        '                <Setter Property="BorderBrush" Value="Gray"/>',
-        '                <Setter Property="BorderThickness" Value="2"/>',
-        '                <Style.Resources>',
-        '                    <Style TargetType="Border">',
-        '                        <Setter Property="CornerRadius" Value="5"/>',
-        '                    </Style>',
-        '                </Style.Resources>',
-        '            </Style>',
-        '        </Window.Resources>',
-        '        <Grid>',
-        '            <Grid.RowDefinitions>',
-        '                <RowDefinition Height="40"/>',
-        '                <RowDefinition Height="40"/>',
-        '                <RowDefinition Height="*"/>',
-        '            </Grid.RowDefinitions>',
-        '            <Grid Grid.Row="0">',
-        '                <Grid.ColumnDefinitions>',
-        '                    <ColumnDefinition Width="150"/>',
-        '                    <ColumnDefinition Width="*"/>',
-        '                    <ColumnDefinition Width="150"/>',
-        '                </Grid.ColumnDefinitions>',
-        '                <Button Grid.Column="0" Content="Browse" Name="Browse"/>',
-        '                <TextBox Grid.Column="1" Name="Path"/>',
-        '                <Button Grid.Column="2" Content="Select" Name="Select"/>',
-        '            </Grid>',
-        '            <ComboBox Grid.Row="1" SelectedIndex="0" Name="List"/>',
-        '            <DataGrid Grid.Row="2" Name="Output">',
-        '                <DataGrid.Columns>',
-        '                    <DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="120"/>',
-        '                    <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="120"/>',
-        '                    <DataGridTextColumn Header="Component" Binding="{Binding Component}" Width="120"/>',
-        '                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>',
-        '                </DataGrid.Columns>',
-        '            </DataGrid>',
+        Static [String] $Content = @(
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
+        '        Title="PsdLogs"',
+        '        Height="450"',
+        '        Width="800">',
+        '    <Window.Resources>',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="Button">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="30"/>',
+        '            <Setter Property="FontWeight" Value="Semibold"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGrid">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+        '            <Setter Property="AlternationCount" Value="3"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows" Value="False"/>',
+        '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
+        '            <Setter Property="IsTabStop" Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+        '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="2">',
+        '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Medium"/>',
+        '            <Setter Property="Margin" Value="2"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '        </Style>',
+        '        <Style TargetType="Label">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Gray"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '    </Window.Resources>',
+        '    <Grid>',
+        '        <Grid.RowDefinitions>',
+        '            <RowDefinition Height="40"/>',
+        '            <RowDefinition Height="40"/>',
+        '            <RowDefinition Height="*"/>',
+        '        </Grid.RowDefinitions>',
+        '        <Grid Grid.Row="0">',
+        '            <Grid.ColumnDefinitions>',
+        '                <ColumnDefinition Width="150"/>',
+        '                <ColumnDefinition Width="*"/>',
+        '                <ColumnDefinition Width="150"/>',
+        '            </Grid.ColumnDefinitions>',
+        '            <Button Grid.Column="0" Content="Browse" Name="Browse"/>',
+        '            <TextBox Grid.Column="1" Name="Path"/>',
+        '            <Button Grid.Column="2" Content="Select" Name="Select"/>',
         '        </Grid>',
-        '    </Window>' -join "`n")
+        '        <ComboBox Grid.Row="1" SelectedIndex="0" Name="List"/>',
+        '        <DataGrid Grid.Row="2" Name="Output">',
+        '            <DataGrid.Columns>',
+        '                <DataGridTextColumn Header="Time"',
+        '                                    Binding="{Binding Time}"',
+        '                                    Width="120"/>',
+        '                <DataGridTextColumn Header="Date"',
+        '                                    Binding="{Binding Date}"',
+        '                                    Width="120"/>',
+        '                <DataGridTextColumn Header="Component"',
+        '                                    Binding="{Binding Component}"',
+        '                                    Width="120"/>',
+        '                <DataGridTextColumn Header="Message"',
+        '                                    Binding="{Binding Message}"',
+        '                                    Width="*"/>',
+        '            </DataGrid.Columns>',
+        '        </DataGrid>',
+        '    </Grid>',
+        '</Window>' -join "`n")
     }
 
-    Class Main
+    Class PsdLogsController
     {
+        [Object] $Xaml
         [Object] $List
-        Main()
+        PsdLogsController()
         {
+            $This.Xaml = [XamlWindow][PsdLogsXaml]::Content
             $This.List = @( )
+        }
+        StageXaml()
+        {
+            $Ctrl = $This
+
+            $Ctrl.Xaml.IO.List.Add_SelectionChanged(
+            {
+                If ($Xaml.IO.List.SelectedIndex -gt -1)
+                {
+                    $Xaml.IO.Output.Items.Clear()
+                    ForEach ($Item in $Main.List[$Xaml.IO.List.SelectedIndex].Content)
+                    {
+                        $Xaml.IO.Output.Items.Add($Item)
+                    }
+                }
+            })
+            
+            $Ctrl.Xaml.IO.Browse.Add_Click(
+            {
+                $Item                   = New-Object System.Windows.Forms.FolderBrowserDialog
+                $Item.ShowDialog()
+                
+                If (!$Item.SelectedPath)
+                {
+                    $Item.SelectedPath  = ""
+                }
+        
+                $Ctrl.Xaml.IO.Path.Text = $Item.SelectedPath
+            })
+            
+            $Ctrl.Xaml.IO.Select.Add_Click(
+            {
+                Switch (Test-Path $Ctrl.Xaml.IO.Path.Text)
+                {
+                    $True
+                    {
+                        Try
+                        {
+                            $Ctrl.GetList($Ctrl.Xaml.IO.Path.Text)
+                        }
+                        Catch
+                        {
+                            Throw "Unable to retrieve the logs from the specified path"
+                        }
+                    }
+        
+                    $False
+                    {
+                        [System.Windows.MessageBox]::Show("Invalid path","Error")
+                    }
+                }
+        
+                If ($Ctrl.List)
+                {
+                    $Ctrl.Xaml.IO.List.Items.Clear()
+
+                    ForEach ($Item in $Ctrl.List)
+                    {
+                        $Ctrl.Xaml.IO.List.Items.Add($Item.Path)
+                    }
+                }
+            })
+        }
+        Invoke()
+        {
+            $This.Xaml.Invoke()
         }
         GetList([String]$Path)
         {
-            $This.List = Publish-PSDLog $Path
+            $This.List = Publish-PsdLog $Path
         }
     }
 
-    $Xaml = [XamlWindow][PSDLogsGUI]::Tab
-    $Main = [Main]::New()
-
-    $Xaml.IO.List.Add_SelectionChanged(
-    {
-        If ($Xaml.IO.List.SelectedIndex -gt -1)
-        {
-            $Xaml.IO.Output.Items.Clear()
-            ForEach ($Item in $Main.List[$Xaml.IO.List.SelectedIndex].Content)
-            {
-                $Xaml.IO.Output.Items.Add($Item)
-            }
-        }
-    })
-
-    $Xaml.IO.Browse.Add_Click(
-    {
-        $Item                   = New-Object System.Windows.Forms.FolderBrowserDialog
-        $Item.ShowDialog()
-        
-        If (!$Item.SelectedPath)
-        {
-            $Item.SelectedPath  = ""
-        }
-
-        $Xaml.IO.Path.Text      = $Item.SelectedPath
-    })
-
-    $Xaml.IO.Select.Add_Click(
-    {
-        Switch (Test-Path $Xaml.IO.Path.Text)
-        {
-            $True
-            {
-                Try
-                {
-                    $Main.GetList($Xaml.IO.Path.Text)
-                }
-                Catch
-                {
-                    Throw "Unable to retrieve the logs from the specified path"
-                }
-            }
-
-            $False
-            {
-                [System.Windows.MessageBox]::Show("Invalid path","Error")
-            }
-        }
-
-        If ($List)
-        {
-            $Xaml.IO.List.Items.Clear()
-            ForEach ($Item in $Main.List)
-            {
-                $Xaml.IO.List.Items.Add($Item.Path)
-            }
-        }
-    })
-
-    # Invoke
-    $Xaml.Invoke()
-
-    $Xaml
+    $Ctrl = [PsdLogsController]::New()
+    $Ctrl.StageXaml()
+    $Ctrl.Invoke()
 }
