@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.8.0]                                                        \\
-\\  Date       : 2023-08-08 13:10:50                                                                  //
+\\  Date       : 2023-08-09 16:38:41                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2023-08-08
+   Modified   : 2023-08-09
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -32,6 +32,7 @@ Function Get-FEModule
         [Parameter(ParameterSetName=1)][Switch]   $Control ,
         [Parameter(ParameterSetName=2)][Switch] $Functions ,  
         [Parameter(ParameterSetName=3)][Switch]  $Graphics )
+
 
     # // =======================================================
     # // | Used to track console logging, similar to Stopwatch |
@@ -196,17 +197,18 @@ Function Get-FEModule
         }
     }
 
+
     # // =====================================================================
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
     # // =====================================================================
 
     Class ThemeBlock
     {
-        [UInt32]   $Index
-        [Object]  $String
-        [UInt32]    $Fore
-        [UInt32]    $Back
-        [UInt32]    $Last
+        [UInt32]  $Index
+        [Object] $String
+        [UInt32]   $Fore
+        [UInt32]   $Back
+        [UInt32]   $Last
         ThemeBlock([Int32]$Index,[String]$String,[Int32]$Fore,[Int32]$Back)
         {
             $This.Index  = $Index
@@ -229,7 +231,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.ThemeBlock>"
+            Return "<FightingEntropy.Module.Theme[Block]>"
         }
     }
 
@@ -239,7 +241,7 @@ Function Get-FEModule
 
     Class ThemeTrack
     {
-        [UInt32] $Index
+        [UInt32]   $Index
         [Object] $Content
         ThemeTrack([UInt32]$Index,[Object]$Track)
         {
@@ -248,7 +250,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.ThemeTrack>"
+            Return "<FightingEntropy.Module.Theme[Track]>"
         }
     }
 
@@ -377,7 +379,7 @@ Function Get-FEModule
                 }
                 $Block += $Array[$X]
             }
-            
+
             ForEach ($X in 0..($Hash.Count-1))
             {
                 $This.Track[2].Content[$X+3].String = $Hash[$X]
@@ -396,20 +398,21 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.ThemeStack>"
+            Return "<FightingEntropy.Module.Theme[Stack]>"
         }
     }
     
+
     # // ===================================================
     # // | Property object which includes source and index |
     # // ===================================================
 
     Class OSProperty
     {
-        [String] $Source
+        [String]       $Source
         Hidden [UInt32] $Index
-        [String] $Name
-        [Object] $Value
+        [String]         $Name
+        [Object]        $Value
         OSProperty([String]$Source,[UInt32]$Index,[String]$Name,[Object]$Value)
         {
             $This.Source = $Source
@@ -419,19 +422,19 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OSProperty>"
+            Return "<FightingEntropy.Module.OS[Property]>"
         }
     }
 
     # // ==========================================================
     # // | Container object for indexed OS (property/value) pairs |
     # // ==========================================================
-    
+
     Class OSPropertySet
     {
         Hidden [UInt32] $Index
-        [String] $Source
-        [Object] $Property
+        [String]       $Source
+        [Object]     $Property
         OSPropertySet([UInt32]$Index,[String]$Source)
         {
             $This.Index     = $Index
@@ -444,8 +447,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            $D = ([String]$This.Property.Count).Length
-            Return "({0:d$D}) <FightingEntropy.Module.OSPropertySet[{1}]>" -f $This.Property.Count, $This.Source
+            Return "<FightingEntropy.Module.OS[PropertySet]>"
         }
     }
 
@@ -453,7 +455,7 @@ Function Get-FEModule
     # // | Collects various details about the operating system specifically for cross-platform compatibility |
     # // =====================================================================================================
 
-    Class OS
+    Class OSController
     {
         Hidden [String] $Name
         [Object]     $Caption
@@ -461,7 +463,7 @@ Function Get-FEModule
         [Object]   $PSVersion
         [Object]        $Type
         [Object]      $Output
-        OS()
+        OSController()
         {
             $This.Name   = "Operating System"
             $This.Output = @( )
@@ -498,7 +500,7 @@ Function Get-FEModule
 
             (Get-Variable PSVersionTable | % Value).GetEnumerator() | % { $This.Add(3,$_.Name,$_.Value) }
 
-            If ($This.Tx("PowerShell","PSedition") -eq "Desktop")
+            If ($This.Tx("PowerShell","PSEdition") -eq "Desktop")
             {
                 Get-CimInstance Win32_OperatingSystem | % { $This.Add(3,"OS","Microsoft Windows $($_.Version)") }
                 $This.Add(3,"Platform","Win32NT")
@@ -523,7 +525,11 @@ Function Get-FEModule
         }
         AddPropertySet([String]$Name)
         {
-            $This.Output += [OSPropertySet]::New($This.Output.Count,$Name)
+            $This.Output += $This.OSPropertySet($This.Output.Count,$Name)
+        }
+        [Object] OSPropertySet([UInt32]$Index,[String]$Name)
+        {
+            Return [OSPropertySet]::New($Index,$Name)
         }
         [String] GetWinCaption()
         {
@@ -538,28 +544,40 @@ Function Get-FEModule
         }
         [String] GetOSType()
         {
-            Return @( If ($This.Version.Major -gt 5)
+            If ($This.Version.Major -gt 5)
             {
                 If (Get-Item Variable:\IsLinux | % Value)
                 {
-                    (hostnamectl | ? { $_ -match "Operating System" }).Split(":")[1].TrimStart(" ")
+                    $Item = (hostnamectl | ? { $_ -match "Operating System" }).Split(":")[1].TrimStart(" ")
                 }
-
                 Else
                 {
-                    $This.GetWinType()
+                    $Item = $This.GetWinType()
                 }
             }
 
             Else
             {
-                $This.GetWinType()
-            })
+                $Item = $This.GetWinType()
+            }
+
+            Return $Item
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS>"
+            Return "<FightingEntropy.Module.OS[Controller]>"
         }
+    }
+
+    # // ======================================
+    # // | Enumerates the manifest item types |
+    # // ======================================
+
+    Enum ManifestListType
+    {
+        Control
+        Function
+        Graphic
     }
 
     # // ============================================================
@@ -579,13 +597,17 @@ Function Get-FEModule
             $This.Name   = $Name
             $This.Hash   = $Hash
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Manifest[ListItem]>"
+        }
     }
 
     # // ==============================================================
     # // | Manifest file -> filesystem object (collection/validation) |
     # // ==============================================================
 
-    Class ManifestFile
+    Class ManifestFileEntry
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -597,7 +619,7 @@ Function Get-FEModule
         Hidden [String]   $Source
         Hidden [UInt32]    $Match
         Hidden [Object]  $Content
-        ManifestFile([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
+        ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
         {
             $This.Index    = $Folder.Item.Count
             $This.Mode     = 0
@@ -638,28 +660,31 @@ Function Get-FEModule
             {
                 $xContent = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
 
-                If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+                Switch -Regex ($This.Name)
                 {
-                    $This.Content = $xContent
-                }
-                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
-                {
-                    $Array = $xContent -Split "`n"
-                    $Ct    = $Array.Count
-                    Do
+                    "\.+(jpg|jpeg|png|bmp|ico)"
                     {
-                        If ($Array[$Ct] -notmatch "\w")
-                        {
-                            $Ct --
-                        }
+                        $This.Content = $xContent
                     }
-                    Until ($Array[$Ct] -match "\w")
-
-                    $This.Content = $Array[0..($Ct)] -join "`n"
-                }
-                Else
-                {
-                    $This.Content = $xContent
+                    "\.+(txt|xml|cs)"
+                    {
+                        $Array = $xContent -Split "`n"
+                        $Ct    = $Array.Count
+                        Do
+                        {
+                            If ($Array[$Ct] -notmatch "\w")
+                            {
+                                $Ct --
+                            }
+                        }
+                        Until ($Array[$Ct] -match "\w")
+    
+                        $This.Content = $Array[0..($Ct)] -join "`n"
+                    }
+                    Default
+                    {
+                        $This.Content = $xContent
+                    }
                 }
             }
             Catch
@@ -681,19 +706,20 @@ Function Get-FEModule
 
             Try
             {
-                If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+                Switch -Regex ($This.Name)
                 {
-                    [System.IO.File]::WriteAllBytes($This.Fullname,[Byte[]]$This.Content)
-                }
-                ElseIf ($This.Name -match "\.+(txt|xml|cs)")
-                {
-                    [System.IO.File]::WriteAllText($This.Fullname,$This.Content)
-                }
-                Else
-                {
-                    [System.IO.File]::WriteAllText($This.Fullname,
-                                                   $This.Content,
-                                                   [System.Text.UTF8Encoding]$False)
+                    "\.+(jpg|jpeg|png|bmp|ico)"
+                    {
+                        [System.IO.File]::WriteAllBytes($This.Fullname,[Byte[]]$This.Content)
+                    }
+                    "\.+(xml|txt|cs)"
+                    {
+                        [System.IO.File]::WriteAllText($This.Fullname,$This.Content)
+                    }
+                    Default
+                    {
+                        [System.IO.File]::WriteAllText($This.Fullname,$This.Content,[System.Text.UTF8Encoding]$False)
+                    }
                 }
             }
             Catch
@@ -710,19 +736,20 @@ Function Get-FEModule
 
             Try
             {
-                If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+                Switch -Regex ($This.Name)
                 {
-                    $This.Content = [System.IO.File]::ReadAllBytes($This.Fullname)
-                }
-                ElseIf ($This.Name -match "\.+(xml|txt|cs)")
-                {
-                    $This.Content = [System.IO.File]::ReadAllText($This.Fullname,
-                                                                  [System.Text.UTF8Encoding]$False)
-                }
-                Else
-                {
-                    $This.Content = [System.IO.File]::ReadAllLines($This.Fullname,
-                                                                   [System.Text.UTF8Encoding]$False)
+                    "\.+(jpg|jpeg|png|bmp|ico)"
+                    {
+                        [System.IO.File]::ReadAllBytes($This.Fullname)
+                    }
+                    "\.+(xml|txt|cs)"
+                    {
+                        [System.IO.File]::ReadAllText($This.Fullname,[System.Text.UTF8Encoding]$False)
+                    }
+                    Default
+                    {
+                        [System.IO.File]::ReadAllLines($This.Fullname,[System.Text.UTF8Encoding]$False)
+                    }
                 }
             }
             Catch
@@ -732,7 +759,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.ManifestFile>"
+            Return "<FightingEntropy.Module.Manifest[FileEntry]>"
         }
     }
 
@@ -740,7 +767,7 @@ Function Get-FEModule
     # // | Manifest folder -> filesystem object |
     # // ========================================
 
-    Class ManifestFolder
+    Class ManifestFolderEntry
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -750,7 +777,7 @@ Function Get-FEModule
         [UInt32]          $Exists
         Hidden [Object]     $Item
         Hidden [String]   $Source
-        ManifestFolder([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
+        ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
         {
             $This.Index     = $Index
             $This.Mode      = 1
@@ -812,7 +839,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "({0}) <FightingEntropy.Module.ManifestFolder[{1}]>" -f $This.Item.Count, $This.Name
+            Return "<FightingEntropy.Module.Manifest[FolderEntry]>"
         }
     }
 
@@ -887,7 +914,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.ManifestController>"
+            Return "<FightingEntropy.Module.Manifest[Controller]>"
         }
     }
 
@@ -934,125 +961,9 @@ Function Get-FEModule
             $This.File        = $Module.Root.File
             $This.Manifest    = $Module.Root.Manifest
         }
-    }
-
-    # // ==================================================
-    # // | Represents individual paths to the module root |
-    # // ==================================================
-
-    Class RootProperty
-    {
-        Hidden [UInt32] $Index
-        [String]         $Type
-        [String]         $Name
-        [String]     $Fullname
-        [UInt32]       $Exists
-        Hidden [String]  $Path
-        RootProperty([UInt32]$Index,[String]$Name,[UInt32]$Type,[String]$Fullname)
-        {
-            $This.Index    = $Index
-            $This.Type     = Switch ($Type) { 0 { "Directory" } 1 { "File" } }
-            $This.Name     = $Name
-            $This.Fullname = $Fullname
-            $This.Path     = $Fullname
-            $This.TestPath()
-        }
-        TestPath()
-        {
-            $This.Exists   = Test-Path $This.Path
-        }
-        Create()
-        {
-            $This.TestPath()
-
-            If (!$This.Exists)
-            {
-                Switch ($This.Name)
-                {
-                    {$_ -in "Resource","Module"}
-                    {
-                        [System.IO.Directory]::CreateDirectory($This.Fullname)
-                    }
-                    {$_ -in "File","Manifest"}
-                    {
-                        [System.IO.File]::Create($This.Fullname).Dispose()
-                    }
-                }
-
-                $This.TestPath()
-            }
-        }
-        Remove()
-        {
-            $This.TestPath()
-
-            If ($This.Exists)
-            {
-                Switch ($This.Name)
-                {
-                    {$_ -in "Resource","Module"}
-                    {
-                        [System.IO.Directory]::Delete($This.Fullname)
-                    }
-                    {$_ -in "File","Manifest","Shortcut"}
-                    {
-                        [System.IO.File]::Delete($This.Fullname)
-                    }
-                }
-
-                $This.Exists = 0
-            }
-        }
         [String] ToString()
         {
-            Return $This.Path
-        }
-    }
-
-    # // ========================================================
-    # // | Represents a collection of paths for the module root |
-    # // ========================================================
-
-    Class Root
-    {
-        Hidden [String] $Name
-        [Object]    $Registry
-        [Object]    $Resource
-        [Object]      $Module
-        [Object]        $File
-        [Object]    $Manifest
-        [Object]    $Shortcut
-        Root([String]$Version,[String]$Resource,[String]$Path)
-        {
-            $This.Name     = "Module Root"
-            $SDP           = "Secure Digits Plus LLC"
-            $FE            = "FightingEntropy"
-            $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\$SDP\$FE\$Version")
-            $This.Resource = $This.Set(1,0,"$Resource")
-            $This.Module   = $This.Set(2,0,"$Path\$FE")
-            $This.File     = $This.Set(3,1,"$Path\$FE\$FE.psm1")
-            $This.Manifest = $This.Set(4,1,"$Path\$FE\$FE.psd1")
-            $This.Shortcut = $This.Set(5,1,"$Env:Public\Desktop\$FE.lnk")
-        }
-        [String] Slot([UInt32]$Type)
-        {
-            Return @("Registry","Resource","Module","File","Manifest","Shortcut")[$Type]
-        }
-        [Object] Set([UInt32]$Index,[UInt32]$Type,[String]$Path)
-        {
-            Return [RootProperty]::New($Index,$This.Slot($Index),$Type,$Path)
-        }
-        [Void] Refresh()
-        {
-            $This.List() | % { $_.TestPath() }
-        }
-        [Object[]] List()
-        {
-            Return $This.PSObject.Properties.Name | % { $This.$_ }
-        }
-        [String] ToString()
-        {
-            Return "<FightingEntropy.Module.Root>"
+            Return "<FightingEntropy.Module.Registry[Template]>"
         }
     }
 
@@ -1062,13 +973,13 @@ Function Get-FEModule
 
     Class RegistryKeyTemp
     {
-        Hidden [Microsoft.Win32.RegistryKey] $Key
+        Hidden [Microsoft.Win32.RegistryKey]    $Key
         Hidden [Microsoft.Win32.RegistryKey] $Subkey
-        [String]            $Enum
-        [String]            $Hive
-        [String]            $Path
-        [String]            $Name
-        Hidden [String] $Fullname
+        [String]                               $Enum
+        [String]                               $Hive
+        [String]                               $Path
+        [String]                               $Name
+        Hidden [String]                    $Fullname
         RegistryKeyTemp([String]$Path)
         {
             $This.Fullname = $Path
@@ -1125,6 +1036,10 @@ Function Get-FEModule
                 $This.Key.Dispose()
             }
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Registry[KeyTemp]>"
+        }
     }
     
     # // ========================================================
@@ -1145,7 +1060,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.RegistryKeyProperty>"
+            Return "<FightingEntropy.Module.Registry[KeyProperty]>"
         }
     }
 
@@ -1250,10 +1165,129 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.RegistryKey>"
+            Return "<FightingEntropy.Module.Registry[Key]>"
         }
     }
 
+    # // ==================================================
+    # // | Represents individual paths to the module root |
+    # // ==================================================
+
+    Class RootProperty
+    {
+        Hidden [UInt32] $Index
+        [String]         $Type
+        [String]         $Name
+        [String]     $Fullname
+        [UInt32]       $Exists
+        Hidden [String]  $Path
+        RootProperty([UInt32]$Index,[String]$Name,[UInt32]$Type,[String]$Fullname)
+        {
+            $This.Index    = $Index
+            $This.Type     = Switch ($Type) { 0 { "Directory" } 1 { "File" } }
+            $This.Name     = $Name
+            $This.Fullname = $Fullname
+            $This.Path     = $Fullname
+            $This.TestPath()
+        }
+        TestPath()
+        {
+            $This.Exists   = Test-Path $This.Path
+        }
+        Create()
+        {
+            $This.TestPath()
+
+            If (!$This.Exists)
+            {
+                Switch ($This.Name)
+                {
+                    {$_ -in "Resource","Module"}
+                    {
+                        [System.IO.Directory]::CreateDirectory($This.Fullname)
+                    }
+                    {$_ -in "File","Manifest"}
+                    {
+                        [System.IO.File]::Create($This.Fullname).Dispose()
+                    }
+                }
+
+                $This.TestPath()
+            }
+        }
+        Remove()
+        {
+            $This.TestPath()
+
+            If ($This.Exists)
+            {
+                Switch ($This.Name)
+                {
+                    {$_ -in "Resource","Module"}
+                    {
+                        [System.IO.Directory]::Delete($This.Fullname)
+                    }
+                    {$_ -in "File","Manifest","Shortcut"}
+                    {
+                        [System.IO.File]::Delete($This.Fullname)
+                    }
+                }
+
+                $This.Exists = 0
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Path
+        }
+    }
+
+    # // ========================================================
+    # // | Represents a collection of paths for the module root |
+    # // ========================================================
+
+    Class RootController
+    {
+        Hidden [String] $Name
+        [Object]    $Registry
+        [Object]    $Resource
+        [Object]      $Module
+        [Object]        $File
+        [Object]    $Manifest
+        [Object]    $Shortcut
+        RootController([String]$Version,[String]$Resource,[String]$Path)
+        {
+            $This.Name     = "Module Root"
+            $SDP           = "Secure Digits Plus LLC"
+            $FE            = "FightingEntropy"
+            $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\$SDP\$FE\$Version")
+            $This.Resource = $This.Set(1,0,"$Resource")
+            $This.Module   = $This.Set(2,0,"$Path\$FE")
+            $This.File     = $This.Set(3,1,"$Path\$FE\$FE.psm1")
+            $This.Manifest = $This.Set(4,1,"$Path\$FE\$FE.psd1")
+            $This.Shortcut = $This.Set(5,1,"$Env:Public\Desktop\$FE.lnk")
+        }
+        [String] Slot([UInt32]$Type)
+        {
+            Return @("Registry","Resource","Module","File","Manifest","Shortcut")[$Type]
+        }
+        [Object] Set([UInt32]$Index,[UInt32]$Type,[String]$Path)
+        {
+            Return [RootProperty]::New($Index,$This.Slot($Index),$Type,$Path)
+        }
+        [Void] Refresh()
+        {
+            $This.List() | % { $_.TestPath() }
+        }
+        [Object[]] List()
+        {
+            Return $This.PSObject.Properties.Name | % { $This.$_ }
+        }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Root[Controller]>"
+        }
+    }
     # // ===========================================
     # // | Collects/creates versions of the module |
     # // ===========================================
@@ -1338,6 +1372,10 @@ Function Get-FEModule
 
             Return Get-FileHash $Path | % Hash
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Validate[File]>"
+        }
     }
 
     # // ===============================================================
@@ -1381,11 +1419,15 @@ Function Get-FEModule
                                             $This.Prop("NameLink"," "),
                                             $This.Prop("Hash"," ")
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.MarkdownArchive[Entry]>"
+        }
     }
 
-    # // ______________________________________________________________
+    # // ==============================================================
     # // | Factory class to control all of the aforementioned classes |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ==============================================================
 
     Class ModuleController
     {
@@ -1439,7 +1481,7 @@ Function Get-FEModule
             # Registry
             $This.Registry = $This.New("Registry")
 
-            $This.Update(0," ".PadLeft(103," "))
+            $This.Update(0," ".PadLeft(102," "))
 
             # Load the manifest
             $This.LoadManifest()
@@ -1456,7 +1498,7 @@ Function Get-FEModule
             # If enabled, shows the last item added to the console
             If ($This.Mode -eq 0)
             {
-                [Console]::WriteLine($This.Console.Last())
+                [Console]::WriteLine($This.Console.Last().Status)
             }
         }
         [Void] Update([Int32]$State,[String]$Status)
@@ -1527,20 +1569,20 @@ Function Get-FEModule
             # Returns parsed FEModule version object 
             Return [FEVersion]::New("| $($This.Version) | $($This.Date) | $($This.Guid) |")
         }
-        [Object] ManifestFolder([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
+        [Object] ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
         {
             # Instantiates a new manifest folder, and can be used externally
-            Return [ManifestFolder]::New($Index,$Type,$Resource,$Name)
+            Return [ManifestFolderEntry]::New($Index,$Type,$Resource,$Name)
         }
-        [Object] ManifestFile([Object]$Folder,[String]$Name,[String]$Hash)
+        [Object] ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash)
         {
             # Instantiates a new manifest file, and can be used externally
-            Return [ManifestFile]::New($Folder,$Name,$Hash,$This.SourceUrl())
+            Return [ManifestFileEntry]::New($Folder,$Name,$Hash,$This.SourceUrl())
         }
         [Object] NewVersion([String]$Version)
         {
             # Tests a version input string, and if it passes, returns a version object
-            If ($Version -notmatch "\d{4}\.\d{2}\.\d+")
+            If ($Version -notmatch "\d{4}\.\d{1,}\.\d{1,}")
             {
                 Throw "Invalid version entry"
             }
@@ -1550,8 +1592,8 @@ Function Get-FEModule
         [Object[]] Versions()
         {
             # Obtains the available versions from the project site
-            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
-            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{2}\.\d+\*\*" } | % { [FEVersion]$_ }
+            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/readme.md?raw=true"
+            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{1,}\.\d{1,}\*\*" } | % { [FEVersion]$_ }
         }
         [Object] Template()
         {
@@ -1565,11 +1607,11 @@ Function Get-FEModule
             {
                 OS
                 {
-                    [OS]::New()
+                    [OSController]::New()
                 }
                 Root
                 {
-                    [Root]::New($This.Version,$This.GetResource(),$This.GetRootPath())
+                    [RootController]::New($This.Version,$This.GetResource(),$This.GetRootPath())
                 }
                 Manifest
                 {
@@ -1645,57 +1687,58 @@ Function Get-FEModule
                 }
                 Function
                 {
-                    ("Copy-FileStream.ps1"             , "02A752EB77E36D83CB1DA4CAE9F9FD99681DCF1FA06B7F62230585CC00D235DE") ,
-                    ("Get-AssemblyList.ps1"            , "63EDB49C2FE80B93BD3FA6085EA1CE87927B70F5932EC15C3B6D88D4D3D81978") ,
-                    ("Get-ControlExtension.ps1"        , "82E3493A8B654FC4C11B2F0AE6F62E8B043E7A805FE0EA91639381C486D2C331") ,
-                    ("Get-DCOMSecurity.ps1"            , "C0F71EC9788324C10C68B8DC042B378BA88BC185B0DAEA9F34C7855474C27B18") ,
-                    ("Get-EnvironmentKey.ps1"          , "C9755AF12D6E1B4BBD5D898563CB0D205BF2A8CFC78F96B0887BC828DE153D7D") ,
-                    ("Get-EventLogArchive.ps1"         , "FEB6F04221BDF827E932C5BAD3A7470A1ED557A36F8C025665A5C2C174B11E29") ,
-                    ("Get-EventLogConfigExtension.ps1" , "E19AFE2CD3FD89074835E3338A208FEBCA970E4755FC87DFC0E36F71F902D50B") ,
-                    ("Get-EventLogController.ps1"      , "17F1F8865719592D60CF5AF51771CE9FE775878BFA9DFF7897044A17E00379C4") ,
-                    ("Get-EventLogProject.ps1"         , "211F62139ADB5E4BA957A12B11E5BC6F55B7862E63F60BA921832410E7114BA4") ,
-                    ("Get-EventLogRecordExtension.ps1" , "C8773C24AA850021C2B15584C7198FA65C736F7F38B902D91FA1290A9E3F9CB0") ,
-                    ("Get-EventLogXaml.ps1"            , "89F96497DD3050104A63D536602F12864A8FEDA7E95E4DDB39B85E30A1F9FB80") ,
-                    ("Get-FEADLogin.ps1"               , "D60DDE95DCEC1596951DDC687CF83BECC32EF8218BF3E97522A30BE7F35CEDE0") ,
-                    ("Get-FEDCPromo.ps1"               , "99E9BF0BC2CB55260267DFA3E203C936016BB99051EB2301BBFC6CFD8D128095") ,
-                    ("Get-FEImageManifest.ps1"         , "2D1D8896C36AF6F1FB4677D1648AEBC3B9873CFF505D5B94E04AD6D81CB6B444") ,
-                    ("Get-FEModule.ps1"                , "19FE0FB51A95D8259C8952C9920705F2E6A627BE1F3E8B0D7593E71C44EDA612") ,
-                    ("Get-FENetwork.ps1"               , "7A68ADF6AFF12661E036E1405F8655BE07B6B547F05141603A32BCC8FE5A5F75") ,
-                    ("Get-FERole.ps1"                  , "220808D891851845B16366B470EB6A85FF030CA4266DBF35E760CEAE2730A145") ,
-                    ("Get-FESystem.ps1"                , "1EC3E7029BC25BF15805EE632A8C2377677397B6D3FC1F0B8AB7133E800E5C3F") ,
-                    ("Get-MDTModule.ps1"               , "AA9BB135FADFC5D2FA3FEF4B7258EFC01CCAA42100134725AFF9D6273782ADF9") ,
-                    ("Get-PowerShell.ps1"              , "8504FF74C78BC486E0242689A70CFAD6EDD8F8130ED123DE88B09D2B6D560063") ,
-                    ("Get-PropertyItem.ps1"            , "758B68FC38B0D71B27866EAB67C69B2A40E4AAD803636E61C885E83A87E33C9D") ,
-                    ("Get-PropertyObject.ps1"          , "D5090E35819F149D03654C61BAEB9818BB7D8BCF7DCAB2F715DE55C13DC5CFCA") ,
-                    ("Get-PSDLog.ps1"                  , "C8A2E2B91EADF76A58C2D2054A82EE171A1338E405FD4E828D0AF5A78644987D") ,
-                    ("Get-PSDLogGUI.ps1"               , "30A5C2B92FA6F8293A362BA870C66432FB86F9029ED2F69F1473A9D324E0A550") ,
-                    ("Get-PSDModule.ps1"               , "CD83DA3B18F706174C9D65969938B85F730D36479A42D1D71EDE2C0CA9BE8024") ,
-                    ("Get-ThreadController.ps1"        , "3DFA549D11BB239E63B1E114C4C86CFA7A92B83C95F114B5BD66DDC33778E545") ,
-                    ("Get-UserProfile.ps1"             , "97FF1186827FDE6A84B66C67036B3018F61624C92ECA37F89AC70077B717A6C6") ,
-                    ("Get-ViperBomb.ps1"               , "D24024D5F6B37F6521C536CDBEEA9024830727AD4159EA67261206AE8EF1F13D") ,
-                    ("Get-WhoisUtility.ps1"            , "BFE480D46157A0A0F541A4A14E12D85F834592DA8243A5BCE4D24EDADDB4BE9A") ,
-                    ("Initialize-FeAdInstance.ps1"     , "0EEF28E919AE410A405DB87C4124239C63026192E188D26B23885A23C6388477") ,
-                    ("Install-BossMode.ps1"            , "E7D53EF50DB9B226C3213F5A2FE66671F12FDD450FBE9629DFED78FE3683FB19") ,
-                    ("Install-IISServer.ps1"           , "CAFE22024A7B0E398CDB9BA556EC1B5ED776F38FEACF35FBFB4C38C311E1EBE2") ,
-                    ("Install-PSD.ps1"                 , "7CA2FFB284B9D9A12CC43D43E324FC71C77CF07412E0B5EC47D241965DEEACD0") ,
-                    ("Invoke-cimdb.ps1"                , "97134F3F6918288B0AB177615F5CC7F78C5F188E8368F1CF8B597419E272C435") ,
-                    ("New-Document.ps1"                , "7B21B34EB98C96A93A54639F0A05028B7B1738399EBB391B86EFB0404F851D10") ,
-                    ("New-EnvironmentKey.ps1"          , "9577B80E2A2309C1A100859370B7979FBDC504F78BCD8ECF0E4A110585F9C848") ,
-                    ("New-FEConsole.ps1"               , "6909B10D29F99EC565B714F31BBD5BE04E5FAE350DC397FE94018988E056E2F1") ,
-                    ("New-FEFormat.ps1"                , "549EC35DCB88F4C48ED7C14F06FB0DA05375AF64BFF5C1344A1403E249CE24F2") ,
-                    ("New-FEInfrastructure.ps1"        , "3918611F5026D910A1F4D404CEA7D72A70B3DDD2B40CF2D57CFF39CF0E9F0D12") ,
-                    ("New-MarkdownFile.ps1"            , "17F2298DF8523E8B9A19AA4DE512E5E8BAA0E282F714A1630283966F76AC7E27") ,
-                    ("New-TranscriptionCollection.ps1" , "D3A5F59E17A71B9D6983F5C4F1F32B88B7634FA4910B2DB4A840D97D2B459C6B") ,
-                    ("New-VmController.ps1"            , "19E183DC51FB67F8BF95DEC6A18747F1A9DAF333BA2ADBD1D72E64B13B0CDCCE") ,
-                    ("Search-WirelessNetwork.ps1"      , "52FDA296BDB480C4248C182825545C988BE1A6A23A298A8E94507AFB42FAB032") ,
-                    ("Set-AdminAccount.ps1"            , "1B18B8A399A14F85F65B8A78FF2FF5E360F69A887F980E788E99F59D908C7582") ,
-                    ("Set-ScreenResolution.ps1"        , "8FA4D6D0BB1B2C0FDE8EE05C1114682AB54E7FE238F70409C45333AE0002E3C5") ,
-                    ("Show-ToastNotification.ps1"      , "BEE09485C8E68B7DD2BEAA317B67401EB87E80BCCA6F54B9965725C2F0500409") ,
-                    ("Start-TCPSession.ps1"            , "6ED5305A4E239BD839B611B986DDF1701C1DB0FB4FDE18B04B2FE6812610D9F9") ,
-                    ("Update-PowerShell.ps1"           , "4510EB6E34553E58393D8EDCBCFE34D8D11DFB6AF049D9C4CD4A6934DBCE779A") ,
-                    ("Write-Element.ps1"               , "07D040C9749E6AAF56BD827238CF69DDFFF1A7123A4EE96D98249554FEC10610") ,
-                    ("Write-Theme.ps1"                 , "01070281F24BE58928A1146EF89B3AE56F3FAE100BE178ED11A5FEF710724C00") ,
-                    ("Write-Xaml.ps1"                  , "F233F0E56889F7825615DE597D940EB9F5461158B57510E68E2F894B12722908")
+                    ("Copy-FileStream.ps1"             , "937CD4B7A4BB187330BD52A2C245E13AECD926A05CEC4A2A47E4AD284C84801B") ,
+                    ("Get-AssemblyList.ps1"            , "4F18F529AFC479D7F55F9E3F4E53754678723D3A9CCB6F1BFD9D6C011C526A6F") ,
+                    ("Get-ControlExtension.ps1"        , "0E0BE40DDC1F4E4B74BB30E4340C3794A84D59B49945BCB5288ADB01474C9029") ,
+                    ("Get-DcomSecurity.ps1"            , "26F688DE75910CEA3B6D875F77CBCBE76088B596623D4E09E9A6745D3652CE41") ,
+                    ("Get-EnvironmentKey.ps1"          , "B747B32DF346738A307190C9410F1164FD2A784AE79810CC9BB3B909A09A9CE8") ,
+                    ("Get-EventLogArchive.ps1"         , "2186A9E48DC343CD0AED8DDBA13F9B8B22EC98BD8E245D6866517A3E4BC58810") ,
+                    ("Get-EventLogConfigExtension.ps1" , "63C5D428EB635BA5555C67DF3004574AA21CD526C6828544D6ADEA280B9021A4") ,
+                    ("Get-EventLogController.ps1"      , "312491AE3C3D7CED28E204C3029CFA5DB0EB75420D95BCC6445593B2135A95F9") ,
+                    ("Get-EventLogProject.ps1"         , "5412F53D7807B489FE2297B0EEC6B39A13A22DA4E786DBBEEA70F78D6D1301EC") ,
+                    ("Get-EventLogRecordExtension.ps1" , "C8FFD53CB25CBEC83994BE2D781761DAA8FDAF1F5052677F8B9DB36650CC0D36") ,
+                    ("Get-EventLogXaml.ps1"            , "513EC10454C110B5647D6715CFB5DCAF48D23B2719A817B2B3804F83B0250C55") ,
+                    ("Get-FEADLogin.ps1"               , "2071B499D0172A478FCCC5059FD4BC80CD3303DCECFA02CDFF1E33FB9F5C7396") ,
+                    ("Get-FEDCPromo.ps1"               , "A3720DC7E7E77C1E806A0331C6E42D4FDDD5AD09ED4ADD98E6092C02BD27686E") ,
+                    ("Get-FEDevice.ps1"                , "6FFA1AA2974B903A44015438CC89E7B4E9179BA2EE6AE54916D41F12974C5E14") ,
+                    ("Get-FEImageManifest.ps1"         , "AC02A718807CC18C3514B4BD341A5C0F17F32A735FC870DAFECFBC6DDA3BB093") ,
+                    ("Get-FEModule.ps1"                , "0388F8FEE78A100B73EA1DECF1483D14B6F9C1FFEA5CDA9EE82987D97677F34E") ,
+                    ("Get-FENetwork.ps1"               , "D9C810171D4C854D76AD97B0C8050E29778B1A739525113254315D87C0254391") ,
+                    ("Get-FEProcess.ps1"               , "C2ADA73AEC1EC1F336FDF59813B0B1A202EEDA8C5CCDFE3B8105AB16C47A3904") ,
+                    ("Get-FESystem.ps1"                , "19540FEE9CC21B10294125C0AECF3022123A066BF297D8149BBF9B7C8B153E3D") ,
+                    ("Get-MdtModule.ps1"               , "FF36B14E4FC6059655696E6E8D09E29B21F1AE49BC1AC2307F63C402B93E75EB") ,
+                    ("Get-PowerShell.ps1"              , "68D8C072720D0B6FA867502417BEF2ED3B70408E7C6A2F840C8243423AA5BC68") ,
+                    ("Get-PropertyItem.ps1"            , "1DC6E15A16936CF0C3B31962E50967FFD584349F1B0FCB86AED6E8EBD1B4D05F") ,
+                    ("Get-PropertyObject.ps1"          , "33A34DE2CACAE0FC73BC2A18B96F86CE0A9C8FC9E2C3D28D896AB884911ECAA1") ,
+                    ("Get-PsdLog.ps1"                  , "790A41B5B4D0D96DF555B9440E8A57DA5694956846565BD7FDD18F303D65BEF6") ,
+                    ("Get-PsdLogGUI.ps1"               , "E299F666C8711E1FB45DD2C572744DA230BE094D5427C373F5F3E765F6EE3CC2") ,
+                    ("Get-PsdModule.ps1"               , "CA5C728289FC3DB475E85AA121CB77589F28503AB7EF0388E96684D1F87B75B6") ,
+                    ("Get-ThreadController.ps1"        , "0BA299EB6DEC71D001C5302FF8EC3537C5A7D52E02999BC1BD475C57C0700D47") ,
+                    ("Get-UserProfile.ps1"             , "2526A58A29CFD7F1EFBB15DDF151F96AE108377821778E5D9A30A5674DE8FD9A") ,
+                    ("Get-ViperBomb.ps1"               , "874154837B8D682905F967D139FF1CF148326D48052402752E4448DDE9BEE920") ,
+                    ("Get-WhoisUtility.ps1"            , "F112A4EC6A359A54BFEC3A9F7BDC695C53F1833BA10A86ED926E08BCC42C402F") ,
+                    ("Initialize-FeAdInstance.ps1"     , "D9B22E6BBB27AB16F705D6925DB2CACA878B75A71DD74FF054F68C5099D94547") ,
+                    ("Install-BossMode.ps1"            , "EBAF7B18203D152828FF416918573FDF564E180EAF5AC7AA244FA4927E51E8CE") ,
+                    ("Install-IISServer.ps1"           , "5B46F674291E4454C1D9BC0870005332571582E3099B8EFAF62FC01EB3F0958E") ,
+                    ("Install-Psd.ps1"                 , "F1CF595E447A5486D9009D1D5EA86E114CAC62DEF97B61AFA4C6810D87264476") ,
+                    ("Invoke-cimdb.ps1"                , "AD12DE4772D2CCA77F8C411FDF3A6010AD99FEA9DAB31556F896EFB1ACA71238") ,
+                    ("New-Document.ps1"                , "7E9A320A2A048559EDCFA073B85204C152297F22FE13021CCDF8A6D5451F018F") ,
+                    ("New-EnvironmentKey.ps1"          , "C6835E2230076ED16B1D8C68765DC33F7D3B8BC078928629887044D4906EAD87") ,
+                    ("New-FEConsole.ps1"               , "033C065671462D5960F49E017D651C98A963AC85C12487E2B673C6DA255F47AA") ,
+                    ("New-FEFormat.ps1"                , "C23A53F4669ED1CC72ADD10CA18A57C8EB2575E7A2F26B3D2168DFA9970F7D2B") ,
+                    ("New-FEInfrastructure.ps1"        , "469A8F95A22D233B1E22A389E58855D970B94D185A537F90440BEF8D1BB5DF03") ,
+                    ("New-MarkdownFile.ps1"            , "5C6DA1A6C5C3245BBC61E1FB51761AD4043F7A162002A8655DEB770574E56F1F") ,
+                    ("New-TranscriptionCollection.ps1" , "AD7A21A568AD907E1739C47EBA84977AAAE4DD7E1ED9DA606FCF937F0495A85E") ,
+                    ("New-VmController.ps1"            , "52D50925A41C80D650093952B82E8FB0078AD75AF1A10B8560E2100D515C37C3") ,
+                    ("Search-WirelessNetwork.ps1"      , "AF7E3BDBF9B133309827B9DA28478680E864B8609AD26A184B449D21937C5146") ,
+                    ("Set-AdminAccount.ps1"            , "00E4270ECA4B1A85C451659CD4D7DF2D1F442A88809E7F46EF7FAE2DD7D3DA1A") ,
+                    ("Set-ScreenResolution.ps1"        , "868E0D0A21A096CA60E738FB92C0C40F633E861384ACA674D225033859D88EA0") ,
+                    ("Show-ToastNotification.ps1"      , "81FF3C1DB929701D5AD2B0128C1ADF35A1A2D5B1C022EE6939E30EF7B46AFEAA") ,
+                    ("Start-TCPSession.ps1"            , "FD6C55AB2109385ACA7054BA522293C22FB54E724489E6C9D3A26A31A2931FD8") ,
+                    ("Update-PowerShell.ps1"           , "7503EC8FBC94BBDC517ED97641E3B28B8165F4FA49A9A754CB239DA1B18FA758") ,
+                    ("Write-Element.ps1"               , "2A9BA592965DF81FFD9946D2F17F21708E75E2B650D4E4B2B38EE04344B7EDF2") ,
+                    ("Write-Theme.ps1"                 , "3E836D3CE85CD1EFB32341AEB455628081B52E78D5CB4FB94D8F9FD0E102D629") ,
+                    ("Write-Xaml.ps1"                  , "C97F1B4C6916994356D92F0F5B803893E0887F2D249200B412901AE6B43FE1D7")
                 }
                 Graphic
                 {
@@ -1711,12 +1754,16 @@ Function Get-FEModule
 
             Return $List
         }
+        [String[]] ManifestEnum()
+        {
+            Return [System.Enum]::GetNames([ManifestListType])
+        }
         LoadManifest()
         {
             $Out = @( )
 
             # Collects all of the files and names
-            ForEach ($Type in "Control","Function","Graphic")
+            ForEach ($Type in $This.ManifestEnum())
             {
                 ForEach ($Item in $This.GetManifestList($Type))
                 {
@@ -1727,7 +1774,7 @@ Function Get-FEModule
             # Determines maximum name length
             $Max = ($Out.Name | Sort-Object Length)[-1]
 
-            ForEach ($Type in "Control","Function","Graphic")
+            ForEach ($Type in $This.ManifestEnum())
             {
                 # Adds + selects specified folder object
                 $This.LoadFolder($Type)
@@ -1748,7 +1795,7 @@ Function Get-FEModule
             $ID   = $This.GetFolderName($Type)
 
             # Instantiates the specified folder
-            $Item = $This.ManifestFolder($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
+            $Item = $This.ManifestFolderEntry($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
 
             # Logs validation of its existence, and adds if it does not
             Switch ([UInt32]!!$Item)
@@ -1782,7 +1829,7 @@ Function Get-FEModule
             }
 
             # Instantiates the specified file
-            $Item   = $This.ManifestFile($Folder,$ID,$Hash)
+            $Item   = $This.ManifestFileEntry($Folder,$ID,$Hash)
             $Label  = $ID.PadRight($Max," ")
 
             # Logs validation of its existence, and adds if it does not
@@ -2419,9 +2466,13 @@ Function Get-FEModule
                 }
             }
         }
+        [String] DateTime()
+        {
+            Return [DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss")
+        }
         [String] ToString()
         {
-            Return "<FEModule.ModuleController>"
+            Return "<FightingEntropy.Module.Controller>"
         }
     }
 
