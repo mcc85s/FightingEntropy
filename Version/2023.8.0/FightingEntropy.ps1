@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2023-08-09 16:39:51                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2023-08-09 17:58:30                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -20,21 +20,21 @@
     [+] [system management/maintenance]
 
     ...it'll eventually be usable on ALL platforms where [PowerShell] is able to be deployed.
-    ________________________________________________________________________________________
-    |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | Demo                                                                                 |
-    |______________________________________________________________________________________|
-    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | Date     | Name                                       | Url                          |
-    |__________|____________________________________________|______________________________|
-    |¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | 10/28/22 | [FightingEntropy(π)][2022.10.1]            | https://youtu.be/S7k4lZdPE-I |
-    | 04/03/23 | Virtualization Lab - TCP Session           | https://youtu.be/09c-fFbEQrU |
-    | 03/20/23 | Virtualization Lab - Desktop Deployment    | https://youtu.be/i2_fafoIx6I |
-    | 01/31/23 | New-VmController [Flight Test v2.0] Part I | https://youtu.be/nqTOmNIilxw |
-    | 01/12/23 | Virtualization Lab - FEDCPromo             | https://youtu.be/9v7uJHF-cGQ |
-    |__________|____________________________________________|______________________________|
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+     __________________________________________________________________________________________
+    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+    \\ [Demo]                                                                                 //
+    //________________________________________________________________________________________\\
+    \\¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯//
+    // Date     || Name                                       || Url                          \\
+    \\__________||____________________________________________||______________________________//
+    //¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+    \\ 10/28/22 || [FightingEntropy(π)][2022.10.1]            || https://youtu.be/S7k4lZdPE-I //
+    // 04/03/23 || Virtual Lab - TCP Session                  || https://youtu.be/09c-fFbEQrU \\
+    \\ 03/20/23 || Virtual Lab - Desktop Deployment           || https://youtu.be/i2_fafoIx6I //
+    // 01/31/23 || New-VmController [Flight Test v2.0] Part I || https://youtu.be/nqTOmNIilxw \\
+    \\ 01/12/23 || Virtualization Lab - FEDCPromo             || https://youtu.be/9v7uJHF-cGQ //
+    //__________||____________________________________________||______________________________\\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     This module is rather [experimental] and incorporates [a lot of moving parts],
     so it has [many areas of development]. 
 
@@ -86,13 +86,13 @@
     | Installation |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     1) [Load the module into memory], which can be done be using this command:
-       
-    irm https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1?raw=true | iex 
-
+    _______________________________________________________________________________________________________________
+    | irm https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0/FightingEntropy.ps1?raw=true | iex |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     ...or just (copying + pasting) the content of the file...
-
-    https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1
-
+    ____________________________________________________________________________________________
+    | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0/FightingEntropy.ps1 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     ...into the [PowerShell] session, and pressing <Enter>
 
     2) Once the [module is loaded into memory], enter the following:
@@ -114,12 +114,13 @@
   Function /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯                                                                                                              
 #>
+
 Function FightingEntropy.Module
 {
     [CmdLetBinding()]Param([Parameter()][UInt32]$Mode=0)
 
     # // =======================================================
-    # // | Used to track console logging, similar to Stopwatch | *
+    # // | Used to track console logging, similar to Stopwatch |
     # // =======================================================
 
     Class ConsoleTime
@@ -145,7 +146,7 @@ Function FightingEntropy.Module
     }
 
     # // ========================================
-    # // | Single object that displays a status | *
+    # // | Single object that displays a status |
     # // ========================================
 
     Class ConsoleEntry
@@ -170,7 +171,7 @@ Function FightingEntropy.Module
     }
 
     # // =========================================================================
-    # // | A collection of status objects, uses itself to create/update messages | *
+    # // | A collection of status objects, uses itself to create/update messages |
     # // =========================================================================
 
     Class ConsoleController
@@ -282,7 +283,7 @@ Function FightingEntropy.Module
     }
 
     # // =====================================================================
-    # // | This is a 1x[track] x 4[char] chunk of information for Write-Host | *
+    # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
     # // =====================================================================
 
     Class ThemeBlock
@@ -319,7 +320,7 @@ Function FightingEntropy.Module
     }
 
     # // ===============================================
-    # // | Represents a 1x[track] in a stack of tracks | *
+    # // | Represents a 1x[track] in a stack of tracks |
     # // ===============================================
 
     Class ThemeTrack
@@ -338,7 +339,7 @@ Function FightingEntropy.Module
     }
 
     # // =============================================
-    # // | Generates an actionable write-host object | *
+    # // | Generates an actionable write-host object |
     # // =============================================
 
     Class ThemeStack
@@ -486,7 +487,7 @@ Function FightingEntropy.Module
     }
 
     # // ===================================================
-    # // | Property object which includes source and index | *
+    # // | Property object which includes source and index |
     # // ===================================================
 
     Class OSProperty
@@ -509,7 +510,7 @@ Function FightingEntropy.Module
     }
 
     # // ==========================================================
-    # // | Container object for indexed OS (property/value) pairs | *
+    # // | Container object for indexed OS (property/value) pairs |
     # // ==========================================================
 
     Class OSPropertySet
@@ -534,7 +535,7 @@ Function FightingEntropy.Module
     }
 
     # // =====================================================================================================
-    # // | Collects various details about the operating system specifically for cross-platform compatibility | *
+    # // | Collects various details about the operating system specifically for cross-platform compatibility |
     # // =====================================================================================================
 
     Class OSController
@@ -652,7 +653,7 @@ Function FightingEntropy.Module
     }
 
     # // ======================================
-    # // | Enumerates the manifest item types | *
+    # // | Enumerates the manifest item types |
     # // ======================================
 
     Enum ManifestListType
@@ -663,7 +664,7 @@ Function FightingEntropy.Module
     }
 
     # // ============================================================
-    # // | Meant to determine longest file name and provide spacing | *
+    # // | Meant to determine longest file name and provide spacing |
     # // ============================================================
 
     Class ManifestListItem
@@ -686,7 +687,7 @@ Function FightingEntropy.Module
     }
 
     # // ==============================================================
-    # // | Manifest file -> filesystem object (collection/validation) | *
+    # // | Manifest file -> filesystem object (collection/validation) |
     # // ==============================================================
 
     Class ManifestFileEntry
@@ -846,7 +847,7 @@ Function FightingEntropy.Module
     }
 
     # // ========================================
-    # // | Manifest folder -> filesystem object | *
+    # // | Manifest folder -> filesystem object |
     # // ========================================
 
     Class ManifestFolderEntry
@@ -926,7 +927,7 @@ Function FightingEntropy.Module
     }
 
     # // =====================================================================
-    # // | File manifest container, laid out for hash (insertion+validation) | *
+    # // | File manifest container, laid out for hash (insertion+validation) |
     # // =====================================================================
 
     Class ManifestController
@@ -1001,7 +1002,7 @@ Function FightingEntropy.Module
     }
 
     # // ===================================
-    # // | Template for registry injection | *
+    # // | Template for registry injection |
     # // ===================================
 
     Class RegistryTemplate
@@ -1050,7 +1051,7 @@ Function FightingEntropy.Module
     }
 
     # // ===========================================
-    # // | Works as a PowerShell Registry provider | *
+    # // | Works as a PowerShell Registry provider |
     # // ===========================================
 
     Class RegistryKeyTemp
@@ -1125,7 +1126,7 @@ Function FightingEntropy.Module
     }
     
     # // ========================================================
-    # // | Represents an individual registry key for the module | *
+    # // | Represents an individual registry key for the module |
     # // ========================================================
 
     Class RegistryKeyProperty
@@ -1147,7 +1148,7 @@ Function FightingEntropy.Module
     }
 
     # // ===========================================================
-    # // | Represents a collection of registry keys for the module | *
+    # // | Represents a collection of registry keys for the module |
     # // ===========================================================
 
     Class RegistryKey
@@ -2603,7 +2604,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-08-09 16:39:51 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-08-09 17:58:30 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
