@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.8.0]                                                        \\
-\\  Date       : 2023-08-16 15:35:34                                                                  //
+\\  Date       : 2023-08-16 18:27:32                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -517,11 +517,11 @@ Function Get-FEModule
         }
         [Object] Property([String]$Source)
         {
-            Return $This.Output | ? Source -eq $Source | % Property
+            Return $This.Output | ? Source -eq $Source
         }
         [Object] Tx([String]$Source,[String]$Name)
         {
-            Return $This.Property($Source) | ? Name -eq $Name | % Value
+            Return $This.Property($Source) | % Property | ? Name -eq $Name | % Value
         }
         Add([UInt32]$Index,[String]$Name,[Object]$Value)
         {
@@ -2500,3 +2500,4 @@ Function Get-FEModule
         }
     }
 }
+
