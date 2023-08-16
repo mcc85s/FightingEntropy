@@ -4,6 +4,7 @@
 # a lot longer to load. Merging the following class types and then relocating the SetMode method to the outside
 # ViperBombController scope WILL allow this function to work a LOT faster.
 
+
     Class ByteSize
     {
         [String]   $Name
@@ -45,6 +46,23 @@
         }
     }
 
+    Class GenericProperty
+    {
+        [UInt32]  $Index
+        [String]   $Name
+        [Object]  $Value
+        GenericProperty([UInt32]$Index,[Object]$Property)
+        {
+            $This.Index  = $Index
+            $This.Name   = $Property.Name
+            $This.Value  = $Property.Value -join ", "
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.Generic[Property]>"
+        }
+    }
+
     Class GenericProfileProperty
     {
         [UInt32] $Index
@@ -64,7 +82,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.GenericProfile[Property]>"
+            Return "<FEModule.ViperBomb.GenericProfile[Property]>"
         }
     }
 
@@ -150,7 +168,7 @@
         '        Height="640"',
         '        Width="800"',
         '        ResizeMode="NoResize"',
-        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\icon.ico"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
         '        HorizontalAlignment="Center"',
         '        WindowStartupLocation="CenterScreen"',
         '        FontFamily="Consolas"',
@@ -462,7 +480,7 @@
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
         '                        <Image Grid.Row="0"',
-        '                               Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.8.0\Graphics\banner.png"/>',
+        '                               Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\banner.png"/>',
         '                    </Grid>',
         '                    <DataGrid Grid.Row="2" Name="Module">',
         '                        <DataGrid.RowStyle>',
@@ -501,8 +519,8 @@
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                    <TabControl Grid.Row="3">',
-        '                            <TabItem Header="Extension">',
-        '                                <DataGrid HeadersVisibility="None"',
+        '                        <TabItem Header="Extension">',
+        '                            <DataGrid HeadersVisibility="None"',
         '                                          Name="ModuleExtension">',
         '                                <DataGrid.RowStyle>',
         '                                    <Style TargetType="{x:Type DataGridRow}">',
@@ -522,17 +540,17 @@
         '                                    </Style>',
         '                                </DataGrid.RowStyle>',
         '                                <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"',
+        '                                    <DataGridTextColumn Header="Name"',
         '                                                            Binding="{Binding Name}"',
         '                                                            Width="120"/>',
-        '                                        <DataGridTextColumn Header="Value"',
+        '                                    <DataGridTextColumn Header="Value"',
         '                                                            Binding="{Binding Value}"',
         '                                                            Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </TabItem>',
-        '                            <TabItem Header="Root">',
-        '                                <DataGrid Name="ModuleRoot">',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </TabItem>',
+        '                        <TabItem Header="Root">',
+        '                            <DataGrid Name="ModuleRoot">',
         '                                <DataGrid.RowStyle>',
         '                                    <Style TargetType="{x:Type DataGridRow}">',
         '                                        <Style.Triggers>',
@@ -551,28 +569,28 @@
         '                                    </Style>',
         '                                </DataGrid.RowStyle>',
         '                                <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Type"',
+        '                                    <DataGridTextColumn Header="Type"',
         '                                                            Binding="{Binding Type}"',
         '                                                            Width="70"/>',
-        '                                        <DataGridTextColumn Header="Name"',
+        '                                    <DataGridTextColumn Header="Name"',
         '                                                            Binding="{Binding Name}"',
         '                                                            Width="65"/>',
-        '                                        <DataGridTextColumn Header="Fullname"',
+        '                                    <DataGridTextColumn Header="Fullname"',
         '                                                            Binding="{Binding Fullname}"',
         '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="Exists"',
+        '                                    <DataGridTextColumn Header="Exists"',
         '                                                            Binding="{Binding Exists}"',
         '                                                            Width="45"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </TabItem>',
-        '                            <TabItem Header="Manifest">',
-        '                                <Grid>',
-        '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="50"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                    </Grid.RowDefinitions>',
-        '                                    <DataGrid Grid.Row="0"',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </TabItem>',
+        '                        <TabItem Header="Manifest">',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="50"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <DataGrid Grid.Row="0"',
         '                                              Name="ModuleManifest">',
         '                                    <DataGrid.RowStyle>',
         '                                        <Style TargetType="{x:Type DataGridRow}">',
@@ -592,15 +610,15 @@
         '                                        </Style>',
         '                                    </DataGrid.RowStyle>',
         '                                    <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Source"',
+        '                                        <DataGridTextColumn Header="Source"',
         '                                                                Binding="{Binding Source}"',
         '                                                                Width="310"/>',
-        '                                            <DataGridTextColumn Header="Resource"',
+        '                                        <DataGridTextColumn Header="Resource"',
         '                                                                Binding="{Binding Resource}"',
         '                                                                Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                    <DataGrid Grid.Row="1"',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                                <DataGrid Grid.Row="1"',
         '                                              Name="ModuleManifestList">',
         '                                    <DataGrid.RowStyle>',
         '                                        <Style TargetType="{x:Type DataGridRow}">',
@@ -620,25 +638,25 @@
         '                                        </Style>',
         '                                    </DataGrid.RowStyle>',
         '                                    <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Type"',
+        '                                        <DataGridTextColumn Header="Type"',
         '                                                                Binding="{Binding Type}"',
         '                                                                Width="60"/>',
-        '                                            <DataGridTextColumn Header="Name"',
+        '                                        <DataGridTextColumn Header="Name"',
         '                                                                Binding="{Binding Name}"',
         '                                                                Width="175"/>',
-        '                                            <DataGridTextColumn Header="Hash"',
+        '                                        <DataGridTextColumn Header="Hash"',
         '                                                                Binding="{Binding Hash}"',
         '                                                                Width="*"/>',
-        '                                            <DataGridTextColumn Header="Exists"',
+        '                                        <DataGridTextColumn Header="Exists"',
         '                                                                Width="45"',
         '                                                                Binding="{Binding Exists}"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </Grid>',
-        '                            </TabItem>',
-        '                        </TabControl>',
-        '                    </Grid>',
-        '                </TabItem>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                            </Grid>',
+        '                        </TabItem>',
+        '                    </TabControl>',
+        '                </Grid>',
+        '            </TabItem>',
         '            <TabItem Header="System">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
@@ -719,167 +737,6 @@
         '                                </DataGrid>',
         '                            </Grid>',
         '                        </TabItem>',
-        '                        <TabItem Header="OS">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="50"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <DataGrid Grid.Row="0" Name="OperatingSystem">',
-        '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
-        '                                            <Style.Triggers>',
-        '                                                <Trigger Property="IsMouseOver" Value="True">',
-        '                                                    <Setter Property="ToolTip">',
-        '                                                        <Setter.Value>',
-        '                                                            <TextBlock Text="Operating System Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
-        '                                                        </Setter.Value>',
-        '                                                    </Setter>',
-        '                                                </Trigger>',
-        '                                            </Style.Triggers>',
-        '                                        </Style>',
-        '                                    </DataGrid.RowStyle>',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Edition"',
-        '                                                            Width="*"',
-        '                                                            Binding="{Binding Caption}"/>',
-        '                                        <DataGridTextColumn Header="Version"',
-        '                                                            Width="100"',
-        '                                                            Binding="{Binding Version}"/>',
-        '                                        <DataGridTextColumn Header="Build"',
-        '                                                            Width="50"',
-        '                                                            Binding="{Binding Build}"/>',
-        '                                        <DataGridTextColumn Header="Serial"',
-        '                                                            Width="180"',
-        '                                                            Binding="{Binding Serial}"/>',
-        '                                        <DataGridTextColumn Header="Lang."',
-        '                                                            Width="35"',
-        '                                                            Binding="{Binding Language}"/>',
-        '                                        <DataGridTextColumn Header="Prod."',
-        '                                                            Width="35"',
-        '                                                            Binding="{Binding Product}"/>',
-        '                                        <DataGridTextColumn Header="Type"',
-        '                                                            Width="35"',
-        '                                                            Binding="{Binding Type}"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="100"/>',
-        '                                        <ColumnDefinition Width="10"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0" Content="[Hot Fix]:"/>',
-        '                                    <Border   Grid.Column="1" Background="Black" Margin="4"/>',
-        '                                    <Label    Grid.Column="2" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="3"',
-        '                                              Name="HotFixSearchProperty"',
-        '                                              SelectedIndex="1">',
-        '                                        <ComboBoxItem Content="Description"/>',
-        '                                        <ComboBoxItem Content="HotFix ID"/>',
-        '                                        <ComboBoxItem Content="Installed By"/>',
-        '                                        <ComboBoxItem Content="Installed On"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox  Grid.Column="4"',
-        '                                              Name="HotFixSearchFilter"/>',
-        '                                    <Button   Grid.Column="5"',
-        '                                              Content="Refresh"',
-        '                                              Name="HotFixRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="2" Name="HotFixOutput">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTextColumn Header="Source"',
-        '                                                            Binding="{Binding Source}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="HotFix ID"',
-        '                                                            Binding="{Binding HotFixID}"',
-        '                                                            Width="80"/>',
-        '                                        <DataGridTextColumn Header="Installed By"',
-        '                                                            Binding="{Binding InstalledBy}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="Installed On"',
-        '                                                            Binding="{Binding InstalledOn}"',
-        '                                                            Width="120"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="100">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="100">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0"',
-        '                                              Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="HotFixProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="HotFixProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="HotFixProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="HotFixProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="4">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="HotFixProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="HotFixProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="HotFixProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
-        '                            </Grid>',
-        '                        </TabItem>',
         '                        <TabItem Header="Computer">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
@@ -956,7 +813,7 @@
         '                                </DataGrid>',
         '                            </Grid>',
         '                        </TabItem>',
-        '                        <TabItem Header="Current">',
+        '                        <TabItem Header="Edition">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="50"/>',
@@ -972,7 +829,7 @@
         '                                                            Binding="{Binding Name}"',
         '                                                            Width="100"/>',
         '                                        <DataGridTextColumn Header="Build"',
-        '                                                            Binding="{Binding Index}"',
+        '                                                            Binding="{Binding Build}"',
         '                                                            Width="100"/>',
         '                                        <DataGridTextColumn Header="Codename"',
         '                                                            Binding="{Binding Codename}"',
@@ -1001,600 +858,6 @@
         '                                        </DataGridTextColumn>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                            </Grid>',
-        '                        </TabItem>',
-        '                        <TabItem Header="Optional">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Grid Grid.Row="0">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="1"',
-        '                                              Name="FeatureProperty"',
-        '                                              SelectedIndex="0">',
-        '                                        <ComboBoxItem Content="Feature Name"/>',
-        '                                        <ComboBoxItem Content="Description"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox Grid.Column="2"',
-        '                                             Name="FeatureFilter"/>',
-        '                                    <Button Grid.Column="3"',
-        '                                            Content="Refresh"',
-        '                                            Name="FeatureRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="FeatureOutput">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Width="40"',
-        '                                                            Binding="{Binding Index}"/>',
-        '                                        <DataGridTextColumn Header="Name"',
-        '                                                            Width="*"',
-        '                                                            Binding="{Binding FeatureName}"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="160">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
-        '                                                        <ComboBoxItem Content="Enabled"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="160">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
-        '                                                        <ComboBoxItem Content="Enabled"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0"',
-        '                                              Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="FeatureProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="FeatureProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="FeatureProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="FeatureProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="FeatureProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="FeatureProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="FeatureProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
-        '                            </Grid>',
-        '                        </TabItem>',
-        '                        <TabItem Header="AppX">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Grid Grid.Row="0">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="1"',
-        '                                          Name="AppXProperty"',
-        '                                          SelectedIndex="0">',
-        '                                        <ComboBoxItem Content="Package Name"/>',
-        '                                        <ComboBoxItem Content="Display Name"/>',
-        '                                        <ComboBoxItem Content="Description"/>',
-        '                                        <ComboBoxItem Content="Publisher ID"/>',
-        '                                        <ComboBoxItem Content="Install Location"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox Grid.Column="2"',
-        '                                         Name="AppXFilter"/>',
-        '                                    <Button Grid.Column="3" Content="Refresh" Name="AppXRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="AppXOutput">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTextColumn Header="DisplayName"',
-        '                                                            Binding="{Binding DisplayName}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="PublisherID"',
-        '                                                            Binding="{Binding PublisherID}"',
-        '                                                            Width="100"/>',
-        '                                        <DataGridTextColumn Header="Version"',
-        '                                                            Binding="{Binding Version}"',
-        '                                                            Width="150"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0"',
-        '                                              Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="AppXProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="AppXProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="AppXProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="AppXProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="AppXProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="AppXProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="AppXProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
-        '                            </Grid>',
-        '                        </TabItem>',
-        '                        <TabItem Header="Application">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Grid Grid.Row="0">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="130"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="1"',
-        '                                              Name="ApplicationProperty"',
-        '                                              SelectedIndex="1">',
-        '                                        <ComboBoxItem Content="Display Name"/>',
-        '                                        <ComboBoxItem Content="Display Version"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox Grid.Column="2"',
-        '                                             Name="ApplicationFilter"/>',
-        '                                    <Button Grid.Column="3"',
-        '                                            Content="Refresh"',
-        '                                            Name="ApplicationRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="ApplicationOutput">',
-        '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
-        '                                            <Style.Triggers>',
-        '                                                <Trigger Property="IsMouseOver" Value="True">',
-        '                                                    <Setter Property="ToolTip">',
-        '                                                        <Setter.Value>',
-        '                                                            <TextBlock Text="{Binding DisplayVersion}"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
-        '                                                        </Setter.Value>',
-        '                                                    </Setter>',
-        '                                                </Trigger>',
-        '                                            </Style.Triggers>',
-        '                                        </Style>',
-        '                                    </DataGrid.RowStyle>',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTextColumn Header="DisplayName"',
-        '                                                            Binding="{Binding DisplayName}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="Type"',
-        '                                                            Binding="{Binding Type}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Installed"/>',
-        '                                                        <ComboBoxItem Content="Remove"/>',
-        '                                                        <ComboBoxItem Content="Install"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0" Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="ApplicationProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="ApplicationProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="ApplicationProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="ApplicationProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="ApplicationProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="ApplicationProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="ApplicationProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
-        '                            </Grid>',
-        '                        </TabItem>',
-        '                        <TabItem Header="Event">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Grid Grid.Row="0">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="130"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="1"',
-        '                                              Name="EventProperty"',
-        '                                              SelectedIndex="0">',
-        '                                        <ComboBoxItem Content="Name"/>',
-        '                                        <ComboBoxItem Content="Fullname"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox Grid.Column="2"',
-        '                                             Name="EventFilter"/>',
-        '                                    <Button Grid.Column="3"',
-        '                                            Content="Refresh"',
-        '                                            Name="EventRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="EventOutput">',
-        '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
-        '                                            <Style.Triggers>',
-        '                                                <Trigger Property="IsMouseOver" Value="True">',
-        '                                                    <Setter Property="ToolTip">',
-        '                                                        <Setter.Value>',
-        '                                                            <TextBlock Text="{Binding Fullname}"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
-        '                                                        </Setter.Value>',
-        '                                                    </Setter>',
-        '                                                </Trigger>',
-        '                                            </Style.Triggers>',
-        '                                        </Style>',
-        '                                    </DataGrid.RowStyle>',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTextColumn Header="Name"',
-        '                                                            Binding="{Binding Name}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="Size"',
-        '                                                            Binding="{Binding Size}"',
-        '                                                            Width="60"/>',
-        '                                        <DataGridTextColumn Header="Max"',
-        '                                                            Binding="{Binding Max}"',
-        '                                                            Width="60"/>',
-        '                                        <DataGridTextColumn Header="%"',
-        '                                                            Binding="{Binding Percent}"',
-        '                                                            Width="60"/>',
-        '                                        <DataGridTextColumn Header="Ct"',
-        '                                                            Binding="{Binding Count}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="Enabled"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="Enabled"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0"',
-        '                                              Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="EventProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="EventProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="EventProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="EventProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="EventProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="EventProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="EventProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
-        '                            </Grid>',
-        '                        </TabItem>',
-        '                        <TabItem Header="Task">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Grid Grid.Row="0">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="130"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="[Search]:"/>',
-        '                                    <ComboBox Grid.Column="1"',
-        '                                              Name="TaskProperty"',
-        '                                              SelectedIndex="0">',
-        '                                        <ComboBoxItem Content="Name"/>',
-        '                                        <ComboBoxItem Content="Author"/>',
-        '                                        <ComboBoxItem Content="State"/>',
-        '                                    </ComboBox>',
-        '                                    <TextBox Grid.Column="2"',
-        '                                             Name="TaskFilter"/>',
-        '                                    <Button Grid.Column="3"',
-        '                                            Content="Refresh"',
-        '                                            Name="TaskRefresh"/>',
-        '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="TaskOutput">',
-        '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
-        '                                            <Style.Triggers>',
-        '                                                <Trigger Property="IsMouseOver" Value="True">',
-        '                                                    <Setter Property="ToolTip">',
-        '                                                        <Setter.Value>',
-        '                                                            <TextBlock Text="{Binding Author}"',
-        '                                                               TextWrapping="Wrap"',
-        '															   FontFamily="Consolas"',
-        '                                                               Background="#000000"',
-        '                                                               Foreground="#00FF00"/>',
-        '                                                        </Setter.Value>',
-        '                                                    </Setter>',
-        '                                                    <Setter Property="ToolTipService.ShowDuration"',
-        '                                                            Value="360000000"/>',
-        '                                                </Trigger>',
-        '                                            </Style.Triggers>',
-        '                                        </Style>',
-        '                                    </DataGrid.RowStyle>',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="#"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="40"/>',
-        '                                        <DataGridTextColumn Header="Name"',
-        '                                                            Binding="{Binding Name}"',
-        '                                                            Width="*"/>',
-        '                                        <DataGridTextColumn Header="Act."',
-        '                                                            Binding="{Binding Actions}"',
-        '                                                            Width="50"/>',
-        '                                        <DataGridTextColumn Header="Trig."',
-        '                                                            Binding="{Binding Triggers}"',
-        '                                                            Width="50"/>',
-        '                                        <DataGridTemplateColumn Header="State" Width="75">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding State.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="Ready"/>',
-        '                                                        <ComboBoxItem Content="Running"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
-        '                                        <DataGridTemplateColumn Header="Target" Width="50">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Target.Index}"',
-        '                                                              Style="{StaticResource DGCombo}">',
-        '                                                        <ComboBoxItem Content="Disabled"/>',
-        '                                                        <ComboBoxItem Content="Ready"/>',
-        '                                                        <ComboBoxItem Content="Running"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="25"/>',
-        '                                        <ColumnDefinition Width="90"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0"',
-        '                                              Content="[Profile]:"/>',
-        '                                    <CheckBox Grid.Column="1"',
-        '                                              Name="TaskProfileSwitch"/>',
-        '                                    <TextBox  Grid.Column="2"',
-        '                                              Name="TaskProfilePath"/>',
-        '                                    <Image    Grid.Column="3"',
-        '                                              Name="TaskProfilePathIcon"/>',
-        '                                    <Button   Grid.Column="4"',
-        '                                              Name="TaskProfileBrowse"',
-        '                                              Content="Browse"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="3">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0"',
-        '                                            Name="TaskProfileLoad"',
-        '                                            Content="Load"/>',
-        '                                    <Button Grid.Column="1"',
-        '                                            Name="TaskProfileSave"',
-        '                                            Content="Save"/>',
-        '                                    <Button Grid.Column="2"',
-        '                                            Name="TaskProfileApply"',
-        '                                            Content="Apply"/>',
-        '                                </Grid>',
         '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Processor">',
@@ -1911,6 +1174,761 @@
         '                            </Grid>',
         '                        </TabItem>',
         '                    </TabControl>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="OS/HotFix">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="50"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <DataGrid Grid.Row="0" Name="OperatingSystem">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="Operating System Information"',
+        '                                                                       TextWrapping="Wrap"',
+        '                                                                       FontFamily="Consolas"',
+        '                                                                       Background="#000000"',
+        '                                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Edition"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Caption}"/>',
+        '                            <DataGridTextColumn Header="Version"',
+        '                                                            Width="100"',
+        '                                                            Binding="{Binding Version}"/>',
+        '                            <DataGridTextColumn Header="Build"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Build}"/>',
+        '                            <DataGridTextColumn Header="Serial"',
+        '                                                            Width="180"',
+        '                                                            Binding="{Binding Serial}"/>',
+        '                            <DataGridTextColumn Header="Lang."',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Language}"/>',
+        '                            <DataGridTextColumn Header="Prod."',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Product}"/>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Type}"/>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="1">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="10"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0" Content="[Hot Fix]:"/>',
+        '                        <Border   Grid.Column="1" Background="Black" Margin="4"/>',
+        '                        <Label    Grid.Column="2" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="3"',
+        '                                              Name="HotFixSearchProperty"',
+        '                                              SelectedIndex="1">',
+        '                            <ComboBoxItem Content="Description"/>',
+        '                            <ComboBoxItem Content="HotFix ID"/>',
+        '                            <ComboBoxItem Content="Installed By"/>',
+        '                            <ComboBoxItem Content="Installed On"/>',
+        '                        </ComboBox>',
+        '                        <TextBox  Grid.Column="4"',
+        '                                              Name="HotFixSearchFilter"/>',
+        '                        <Button   Grid.Column="5"',
+        '                                              Content="Refresh"',
+        '                                              Name="HotFixRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="2" Name="HotFixOutput">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Binding="{Binding Index}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTextColumn Header="Source"',
+        '                                                            Binding="{Binding Source}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="HotFix ID"',
+        '                                                            Binding="{Binding HotFixID}"',
+        '                                                            Width="80"/>',
+        '                            <DataGridTextColumn Header="Installed By"',
+        '                                                            Binding="{Binding InstalledBy}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="Installed On"',
+        '                                                            Binding="{Binding InstalledOn}"',
+        '                                                            Width="120"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="100">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="100">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0"',
+        '                                              Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="HotFixProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="HotFixProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="HotFixProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="HotFixProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="4">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="HotFixProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="HotFixProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="HotFixProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Feature">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                              Name="FeatureProperty"',
+        '                                              SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Feature Name"/>',
+        '                            <ComboBoxItem Content="Description"/>',
+        '                        </ComboBox>',
+        '                        <TextBox Grid.Column="2"',
+        '                                             Name="FeatureFilter"/>',
+        '                        <Button Grid.Column="3"',
+        '                                            Content="Refresh"',
+        '                                            Name="FeatureRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="1" Name="FeatureOutput">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Width="40"',
+        '                                                            Binding="{Binding Index}"/>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding FeatureName}"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="160">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
+        '                                            <ComboBoxItem Content="Enabled"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="160">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
+        '                                            <ComboBoxItem Content="Enabled"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0"',
+        '                                              Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="FeatureProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="FeatureProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="FeatureProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="FeatureProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="FeatureProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="FeatureProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="FeatureProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="AppX">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                          Name="AppXProperty"',
+        '                                          SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Package Name"/>',
+        '                            <ComboBoxItem Content="Display Name"/>',
+        '                            <ComboBoxItem Content="Description"/>',
+        '                            <ComboBoxItem Content="Publisher ID"/>',
+        '                            <ComboBoxItem Content="Install Location"/>',
+        '                        </ComboBox>',
+        '                        <TextBox Grid.Column="2"',
+        '                                         Name="AppXFilter"/>',
+        '                        <Button Grid.Column="3" Content="Refresh" Name="AppXRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="1" Name="AppXOutput">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Binding="{Binding Index}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTextColumn Header="DisplayName"',
+        '                                                            Binding="{Binding DisplayName}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="PublisherID"',
+        '                                                            Binding="{Binding PublisherID}"',
+        '                                                            Width="100"/>',
+        '                            <DataGridTextColumn Header="Version"',
+        '                                                            Binding="{Binding Version}"',
+        '                                                            Width="150"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0"',
+        '                                              Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="AppXProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="AppXProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="AppXProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="AppXProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="AppXProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="AppXProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="AppXProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Application">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="130"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                              Name="ApplicationProperty"',
+        '                                              SelectedIndex="1">',
+        '                            <ComboBoxItem Content="Display Name"/>',
+        '                            <ComboBoxItem Content="Display Version"/>',
+        '                        </ComboBox>',
+        '                        <TextBox Grid.Column="2"',
+        '                                             Name="ApplicationFilter"/>',
+        '                        <Button Grid.Column="3"',
+        '                                            Content="Refresh"',
+        '                                            Name="ApplicationRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="1" Name="ApplicationOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding DisplayVersion}"',
+        '                                                                       TextWrapping="Wrap"',
+        '                                                                       FontFamily="Consolas"',
+        '                                                                       Background="#000000"',
+        '                                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Binding="{Binding Index}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTextColumn Header="DisplayName"',
+        '                                                            Binding="{Binding DisplayName}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                            Binding="{Binding Type}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Installed"/>',
+        '                                            <ComboBoxItem Content="Remove"/>',
+        '                                            <ComboBoxItem Content="Install"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0" Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="ApplicationProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="ApplicationProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="ApplicationProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="ApplicationProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="ApplicationProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="ApplicationProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="ApplicationProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Event">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="130"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                              Name="EventProperty"',
+        '                                              SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Name"/>',
+        '                            <ComboBoxItem Content="Fullname"/>',
+        '                        </ComboBox>',
+        '                        <TextBox Grid.Column="2"',
+        '                                             Name="EventFilter"/>',
+        '                        <Button Grid.Column="3"',
+        '                                            Content="Refresh"',
+        '                                            Name="EventRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="1" Name="EventOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Fullname}"',
+        '                                                                       TextWrapping="Wrap"',
+        '                                                                       FontFamily="Consolas"',
+        '                                                                       Background="#000000"',
+        '                                                                       Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Binding="{Binding Index}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                            Binding="{Binding Name}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="Size"',
+        '                                                            Binding="{Binding Size}"',
+        '                                                            Width="60"/>',
+        '                            <DataGridTextColumn Header="Max"',
+        '                                                            Binding="{Binding Max}"',
+        '                                                            Width="60"/>',
+        '                            <DataGridTextColumn Header="%"',
+        '                                                            Binding="{Binding Percent}"',
+        '                                                            Width="60"/>',
+        '                            <DataGridTextColumn Header="Ct"',
+        '                                                            Binding="{Binding Count}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="Enabled"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="Enabled"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0"',
+        '                                              Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="EventProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="EventProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="EventProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="EventProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="EventProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="EventProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="EventProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Task">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Grid Grid.Row="0">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="130"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label Grid.Column="0" Content="[Search]:"/>',
+        '                        <ComboBox Grid.Column="1"',
+        '                                              Name="TaskProperty"',
+        '                                              SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Name"/>',
+        '                            <ComboBoxItem Content="Author"/>',
+        '                            <ComboBoxItem Content="State"/>',
+        '                        </ComboBox>',
+        '                        <TextBox Grid.Column="2"',
+        '                                             Name="TaskFilter"/>',
+        '                        <Button Grid.Column="3"',
+        '                                            Content="Refresh"',
+        '                                            Name="TaskRefresh"/>',
+        '                    </Grid>',
+        '                    <DataGrid Grid.Row="1" Name="TaskOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Author}"',
+        '                                                               TextWrapping="Wrap"',
+        '															   FontFamily="Consolas"',
+        '                                                               Background="#000000"',
+        '                                                               Foreground="#00FF00"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="#"',
+        '                                                            Binding="{Binding Index}"',
+        '                                                            Width="40"/>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                            Binding="{Binding Name}"',
+        '                                                            Width="*"/>',
+        '                            <DataGridTextColumn Header="Act."',
+        '                                                            Binding="{Binding Actions}"',
+        '                                                            Width="50"/>',
+        '                            <DataGridTextColumn Header="Trig."',
+        '                                                            Binding="{Binding Triggers}"',
+        '                                                            Width="50"/>',
+        '                            <DataGridTemplateColumn Header="State" Width="75">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="Ready"/>',
+        '                                            <ComboBoxItem Content="Running"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                            <DataGridCheckBoxColumn Header="[+]"',
+        '                                                                Width="25"',
+        '                                                                Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="Target" Width="50">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                              Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Disabled"/>',
+        '                                            <ComboBoxItem Content="Ready"/>',
+        '                                            <ComboBoxItem Content="Running"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                    <Grid Grid.Row="2">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="90"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="0"',
+        '                                              Content="[Profile]:"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                              Name="TaskProfileSwitch"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                              Name="TaskProfilePath"/>',
+        '                        <Image    Grid.Column="3"',
+        '                                              Name="TaskProfilePathIcon"/>',
+        '                        <Button   Grid.Column="4"',
+        '                                              Name="TaskProfileBrowse"',
+        '                                              Content="Browse"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="3">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0"',
+        '                                            Name="TaskProfileLoad"',
+        '                                            Content="Load"/>',
+        '                        <Button Grid.Column="1"',
+        '                                            Name="TaskProfileSave"',
+        '                                            Content="Save"/>',
+        '                        <Button Grid.Column="2"',
+        '                                            Name="TaskProfileApply"',
+        '                                            Content="Apply"/>',
+        '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="Service">',
@@ -2264,7 +2282,7 @@
         '                    </TabControl>',
         '                </Grid>',
         '            </TabItem>',
-        '            <TabItem Header="Control">',
+        '            <TabItem Header="Settings">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
         '                        <RowDefinition Height="10"/>',
@@ -2464,7 +2482,7 @@
         '                    </TabControl>',
         '                </Grid>',
         '            </TabItem>',
-        '            <TabItem Header="Profile" Height="32" VerticalAlignment="Top">',
+        '            <TabItem Header="Profile">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
         '                        <RowDefinition Height="10"/>',
@@ -2959,6 +2977,433 @@
             Return "<FEModule.ViperBomb.XamlWindow>"
         }
     }
+
+    # // ==================
+    # // | System Objects |
+    # // ==================
+
+    Class SystemBiosInformation
+    {
+        [String]            $Name
+        [String]    $Manufacturer
+        [String]    $SerialNumber
+        [String]         $Version
+        [String]     $ReleaseDate
+        [Bool]     $SmBiosPresent
+        [String]   $SmBiosVersion
+        [String]     $SmBiosMajor
+        [String]     $SmBiosMinor
+        [String] $SystemBiosMajor
+        [String] $SystemBiosMinor
+        SystemBiosInformation([Object]$Bios)
+        {
+            $This.Name            = $Bios.Name
+            $This.Manufacturer    = $Bios.Manufacturer
+            $This.SerialNumber    = $Bios.SerialNumber
+            $This.Version         = $Bios.Version
+            $This.ReleaseDate     = $Bios.ReleaseDate
+            $This.SmBiosPresent   = $Bios.SmBiosPresent
+            $This.SmBiosVersion   = $Bios.SmBiosBiosVersion
+            $This.SmBiosMajor     = $Bios.SmBiosMajorVersion
+            $This.SmBiosMinor     = $Bios.SmBiosMinorVersion
+            $This.SystemBiosMajor = $Bios.SystemBiosMajorVersion
+            $This.SystemBIosMinor = $Bios.SystemBiosMinorVersion
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.BiosInformation>"
+        }
+    }
+
+    Class SystemOperatingSystem
+    {
+        [String]         $Caption
+        [String]         $Version
+        [String]           $Build
+        [String]          $Serial
+        [UInt32]        $Language
+        [UInt32]         $Product
+        [UInt32]            $Type
+        SystemOperatingSystem([Object]$OS)
+        {
+            $This.Caption       = $OS.Caption
+            $This.Version       = $OS.Version
+            $This.Build         = $OS.BuildNumber
+            $This.Serial        = $OS.SerialNumber
+            $This.Language      = $OS.OSLanguage
+            $This.Product       = $OS.OSProductSuite
+            $This.Type          = $OS.OSType
+
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.OperatingSystem>"
+        }
+    }
+
+    Class SystemComputerSystem
+    {
+        [String]    $Manufacturer
+        [String]           $Model
+        [String]         $Product
+        [String]          $Serial
+        [Object]          $Memory
+        [String]    $Architecture
+        [String]            $UUID
+        [String]         $Chassis
+        [String]        $BiosUefi
+        [Object]        $AssetTag
+        ComputerSystem([Object]$System)
+        {
+            $This.Computer     = @{ 
+            
+                System         = $This.Get("ComputerSystem")
+                Product        = $This.Get("ComputerSystemProduct")
+                Board          = $This.Get("BaseBoard")
+                Form           = $This.Get("SystemEnclosure")
+            }
+
+            $This.Manufacturer = $This.Computer.System.Manufacturer
+            $This.Model        = $This.Computer.System.Model
+            $This.Memory       = $This.ByteSize("Memory",$This.Computer.System.TotalPhysicalMemory)
+            $This.UUID         = $This.Computer.Product.UUID 
+            $This.Product      = $This.Computer.Product.Version
+            $This.Serial       = $This.Computer.Board.SerialNumber -Replace "\.",""
+            $This.BiosUefi     = $This.Get("SecureBootUEFI")
+
+            $This.AssetTag     = $This.Computer.Form.SMBIOSAssetTag.Trim()
+            $This.Chassis      = Switch ([UInt32]$This.Computer.Form.ChassisTypes[0])
+            {
+                {$_ -in 8..12+14,18,21} {"Laptop"}
+                {$_ -in 3..7+15,16}     {"Desktop"}
+                {$_ -in 23}             {"Server"}
+                {$_ -in 34..36}         {"Small Form Factor"}
+                {$_ -in 30..32+13}      {"Tablet"}
+            }
+
+            $This.Architecture = @{x86="x86";AMD64="x64"}[$This.Get("Architecture")]
+        }
+        [Object] ByteSize([String]$Name,[UInt64]$Bytes)
+        {
+            Return [ByteSize]::New($Name,$Bytes)
+        }
+        [Object] Get([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+
+            }
+
+            Return $Item
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.ComputerSystem>"
+        }
+    }
+
+    Class SystemCurrentVersion
+    {
+        [String]       $Id
+        [String]    $Label
+        [Object] $Property
+        SystemCurrentVersion([Object]$System)
+        {
+            $This.Refresh()
+        }
+        [Object] GenericProperty([UInt32]$Index,[Object]$Property)
+        {
+            Return [GenericProperty]::New($Index,$Property)
+        }
+        [Object] GetCurrentVersion()
+        {
+            Return Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+        }
+        Clear()
+        {
+            $This.Property = @( )
+        }
+        Refresh()
+        {
+            $This.Current  = $This.GetCurrentVersion()
+            $This.Clear()
+
+            ForEach ($Property in $This.Current.PSObject.Properties | ? Name -notmatch ^PS)
+            {
+                $This.Add($Property)
+            }
+
+            $This.Id    = $This.Get("DisplayVersion") | % Value
+            $This.Label = "v{0}" -f $This.Id
+        }
+        Add([Object]$Property)
+        {
+            $This.Property += $this.GenericProperty($This.Property.Count,$Property)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return $This.Property | ? Name -eq $Name
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.CurrentVersion>"
+        }
+    }
+
+    Enum SystemEditionType
+    {
+        v1507
+        v1511
+        v1607
+        v1703
+        v1709
+        v1803
+        v1903
+        v1909
+        v2004
+        v20H2
+        v21H1
+        v21H2
+        v22H2
+    }
+
+    Class SystemEditionItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [UInt32]       $Build
+        [String]    $Codename
+        [String] $Description
+        SystemEditionItem([String]$Name)
+        {
+            $This.Index = [UInt32][SystemEditionType]::$Name
+            $This.Name  = [SystemEditionType]::$Name
+        }
+        Inject([String]$Line)
+        {
+            $Split            = $Line -Split ","
+            $This.Build       = $Split[0]
+            $This.Codename    = $Split[1]
+            $This.Description = $Split[2]
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class SystemEditionController
+    {
+        [Object] $Current
+        [Object] $Output
+        SystemEditionController([Object]$Current)
+        {
+            $This.Refresh()
+            $This.Current = $This.Output | ? Name -eq $Current.Label
+        }
+        [Object] SystemEditionItem([String]$Name)
+        {
+            Return [SystemEditionItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+            
+            ForEach ($Name in [System.Enum]::GetNames([SystemEditionType]))
+            {
+                $Item = $This.SystemEditionItem($Name)
+                $Line = Switch ($Item.Name)
+                {
+                    v1507 { "10240,Threshold 1,Release To Manufacturing"  }
+                    v1511 { "10586,Threshold 2,November Update"           }
+                    v1607 { "14393,Redstone 1,Anniversary Update"         }
+                    v1703 { "15063,Redstone 2,Creators Update"            }
+                    v1709 { "16299,Redstone 3,Fall Creators Update"       }
+                    v1803 { "17134,Redstone 4,April 2018 Update"          }
+                    v1809 { "17763,Redstone 5,October 2018 Update"        }
+                    v1903 { "18362,19H1,May 2019 Update"                  }
+                    v1909 { "18363,19H2,November 2019 Update"             }
+                    v2004 { "19041,20H1,May 2020 Update"                  }
+                    v20H2 { "19042,20H2,October 2020 Update"              }
+                    v21H1 { "19043,21H1,May 2021 Update"                  }
+                    v21H2 { "19044,21H2,November 2021 Update"             }
+                    v22H2 { "19045,22H2,2022 Update"                      }
+                }
+
+                $Item.Inject($Line)
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Edition[Controller]>"
+        }
+    }
+
+    Class SystemSnapshot
+    {
+        [String]               $Start
+        [String]        $ComputerName
+        [String]                $Name
+        [String]         $DisplayName
+        Hidden [UInt32] $PartOfDomain
+        [String]                 $DNS
+        [String]             $NetBIOS
+        [String]            $Hostname
+        [String]            $Username
+        [Object]           $Principal
+        [UInt32]             $IsAdmin
+        [String]             $Caption
+        [Version]            $Version
+        [String]           $ReleaseID
+        [UInt32]               $Build
+        [String]         $Description
+        [String]                 $SKU
+        [String]             $Chassis
+        [String]                $Guid
+        [UInt32]            $Complete
+        [String]             $Elapsed
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Snapshot>"
+        }
+        [UInt32] CheckAdmin()
+        {
+            $Collect = ForEach ($Item in "Administrator","Administrators")
+            {
+                $This.Principal.IsInRole($Item)
+            }
+
+            Return $True -in $Collect
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.System.Snapshot>"
+        }
+    }
+
+    Class SystemController
+    {
+        [Object]      $Bios
+        [Object]  $Computer
+        [Object]   $Edition
+        [Object] $Processor
+        [Object]      $Disk
+        [Object]   $Network
+        SystemController([Object]$Module)
+        {
+            $Module = Get-FEModule -Mode 1
+
+            $Name   = "Bios"
+            $Item   = Get-CimInstance Win32_Bios
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Property($Name)
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value)}
+
+            $Name   = "OperatingSystem"
+            $Item   = Get-CimInstance Win32_OperatingSystem
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Output | ? Source -eq $Name
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
+            
+            $Name   = "ComputerSystem"
+            $Item   = Get-CimInstance Win32_ComputerSystem
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Output | ? Source -eq $Name
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
+
+            $Name   = "Product"
+            $Item   = Get-CimInstance Win32_ComputerSystemProduct
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Output | ? Source -eq $Name
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
+
+            $Name   = "Baseboard"
+            $Item   = Get-CimInstance Win32_Baseboard
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Output | ? Source -eq $Name
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
+
+            $Name   = "Enclosure"
+            $Item   = Get-CimInstance Win32_SystemEnclosure
+
+            $Module.OS.AddPropertySet($Name)
+            $Slot   = $Module.OS.Output | ? Source -eq $Name
+            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
+
+            }
+            [Object] GetSystemEnclosure()
+            {
+                Return Get-CimInstance Win32_SystemEnclosure
+            }
+            [String] GetSecureBootUEFI()
+            {
+                Try
+                {
+                    Get-SecureBootUEFI -Name SetupMode -EA 0
+                    Return "UEFI"
+                }
+                Catch
+                {
+                    Return "BIOS"
+                }
+            }
+            [String] GetArchitecture()
+            {
+                Return [Environment]::GetEnvironmentVariable("Processor_Architecture")
+            }
+        }
+        [Object] GetBios()
+        {
+            Return Get-CimInstance Win32_Bios
+        }
+        [Object] GetOperatingSystem()
+        {
+            Return Get-CimInstance Win32_OperatingSystem
+        }
+        [Object] GetComputerSystem()
+        {
+            Return Get-CimInstance Win32_ComputerSystem 
+        }
+        [Object] GetComputerSystemProduct()
+        {
+            Return Get-CimInstance Win32_ComputerSystemProduct
+        }
+        [Object] GetBaseboard()
+        {
+            Return Get-CimInstance Win32_Baseboard
+        }
+        [Object] GetSystemEnclosure()
+        {
+            Return Get-CimInstance Win32_SystemEnclosure
+        }
+        [String] GetSecureBootUEFI()
+        {
+            Try
+            {
+                Get-SecureBootUEFI -Name SetupMode -EA 0
+                Return "UEFI"
+            }
+            Catch
+            {
+                Return "BIOS"
+            }
+        }
+        [String] GetArchitecture()
+        {
+            Return [Environment]::GetEnvironmentVariable("Processor_Architecture")
+        }
+    }
+
 
     # // ===================
     # // | HotFix Controls |
@@ -5494,6 +5939,83 @@
         Service
     }
 
+    Class ViperBombProperty
+    {
+        [String]  $Name
+        [Object] $Value
+        ViperBombProperty([Object]$Property)
+        {
+            $This.Name  = $Property.Name
+            $This.Value = $Property.Value -join ", "
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtual.VmController[Property]>"
+        }
+    }
+    Class ViperBombValidatePath
+    {
+        [UInt32]   $Status
+        [String]     $Type
+        [String]     $Name
+        [Object] $Fullname
+        ViperBombValidatePath([String]$Entry)
+        {
+            $This.Status       = [UInt32]($Entry -match "^\w+\:\\")
+            $This.Fullname     = $Entry
+            If ($This.Status -eq 1)
+            {
+                Try
+                {
+                    If ([System.IO.FileInfo]::new($Entry).Attributes -match "Directory")
+                    {
+                        $This.Type   = "Directory" 
+                    }
+                    Else
+                    {
+                        $This.Type   = "File"
+                    }
+                    
+                    $This.Name       = Split-Path -Leaf $Entry
+
+                    If (!(Test-Path $This.Fullname))
+                    {
+                        $This.Status = 2
+                    }
+                }
+                Catch
+                {
+                    
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Fullname
+        }
+    }
+
+    Class ViperBombFlag
+    {
+        [UInt32] $Index
+        [String] $Name
+        [UInt32] $Status
+        ViperBombFlag([UInt32]$Index,[String]$Name)
+        {
+            $This.Index  = $Index
+            $This.Name   = $Name
+            $This.SetStatus(0)
+        }
+        SetStatus([UInt32]$Status)
+        {
+            $This.Status = $Status
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb[Flag]>"
+        }
+    }
+
     Class ViperBombController
     {
         [Object]      $Module
@@ -5535,6 +6057,10 @@
             If ($This.Module.Mode -ne 0)
             {
                 [Console]::WriteLine($Last.String)
+                If ($This.Xaml)
+                {
+                    $This.Xaml.IO.ConsoleOutput.Items.Add($Last)
+                }
             }
         }
         [String] Start()
@@ -7608,6 +8134,181 @@
             {
                 $xSender.Items.Add($Item)
             }
+        }
+        [String] Escape([String]$String)
+        {
+            Return [Regex]::Escape($String)
+        }
+        [String] Runtime()
+        {
+            Return [DateTime]::Now.ToString("yyyyMMdd_HHmmss")
+        }
+        [Object] ViperBombProperty([Object]$Property)
+        {
+            Return [ViperBombProperty]::New($Property)
+        }
+        [Object] ViperBombFlag([UInt32]$Index,[String]$Name)
+        {
+            Return [ViperBombFlag]::New($Index,$Name)
+        }
+        [Object] ViperBombValidatePath([String]$Entry)
+        {
+            Return [ViperBombValidatePath]::New($Entry)
+        }
+        [String[]] Grid([String]$Slot)
+        {
+            $Item = Switch ($Slot)
+            {
+                Module
+                {
+                    "Source",
+                    "Description",
+                    "Author",
+                    "Copyright"
+                }
+                Bios
+                {
+                    "ReleaseDate",
+                    "SmBiosPresent",
+                    "SmBiosVersion",
+                    "SmBiosMajor",
+                    "SmBiosMinor",
+                    "SystemBiosMajor",
+                    "SystemBiosMinor"
+                }
+                Computer
+                {
+                    "UUID",
+                    "Chassis",
+                    "BiosUefi",
+                    "AssetTag"
+                }
+                Processor
+                {
+                    "ProcessorId",
+                    "DeviceId",
+                    "Speed",
+                    "Cores",
+                    "Used",
+                    "Logical",
+                    "Threads"
+                }
+                Disk
+                {
+                    "PartitionStyle",
+                    "ProvisioningType",
+                    "OperationalStatus",
+                    "HealthStatus",
+                    "BusType",
+                    "UniqueId",
+                    "Location"
+                }
+                Network
+                {
+                    "IPAddress",
+                    "SubnetMask",
+                    "Gateway",
+                    "DnsServer",
+                    "DhcpServer",
+                    "MacAddress"
+                }
+                Option
+                {
+                    "DevErrors",
+                    "DevLog",
+                    "DevConsole",
+                    "DevReport",
+                    "BypassBuild",
+                    "BypassEdition",
+                    "BypassLaptop",
+                    "DisplayActive",
+                    "DisplayInactive",
+                    "DisplaySkipped",
+                    "MiscSimulate",
+                    "MiscXbox",
+                    "MiscChange",
+                    "MiscStopDisabled",
+                    "LogService",
+                    "LogScript",
+                    "BackupRegistry",
+                    "BackupConfig"
+                }
+                Control
+                {
+                    "Name",
+                    "DisplayName",
+                    "Value",
+                    "Description"
+                }
+                Feature
+                {
+                    "Index",
+                    "FeatureName",
+                    "State",
+                    "Path",
+                    "Online",
+                    "WinPath",
+                    "SysDrivePath",
+                    "RestartNeeded",
+                    "LogPath",
+                    "ScratchDirectory",
+                    "LogLevel"
+                }
+                AppX
+                {
+                    "PackageName",
+                    "DisplayName",
+                    "PublisherID",
+                    "Version",
+                    "Architecture",
+                    "ResourceID",
+                    "InstallLocation",
+                    "RestartNeeded",
+                    "LogPath",
+                    "LogLevel"
+                }
+            }
+
+            Return $Item
+        }
+        [Object[]] Property([Object]$Object)
+        {
+            Return $Object.PSObject.Properties | % { $This.ViperBombProperty($_) }
+        }
+        [Object[]] Property([Object]$Object,[UInt32]$Mode,[String[]]$Property)
+        {
+            $List = $Object.PSObject.Properties
+            $Item = Switch ($Mode)
+            {
+                0 { $List | ? Name -notin $Property } 1 { $List | ? Name -in $Property }
+            }
+    
+            Return $Item | % { $This.ViperBombProperty($_) }
+        }
+        StageXaml()
+        {
+            $This.ModulePanel()
+        }
+        ModulePanel()
+        {
+            $This.Update(0,"Staging [~] Module Panel")
+
+            $Ctrl = $This
+
+            # [Module]
+            $Ctrl.Reset($Ctrl.Xaml.IO.Module,$Ctrl.Module)
+
+            # [Module Extension]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ModuleExtension,$Ctrl.Property($Ctrl.Module,1,$Ctrl.Grid("Module")))
+
+            # [Module Root]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ModuleRoot,$Ctrl.Module.Root.List())
+
+            # [Module Manifest]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ModuleManifest,$Ctrl.Module.Manifest)
+
+            # [Module Manifest List]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ModuleManifestList,$Ctrl.Module.Manifest.Full())
         }
         [Object] GetHotFix([String]$HotFixID)
         {
@@ -10656,55 +11357,9 @@
         {
             Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process
         }
-        [UInt32] x64Bit()
+        Invoke()
         {
-            Return [Environment]::Is64BitProcess
-        }
-        [UInt32] GetWinVersion()
-        {
-            Return Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" | % ReleaseID
-        }
-        [String] AutoLoggerRegistry()
-        {
-            Return "HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener"
-        }
-        [String] AutoLoggerPath()
-        {
-            Return "{0}\Microsoft\Diagnosis\ETLLogs\AutoLogger" -f [Environment]::GetEnvironmentVariable("ProgramData")
-        }
-        [Object] ComMusm()
-        {
-            Return New-Object -ComObject Microsoft.Update.ServiceManager
-        }
-        [String] AppAutoCloudCache()
-        {
-            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount"
-        }
-        [String] AppAutoPlaceholder() 
-        {
-            Return "*windows.data.placeholdertilecollection\Current"
-        }
-        [String[]] MUSNotify()
-        {
-            Return @("","ux" | % { "$Env:windir\System32\musnotification$_.exe" })
-        }
-        [String] QuickAccessParseName()
-        {
-            Return 'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}"', 
-                'System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}"', 
-                'System.IsFolder:=System.StructuredQueryType.Boolean#True' -join " AND "
-        }
-        [String] StartSuggestionsCloudCache()
-        {
-            Return "HKCU:","SOFTWARE","Microsoft","Windows","CurrentVersion","CloudStore","Store",
-            "Cache","DefaultAccount","*windows.data.placeholdertilecollection","Current" -join "\"
-        }
-        [String] LockscreenArgument()
-        {
-            $Item = "HKLM","SOFTWARE","Microsoft","Windows","CurrentVersion","Authentication",
-                    "LogonUI","SessionData" -join "\"
-
-            Return "add $Item /t REG_DWORD /v AllowLockScreen /d 0 /f"
+            $This.Xaml.Invoke()
         }
         [String] ToString()
         {
@@ -10714,15 +11369,5 @@
 
 $Ctrl = [ViperBombController]::New()
 $Ctrl.RefreshAll()
-
-<# [Extending the module object]
-$Name  = "OperatingSystem"
-$Ctrl.Module.OS.AddPropertySet($Name)
-$Slot  = $Ctrl.Module.OS.Output | ? Source -eq $Name
-(Get-CimInstance Win32_OperatingSystem).PSObject.Properties | % { $Ctrl.Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-
-$Name  = "ComputerSystem"
-$Ctrl.Module.OS.AddPropertySet($Name)
-$Slot  = $Ctrl.Module.OS.Output | ? Source -eq $Name
-(Get-CimInstance Win32_ComputerSystem).PSObject.Properties | % { $Ctrl.Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-#>
+$Ctrl.StageXaml()
+$Ctrl.Invoke()
