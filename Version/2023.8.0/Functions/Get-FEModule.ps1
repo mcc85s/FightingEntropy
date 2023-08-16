@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2023.8.0]                                                        \\
-\\  Date       : 2023-08-09 16:38:41                                                                  //
+\\  Date       : 2023-08-16 15:35:34                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2023-08-09
+   Modified   : 2023-08-16
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -515,9 +515,13 @@ Function Get-FEModule
             $This.PSVersion = $This.Tx("PowerShell","PSVersion")
             $This.Type      = $This.GetOSType()
         }
+        [Object] Property([String]$Source)
+        {
+            Return $This.Output | ? Source -eq $Source | % Property
+        }
         [Object] Tx([String]$Source,[String]$Name)
         {
-            Return $This.Output | ? Source -eq $Source | % Property | ? Name -eq $Name | % Value
+            Return $This.Property($Source) | ? Name -eq $Name | % Value
         }
         Add([UInt32]$Index,[String]$Name,[Object]$Value)
         {
