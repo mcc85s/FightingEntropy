@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2023-08-09 17:58:30                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2023-08-16 15:37:11                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -598,9 +598,13 @@ Function FightingEntropy.Module
             $This.PSVersion = $This.Tx("PowerShell","PSVersion")
             $This.Type      = $This.GetOSType()
         }
+        [Object] Property([String]$Source)
+        {
+            Return $This.Output | ? Source -eq $Source | % Property
+        }
         [Object] Tx([String]$Source,[String]$Name)
         {
-            Return $This.Output | ? Source -eq $Source | % Property | ? Name -eq $Name | % Value
+            Return $This.Property($Source) | ? Name -eq $Name | % Value
         }
         Add([UInt32]$Index,[String]$Name,[Object]$Value)
         {
@@ -1786,7 +1790,7 @@ Function FightingEntropy.Module
                     ("Get-FEDCPromo.ps1"               , "A3720DC7E7E77C1E806A0331C6E42D4FDDD5AD09ED4ADD98E6092C02BD27686E") ,
                     ("Get-FEDevice.ps1"                , "6FFA1AA2974B903A44015438CC89E7B4E9179BA2EE6AE54916D41F12974C5E14") ,
                     ("Get-FEImageManifest.ps1"         , "AC02A718807CC18C3514B4BD341A5C0F17F32A735FC870DAFECFBC6DDA3BB093") ,
-                    ("Get-FEModule.ps1"                , "F3415E8061EEFE1904D1F2285A674207E340DEDC6A0F9C97D09DA19398EDD599") ,
+                    ("Get-FEModule.ps1"                , "3CC6662DC9925A8250BE416C9AE77E99184388BC02A000E6F643F4C99F12C47C") ,
                     ("Get-FENetwork.ps1"               , "D9C810171D4C854D76AD97B0C8050E29778B1A739525113254315D87C0254391") ,
                     ("Get-FEProcess.ps1"               , "C2ADA73AEC1EC1F336FDF59813B0B1A202EEDA8C5CCDFE3B8105AB16C47A3904") ,
                     ("Get-FESystem.ps1"                , "19540FEE9CC21B10294125C0AECF3022123A066BF297D8149BBF9B7C8B153E3D") ,
@@ -2604,7 +2608,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-08-09 17:58:30 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-08-16 15:37:11 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
