@@ -1,9 +1,12 @@
-# About (2023/08/15)
+# About (2023/08/16)
 # Get-ViperBomb takes a fair amount of time to load. Not to mention, the ControlTemplate classes each require the
 # $Console variable to be present, which is effectively duplicating that object, whereby making the process take
 # a lot longer to load. Merging the following class types and then relocating the SetMode method to the outside
 # ViperBombController scope WILL allow this function to work a LOT faster.
 
+    # // ===================
+    # // | Generic Objects |
+    # // ===================    
 
     Class ByteSize
     {
@@ -152,6 +155,44 @@
         [String] ToString()
         {
             Return "<FEModule.GenericProfile[Controller]>"
+        }
+    }
+
+    Class GenericList
+    {
+        [String]    $Name
+        [Object] $Profile
+        [UInt32]   $Count
+        [Object]  $Output
+        GenericList([String]$Name)
+        {
+            $This.Name    = $Name
+            $This.Profile = $This.GenericProfileController()
+            $This.Clear()
+        }
+        GenericList([Switch]$Flags,[String]$Name)
+        {
+            $This.Name    = $Name
+            $This.Profile = "<Nullified>"
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Count   = 0
+            $This.Output  = @( )
+        }
+        Add([Object]$Item)
+        {
+            $This.Output += $Item
+            $This.Count   = $This.Output.Count
+        }
+        [Object] GenericProfileController()
+        {
+            Return [GenericProfileController]::New($This.Name)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Generic[List][{0}]>" -f $This.Name
         }
     }
     
@@ -2982,6 +3023,55 @@
     # // | System Objects |
     # // ==================
 
+    Class SystemSnapshot
+    {
+        [DateTime]      $Start
+        [String] $ComputerName
+        [String]         $Name
+        [String]  $DisplayName
+        [UInt32] $PartOfDomain
+        [String]          $Dns
+        [String]      $NetBios
+        [String]     $Hostname
+        [String]     $Username
+        [Object]    $Principal
+        [Bool]        $IsAdmin
+        [String]      $Caption
+        [String]         $Guid
+        SystemSnapshot([Object]$Module)
+        {
+            $This.Start         = $Module.Console.Start.Time
+            $This.ComputerName  = $Module.OS.Tx("Environment","ComputerName")
+            $This.Name          = $This.ComputerName.ToLower()
+            $This.DisplayName   = "{0}-{1}" -f $This.Start.ToString("yyyy-MMdd-HHmmss"), $This.ComputerName
+            $This.PartOfDomain  = $Module.OS.Tx("ComputerSystem","PartOfDomain")
+            $This.Dns           = @($Env:UserDnsDomain,"-")[!$env:UserDnsDomain]
+            $This.NetBIOS       = $Module.OS.Tx("Environment","UserDomain").ToLower()
+            $This.Hostname      = @($This.Name;"{0}.{1}" -f $This.Name, $This.Dns)[$This.PartOfDomain].ToLower()
+            $This.Username      = $Module.OS.Tx("Environment","Username")
+            $This.Principal     = $This.GetPrincipal()
+            $This.IsAdmin       = $This.GetIsAdmin()
+            $This.Caption       = $Module.OS.Tx("OperatingSystem","Caption")
+            $This.Guid          = $This.NewGuid()
+        }
+        [Object] GetPrincipal()
+        {
+            Return [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() 
+        }
+        [UInt32] GetIsAdmin()
+        {
+            Return $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
+        }
+        [Guid] NewGuid()
+        {
+            Return [Guid]::NewGuid()
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Snapshot>"
+        }
+    }
+
     Class SystemBiosInformation
     {
         [String]            $Name
@@ -2995,19 +3085,19 @@
         [String]     $SmBiosMinor
         [String] $SystemBiosMajor
         [String] $SystemBiosMinor
-        SystemBiosInformation([Object]$Bios)
+        SystemBiosInformation([Object]$Module)
         {
-            $This.Name            = $Bios.Name
-            $This.Manufacturer    = $Bios.Manufacturer
-            $This.SerialNumber    = $Bios.SerialNumber
-            $This.Version         = $Bios.Version
-            $This.ReleaseDate     = $Bios.ReleaseDate
-            $This.SmBiosPresent   = $Bios.SmBiosPresent
-            $This.SmBiosVersion   = $Bios.SmBiosBiosVersion
-            $This.SmBiosMajor     = $Bios.SmBiosMajorVersion
-            $This.SmBiosMinor     = $Bios.SmBiosMinorVersion
-            $This.SystemBiosMajor = $Bios.SystemBiosMajorVersion
-            $This.SystemBIosMinor = $Bios.SystemBiosMinorVersion
+            $This.Name            = $Module.OS.Tx("Bios","Name")
+            $This.Manufacturer    = $Module.OS.Tx("Bios","Manufacturer")
+            $This.SerialNumber    = $Module.OS.Tx("Bios","SerialNumber")
+            $This.Version         = $Module.OS.Tx("Bios","Version")
+            $This.ReleaseDate     = $Module.OS.Tx("Bios","ReleaseDate")
+            $This.SmBiosPresent   = $Module.OS.Tx("Bios","SmBiosPresent")
+            $This.SmBiosVersion   = $Module.OS.Tx("Bios","SmBiosBiosVersion")
+            $This.SmBiosMajor     = $Module.OS.Tx("Bios","SmBiosMajorVersion")
+            $This.SmBiosMinor     = $Module.OS.Tx("Bios","SmBiosMinorVersion")
+            $This.SystemBiosMajor = $Module.OS.Tx("Bios","SystemBiosMajorVersion")
+            $This.SystemBIosMinor = $Module.OS.Tx("Bios","SystemBiosMinorVersion")
         }
         [String] ToString()
         {
@@ -3017,22 +3107,22 @@
 
     Class SystemOperatingSystem
     {
-        [String]         $Caption
-        [String]         $Version
-        [String]           $Build
-        [String]          $Serial
-        [UInt32]        $Language
-        [UInt32]         $Product
-        [UInt32]            $Type
-        SystemOperatingSystem([Object]$OS)
+        [String]  $Caption
+        [String]  $Version
+        [String]    $Build
+        [String]   $Serial
+        [UInt32] $Language
+        [UInt32]  $Product
+        [UInt32]     $Type
+        SystemOperatingSystem([Object]$Module)
         {
-            $This.Caption       = $OS.Caption
-            $This.Version       = $OS.Version
-            $This.Build         = $OS.BuildNumber
-            $This.Serial        = $OS.SerialNumber
-            $This.Language      = $OS.OSLanguage
-            $This.Product       = $OS.OSProductSuite
-            $This.Type          = $OS.OSType
+            $This.Caption       = $Module.OS.Tx("OperatingSystem","Caption")
+            $This.Version       = $Module.OS.Tx("OperatingSystem","Version")
+            $This.Build         = $Module.OS.Tx("OperatingSystem","BuildNumber")
+            $This.Serial        = $Module.OS.Tx("OperatingSystem","SerialNumber")
+            $This.Language      = $Module.OS.Tx("OperatingSystem","OSLanguage")
+            $This.Product       = $Module.OS.Tx("OperatingSystem","OSProductSuite")
+            $This.Type          = $Module.OS.Tx("OperatingSystem","OSType")
 
         }
         [String] ToString()
@@ -3043,36 +3133,28 @@
 
     Class SystemComputerSystem
     {
-        [String]    $Manufacturer
-        [String]           $Model
-        [String]         $Product
-        [String]          $Serial
-        [Object]          $Memory
-        [String]    $Architecture
-        [String]            $UUID
-        [String]         $Chassis
-        [String]        $BiosUefi
-        [Object]        $AssetTag
-        ComputerSystem([Object]$System)
+        [String] $Manufacturer
+        [String]        $Model
+        [String]      $Product
+        [String]       $Serial
+        [Object]       $Memory
+        [String] $Architecture
+        [String]         $UUID
+        [String]      $Chassis
+        [String]     $BiosUefi
+        [Object]     $AssetTag
+        SystemComputerSystem([Object]$Module)
         {
-            $This.Computer     = @{ 
-            
-                System         = $This.Get("ComputerSystem")
-                Product        = $This.Get("ComputerSystemProduct")
-                Board          = $This.Get("BaseBoard")
-                Form           = $This.Get("SystemEnclosure")
-            }
+            $This.Manufacturer = $Module.OS.Tx("ComputerSystem","Manufacturer")
+            $This.Model        = $Module.OS.Tx("ComputerSystem","Model")
+            $This.Memory       = $This.ByteSize("Memory",$Module.OS.Tx("ComputerSystem","TotalPhysicalMemory"))
+            $This.UUID         = $Module.OS.Tx("Product","UUID") 
+            $This.Product      = $Module.OS.Tx("Product","Version")
+            $This.Serial       = $Module.OS.Tx("Baseboard","SerialNumber") -Replace "\.",""
+            $This.BiosUefi     = $This.GetSecureBootUEFI()
 
-            $This.Manufacturer = $This.Computer.System.Manufacturer
-            $This.Model        = $This.Computer.System.Model
-            $This.Memory       = $This.ByteSize("Memory",$This.Computer.System.TotalPhysicalMemory)
-            $This.UUID         = $This.Computer.Product.UUID 
-            $This.Product      = $This.Computer.Product.Version
-            $This.Serial       = $This.Computer.Board.SerialNumber -Replace "\.",""
-            $This.BiosUefi     = $This.Get("SecureBootUEFI")
-
-            $This.AssetTag     = $This.Computer.Form.SMBIOSAssetTag.Trim()
-            $This.Chassis      = Switch ([UInt32]$This.Computer.Form.ChassisTypes[0])
+            $This.AssetTag     = $Module.OS.Tx("Enclosure","SMBIOSAssetTag").Trim()
+            $This.Chassis      = Switch ([UInt32]$Module.OS.Tx("Enclosure","ChassisTypes")[0])
             {
                 {$_ -in 8..12+14,18,21} {"Laptop"}
                 {$_ -in 3..7+15,16}     {"Desktop"}
@@ -3081,20 +3163,23 @@
                 {$_ -in 30..32+13}      {"Tablet"}
             }
 
-            $This.Architecture = @{x86="x86";AMD64="x64"}[$This.Get("Architecture")]
+            $This.Architecture = @{x86="x86";AMD64="x64"}[$Module.OS.Tx("Environment","Processor_Architecture")]
+        }
+        [String] GetSecureBootUEFI()
+        {
+            Try
+            {
+                Get-SecureBootUEFI -Name SetupMode -EA 0
+                Return "UEFI"
+            }
+            Catch
+            {
+                Return "BIOS"
+            }
         }
         [Object] ByteSize([String]$Name,[UInt64]$Bytes)
         {
             Return [ByteSize]::New($Name,$Bytes)
-        }
-        [Object] Get([String]$Name)
-        {
-            $Item = Switch ($Name)
-            {
-
-            }
-
-            Return $Item
         }
         [String] ToString()
         {
@@ -3240,170 +3325,586 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.System.Edition[Controller]>"
+            Return "<FEModule.ViperBomb.System.Edition.Controller>"
         }
     }
 
-    Class SystemSnapshot
+    # // ======================
+    # // | Processor Controls |
+    # // ======================
+
+    Class SystemProcessorItem
     {
-        [String]               $Start
-        [String]        $ComputerName
-        [String]                $Name
-        [String]         $DisplayName
-        Hidden [UInt32] $PartOfDomain
-        [String]                 $DNS
-        [String]             $NetBIOS
-        [String]            $Hostname
-        [String]            $Username
-        [Object]           $Principal
-        [UInt32]             $IsAdmin
-        [String]             $Caption
-        [Version]            $Version
-        [String]           $ReleaseID
-        [UInt32]               $Build
-        [String]         $Description
-        [String]                 $SKU
-        [String]             $Chassis
-        [String]                $Guid
-        [UInt32]            $Complete
-        [String]             $Elapsed
+        [UInt32]            $Index
+        Hidden [Object] $Processor
+        [String]     $Manufacturer
+        [String]             $Name
+        [String]          $Caption
+        [UInt32]            $Cores
+        [UInt32]             $Used
+        [UInt32]          $Logical
+        [UInt32]          $Threads
+        [String]      $ProcessorId
+        [String]         $DeviceId
+        [UInt32]            $Speed
+        [String]           $Status
+        SystemProcessorItem([UInt32]$Index,[Object]$Processor)
+        {
+            $This.Index        = $Index
+            $This.Processor    = $Processor
+            $This.Manufacturer = Switch -Regex ($Processor.Manufacturer) 
+            {
+            Intel { "Intel" } Amd { "AMD" } Default { $Processor.Manufacturer }
+            }
+            $This.Name         = $Processor.Name -Replace "\s+"," "
+            $This.Caption      = $Processor.Caption
+            $This.Cores        = $Processor.NumberOfCores
+            $This.Used         = $Processor.NumberOfEnabledCore
+            $This.Logical      = $Processor.NumberOfLogicalProcessors 
+            $This.Threads      = $Processor.ThreadCount
+            $This.ProcessorID  = $Processor.ProcessorId
+            $This.DeviceID     = $Processor.DeviceID
+            $This.Speed        = $Processor.MaxClockSpeed
+        }
+        SetStatus()
+        {
+            $This.Status       = "[Processor]: ({0}) {1}" -f $This.Index, $This.Name
+        }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.System.Snapshot>"
+            Return $This.Name
         }
-        [UInt32] CheckAdmin()
+    }
+
+    Class SystemProcessorController : GenericList
+    {
+        SystemProcessorController([String]$Name) : Base($Name)
         {
-            $Collect = ForEach ($Item in "Administrator","Administrators")
+
+        }
+        [Object[]] GetObject()
+        {
+            Return Get-CimInstance Win32_Processor
+        }
+        [Object] SystemProcessorItem([UInt32]$Index,[Object]$Processor)
+        {
+            Return [SystemProcessorItem]::New($Index,$Processor)
+        }
+        [Object] New([Object]$Processor)
+        {
+            $Item = $This.SystemProcessorItem($This.Output.Count,$Processor)
+
+            $Item.SetStatus()
+
+            Return $Item
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Processor in $This.GetObject())
             {
-                $This.Principal.IsInRole($Item)
+                $Item = $This.New($Processor)
+
+                $This.Add($Item)
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Processor.Controller>"
+        }
+    }
+
+    # // =================
+    # // | Disk Controls |
+    # // =================
+
+    Class SystemPartitionItem
+    {
+        [UInt32]            $Index
+        Hidden [Object] $Partition
+        Hidden [String]     $Label
+        [String]             $Type
+        [String]             $Name
+        [Object]             $Size
+        [UInt32]             $Boot
+        [UInt32]          $Primary
+        [UInt32]             $Disk
+        [UInt32]        $PartIndex
+        SystemPartitionItem([UInt32]$Index,[Object]$Partition)
+        {
+            $This.Index      = $Index
+            $This.Partition  = $Partition
+            $This.Type       = $Partition.Type
+            $This.Name       = $Partition.Name
+            $This.Size       = $This.GetSize($Partition.Size)
+            $This.Boot       = $Partition.BootPartition
+            $This.Primary    = $Partition.PrimaryPartition
+            $This.Disk       = $Partition.DiskIndex
+            $This.PartIndex  = $Partition.Index
+        }
+        [Object] GetSize([UInt64]$Bytes)
+        {
+            Return [ByteSize]::New("Partition",$Bytes)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System..Partition[Item]>"
+        }
+    }
+
+    Class SystemPartitionList : GenericList
+    {
+        SystemPartitionList([Switch]$Flags,[String]$Name) : base($Name)
+        {
+            
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Partition[List]>"
+        }
+    }
+
+    Class SystemVolumeItem
+    {
+        [UInt32]            $Index
+        Hidden [Object]     $Drive
+        Hidden [Object] $Partition
+        Hidden [String]     $Label
+        [UInt32]             $Rank
+        [String]          $DriveID
+        [String]      $Description
+        [String]       $Filesystem
+        [String]       $VolumeName
+        [String]     $VolumeSerial
+        [Object]             $Size
+        [Object]        $Freespace
+        [Object]             $Used
+        SystemVolumeItem([UInt32]$Index,[Object]$Drive,[Object]$Partition)
+        {
+            $This.Index             = $Index
+            $This.Drive             = $Drive
+            $This.Partition         = $Partition
+            $This.DriveID           = $Drive.Name
+            $This.Description       = $Drive.Description
+            $This.Filesystem        = $Drive.Filesystem
+            $This.VolumeName        = $Drive.VolumeName
+            $This.VolumeSerial      = $Drive.VolumeSerialNumber
+            $This.Size              = $This.GetSize("Total",$Drive.Size)
+            $This.Freespace         = $This.GetSize("Free",$Drive.Freespace)
+            $This.Used              = $This.GetSize("Used",($This.Size.Bytes - $This.Freespace.Bytes))
+        }
+        [Object] GetSize([String]$Name,[UInt64]$Bytes)
+        {
+            Return [ByteSize]::New($Name,$Bytes)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Volume[Item]>"
+        }
+    }
+
+    Class SystemVolumeList : GenericList
+    {
+        SystemVolumeList([Switch]$Flags,[String]$Name) : base($Name)
+        {
+            
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Volume[List]>"
+        }
+    }
+
+    Class SystemDiskItem
+    {
+        [UInt32]             $Index
+        Hidden [Object]  $DiskDrive
+        [String]              $Disk
+        [String]             $Model
+        [String]            $Serial
+        [String]    $PartitionStyle
+        [String]  $ProvisioningType
+        [String] $OperationalStatus
+        [String]      $HealthStatus
+        [String]           $BusType
+        [String]          $UniqueId
+        [String]          $Location
+        [Object]         $Partition
+        [Object]            $Volume
+        Hidden [String]     $Status
+        SystemDiskItem([Object]$Disk)
+        {
+            $This.Index             = $Disk.Index
+            $This.DiskDrive         = $Disk
+            $This.Disk              = $Disk.DeviceId
+            $This.Partition         = $This.New("Partition")
+            $This.Volume            = $This.New("Volume")
+        }
+        MsftDisk([Object]$MsftDisk)
+        {
+            $This.Model             = $MsftDisk.Model
+            $This.Serial            = $MsftDisk.SerialNumber -Replace "^\s+",""
+            $This.PartitionStyle    = $MsftDisk.PartitionStyle
+            $This.ProvisioningType  = $MsftDisk.ProvisioningType
+            $This.OperationalStatus = $MsftDisk.OperationalStatus
+            $This.HealthStatus      = $MsftDisk.HealthStatus
+            $This.BusType           = $MsftDisk.BusType
+            $This.UniqueId          = $MsftDisk.UniqueId
+            $This.Location          = $MsftDisk.Location
+        }
+        [String] GetSize()
+        {
+            $Size = 0
+            ForEach ($Partition in $This.Partition)
+            {
+                $Size = $Size + $Partition.Size.Bytes
             }
 
-            Return $True -in $Collect
+            Return "{0:n2} GB" -f ($Size/1GB)
+        }
+        SetStatus()
+        {
+            $This.Status            = "[Disk]: ({0}) {1} {2}" -f $This.Index, $This.Model, $This.GetSize()
+        }
+        [Object] New([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                Partition { [SystemPartitionList]::New($False,"Partition") }
+                Volume    {    [SystemVolumeList]::New($False,"Volume")    }
+            }
+
+            Return $Item
         }
         [String] ToString()
         {
-            Return "<FEModule.System.Snapshot>"
+            Return "<FEModule.ViperBomb.System.Disk[Item]>"
+        }
+    }
+
+    Class SystemDiskController : GenericList
+    {
+        SystemDiskController([String]$Name) : Base($Name)
+        {
+
+        }
+        Refresh()
+        {
+            $DiskDrive         = $This.Get("DiskDrive")
+            $MsftDisk          = $This.Get("MsftDisk")
+            $DiskPartition     = $This.Get("DiskPartition")
+            $LogicalDisk       = $This.Get("LogicalDisk")
+            $LogicalDiskToPart = $This.Get("LogicalDiskToPart")
+
+            ForEach ($Drive in $DiskDrive | ? MediaType -match Fixed)
+            {
+                # [Disk Template]
+                $Disk     = $This.DiskItem($Drive)
+
+                # [MsftDisk]
+                $Msft     = $MsftDisk | ? Number -eq $Disk.Index
+                If ($Msft)
+                {
+                    $Disk.MsftDisk($Msft)
+                }
+
+                # [Partitions]
+                ForEach ($Partition in $DiskPartition | ? DiskIndex -eq $Disk.Index)
+                {
+                    $Disk.Partition.Add($This.PartitionItem($Disk.Partition.Count,$Partition))
+                }
+
+                # [Volumes]
+                ForEach ($Logical in $LogicalDiskToPart | ? { $_.Antecedent.DeviceID -in $DiskPartition.Name })
+                {
+                    $Drive      = $LogicalDisk   | ? DeviceID -eq $Logical.Dependent.DeviceID
+                    $Partition  = $DiskPartition | ?     Name -eq $Logical.Antecedent.DeviceID
+                    If ($Drive -and $Partition)
+                    {
+                        $Disk.Volume.Add($This.VolumeItem($Disk.Volume.Count,$Drive,$Partition))
+                    }
+                }
+
+                $This.Output += $Disk
+            }
+        }
+        [Object[]] Get([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                DiskDrive         { Get-CimInstance Win32_DiskDrive | ? MediaType -match Fixed          }
+                MsftDisk          { Get-CimInstance MSFT_Disk -Namespace Root/Microsoft/Windows/Storage }
+                DiskPartition     { Get-CimInstance Win32_DiskPartition                                 }
+                LogicalDisk       { Get-CimInstance Win32_LogicalDisk                                   }
+                LogicalDiskToPart { Get-CimInstance Win32_LogicalDiskToPartition                        }
+            }
+
+            Return $Item
+        }
+        [Object] New([Object]$Disk)
+        {
+            $Item = $This.DiskItem($Disk)
+
+            Return $Item
+        }
+        [Object] SystemDiskItem([Object]$Disk)
+        {
+            Return [SystemDiskItem]::New($Disk)
+        }
+        [Object] SystemPartitionItem([UInt32]$Index,[Object]$Partition)
+        {
+            Return [SystemPartitionItem]::New($Index,$Partition)
+        }
+        [Object] SystemVolumeItem([UInt32]$Index,[Object]$Drive,[Object]$Partition)
+        {
+            Return [SystemVolumeItem]::New($Index,$Drive,$Partition)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Disk.Controller>"
+        }
+    }
+
+    # // ====================
+    # // | Network Controls |
+    # // ====================
+
+    Enum SystemNetworkStateType
+    {
+        Disconnected
+        Connected
+    }
+
+    Class SystemNetworkStateItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String]       $Label
+        [String] $Description
+        SystemNetworkStateItem([String]$Name)
+        {
+            $This.Index = [UInt32][SystemNetworkStateType]::$Name
+            $This.Name  = [SystemNetworkStateType]::$Name
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class SystemNetworkStateList
+    {
+        [Object] $Output
+        SystemNetworkStateList()
+        {
+            $This.Refresh()
+        }
+        [Object] SystemNetworkStateItem([String]$Name)
+        {
+            Return [SystemNetworkStateItem]::New($Name)
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in [System.Enum]::GetNames([SystemNetworkStateType]))
+            {
+                $Item             = $This.SystemNetworkStateItem($Name)
+                $Item.Label       = @("[ ]","[+]")[$Item.Index]
+                $Item.Description = Switch ($Item.Name)
+                {
+                    Disconnected { "Adapter is not connected" }
+                    Connected    { "Adapter is connected"     }
+                }
+                $This.Output += $Item
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.NetworkState[List]>"
+        }
+    }
+
+    Class SystemNetworkItem
+    {
+        [UInt32]            $Index
+        Hidden [Object] $Interface
+        [String]             $Name
+        [Object]            $State
+        [String]        $IPAddress
+        [String]       $SubnetMask
+        [String]          $Gateway
+        [String]        $DnsServer
+        [String]       $DhcpServer
+        [String]       $MacAddress
+        [String]           $Status
+        SystemNetworkItem([UInt32]$Index,[Object]$Interface)
+        {
+            $This.Index               = $Index
+            $This.Name                = $Interface.Description
+            Switch ([UInt32]$Interface.IPEnabled)
+            {
+                0
+                {
+                    $This.IPAddress   = "-"
+                    $This.SubnetMask  = "-"
+                    $This.Gateway     = "-"
+                    $This.DnsServer   = "-"
+                    $This.DhcpServer  = "-"
+                }
+                1
+                {
+                    $This.IPAddress   = $This.Ip($Interface.IPAddress)
+                    $This.SubnetMask  = $This.Ip($Interface.IPSubnet)
+                    If ($Interface.DefaultIPGateway)
+                    {
+                        $This.Gateway = $This.Ip($Interface.DefaultIPGateway)
+                    }
+
+                    $This.DnsServer   = ($Interface.DnsServerSearchOrder | % { $This.Ip($_) }) -join ", "
+                    $This.DhcpServer  = $This.Ip($Interface.DhcpServer)
+                }     
+            }
+
+            $This.MacAddress          = ("-",$Interface.MacAddress)[!!$Interface.MacAddress]
+        }
+        SetState([Object]$State)
+        {
+            $This.State               = $State 
+        }
+        SetStatus()
+        {
+            $This.Status              = "[Network]: {0} {1}" -f $This.State.Label, $This.Name
+        }
+        [String] Ip([Object]$Property)
+        {
+            Return $Property | ? {$_ -match "(\d+\.){3}\d+"}
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Network[Item]>"
+        }
+    }
+
+    Class SystemNetworkController : GenericList
+    {
+        Hidden [Object] $State
+        SystemNetworkController([String]$Name) : Base($Name)
+        {
+            $This.State = $This.SystemNetworkStateList()
+        }
+        [Object[]] GetObject()
+        {
+            Return Get-CimInstance Win32_NetworkAdapterConfiguration
+        }
+        [Object] SystemNetworkStateList()
+        {
+            Return [SystemNetworkStateList]::New()
+        }
+        [Object] SystemNetworkItem([UInt32]$Index,[Object]$Network)
+        {
+            Return [SystemNetworkItem]::New($Index,$Network)
+        }
+        [Object] New([Object]$Network)
+        {
+            $Item       = $This.SystemNetworkItem($This.Output.Count,$Network)
+            $xState     = $This.State.Output | ? Index -eq ([UInt32]$Network.IPEnabled)
+            $Item.SetState($xState)
+            $Item.SetStatus()
+
+            Return $Item
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Network in $This.GetObject())
+            {
+                $Item = $This.New($Network)
+
+                $This.Add($Item)
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.System.Network.Controller>"
         }
     }
 
     Class SystemController
     {
-        [Object]      $Bios
-        [Object]  $Computer
-        [Object]   $Edition
-        [Object] $Processor
-        [Object]      $Disk
-        [Object]   $Network
+        Hidden [Object] $Module
+        [Object]      $Snapshot
+        [Object]          $Bios
+        [Object]            $OS
+        [Object]      $Computer
+        [Object]       $Edition
+        [Object]     $Processor
+        [Object]          $Disk
+        [Object]       $Network
         SystemController([Object]$Module)
         {
-            $Module = Get-FEModule -Mode 1
-
-            $Name   = "Bios"
-            $Item   = Get-CimInstance Win32_Bios
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Property($Name)
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value)}
-
-            $Name   = "OperatingSystem"
-            $Item   = Get-CimInstance Win32_OperatingSystem
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Output | ? Source -eq $Name
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-            
-            $Name   = "ComputerSystem"
-            $Item   = Get-CimInstance Win32_ComputerSystem
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Output | ? Source -eq $Name
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-
-            $Name   = "Product"
-            $Item   = Get-CimInstance Win32_ComputerSystemProduct
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Output | ? Source -eq $Name
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-
-            $Name   = "Baseboard"
-            $Item   = Get-CimInstance Win32_Baseboard
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Output | ? Source -eq $Name
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-
-            $Name   = "Enclosure"
-            $Item   = Get-CimInstance Win32_SystemEnclosure
-
-            $Module.OS.AddPropertySet($Name)
-            $Slot   = $Module.OS.Output | ? Source -eq $Name
-            $Item.PSObject.Properties | % { $Module.OS.Add($Slot.Index,$_.Name,$_.Value) }
-
-            }
-            [Object] GetSystemEnclosure()
+            $This.Module    = $Module
+            $This.Snapshot  = $This.Get("Snapshot")
+            $This.Bios      = $This.Get("Bios")
+            $This.OS        = $This.Get("OS")
+            $This.Computer  = $This.Get("Computer")
+            $This.Edition   = $This.Get("Edition")
+            $This.Processor = $This.Get("Processor")
+            $This.Disk      = $This.Get("Disk")
+            $This.Network   = $This.Get("Network")
+        }
+        [Object] Get([String]$Name)
+        {
+            $This.Module.Update(0,"Getting [~] $Name")
+            $Item = Switch ($Name)
             {
-                Return Get-CimInstance Win32_SystemEnclosure
-            }
-            [String] GetSecureBootUEFI()
-            {
-                Try
+                Snapshot
                 {
-                    Get-SecureBootUEFI -Name SetupMode -EA 0
-                    Return "UEFI"
+                    [SystemSnapshot]::New($This.Module)
                 }
-                Catch
+                Bios
                 {
-                    Return "BIOS"
+                    [SystemBiosInformation]::New($This.Module)
+                }
+                OS
+                {
+                    [SystemOperatingSystem]::New($This.Module)
+                }
+                Computer
+                {
+                    [SystemComputerSystem]::New($This.Module)
+                }
+                Edition
+                {
+                    [SystemEditionController]::New($This.Module)
+                }
+                Processor
+                {
+                    [SystemProcessorController]::New("Processor")
+                }
+                Disk
+                {
+                    [SystemDiskController]::New("Disk")
+                }
+                Network
+                {
+                    [SystemNetworkController]::New("Network")
                 }
             }
-            [String] GetArchitecture()
-            {
-                Return [Environment]::GetEnvironmentVariable("Processor_Architecture")
-            }
+
+            Return $Item
         }
-        [Object] GetBios()
+        [String] ToString()
         {
-            Return Get-CimInstance Win32_Bios
-        }
-        [Object] GetOperatingSystem()
-        {
-            Return Get-CimInstance Win32_OperatingSystem
-        }
-        [Object] GetComputerSystem()
-        {
-            Return Get-CimInstance Win32_ComputerSystem 
-        }
-        [Object] GetComputerSystemProduct()
-        {
-            Return Get-CimInstance Win32_ComputerSystemProduct
-        }
-        [Object] GetBaseboard()
-        {
-            Return Get-CimInstance Win32_Baseboard
-        }
-        [Object] GetSystemEnclosure()
-        {
-            Return Get-CimInstance Win32_SystemEnclosure
-        }
-        [String] GetSecureBootUEFI()
-        {
-            Try
-            {
-                Get-SecureBootUEFI -Name SetupMode -EA 0
-                Return "UEFI"
-            }
-            Catch
-            {
-                Return "BIOS"
-            }
-        }
-        [String] GetArchitecture()
-        {
-            Return [Environment]::GetEnvironmentVariable("Processor_Architecture")
+            Return "<FEModule.ViperBomb.System.Controller>"
         }
     }
-
 
     # // ===================
     # // | HotFix Controls |
@@ -3565,7 +4066,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.HotFix[Controller]>"
+            Return "<FEModule.ViperBomb.HotFix.Controller>"
         }
     }
 
@@ -4339,7 +4840,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.Feature[Controller]>"
+            Return "<FEModule.ViperBomb.Feature.Controller>"
         }
     }
     
@@ -4762,7 +5263,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.AppX[Controller]>"
+            Return "<FEModule.ViperBomb.AppX.Controller>"
         }
     }
 
@@ -4954,7 +5455,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.Application[Controller]>"
+            Return "<FEModule.ViperBomb.Application.Controller>"
         }
     }
 
@@ -5129,7 +5630,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.EventLogProvider[Controller]>"
+            Return "<FEModule.ViperBomb.EventLogProvider.Controller>"
         }
     }
 
@@ -5308,7 +5809,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.ScheduledTask[Controller]>"
+            Return "<FEModule.ViperBomb.ScheduledTask.Controller>"
         }
     }
 
@@ -5553,7 +6054,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.Service[Controller]>"
+            Return "<FEModule.ViperBomb.Service.Controller>"
         }
     }
 
@@ -5924,7 +6425,7 @@
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.Setting[Controller]>"
+            Return "<FEModule.ViperBomb.Setting.Controller>"
         }
     }
 
@@ -6016,10 +6517,21 @@
         }
     }
 
+    Enum ModuleExtensionType
+    {
+        Bios
+        OperatingSystem
+        ComputerSystem
+        Product
+        Baseboard
+        Enclosure
+    }
+
     Class ViperBombController
     {
         [Object]      $Module
         [Object]        $Xaml
+        [Object]      $System
         [Object]      $HotFix
         [Object]     $Feature
         [Object]        $AppX
@@ -6040,7 +6552,10 @@
         }
         Main()
         {
+            $This.AddModuleProperties()
+
             $This.Xaml        = $This.New("Xaml")
+            $This.System      = $This.New("System")
             $This.HotFix      = $This.New("HotFix")
             $This.Feature     = $This.New("Feature")
             $This.AppX        = $This.New("AppX")
@@ -6049,6 +6564,31 @@
             $This.Task        = $This.New("Task")
             $This.Service     = $This.New("Service")
             $This.Setting     = $This.New("Setting")
+        }
+        AddModuleProperty([String]$Name)
+        {
+            $Item = Switch ($Name)
+            {
+                Bios             { Get-CimInstance Win32_Bios }
+                OperatingSystem  { Get-CimInstance Win32_OperatingSystem }
+                ComputerSystem   { Get-CimInstance Win32_ComputerSystem }
+                Product          { Get-CimInstance Win32_ComputerSystemProduct }
+                Baseboard        { Get-CimInstance Win32_Baseboard }
+                Enclosure        { Get-CimInstance Win32_SystemEnclosure }
+            }
+
+            $This.Module.OS.AddPropertySet($Name)
+            $Slot = $This.Module.OS.Property($Name)
+            $Item.PSObject.Properties | % { $This.Module.OS.Add($Slot.Index,$_.Name,$_.Value)}
+
+            $This.Update(1,"Module [+] $Name")
+        }
+        AddModuleProperties()
+        {
+            ForEach ($Name in [System.Enum]::GetNames([ModuleExtensionType]))
+            {
+                $This.AddModuleProperty($Name)
+            }
         }
         Update([Int32]$State,[String]$Status)
         {
@@ -6080,6 +6620,10 @@
                 Xaml
                 {
                     [XamlWindow][ViperBombXaml]::Content
+                }
+                System
+                {
+                    [SystemController]::New($This.Module)
                 }
                 HotFix
                 {
