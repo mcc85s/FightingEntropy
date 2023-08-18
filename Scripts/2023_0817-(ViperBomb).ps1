@@ -1,12 +1,23 @@
-# About (2023/08/17)
-# Get-ViperBomb takes a fair amount of time to load. Not to mention, the ControlTemplate classes each require the
-# $Console variable to be present, which is effectively duplicating that object, whereby making the process take
-# a lot longer to load. Merging the following class types and then relocating the SetMode method to the outside
-# ViperBombController scope WILL allow this function to work a LOT faster.
+<# [About (2023/08/17)]
+
+Get-ViperBomb takes a fair amount of time to load, since it's reaching into system classes, WMI, processor,
+hard drives, networking, hotfixes, features, DISM packages, applications, event logs, tasks, services,
+Windows settings, and even user profiles.
+
+Prior to this update (incomplete), the ControlTemplate classes each required the $Console variable to be
+present, which was effectively duplicating that object rather than being a reference or pointer... whereby
+causing the process take longer to load.
+
+Merging the following class types and various functionality from Get-FESystem, and then relocating the 
+SetMode method to the outside ViperBombController scope WILL allow this function to work a LOT faster.
+
+Not to mention it is retaining control over all things logged to the console.
+This function is still not done... but as you'll see in a moment, it's doing a lot of work.
+#>
 
     # // ===================
     # // | Generic Objects |
-    # // ===================    
+    # // ===================
 
     Class ByteSize
     {
@@ -223,8 +234,10 @@
         '            </Setter>',
         '        </Style>',
         '        <Style TargetType="ToolTip">',
-        '            <Setter Property="Background" Value="#000000"/>',
-        '            <Setter Property="Foreground" Value="#66D066"/>',
+        '            <Setter Property="Background"',
+        '                    Value="#000000"/>',
+        '            <Setter Property="Foreground"',
+        '                    Value="#66D066"/>',
         '        </Style>',
         '        <Style TargetType="TabItem">',
         '            <Setter Property="Template">',
@@ -349,65 +362,46 @@
         '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"',
         '                    Value="Auto"/>',
         '        </Style>',
-        '        <Style TargetType="DataGridRow">',
+        '        <Style x:Key="xTextBlock" TargetType="TextBlock">',
+        '            <Setter Property="TextWrapping"',
+        '                    Value="WrapWithOverflow"/>',
+        '            <Setter Property="FontFamily"',
+        '                    Value="Consolas"/>',
+        '            <Setter Property="FontWeight"',
+        '                    Value="Heavy"/>',
+        '            <Setter Property="Background"',
+        '                    Value="#000000"/>',
+        '            <Setter Property="Foreground"',
+        '                    Value="#00FF00"/>',
+        '        </Style>',
+        '        <Style x:Key="xDataGridRow"',
+        '               TargetType="DataGridRow">',
         '            <Setter Property="VerticalAlignment"',
         '                    Value="Center"/>',
         '            <Setter Property="VerticalContentAlignment"',
         '                    Value="Center"/>',
         '            <Setter Property="TextBlock.VerticalAlignment"',
         '                    Value="Center"/>',
-        '            <Setter Property="Height"   Value="20"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Style.Triggers>',
-        '                <Trigger Property="AlternationIndex"',
-        '                         Value="0">',
-        '                    <Setter Property="Background"',
-        '                            Value="#F8FFFFFF"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex"',
-        '                         Value="1">',
-        '                    <Setter Property="Background"',
-        '                            Value="#FFF8FFFF"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex"',
-        '                         Value="2">',
-        '                    <Setter Property="Background"',
-        '                            Value="#FFFFF8FF"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex"',
-        '                         Value="3">',
-        '                    <Setter Property="Background"',
-        '                            Value="#F8F8F8FF"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex"',
-        '                         Value="4">',
-        '                    <Setter Property="Background"',
-        '                            Value="#F8FFF8FF"/>',
-        '                </Trigger>',
-        '                <Trigger Property="IsMouseOver" Value="True">',
-        '                    <Setter Property="ToolTip">',
-        '                        <Setter.Value>',
-        '                            <TextBlock Text="{Binding Description}"',
-        '                                       TextWrapping="Wrap"',
-        '                                       FontFamily="Consolas"',
-        '                                       Width="400"',
-        '                                       Background="#000000"',
-        '                                       Foreground="#00FF00"/>',
-        '                        </Setter.Value>',
-        '                    </Setter>',
-        '                    <Setter Property="ToolTipService.ShowDuration"',
-        '                            Value="360000000"/>',
-        '                </Trigger>',
-        '            </Style.Triggers>',
+        '            <Setter Property="Height"',
+        '                    Value="20"/>',
+        '            <Setter Property="FontSize"',
+        '                    Value="12"/>',
+        '            <Setter Property="FontWeight"',
+        '                    Value="Heavy"/>',
         '        </Style>',
         '        <Style TargetType="DataGridColumnHeader">',
-        '            <Setter Property="FontSize"   Value="10"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '            <Setter Property="FontSize"',
+        '                    Value="10"/>',
+        '            <Setter Property="FontWeight"',
+        '                    Value="Heavy"/>',
         '        </Style>',
         '        <Style TargetType="TabControl">',
-        '            <Setter Property="TabStripPlacement" Value="Top"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
-        '            <Setter Property="Background" Value="LightYellow"/>',
+        '            <Setter Property="TabStripPlacement"',
+        '                    Value="Top"/>',
+        '            <Setter Property="HorizontalContentAlignment"',
+        '                    Value="Center"/>',
+        '            <Setter Property="Background"',
+        '                    Value="LightYellow"/>',
         '        </Style>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Foreground" Value="Black"/>',
@@ -470,18 +464,18 @@
         '        <DataGrid Grid.Row="0"',
         '                  Name="OS">',
         '            <DataGrid.RowStyle>',
-        '                <Style TargetType="{x:Type DataGridRow}">',
+        '                <Style TargetType="{x:Type DataGridRow}"',
+        '                       BasedOn="{StaticResource xDataGridRow}">',
         '                    <Style.Triggers>',
         '                        <Trigger Property="IsMouseOver" Value="True">',
         '                            <Setter Property="ToolTip">',
         '                                <Setter.Value>',
         '                                    <TextBlock Text="{Binding Name}"',
-        '                                               TextWrapping="Wrap"',
-        '                                               FontFamily="Consolas"',
-        '                                               Background="#000000"',
-        '                                               Foreground="#00FF00"/>',
+        '                                               Style="{StaticResource xTextBlock}"/>',
         '                                </Setter.Value>',
         '                            </Setter>',
+        '                            <Setter Property="ToolTipService.ShowDuration"',
+        '                                    Value="360000000"/>',
         '                        </Trigger>',
         '                    </Style.Triggers>',
         '                </Style>',
@@ -527,18 +521,18 @@
         '                    <DataGrid Grid.Row="2"',
         '                              Name="Module">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="{Binding Description}"',
-        '                                                           TextWrapping="Wrap"',
-        '                                                           FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
         '                                    </Trigger>',
         '                                </Style.Triggers>',
         '                            </Style>',
@@ -566,47 +560,47 @@
         '                            <DataGrid HeadersVisibility="None"',
         '                                      Name="ModuleExtension">',
         '                                <DataGrid.RowStyle>',
-        '                                    <Style TargetType="{x:Type DataGridRow}">',
+        '                                    <Style TargetType="{x:Type DataGridRow}"',
+        '                                           BasedOn="{StaticResource xDataGridRow}">',
         '                                        <Style.Triggers>',
         '                                            <Trigger Property="IsMouseOver" Value="True">',
         '                                                <Setter Property="ToolTip">',
         '                                                    <Setter.Value>',
         '                                                        <TextBlock Text="[FightingEntropy()] Module Property"',
-        '                                                                   TextWrapping="Wrap"',
-        '                                                                   FontFamily="Consolas"',
-        '                                                                   Background="#000000"',
-        '                                                                   Foreground="#00FF00"/>',
+        '                                                                   Style="{StaticResource xTextBlock}"/>',
         '                                                    </Setter.Value>',
         '                                                </Setter>',
+        '                                                <Setter Property="ToolTipService.ShowDuration"',
+        '                                                        Value="360000000"/>',
         '                                            </Trigger>',
         '                                        </Style.Triggers>',
         '                                    </Style>',
         '                                </DataGrid.RowStyle>',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"',
-        '                                                            Binding="{Binding Name}"',
-        '                                                            Width="120"/>',
+        '                                                        Binding="{Binding Name}"',
+        '                                                        Width="120"/>',
         '                                    <DataGridTextColumn Header="Value"',
-        '                                                            Binding="{Binding Value}"',
-        '                                                            Width="*"/>',
+        '                                                        Binding="{Binding Value}"',
+        '                                                        Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </TabItem>',
         '                        <TabItem Header="Root">',
         '                            <DataGrid Name="ModuleRoot">',
         '                                <DataGrid.RowStyle>',
-        '                                    <Style TargetType="{x:Type DataGridRow}">',
+        '                                    <Style TargetType="{x:Type DataGridRow}"',
+        '                                           BasedOn="{StaticResource xDataGridRow}">',
         '                                        <Style.Triggers>',
         '                                            <Trigger Property="IsMouseOver" Value="True">',
         '                                                <Setter Property="ToolTip">',
         '                                                    <Setter.Value>',
         '                                                        <TextBlock Text="[FightingEntropy()] Root Property"',
-        '                                                                   TextWrapping="Wrap"',
-        '                                                                   FontFamily="Consolas"',
-        '                                                                   Background="#000000"',
-        '                                                                   Foreground="#00FF00"/>',
+        '                                                                   Style="{StaticResource xTextBlock}"/>',
         '                                                    </Setter.Value>',
         '                                                </Setter>',
+        '                                                <Setter Property="ToolTipService.ShowDuration"',
+        '                                                        Value="360000000"/>',
         '                                            </Trigger>',
         '                                        </Style.Triggers>',
         '                                    </Style>',
@@ -634,20 +628,20 @@
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0"',
-        '                                              Name="ModuleManifest">',
+        '                                          Name="ModuleManifest">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="[FightingEntropy()] Module Manifest"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -664,18 +658,18 @@
         '                                <DataGrid Grid.Row="1"',
         '                                          Name="ModuleManifestList">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="{Binding Fullname}"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -723,24 +717,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Snapshot]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Provides host system + runtime information&gt;"/>',
+        '                                             Text="&lt;Provides host system + runtime information&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="1"',
         '                                          Name="SnapshotInformation"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Snapshot Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -772,22 +767,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Bios]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays system (BIOS/UEFI) information&gt;"/>',
+        '                                             Text="&lt;Displays system (BIOS/UEFI) information&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="BiosInformation">',
+        '                                <DataGrid Grid.Row="1"',
+        '                                          Name="BiosInformation">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Bios Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -815,24 +812,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Extension]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays additional (BIOS/UEFI) information&gt;"/>',
+        '                                             Text="&lt;Displays additional (BIOS/UEFI) information&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
         '                                          Name="BiosInformationExtension"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Bios Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -865,22 +863,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Computer]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays information about the computer system&gt;"/>',
+        '                                             Text="&lt;Displays information about the computer system&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="ComputerSystem">',
+        '                                <DataGrid Grid.Row="1"',
+        '                                          Name="ComputerSystem">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Computer System Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -911,24 +911,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Extension]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays additional computer system information&gt;"/>',
+        '                                             Text="&lt;Displays additional computer system information&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
         '                                          Name="ComputerSystemExtension"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Computer System Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -960,31 +961,29 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Edition]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays operating system edition information&gt;"/>',
+        '                                             Text="&lt;Displays operating system edition information&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="1"',
         '                                          Name="EditionCurrent">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Edition Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
         '                                    </DataGrid.RowStyle>',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Index"',
-        '                                                            Binding="{Binding Index}"',
-        '                                                            Width="50"/>',
         '                                        <DataGridTextColumn Header="Name"',
         '                                                            Binding="{Binding Name}"',
         '                                                            Width="100"/>',
@@ -1004,24 +1003,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Property]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays operating system edition properties&gt;"/>',
+        '                                             Text="&lt;Displays operating system edition properties&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
         '                                          Name="EditionProperty"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Edition Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1065,23 +1065,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Processor]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays information for each CPU&gt;"/>',
+        '                                             Text="&lt;Displays information for each CPU&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="1"',
         '                                          Name="ProcessorOutput">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Processor Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1106,24 +1107,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Extension]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays additional properties for selected CPU&gt;"/>',
+        '                                             Text="&lt;Displays additional properties for selected CPU&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
         '                                          Name="ProcessorExtension"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Processor Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1145,11 +1147,11 @@
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="80"/>',
         '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="80"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="80"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
@@ -1159,24 +1161,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Disk]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays information for each (system disk/HDD)&gt;"/>',
+        '                                             Text="&lt;Displays information for each (system disk/HDD)&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="1"',
-        '                                          RowHeaderWidth="0"',
-        '                                          Name="DiskOutput">',
+        '                                          Name="DiskOutput"',
+        '                                          RowHeaderWidth="0">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Disk Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1210,24 +1213,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Extension]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays additional properties for selected HDD&gt;"/>',
+        '                                             Text="&lt;Displays additional properties for selected HDD&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
         '                                          Name="DiskExtension"',
         '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Disk Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1249,22 +1253,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Partition]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays partition information for selected HDD&gt;"/>',
+        '                                             Text="&lt;Displays partition information for selected HDD&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
-        '                                <DataGrid Grid.Row="5" Name="DiskPartition">',
+        '                                <DataGrid Grid.Row="5"',
+        '                                          Name="DiskPartition">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Partition Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1298,22 +1304,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Volume]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays volume information for selected HDD&gt;"/>',
+        '                                             Text="&lt;Displays volume information for selected HDD&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
-        '                                <DataGrid Grid.Row="7" Name="DiskVolume">',
+        '                                <DataGrid Grid.Row="7"',
+        '                                          Name="DiskVolume">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Volume Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1360,22 +1368,24 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Network]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays information for each network interface&gt;"/>',
+        '                                             Text="&lt;Displays information for each network interface&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
-        '                                <DataGrid Grid.Row="1" Name="NetworkOutput">',
+        '                                <DataGrid Grid.Row="1"',
+        '                                          Name="NetworkOutput">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Network Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1408,24 +1418,25 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Extension]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Displays additional properties for selected network adapter&gt;"/>',
+        '                                             Text="&lt;Displays additional properties for selected network adapter&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <DataGrid Grid.Row="3"',
-        '                                          HeadersVisibility="None"',
-        '                                          Name="NetworkExtension">',
+        '                                          Name="NetworkExtension"',
+        '                                          HeadersVisibility="None">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="Network Information"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
         '                                                </Trigger>',
         '                                            </Style.Triggers>',
         '                                        </Style>',
@@ -1476,22 +1487,24 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[OS/HotFix]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profiles + information for (installed/desired) Hot Fix packages&gt;"/>',
+        '                                 Text="&lt;Manages profiles + information for (installed/desired) Hot Fix packages&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
-        '                    <DataGrid Grid.Row="2" Name="OperatingSystem">',
+        '                    <DataGrid Grid.Row="2"',
+        '                              Name="OperatingSystem">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="Operating System Information"',
-        '                                                           TextWrapping="Wrap"',
-        '                                                           FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
         '                                    </Trigger>',
         '                                </Style.Triggers>',
         '                            </Style>',
@@ -1547,10 +1560,37 @@
         '                    </Grid>',
         '                    <DataGrid Grid.Row="4"',
         '                              Name="HotFixOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Description}"',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="40"/>',
@@ -1578,7 +1618,8 @@
         '                                    </DataTemplate>',
         '                                </DataGridTemplateColumn.CellTemplate>',
         '                            </DataGridTemplateColumn>',
-        '                            <DataGridTemplateColumn Header="Target" Width="100">',
+        '                            <DataGridTemplateColumn Header="Target"',
+        '                                                    Width="100">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
         '                                        <ComboBox SelectedIndex="{Binding Target.Index}"',
@@ -1651,7 +1692,8 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[Feature]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profiles + information for (installed/desired) Windows optional features&gt;"/>',
+        '                                 Text="&lt;Manages profiles + information for (installed/desired) Windows optional features&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -1678,10 +1720,37 @@
         '                    </Grid>',
         '                    <DataGrid Grid.Row="3"',
         '                              Name="FeatureOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Description}"',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Width="40"',
         '                                                Binding="{Binding Index}"/>',
@@ -1773,7 +1842,8 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[AppX]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profiles + information for (provisioned/desired) DISM packages&gt;"/>',
+        '                                 Text="&lt;Manages profiles + information for (provisioned/desired) DISM packages&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -1803,10 +1873,37 @@
         '                    </Grid>',
         '                    <DataGrid Grid.Row="3"',
         '                              Name="AppXOutput">',
+        '                        <DataGrid.RowStyle>',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
+        '                                <Style.Triggers>',
+        '                                    <Trigger Property="IsMouseOver" Value="True">',
+        '                                        <Setter Property="ToolTip">',
+        '                                            <Setter.Value>',
+        '                                                <TextBlock Text="{Binding Description}"',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
+        '                                            </Setter.Value>',
+        '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
+        '                                    </Trigger>',
+        '                                </Style.Triggers>',
+        '                            </Style>',
+        '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="40"/>',
@@ -1904,7 +2001,8 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[Application]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profiles + information for (installed/desired) applications&gt;"/>',
+        '                                 Text="&lt;Manages profiles + information for (installed/desired) applications&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -1932,26 +2030,36 @@
         '                    <DataGrid Grid.Row="3"',
         '                              Name="ApplicationOutput">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="{Binding DisplayVersion}"',
-        '                                                           TextWrapping="Wrap"',
-        '                                                           FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
         '                                    </Trigger>',
         '                                </Style.Triggers>',
         '                            </Style>',
         '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="40"/>',
@@ -2046,7 +2154,8 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[Event Logs]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profile + information for event log (settings/content)&gt;"/>',
+        '                                 Text="&lt;Manages profile + information for event log (settings/content)&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -2060,40 +2169,50 @@
         '                               Style="{StaticResource LabelRed}"',
         '                               HorizontalContentAlignment="Left"/>',
         '                        <ComboBox Grid.Column="1"',
-        '                                  Name="EventProperty"',
+        '                                  Name="EventLogProperty"',
         '                                  SelectedIndex="0">',
         '                            <ComboBoxItem Content="Name"/>',
         '                            <ComboBoxItem Content="Fullname"/>',
         '                        </ComboBox>',
         '                        <TextBox Grid.Column="2"',
-        '                                 Name="EventFilter"/>',
+        '                                 Name="EventLogFilter"/>',
         '                        <Button Grid.Column="3"',
         '                                Content="Refresh"',
-        '                                Name="EventRefresh"/>',
+        '                                Name="EventLogRefresh"/>',
         '                    </Grid>',
         '                    <DataGrid Grid.Row="3"',
-        '                              Name="EventOutput">',
+        '                              Name="EventLogOutput">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="{Binding Fullname}"',
-        '                                                           TextWrapping="Wrap"',
-        '                                                           FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
+        '                                        <Setter Property="ToolTipService.ShowDuration"',
+        '                                                Value="360000000"/>',
         '                                    </Trigger>',
         '                                </Style.Triggers>',
         '                            </Style>',
         '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="40"/>',
@@ -2149,13 +2268,13 @@
         '                               Style="{StaticResource LabelGray}"',
         '                               HorizontalContentAlignment="Left"/>',
         '                        <CheckBox Grid.Column="1"',
-        '                                  Name="EventProfileSwitch"/>',
+        '                                  Name="EventLogProfileSwitch"/>',
         '                        <TextBox Grid.Column="2"',
-        '                                 Name="EventProfilePath"/>',
+        '                                 Name="EventLogProfilePath"/>',
         '                        <Image Grid.Column="3"',
-        '                               Name="EventProfilePathIcon"/>',
+        '                               Name="EventLogProfilePathIcon"/>',
         '                        <Button Grid.Column="4"',
-        '                                Name="EventProfileBrowse"',
+        '                                Name="EventLogProfileBrowse"',
         '                                Content="Browse"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="5">',
@@ -2165,13 +2284,13 @@
         '                            <ColumnDefinition Width="*"/>',
         '                        </Grid.ColumnDefinitions>',
         '                        <Button Grid.Column="0"',
-        '                                Name="EventProfileLoad"',
+        '                                Name="EventLogProfileLoad"',
         '                                Content="Load"/>',
         '                        <Button Grid.Column="1"',
-        '                                Name="EventProfileSave"',
+        '                                Name="EventLogProfileSave"',
         '                                Content="Save"/>',
         '                        <Button Grid.Column="2"',
-        '                                Name="EventProfileApply"',
+        '                                Name="EventLogProfileApply"',
         '                                Content="Apply"/>',
         '                    </Grid>',
         '                </Grid>',
@@ -2195,7 +2314,8 @@
         '                        <Label Grid.Column="0"',
         '                               Content="[Task]:"/>',
         '                        <TextBox Grid.Column="1"',
-        '                                 Text="&lt;Manages profile + information for (current/desired) scheduled tasks&gt;"/>',
+        '                                 Text="&lt;Manages profile + information for (current/desired) scheduled tasks&gt;"',
+        '                                 IsReadOnly="True"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -2224,16 +2344,14 @@
         '                    <DataGrid Grid.Row="3"',
         '                              Name="TaskOutput">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="{Binding Author}"',
-        '                                                           TextWrapping="Wrap"',
-        '														   FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
         '                                        <Setter Property="ToolTipService.ShowDuration"',
@@ -2243,9 +2361,19 @@
         '                            </Style>',
         '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridCheckBoxColumn Header="[+]"',
-        '                                                    Width="25"',
-        '                                                    Binding="{Binding Profile}"/>',
+        '                            <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <CheckBox IsChecked="{Binding Profile}"',
+        '                                                  Margin="0"',
+        '                                                  HorizontalAlignment="Center">',
+        '                                            <CheckBox.LayoutTransform>',
+        '                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                            </CheckBox.LayoutTransform>',
+        '                                        </CheckBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
         '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="40"/>',
@@ -2349,7 +2477,8 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Service]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Manages profile + information for (current/desired) service (states/start modes)&gt;"/>',
+        '                                             Text="&lt;Manages profile + information for (current/desired) service (states/start modes)&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
@@ -2381,17 +2510,14 @@
         '                                          Grid.Column="0"',
         '                                          Name="ServiceOutput">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="{Binding Description}"',
-        '                                                                       TextWrapping="Wrap"',
-        '                                                                       Width="800"',
-        '                                                                       FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
         '                                                    <Setter Property="ToolTipService.ShowDuration"',
@@ -2448,14 +2574,14 @@
         '                                                              Margin="0"',
         '                                                              HorizontalAlignment="Center">',
         '                                                        <CheckBox.LayoutTransform>',
-        '                                                            <ScaleTransform ScaleX="0.75" ScaleY="0.75" />',
+        '                                                            <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
         '                                                        </CheckBox.LayoutTransform>',
         '                                                    </CheckBox>',
         '                                                </DataTemplate>',
         '                                            </DataGridTemplateColumn.CellTemplate>',
         '                                        </DataGridTemplateColumn>',
         '                                        <DataGridTextColumn Header="#"',
-        '                                                            Width="30"',
+        '                                                            Width="40"',
         '                                                            Binding="{Binding Index}"/>',
         '                                        <DataGridTextColumn Header="Name"',
         '                                                            Width="175"',
@@ -2567,7 +2693,8 @@
         '                                    <Label Grid.Column="0"',
         '                                           Content="[Options]:"/>',
         '                                    <TextBox Grid.Column="1"',
-        '                                             Text="&lt;Manages options for the service configuration tool&gt;"/>',
+        '                                             Text="&lt;Manages options for the service configuration tool&gt;"',
+        '                                             IsReadOnly="True"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
@@ -2760,10 +2887,37 @@
         '                                </Grid>',
         '                                <DataGrid Grid.Row="1"',
         '                                          Name="SettingOutput">',
+        '                                    <DataGrid.RowStyle>',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
+        '                                            <Style.Triggers>',
+        '                                                <Trigger Property="IsMouseOver" Value="True">',
+        '                                                    <Setter Property="ToolTip">',
+        '                                                        <Setter.Value>',
+        '                                                            <TextBlock Text="{Binding Description}"',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
+        '                                                        </Setter.Value>',
+        '                                                    </Setter>',
+        '                                                    <Setter Property="ToolTipService.ShowDuration"',
+        '                                                            Value="360000000"/>',
+        '                                                </Trigger>',
+        '                                            </Style.Triggers>',
+        '                                        </Style>',
+        '                                    </DataGrid.RowStyle>',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridCheckBoxColumn Header="[+]"',
-        '                                                                Width="25"',
-        '                                                                Binding="{Binding Profile}"/>',
+        '                                        <DataGridTemplateColumn Header="[+]" Width="25">',
+        '                                            <DataGridTemplateColumn.CellTemplate>',
+        '                                                <DataTemplate>',
+        '                                                    <CheckBox IsChecked="{Binding Profile}"',
+        '                                                              Margin="0"',
+        '                                                              HorizontalAlignment="Center">',
+        '                                                        <CheckBox.LayoutTransform>',
+        '                                                            <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>',
+        '                                                        </CheckBox.LayoutTransform>',
+        '                                                    </CheckBox>',
+        '                                                </DataTemplate>',
+        '                                            </DataGridTemplateColumn.CellTemplate>',
+        '                                        </DataGridTemplateColumn>',
         '                                        <DataGridTextColumn Header="#"',
         '                                                            Width="40"',
         '                                                            Binding="{Binding Index}"/>',
@@ -2981,16 +3135,14 @@
         '                        <DataGrid Grid.Row="1"',
         '                                  Name="ProfileOutput">',
         '                            <DataGrid.RowStyle>',
-        '                                <Style TargetType="{x:Type DataGridRow}">',
+        '                                <Style TargetType="{x:Type DataGridRow}"',
+        '                                       BasedOn="{StaticResource xDataGridRow}">',
         '                                    <Style.Triggers>',
         '                                        <Trigger Property="IsMouseOver" Value="True">',
         '                                            <Setter Property="ToolTip">',
         '                                                <Setter.Value>',
         '                                                    <TextBlock Text="{Binding Sid.Name}"',
-        '                                                               TextWrapping="Wrap"',
-        '															   FontFamily="Consolas"',
-        '                                                               Background="#000000"',
-        '                                                               Foreground="#00FF00"/>',
+        '                                                               Style="{StaticResource xTextBlock}"/>',
         '                                                </Setter.Value>',
         '                                            </Setter>',
         '                                            <Setter Property="ToolTipService.ShowDuration"',
@@ -3059,16 +3211,14 @@
         '                            <TabItem Header="Sid">',
         '                                <DataGrid Name="ProfileSid">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="{Binding Value}"',
-        '                                                                       TextWrapping="Wrap"',
-        '															           FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
         '                                                    <Setter Property="ToolTipService.ShowDuration"',
@@ -3102,16 +3252,14 @@
         '                            <TabItem Header="Property">',
         '                                <DataGrid Name="ProfileProperty">',
         '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
+        '                                        <Style TargetType="{x:Type DataGridRow}"',
+        '                                               BasedOn="{StaticResource xDataGridRow}">',
         '                                            <Style.Triggers>',
         '                                                <Trigger Property="IsMouseOver" Value="True">',
         '                                                    <Setter Property="ToolTip">',
         '                                                        <Setter.Value>',
         '                                                            <TextBlock Text="{Binding Value}"',
-        '                                                                       TextWrapping="Wrap"',
-        '															           FontFamily="Consolas"',
-        '                                                                       Background="#000000"',
-        '                                                                       Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                        </Setter.Value>',
         '                                                    </Setter>',
         '                                                    <Setter Property="ToolTipService.ShowDuration"',
@@ -3181,16 +3329,14 @@
         '                                    <DataGrid Grid.Row="1"',
         '                                              Name="ProfileContent">',
         '                                        <DataGrid.RowStyle>',
-        '                                            <Style TargetType="{x:Type DataGridRow}">',
+        '                                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                                <Style.Triggers>',
         '                                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                                        <Setter Property="ToolTip">',
         '                                                            <Setter.Value>',
         '                                                                <TextBlock Text="{Binding Fullname}"',
-        '                                                                           TextWrapping="Wrap"',
-        '                                                                           FontFamily="Consolas"',
-        '                                                                           Background="#000000"',
-        '                                                                           Foreground="#00FF00"/>',
+        '                                                                       Style="{StaticResource xTextBlock}"/>',
         '                                                            </Setter.Value>',
         '                                                        </Setter>',
         '                                                        <Setter Property="ToolTipService.ShowDuration"',
@@ -3283,16 +3429,14 @@
         '                              Name="ConsoleOutput"',
         '                              SelectionMode="Extended">',
         '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
+        '                            <Style TargetType="{x:Type DataGridRow}"',
+        '                                   BasedOn="{StaticResource xDataGridRow}">',
         '                                <Style.Triggers>',
         '                                    <Trigger Property="IsMouseOver" Value="True">',
         '                                        <Setter Property="ToolTip">',
         '                                            <Setter.Value>',
         '                                                <TextBlock Text="{Binding String}"',
-        '                                                           TextWrapping="Wrap"',
-        '                                                           FontFamily="Consolas"',
-        '                                                           Background="#000000"',
-        '                                                           Foreground="#00FF00"/>',
+        '                                                           Style="{StaticResource xTextBlock}"/>',
         '                                            </Setter.Value>',
         '                                        </Setter>',
         '                                        <Setter Property="ToolTipService.ShowDuration"',
@@ -3302,7 +3446,7 @@
         '                            </Style>',
         '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Index"',
+        '                            <DataGridTextColumn Header="#"',
         '                                                Binding="{Binding Index}"',
         '                                                Width="50"/>',
         '                            <DataGridTextColumn Header="Elapsed"',
@@ -6943,6 +7087,7 @@
         [Object]     $Service
         [Object]     $Setting
         [Object]     $Profile
+        [Object]        $Flag
         ViperBombController()
         {
             $This.Module = Get-FEModule -Mode 1
@@ -6968,6 +7113,26 @@
             $This.Service     = $This.New("Service")
             $This.Setting     = $This.New("Setting")
             $This.Profile     = $This.New("Profile")
+
+            $This.PrimeFlags()
+        }
+        PrimeFlags()
+        {
+            $This.Flag        = @( )
+
+            ForEach ($Name in "HotFixProfilePath",
+                              "FeatureProfilePath",
+                              "AppXProfilePath",
+                              "ApplicationProfilePath",
+                              "EventLogProfilePath",
+                              "TaskProfilePath",
+                              "ServiceOptionPath",
+                              "SettingProfilePath",
+                              "ProfilePath",
+                              "ConsolePath")
+            {
+                $This.Flag += $This.ViperBombFlag($This.Flag.Count,$Name)
+            }
         }
         AddModuleProperty([String]$Name)
         {
@@ -7012,6 +7177,108 @@
         [String] Start()
         {
             Return $This.Module.Console.Start.Time.ToString("yyyy-MMdd-HHmmss")
+        }
+        [String] GetTime()
+        {
+            Return [DateTime]::Now.ToString("yyyyMMdd-HHmmss")
+        }
+        [String] Escape([String]$String)
+        {
+            Return [Regex]::Escape($String)
+        }
+        [String] TargetPath([String]$Path,[String]$Name)
+        {
+            Return "{0}\{1}-{2}.txt" -f $Path, $This.Start(), $Name
+        }
+        [String] Label()
+        {
+            Return "{0}[System Control Extension Utility]" -f $This.Module.Label()
+        }
+        [String] AboutBlackViper()
+        {
+            Return ("BlackViper is the original author of the Black Viper "+
+            "Service Configuration featured on his website. `nThe original"+
+            " utility dealt with (*.bat) files to provide a service config"+
+            "uration template for Windows services, dating back to the day"+
+            "s of Windows (2000/XP).")
+        }
+        [String] AboutMadBomb122()
+        {
+            Return ("MadBomb122 is the author of the Windows PowerShell (G"+
+            "UI/graphical user interface) tool that adopted Black Viper&ap"+
+            "os;s service configuration (*.bat) files in a prior version o"+
+            "f this utility, which is featured on his [GitHub] repository "+
+            "above.")
+        }
+        FolderBrowse([String]$Name)
+        {
+            $This.Update(0,"Browsing [~] Folder: [$Name]")
+            $Object      = $This.Xaml.IO.$Name
+            $Item        = New-Object System.Windows.Forms.FolderBrowserDialog
+            $Item.ShowDialog()
+        
+            $Object.Text = @("<Select a path>",$Item.SelectedPath)[!!$Item.SelectedPath]
+        }
+        FileBrowse([String]$Name)
+        {
+            $This.Update(0,"Browsing [~] File: [$Name]")
+            $Object      = $This.Xaml.Get($Name)
+            $Item                   = New-Object System.Windows.Forms.OpenFileDialog
+            $Item.InitialDirectory  = $Env:SystemDrive
+            $Item.ShowDialog()
+            
+            If (!$Item.Filename)
+            {
+                $Item.Filename                = ""
+            }
+        
+            $Object.Text = @("<Select an image>",$Item.FileName)[!!$Item.FileName]
+        }
+        CheckPath([String]$Name)
+        {
+            $Item        = $This.Xaml.Get($Name)
+            $Icon        = $This.Xaml.Get("$Name`Icon")
+            $xFlag       = $This.Flag | ? Name -eq $Name
+
+            $xFlag.Status = $This.ViperBombValidatePath($Item.Text).Status
+
+            <#
+            ForEach ($Item in "<","C:\","C:\backups","C:\backups\test.txt","C:\backups\fail.txt")
+            {            
+                $Ctrl.ViperBombValidatePath($Item).Status
+            }
+            #>
+    
+            $Icon.Source = $This.IconStatus($xFlag.Status)
+        }
+        ConstructPath([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                New-Item $Path -ItemType Directory -Verbose
+            }
+        }
+        BuildPath([String]$Path)
+        {
+            $Split = $Path.Split("\")
+            $Base  = $Split[0]
+            $Count = $Split.Count - 1
+            Switch ($Count)
+            {
+                {$_ -gt 1}
+                {
+                    ForEach ($X in $Split[1..$Count])
+                    {
+                        $Base = "{0}\{1}" -f $Base, $Split[$X]
+                        $This.ConstructPath($Base)
+                    }
+                }
+                {$_ -eq 1}
+                {
+                    $Base = "{0}\{1}" -f $Base, $Split[1]
+                    $This.ConstructPath($Base)
+                }
+            }
         }
         Clear()
         {
@@ -9142,6 +9409,8 @@
                             }
                         }
 
+                        $Disk.SetStatus()
+
                         $This.Update(0,$Disk.Status)
         
                         $Branch.Output += $Disk
@@ -9168,14 +9437,6 @@
             {
                 $xSender.Items.Add($Item)
             }
-        }
-        [String] Escape([String]$String)
-        {
-            Return [Regex]::Escape($String)
-        }
-        [String] Runtime()
-        {
-            Return [DateTime]::Now.ToString("yyyyMMdd_HHmmss")
         }
         [Object] ViperBombProperty([Object]$Property)
         {
@@ -9335,33 +9596,42 @@
     
             Return $Item | % { $This.ViperBombProperty($_) }
         }
+        SearchControl([Object]$Property,[Object]$Filter,[Object]$Item,[Object]$Control)
+        {
+            $Prop = $Property.SelectedItem.Content.Replace(" ","")
+            $Text = $Filter.Text
+
+            Start-Sleep -Milliseconds 20
+            
+            $Hash = @{ }
+            Switch -Regex ($Text)
+            {
+                Default 
+                { 
+                    ForEach ($Object in $Item | ? $Prop -match $This.Escape($Text))
+                    {
+                        $Hash.Add($Hash.Count,$Object)
+                    }
+                } 
+                "^$" 
+                { 
+                    ForEach ($Object in $Item)
+                    {
+                        $Hash.Add($Hash.Count,$Object)
+                    }
+                }
+            }
+
+            $List = Switch ($Hash.Count)
+            {
+                0 { $Null } 1 { $Hash[0] } Default { $Hash[0..($Hash.Count-1)]}
+            }
+
+            $This.Reset($Control,$List)
+        }
         [String] LogPath()
         {
             Return "{0}\{1}\ViperBomb" -f $This.Module.ProgramData(), $This.Module.Company
-        }
-        [String] TargetPath([String]$Path,[String]$Name)
-        {
-            Return "{0}\{1}-{2}.txt" -f $Path, $This.Config.Time, $Name
-        }
-        [String] Label()
-        {
-            Return "{0}[System Control Extension Utility]" -f $This.Module.Label()
-        }
-        [String] AboutBlackViper()
-        {
-            Return ("BlackViper is the original author of the Black Viper "+
-            "Service Configuration featured on his website. `nThe original"+
-            " utility dealt with (*.bat) files to provide a service config"+
-            "uration template for Windows services, dating back to the day"+
-            "s of Windows (2000/XP).")
-        }
-        [String] AboutMadBomb122()
-        {
-            Return ("MadBomb122 is the author of the Windows PowerShell (G"+
-            "UI/graphical user interface) tool that adopted Black Viper&ap"+
-            "os;s service configuration (*.bat) files in a prior version o"+
-            "f this utility, which is featured on his [GitHub] repository "+
-            "above.")
         }
         [String] IconStatus([UInt32]$Flag)
         {
@@ -9371,17 +9641,170 @@
         }
         StageXaml()
         {
-            $This.ModulePanel()
-            $This.SystemPanel()
-            $This.HotFixPanel()
-            $This.FeaturePanel()
-            $This.AppXPanel()
-            $This.ApplicationPanel()
-            $This.EventPanel()
-            $This.TaskPanel()
-            $This.ServicePanel()
-            $This.SettingPanel()
-            $This.ProfilePanel()
+            # Name                      Has profile
+            $This.ModulePanel()       # 0
+            $This.SystemPanel()       # 0
+            $This.HotFixPanel()       # 1
+            $This.FeaturePanel()      # 1
+            $This.AppXPanel()         # 1
+            $This.ApplicationPanel()  # 1
+            $This.EventLogPanel()     # 1
+            $This.TaskPanel()         # 1
+            $This.ServicePanel()      # 2
+            $This.SettingPanel()      # 1
+            $This.ProfilePanel()      # 0
+        }
+        Panel([String]$Name)
+        {
+            $Ctrl = $This
+
+            Switch ($Name)
+            {
+                HotFix
+                {
+                    $Value = $Ctrl.HotFix.Profile.Enabled  = [UInt32]$Ctrl.Xaml.IO.HotFixProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.HotFixProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.HotFixProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.HotFixProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.HotFixProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.HotFixProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.HotFixProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.HotFixProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.HotFixProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.HotFixProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"HotFix")
+                        }
+                    }
+                }
+                Feature
+                {
+                    $Value = $Ctrl.Feature.Profile.Enabled         = [UInt32]$Ctrl.Xaml.IO.FeatureProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.FeatureProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.FeatureProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.FeatureProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.FeatureProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.FeatureProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.FeatureProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.FeatureProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.FeatureProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.FeatureProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"Feature")
+                        }
+                    }
+                }
+                AppX
+                {
+                    $Value = $Ctrl.AppX.Profile.Enabled  = [UInt32]$Ctrl.Xaml.IO.AppXProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.AppXProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.AppXProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.AppXProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.AppXProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.AppXProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.AppXProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.AppXProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.AppXProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.AppXProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"AppX")
+                        }
+                    }
+                }
+                Application
+                {
+                    $Value = $Ctrl.Application.Profile.Enabled  = [UInt32]$Ctrl.Xaml.IO.ApplicationProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.ApplicationProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.ApplicationProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.ApplicationProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.ApplicationProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.ApplicationProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.ApplicationProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.ApplicationProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.ApplicationProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.ApplicationProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"Application")
+                        }
+                    }
+                }
+                EventLog
+                {
+                    $Value = $Ctrl.EventLog.Profile.Enabled      = [UInt32]$Ctrl.Xaml.IO.EventLogProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.EventLogProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.EventLogProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.EventLogProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.EventLogProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.EventLogProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.EventLogProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.EventLogProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.EventLogProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.EventLogProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"EventLog")
+                        }
+                    }
+                }
+                Task
+                {
+                    $Value = $Ctrl.Task.Profile.Enabled  = [UInt32]$Ctrl.Xaml.IO.TaskProfileSwitch.IsChecked
+
+                    $Ctrl.Xaml.IO.TaskProfilePath.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.TaskProfilePathIcon.IsEnabled = $Value
+                    $Ctrl.Xaml.IO.TaskProfileBrowse.IsEnabled   = $Value
+                    $Ctrl.Xaml.IO.TaskProfileLoad.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.TaskProfileSave.IsEnabled     = $Value
+                    $Ctrl.Xaml.IO.TaskProfileApply.IsEnabled    = $Value
+
+                    Switch ($Value)
+                    {
+                        0 
+                        {
+                            $Ctrl.Xaml.IO.TaskProfilePath.Text       = $Null
+                            $Ctrl.Xaml.IO.TaskProfilePathIcon.Source = $Null
+                        }
+                        1
+                        {
+                            $Ctrl.Xaml.IO.TaskProfilePath.Text       = $Ctrl.TargetPath($Ctrl.LogPath(),"Task")
+                        }
+                    }
+                }
+            }
         }
         ModulePanel()
         {
@@ -9538,7 +9961,7 @@
             
             $Ctrl.Xaml.IO.HotFixProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("HotFix")
+                $Ctrl.Panel("HotFix")
             })
             
             $Ctrl.Xaml.IO.HotFixProfileLoad.Add_Click(
@@ -9559,7 +9982,7 @@
                 }
             })
 
-            # $Ctrl.Panel("HotFix")
+            $Ctrl.Panel("HotFix")
 
             $This.Update(1,"Staged [+] HotFix Panel")
         }
@@ -9588,7 +10011,7 @@
             
             $Ctrl.Xaml.IO.FeatureProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("Feature")
+                $Ctrl.Panel("Feature")
             })
             
             $Ctrl.Xaml.IO.FeatureProfileLoad.Add_Click(
@@ -9609,7 +10032,7 @@
                 }
             })
 
-            # $Ctrl.Panel("Feature")
+            $Ctrl.Panel("Feature")
 
             $This.Update(1,"Staged [+] Feature Panel")
         }
@@ -9638,7 +10061,7 @@
             
             $Ctrl.Xaml.IO.AppXProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("AppX")
+                $Ctrl.Panel("AppX")
             })
             
             $Ctrl.Xaml.IO.AppXProfileLoad.Add_Click(
@@ -9659,7 +10082,7 @@
                 }
             })
 
-            # $Ctrl.Panel("AppX")
+            $Ctrl.Panel("AppX")
 
             $This.Update(1,"Staged [+] AppX Panel")
         }
@@ -9688,7 +10111,7 @@
             
             $Ctrl.Xaml.IO.ApplicationProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("Application")
+                $Ctrl.Panel("Application")
             })
             
             $Ctrl.Xaml.IO.ApplicationProfileLoad.Add_Click(
@@ -9709,57 +10132,57 @@
                 }
             })
 
-            # $Ctrl.Panel("Application")
+            $Ctrl.Panel("Application")
 
             $This.Update(1,"Staged [+] Application Panel")
         }
-        EventPanel()
+        EventLogPanel()
         {
             $This.Update(0,"Staging [~] EventLog Panel")
 
             $Ctrl = $This
 
             # [Event]
-            $Ctrl.Reset($Ctrl.Xaml.IO.EventOutput,$Ctrl.EventLog.Output)
+            $Ctrl.Reset($Ctrl.Xaml.IO.EventLogOutput,$Ctrl.EventLog.Output)
 
-            $Ctrl.Xaml.IO.EventFilter.Add_TextChanged(
+            $Ctrl.Xaml.IO.EventLogFilter.Add_TextChanged(
             {
-                $Ctrl.SearchControl($Ctrl.Xaml.IO.EventProperty,
-                                    $Ctrl.Xaml.IO.EventFilter,
+                $Ctrl.SearchControl($Ctrl.Xaml.IO.EventLogProperty,
+                                    $Ctrl.Xaml.IO.EventLogFilter,
                                     $Ctrl.EventLog.Output,
-                                    $Ctrl.Xaml.IO.EventOutput)
+                                    $Ctrl.Xaml.IO.EventLogOutput)
             })
             
-            $Ctrl.Xaml.IO.EventRefresh.Add_Click(
+            $Ctrl.Xaml.IO.EventLogRefresh.Add_Click(
             {
                 $Ctrl.Refresh("EventLog")
-                $Ctrl.Reset($Ctrl.Xaml.IO.EventOutput,$Ctrl.EventLog.Output)
+                $Ctrl.Reset($Ctrl.Xaml.IO.EventLogOutput,$Ctrl.EventLog.Output)
             })
             
-            $Ctrl.Xaml.IO.EventProfileSwitch.Add_Click(
+            $Ctrl.Xaml.IO.EventLogProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("EventLog")
+                $Ctrl.Panel("EventLog")
             })
             
-            $Ctrl.Xaml.IO.EventProfileLoad.Add_Click(
+            $Ctrl.Xaml.IO.EventLogProfileLoad.Add_Click(
             {
-                $Ctrl.System.Event.Profile.SetPath($Ctrl.Xaml.IO.EventProfilePath.Text)
+                $Ctrl.EventLog.Profile.SetPath($Ctrl.Xaml.IO.EventLogProfilePath.Text)
             })
             
-            $Ctrl.Xaml.IO.EventProfileBrowse.Add_Click(
+            $Ctrl.Xaml.IO.EventLogProfileBrowse.Add_Click(
             {
-                $Ctrl.FileBrowse("EventProfilePath")
+                $Ctrl.FileBrowse("EventLogProfilePath")
             })
             
-            $Ctrl.Xaml.IO.EventProfilePath.Add_TextChanged(
+            $Ctrl.Xaml.IO.EventLogProfilePath.Add_TextChanged(
             {
-                If ($Ctrl.Xaml.IO.EventProfileSwitch.IsChecked)
+                If ($Ctrl.Xaml.IO.EventLogProfileSwitch.IsChecked)
                 {
-                    $Ctrl.CheckPath("EventProfilePath")
+                    $Ctrl.CheckPath("EventLogProfilePath")
                 }
             })
 
-            # $Ctrl.Panel("EventLog")
+            $Ctrl.Panel("EventLog")
 
             $This.Update(1,"Staged [+] EventLog Panel")
         }
@@ -9788,7 +10211,7 @@
             
             $Ctrl.Xaml.IO.TaskProfileSwitch.Add_Click(
             {
-                # $Ctrl.Panel("Task")
+                $Ctrl.Panel("Task")
             })
             
             $Ctrl.Xaml.IO.TaskProfileLoad.Add_Click(
@@ -9809,7 +10232,7 @@
                 }
             })
 
-            # $Ctrl.Panel("Task")
+            $Ctrl.Panel("Task")
 
             $This.Update(1,"Staged [+] Task Panel")
         }
@@ -9820,7 +10243,7 @@
             $Ctrl = $This
 
             # [Service]
-            # $Ctrl.Reset($Ctrl.Xaml.IO.ServiceSlot,$Ctrl.Service.Output.Index)
+            $Ctrl.Reset($Ctrl.Xaml.IO.ServiceSlot,$Ctrl.Service.Output.Index)
 
             <#
             $Ctrl.Xaml.IO.ServiceSlot.Add_SelectionChanged(
