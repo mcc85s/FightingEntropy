@@ -1,4 +1,4 @@
-<# [About (2023/08/17)]
+<# [About (2023/08/20)]
 
 Get-ViperBomb takes a fair amount of time to load, since it's reaching into system classes, WMI, processor,
 hard drives, networking, hotfixes, features, DISM packages, applications, event logs, tasks, services,
@@ -126,7 +126,9 @@ This function is still not done... but as you'll see in a moment, it's doing a l
         }
         SetPath([String]$Fullname)
         {
+            $This.Enabled  = 1
             $This.Fullname = $Fullname
+            $This.TestPath()
         }
         [String] ToString()
         {
@@ -4577,7 +4579,22 @@ This function is still not done... but as you'll see in a moment, it's doing a l
         }
         [String] ToString()
         {
-            Return "<FEModule.ViperBomb.HotFix[Item]>"
+            Return "<FEModule.ViperBomb.HotFix.Item>"
+        }
+    }
+
+    Class HotFixProfileItem
+    {
+        [String] $HotFixID
+        [Object]   $Target
+        HotFixProfileItem([Object]$HotFix)
+        {
+            $This.HotFixID = $HotFix.HotFixID
+            $This.Target   = $HotFix.Target
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.ViperBomb.HotFix.ProfileItem>"
         }
     }
 
@@ -4600,20 +4617,33 @@ This function is still not done... but as you'll see in a moment, it's doing a l
         {
             Return [HotFixItem]::New($Index,$Hotfix)
         }
-        [Object] New([Object]$Hotfix)
+        [Object] HotFixProfileItem([Object]$HotFix)
+        {
+            Return [HotFixProfileItem]::New($HotFix)
+        }
+        [Object] HotFixProfileItem([Switch]$Flags,[Object]$HotFix)
+        {
+            If ($HotFix.Target.GetType().Name -eq "String")
+            {
+                $HotFix.Target = $This.State.Output | ? Name -eq $HotFix.Target
+            }
+
+            Return [HotFixProfileItem]::New($HotFix)
+        }
+        [Object] New([Object]$HotFix)
         {
             $Item   = $This.HotFixItem($This.Output.Count,$HotFix)
 
             $Item.SetState($This.State.Output[0])
 
-            $Target = $This.Profile.Output | ? Name -eq $Item.Name
-            If (!$Target)
+            $Target = $This.Profile.Output | ? HotFixID -eq $Item.HotFixID
+            If ($Target)
             {
-                $Item.SetProfile(0,$This.State.Output[0])
+                $Item.SetProfile(1,$Target.Target)
             }
             Else
             {
-                $Item.SetProfile(1,$This.State.Output[$Target.Value])
+                $Item.SetProfile(0,$This.State.Output[0])
             }
 
             $Item.SetStatus()
@@ -4629,6 +4659,34 @@ This function is still not done... but as you'll see in a moment, it's doing a l
 
                 $This.Add($Item)
             }
+        }
+        Load([String]$Path)
+        {
+            $This.Profile.SetPath($Path)
+            $This.Profile.Content = [System.IO.File]::ReadAllLines($This.Profile.Fullname)
+            $This.Profile.Output  = $This.Profile.Content | ConvertFrom-Csv | % { 
+
+                $This.HotFixProfileItem([Switch]$Flags,$_)
+            }
+
+            ForEach ($Item in $This.Profile.Output)
+            {
+                $Slot         = $This.Get($Item.HotFixID)
+                $Slot.Profile = 1
+                $Slot.Target  = $Item.Target
+            }
+        }
+        Save([String]$Path)
+        {
+            $This.Profile.SetPath($Path)
+            $This.Profile.Output   = $This.Output | ? Profile | % { $This.HotFixProfileItem($_) }
+            $This.Profile.Content  = $This.Profile.Output | ConvertTo-Json
+
+            [System.IO.File]::WriteAllLines($This.Profile.Fullname,$This.Profile.Content)
+        }
+        [Object] Get([String]$HotFixID)
+        {
+            Return $This.Output | ? HotFixID -eq $HotFixID
         }
         [String] ToString()
         {
@@ -7250,7 +7308,7 @@ This function is still not done... but as you'll see in a moment, it's doing a l
             $This.Update(0,"Browsing [~] File: [$Name]")
             $Object      = $This.Xaml.Get($Name)
             $Item                   = New-Object System.Windows.Forms.OpenFileDialog
-            $Item.InitialDirectory  = $Env:SystemDrive
+            $Item.InitialDirectory  = $This.LogPath()
             $Item.ShowDialog()
             
             If (!$Item.Filename)
@@ -9983,6 +10041,7 @@ This function is still not done... but as you'll see in a moment, it's doing a l
             {
                 $Ctrl.Refresh("HotFix")
                 $Ctrl.Reset($Ctrl.Xaml.IO.HotFixOutput,$Ctrl.HotFix.Output)
+                # $Ctrl.Xaml.IO.HotFixOutput.Items.Refresh()
             })
             
             $Ctrl.Xaml.IO.HotFixProfileSwitch.Add_Click(
@@ -9992,16 +10051,22 @@ This function is still not done... but as you'll see in a moment, it's doing a l
             
             $Ctrl.Xaml.IO.HotFixProfileLoad.Add_Click(
             {
-                $Ctrl.HotFix.Profile.SetPath($Ctrl.Xaml.IO.HotFixProfilePath.Text)
+                $Ctrl.Xaml.IO.HotFixProfilePath.Text | % { 
+
+                    $Ctrl.HotFix.Load($_)
+                    $Ctrl.Update(1,"Loaded [+] [HotFix Profile]: $_")
+                }
+
+                $Ctrl.Xaml.IO.HotFixOutput.Items.Refresh()
             })
 
             $Ctrl.Xaml.IO.HotFixProfileSave.Add_Click(
             {
-                #$Out = @( )
-                #ForEach ($HotFix in $Ctrl.HotFix.Output | ? Profile)
-                #{
+                $Ctrl.Xaml.IO.HotFixProfilePath.Text | % { 
                     
-                #}
+                    $Ctrl.Hotfix.Save($_)
+                    $Ctrl.Update(1,"Saved [+] [HotFix Profile]: $_")
+                }
             })
             
             $Ctrl.Xaml.IO.HotFixProfileBrowse.Add_Click(
