@@ -79,3 +79,16 @@ Function Gather-Download
 $Drivers = @{ URL = "https://downloadmirror.intel.com/29074/igfx_win10_100.7212.exe" }
 
 Gather-Download @Drivers -Hash
+
+$Downloads = Get-ChildItem "$Home\downloads" -Filter "igfx_win10_100.7212"
+$Downloads | % { Get-FileHash -Path $_.Fullname -Algorithm SHA256 | % { 
+
+    Echo "File:$($_.Fullname)",
+    "SHA256: $($_.Hash)"
+}}
+
+$Downloads | % { Get-FileHash -Path $_.Fullname -Algorithm MD5 | % {
+
+    Echo "File:$($_.Fullname)",
+    "MD5: $($_.Hash)"
+}}
