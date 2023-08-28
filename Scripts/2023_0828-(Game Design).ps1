@@ -76,7 +76,7 @@
     
     In order to complete the objective, we should first analyze a number of tournament maps and describe them
     all in a way where their strengths and weaknesses can evoke a sense of "common denominators" that will be
-    key in shaping, desigining, and developing the level in the editor.
+    key in shaping, designing, and developing the level in the editor.
                                                                                                             ___________/
 \__________________________________________________________________________________________________________/ Objective  
   Analysis /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
