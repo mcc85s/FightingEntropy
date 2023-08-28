@@ -83,7 +83,7 @@
 /¯¯¯¯¯¯¯¯¯¯                                                                                                             
 
     While the original [Quake III Arena] has a lot of tournament maps in it, [Quake III Team Arena] introduced
-    a handful of maps that I think really illustrates what to do, and what NOT to do, in desigining levels for
+    a handful of maps that I think really illustrates what to do, and what NOT to do, in designing levels for
     the particular mode in question.
     
     ==============================================================================================
@@ -1033,12 +1033,12 @@ something that is incredibly polished.
 
 In order to complete the objective, we should first analyze a number of tournament maps and describe them
 all in a way where their strengths and weaknesses can evoke a sense of "common denominators" that will be
-key in shaping, desigining, and developing the level in the editor.
+key in shaping, designing, and developing the level in the editor.
 "@)
 
 $Doc.Add("Analysis",@"
 While the original [Quake III Arena] has a lot of tournament maps in it, [Quake III Team Arena] introduced
-a handful of maps that I think really illustrates what to do, and what NOT to do, in desigining levels for
+a handful of maps that I think really illustrates what to do, and what NOT to do, in designing levels for
 the particular mode in question.
 
 ==============================================================================================
