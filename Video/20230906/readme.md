@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| Technically (**Game Design Part II**), however this is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [**QuakeCon 2016**], and includes commentary that relates to game design. I've been slowly updating the (*.docx) and (*.pdf) files and will have a new video that shows the process of mapping the rough sketches that were added (**09/08/2023**). |
+| Technically (**Game Design Part II**), however this is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [**QuakeCon 2016**], and includes commentary that relates to game design. I've been slowly updating the (**.docx**) and (**.pdf**) files and will have a new video that shows the process of mapping the rough sketches that were added (**09/08/2023**). |
 
 [[Video](#video)] - [[Document](#document)] - [[Picture](#picture)] - [[Link](#link)]
 
