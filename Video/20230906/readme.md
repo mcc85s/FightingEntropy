@@ -2,9 +2,9 @@
 
 | Description |
 |:------------|
-| Technically (**Game Design Part II**), however this is mostly commentary about the full grand finals matchup between [**Shane Hendrixson (Rapha)**] and [**Sergey Orehkov (Evil)**] at [**QuakeCon 2016**], and includes commentary that relates to game design. |
+| Technically (**Game Design Part II**), however this is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [QuakeCon 2016], and includes commentary that relates to game design. I've been slowly updating the (*.docx) and (*.pdf) files and will have a new video that shows the process of mapping the rough sketches that were added (**09/08/2023**). |
 
-[[Video](#video)] - [[Document](#document)] - [[Link](#link)]
+[[Video](#video)] - [[Document](#document)] - [[Picture](#picture)] - [[Link](#link)]
 
 <p align="center" width="100%">
     <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/thumbnail.jpg">
@@ -19,10 +19,18 @@
 
 ## Document
 
-| Index | Date         | Name/Link                                                                                                                                                                                   |
-|:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | `09/06/2023` | **[2023_0906-(Game Design Part I + Expert Level).doc](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0906-(Game%20Design%20Part%20I%20%2B%20Expert%20Level).doc)** |
-| 1     | `09/06/2023` | **[2023_0906-(Game Design Part I + Expert Level).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0906-(Game%20Design%20Part%20I%20%2B%20Expert%20Level).pdf)** |
+| Index | Date         | Name/Link                                                                                                                             |
+|:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| 0     | `09/06/2023` | **[2023_0906-(Game Design).docx](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0909-(Game%20Design).docx)** |
+| 1     | `09/06/2023` | **[2023_0906-(Game Design).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0909-(Game%20Design).pdf)**   |
+
+## Picture
+
+| Index | Image                                                                                               |
+|:------|:----------------------------------------------------------------------------------------------------|
+| 0     | ![image_1.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/Pics/image_1.jpg) |
+| 1     | ![image_2.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/Pics/image_2.jpg) |
+| 2     | ![image_3.jpg](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/Pics/image_3.jpg) |
 
 ## Link
 
