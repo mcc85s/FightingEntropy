@@ -1,4 +1,4 @@
-# Game Design (Part I + Expert Level + Layout + Q3A Map Selection) [09/17/2023]
+# Game Design (Series) [09/17/2023]
 
 | Description |
 |:------------|
