@@ -1,8 +1,8 @@
-# Game Design (Part I + Expert Level + Layout) [09/11/2023]
+# Game Design (Part I + Expert Level + Layout + Q3A Map Selection) [09/17/2023]
 
 | Description |
 |:------------|
-| This section will be the temporary location for the (**Game Design**) series. The first video is called (**Game Design Part I**), and the original video with its' markdown file and documents can be found **[here](https://github.com/mcc85s/FightingEntropy/tree/main/Video/20230830)**. The second video is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [**QuakeCon 2016**], and includes commentary that relates to game design. The third video is the newest edition that covers the map that I have been drawing out since I created the first video. In order to continue building the level, I decided to play a slew of levels from **[..::LvL]**, which is a website where many of my maps, as well as many others from the community may be found. I also cover to some small degree, some [PowerShell]. I've been slowly updating the (**.docx**) and (**.pdf**) files that are located in this folder. |
+| This section will be the temporary location for the (**Game Design**) series. [**(0) Game Design (Part I) (08/30/2023)**] The first video is called (**Game Design Part I**), and the original video with its' markdown file and documents can be found **[here](https://github.com/mcc85s/FightingEntropy/tree/main/Video/20230830)**. [**(1) Rapha vs Evil (09/06/2023**] is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [**QuakeCon 2016**], and includes commentary that relates to game design. [**(2) 09/11/2023**] covers the map that I have been drawing out since I created the first video, as well as playtesting various levels. [**(3) 09/17/2023**] is a collection of Q3A maps that I've considered using to exhibit their gameplay, and high build quality level design. In order to continue building the level, I decided to play a slew of levels from **[..::LvL]**, which is a website where many of my maps, as well as many others from the community may be found. I also cover to some small degree, some [PowerShell]. I've been slowly updating the (**.docx**) and (**.pdf**) files that are located in this folder. |
 
 [[Video](#video)] - [[Document](#document)] - [[Picture](#picture)] - [[Link](#link)]
 
@@ -17,6 +17,7 @@
 | 0     | `08/30/2023` | **[2023_0830-(Game Design Part I)](https://youtu.be/WyVB0h21eZY)** | `00h 48m 03s` |
 | 1     | `09/06/2023` | **[2023_0904-(Rapha vs Evil)](https://youtu.be/HiNhrH-eD4g)**      | `02h 09m 38s` |
 | 2     | `09/11/2023` | **[2023_0911-(Layout)](https://youtu.be/R5-cCji58Lc)**             | `02h 16m 36s` |
+| 3     | `09/17/2023` | **[2023_0916-(Q3A Map Selection)](https://youtu.be/NdcWjBuUNiU)**  | `03h 46m 46s` |
 
 ## Document
 
