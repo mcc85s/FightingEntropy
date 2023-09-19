@@ -4,7 +4,7 @@
 |:------------|
 | This section will be the temporary location for the (**Game Design**) series. <br><br>[**[Game Design Part I](https://youtu.be/WyVB0h21eZY)**]<br>The first video is called (**Game Design Part I**), and the original video with its' markdown file and documents can be found **[here](https://github.com/mcc85s/FightingEntropy/tree/main/Video/20230830)**. <br><br>[**[Rapha vs Evil](https://youtu.be/HiNhrH-eD4g)**] is mostly commentary about the full grand finals matchup between Shane Hendrixson (**Rapha**) and Sergey Orehkov (**Evil**) at [**QuakeCon 2016**], and includes commentary that relates to game design. <br><br>[**[Layout](https://youtu.be/R5-cCji58Lc)**] covers the map that I have been drawing out since I created the first video, as well as playtesting various levels. <br><br>[**[Q3A Map Selection](https://youtu.be/NdcWjBuUNiU)**] is a collection of Q3A maps that I've considered using to exhibit their gameplay, and high build quality level design.<br><br>In order to continue building the level as seen in [Layout](https://youtu.be/R5-cCji58Lc), I decided to play a slew of levels from **[..::LvL]**, which is a website where many of my maps, as well as many others from the community may be found. <br><br> Lastly, I've been slowly updating the (**.docx**) and (**.pdf**) files that are located in this folder. |
 
-[[Video](#video)] - [[Document](#document)] - [[Picture](#picture)] - [[Link](#link)]
+[[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Picture](#picture)] - [[Link](#link)]
 
 <p align="center" width="100%">
     <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/thumbnail.jpg">
@@ -25,6 +25,11 @@
 |:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------|
 | 0     | `09/06/2023` | **[2023_0909-(Game Design).docx](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0909-(Game%20Design).docx)** |
 | 1     | `09/06/2023` | **[2023_0909-(Game Design).pdf](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0909-(Game%20Design).pdf)**   |
+
+## Script
+| Index | Date         | Name/Link                                                                                                                                         |
+|:------|:-------------|:--------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0     | `09/16/2023` | **[2023_0916-(Q3A Map Selection).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230906/2023_0916-(Q3A%20Map%20Selection).ps1)** |
 
 ## Picture
 
