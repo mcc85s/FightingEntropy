@@ -32,6 +32,7 @@
 | 2     | `07/18/2023` | **[Alexandra Gutelius](https://drive.google.com/file/d/1ANpAI9LO1ZzZKR-ZHXuPeMMtxiUUJ9dX)**          | `07/18/2023 0857` | `07/18/2023 0911` | `00h 13m 57s` |
 
 ## Picture
+**[Note]**: The HEIC files below will not show up, they need to be downloaded.
 
 | Index | Image                                                                                                   |
 |:------|:--------------------------------------------------------------------------------------------------------|
@@ -282,15 +283,15 @@
 | 2     | `08/16/2017` | **[Spectrum Cable Modem Reset](https://youtu.be/LfZW-s0BMow)**                               |
 | 3     | `06/09/2023` | **[Invoke-cimdb](https://www.youtube.com/playlist?list=PL9wYU0PVYkUfDjN2LFKYGFGR0p50ljwnp)** |
 | 4     | `08/31/2023` | **[2023_0831-(First Amendment Auditing)](https://youtu.be/Ybm59jVubK0)**                     |
-| 5     | `04/30/2023` | **[New-VmController - [**Windows 11**]](https://youtu.be/OmTRiYemQAI)**                      |
-| 6     | `04/22/2023` | **[VmController - [**GUI Development (Part 2)**]](https://youtu.be/9WU-9n6eHiE)**            |
-| 7     | `04/16/2023` | **[VmController - [**GUI Development (Part 1)**]](https://youtu.be/Q15NyKzZjBg)**            |
-| 8     | `04/12/2023` | **[Virtualization Lab - [**RHEL Deployment**](https://youtu.be/AucVPa_EpQc)**                |
-| 9     | `04/02/2023` | **[Virtualization Lab - [**TCP Session**]](https://youtu.be/09c-fFbEQrU)**                   |
-| 10    | `03/29/2023` | **[Virtualization Lab - [**Desktop Deployment**]](https://youtu.be/QR5rFm2IQe4)**            |
-| 11    | `03/20/2023` | **[Virtual Lab - [**Desktop Deployment**]](https://youtu.be/i2_fafoIx6I)**                   |
-| 12    | `01/31/2023` | **[New-VmController [**Flight Test v2.0**] Part I](https://youtu.be/nqTOmNIilxw)**           |
-| 13    | `01/12/2023` | **[Virtualization Lab - [**FEDCPromo**]](https://youtu.be/9v7uJHF-cGQ)**                     |
+| 5     | `04/30/2023` | **[New-VmController - Windows 11](https://youtu.be/OmTRiYemQAI)**                            |
+| 6     | `04/22/2023` | **[VmController - GUI Development (Part 2)](https://youtu.be/9WU-9n6eHiE)**                  |
+| 7     | `04/16/2023` | **[VmController - GUI Development (Part 1)](https://youtu.be/Q15NyKzZjBg)**                  |
+| 8     | `04/12/2023` | **[Virtualization Lab - RHEL Deployment](https://youtu.be/AucVPa_EpQc)**                     |
+| 9     | `04/02/2023` | **[Virtualization Lab - TCP Session](https://youtu.be/09c-fFbEQrU)**                         |
+| 10    | `03/29/2023` | **[Virtualization Lab - Desktop Deployment](https://youtu.be/QR5rFm2IQe4)**                  |
+| 11    | `03/20/2023` | **[Virtual Lab - Desktop Deployment](https://youtu.be/i2_fafoIx6I)**                         |
+| 12    | `01/31/2023` | **[New-VmController Flight Test v2.0 Part I](https://youtu.be/nqTOmNIilxw)**                 |
+| 13    | `01/12/2023` | **[Virtualization Lab - FEDCPromo](https://youtu.be/9v7uJHF-cGQ)**                           |
 | 14    | `09/17/2023` | **[2023_0917-(CPH Library)](https://youtu.be/gR6TXz1S1XM)**                                  |
 | 15    | `10/15/2022` | **[Bill Moak Harassment (1)](https://youtu.be/ASTldaBdef4)**                                 |
 | 16    | `07/04/2023` | **[Bill Moak Harassment (2)](https://youtu.be/z47hflXTTuE)**                                 |
