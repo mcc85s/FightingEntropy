@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In this video, I provide an "appeal" for the [**Clifton Park-Halfmoon Public Library**], but include various other videos related to my [**fields of expertise**], and [**investigation capabilities**] work. |
+| In this video, I provide an "appeal" for the [**Clifton Park-Halfmoon Public Library**] in reference to a recent (6) month suspension/ban issued by [**Alexandra Gutelius**] regarding my use of the internal ethernet network. Figured this would be a great opportunity to showcase several exhibits to the community, which include various other videos related to my [**fields of expertise**], and [**investigation capabilities**] work. |
 
 [[Video](#video)] - [[Document](#document)] - [[Audio](#audio)] - [[Picture](#picture)] - [[Link](#link)]
 
