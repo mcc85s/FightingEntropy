@@ -26,4 +26,4 @@
 
 | Index | Date         | Name/Link                                                                                                                                                       |
 |:------|:-------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0     | `09/30/2023` | **[2023_0930-(Optimistic Existentialism).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230930/2023_0930-(Optimistic%20Existentialism).ps1)** |
+| 0     | `09/29/2023` | **[2023_0929-(Optimistic Existentialism).ps1](https://github.com/mcc85s/FightingEntropy/blob/main/Video/20230930/2023_0929-(Optimistic%20Existentialism).ps1)** |
