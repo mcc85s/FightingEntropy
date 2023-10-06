@@ -581,7 +581,7 @@ Function Get-Q3AController
         '                                                        Binding="{Binding Title}"/>',
         '                                    <DataGridTextColumn Header="Mode"',
         '                                                        Width="60"',
-        '                                                        Binding="{Binding Mode}"/>',
+        '                                                        Binding="{Binding ModeStr}"/>',
         '                                    <DataGridTextColumn Header="Rating"',
         '                                                        Width="60"',
         '                                                        Binding="{Binding Rating}"/>',
@@ -920,14 +920,15 @@ Function Get-Q3AController
 
     Class Q3AMapItem
     {
-        [UInt32]         $Index
-        Hidden [DateTime] $Real
-        [String]          $Date
-        [String]          $Time
-        [String]          $Name
-        [String]         $Title
-        [Int32[]]         $Mode
-        [Float]         $Rating
+        [UInt32]          $Index
+        Hidden [DateTime]  $Real
+        [String]           $Date
+        [String]           $Time
+        [String]           $Name
+        [String]          $Title
+        [Int32[]]          $Mode
+        Hidden [String] $ModeStr
+        [Float]          $Rating
         Q3AMapItem([UInt32]$Index,[Object]$Map)
         {
             $This.Index  = $Index
@@ -935,8 +936,9 @@ Function Get-Q3AController
             $This.Date   = $Map.Date
             $This.Time   = $Map.Time
             $This.Name   = $Map.Name
-            $This.Title  = "<Not set>"
-            $This.Mode   = -1
+
+            $This.SetTitle("<Not set>")
+            $This.SetMode(-1)
             $This.Rating = 0.00
         }
         SetTitle([String]$Title)
@@ -945,11 +947,19 @@ Function Get-Q3AController
         }
         SetMode([String]$Mode)
         {
-            $This.Mode   = Invoke-Expression $Mode
+            $This.Mode    = @(Invoke-Expression $Mode)
+            $This.ModeStr = $This.Mode -join ","
         }
         SetRating([String]$Rating)
         {
-            $This.Rating = Invoke-Expression $Rating
+            If ($Rating -match "\d+\.\d+")
+            {
+                $This.Rating = $Rating
+            }
+            If ($Rating -match "\d+\/\d+")
+            {
+                $This.Rating = Invoke-Expression $Rating
+            }
         }
         [String] ToString()
         {
@@ -1039,24 +1049,13 @@ Function Get-Q3AController
 
             ForEach ($X in 0..($Total-1))
             {
-                $Item    = $This.Output[$X]
-                $Label   = $Null
-                $Next    = $Null
-
-                If ($X -eq ($Total-1))
-                {
-                    $Label = "lvl0"
-                    $Next  = $This.Output[0]
-                }
-                Else
-                {
-                    $Label = "lvl{0}" -f ($X + 1)
-                    $Next  = $This.Output[$X+1]
-                }
+                $Item      = $This.Output[$X]
+                $Label     = "lvl{0}" -f $X
+                $Next      = @("lvl{0}" -f ($X + 1);"lvl0")[$X -eq ($Total-1)]
 
                 $Template  = "echo $Label [Name]: {0}, [Rank]: ({1:d$D}/{2}), [Build]: {3} {4}"
-                $Say       = $Template -f $Next.Name, ($X+1), $Total, $Next.Date, $Next.Time
-                $This.Content += "seta lvl$X `"$Say;wait 500;map $($Item.Name); kick allbots; addbot hunter 5; set nextmap vstr $Label`""
+                $Say       = $Template -f $Item.Name, ($X+1), $Total, $Item.Date, $Item.Time
+                $This.Content += "seta $Label `"$Say;wait 500;map $($Item.Name); kick allbots; addbot hunter 5; set nextmap vstr $Next`""
             }
 
             $This.Content += "vstr lvl0"
@@ -1579,31 +1578,31 @@ Function Get-Q3AController
                 $Index                            = $Ctrl.Xaml.IO.Config.SelectedIndex
                 If ($Index -gt -1)
                 {
-                    $Item                         = $Ctrl.Xaml.IO.Config.SelectedItem
-                    $Ctrl.Xaml.IO.MapTitle.Text   = $Item.Title
-                    $Ctrl.Xaml.IO.MapMode.Text    = $Item.Mode -join ","
+                    $Item                             = $Ctrl.Xaml.IO.Config.SelectedItem
                     
-                    If ($Item.Rating -match "\.")
-                    {
-                        $Ctrl.Xaml.IO.MapRating.Text  = "{0}/10" -f $Item.Rating.Split(".")[1]
-                    }
-                    ElseIf ($Item.Rating -eq 0)
-                    {
-                        $Ctrl.Xaml.IO.MapRating.Text = "0/10"
-                    }
-                    ElseIf ($Item.Rating -eq 1)
-                    {
-                        $Ctrl.Xaml.IO.MapRating.Text = "10/10"
-                    }
-                    
-                    $Ctrl.Xaml.IO.Apply.IsEnabled = 1
+                    $Ctrl.Xaml.IO.MapTitle.Text       = $Item.Title
+                    $Ctrl.Xaml.IO.MapTitle.IsEnabled  = 1
+
+                    $Ctrl.Xaml.IO.MapMode.Text        = $Item.ModeStr
+                    $Ctrl.Xaml.IO.MapMode.IsEnabled   = 1
+
+                    $Ctrl.Xaml.IO.MapRating.Text      = $Item.Rating
+                    $Ctrl.Xaml.IO.MapRating.IsEnabled = 1
+
+                    $Ctrl.Xaml.IO.Apply.IsEnabled     = 1
                 }
                 Else
                 {
-                    $Ctrl.Xaml.IO.MapTitle.Text   = $Null
-                    $Ctrl.Xaml.IO.MapMode.Text    = $Null
-                    $Ctrl.Xaml.IO.MapRating.Text  = $Null
-                    $Ctrl.Xaml.IO.Apply.IsEnabled = 0
+                    $Ctrl.Xaml.IO.MapTitle.Text       = $Null
+                    $Ctrl.Xaml.IO.MapTitle.IsEnabled  = 0
+
+                    $Ctrl.Xaml.IO.MapMode.Text        = $Null
+                    $Ctrl.Xaml.IO.MapMode.IsEnabled   = 0
+
+                    $Ctrl.Xaml.IO.MapRating.Text      = $Null
+                    $Ctrl.Xaml.IO.MapRating.IsEnabled = 0
+
+                    $Ctrl.Xaml.IO.Apply.IsEnabled     = 0
                 }
             })
 
