@@ -1,10 +1,14 @@
-# Script: This requires imagemagick in order to convert (*.tga) -> (*.jpg) for the GUI
+# Script: This requires [imagemagick] in order to convert (*.tga) -> (*.jpg) for the GUI
 
 Function Get-Q3AController
 {
     [CmdLetBinding()]Param(
     [Parameter()][ValidateSet(0,1)][UInt32]$Mode=0,
     [Parameter()][Object[]]$List)
+
+    # // ===================================
+    # // | Q3A Controller Xaml for the GUI |
+    # // ===================================
 
     Class Q3AControllerXaml
     {
@@ -686,6 +690,10 @@ Function Get-Q3AController
         '</Window>' -join "`n")
     }
 
+    # // ===========================================================
+    # // | Provides an individual Xaml property access to controls |
+    # // ===========================================================
+
     Class XamlProperty
     {
         [UInt32]   $Index
@@ -704,6 +712,10 @@ Function Get-Q3AController
             Return $This.Name
         }
     }
+
+    # // ==================================================================
+    # // | Creates an object that (processes/controls) the Xaml +  Window |
+    # // ==================================================================
     
     Class XamlWindow
     {
@@ -778,6 +790,10 @@ Function Get-Q3AController
         }
     }
 
+    # // =====================================================
+    # // | Meant to contain DataGrid properties for the game |
+    # // =====================================================
+
     Class Q3AProperty
     {
         [String] $Name
@@ -787,7 +803,11 @@ Function Get-Q3AController
             $This.Name  = $Name
             $This.Value = $Value
         }
-    }
+    }    
+
+    # // ===================================================================
+    # // | Used as a template for any (*.bsp) to populate (Level + Config) |
+    # // ===================================================================
 
     Class Pk3FileBsp
     {
@@ -819,6 +839,10 @@ Function Get-Q3AController
             Return "{0} {1} {2}" -f $This.Date, $This.Time, $This.Name
         }
     }
+
+    # // =======================================================
+    # // | Represents the compressed size of a particular file |
+    # // =======================================================
 
     Class Pk3FileEntrySize
     {
@@ -861,6 +885,10 @@ Function Get-Q3AController
         }
     }
 
+    # // ====================================================================
+    # // | Template for each individual entry in all selected (*.pk3) files |
+    # // ====================================================================
+
     Class Pk3FileEntry
     {
         [UInt32]         $Index
@@ -883,6 +911,10 @@ Function Get-Q3AController
             Return [Pk3FileEntrySize]::New($Bytes)
         }
     }
+
+    # // ==============================================================
+    # // | Template for each individual (*.pk3) file in the base path |
+    # // ==============================================================
 
     Class Pk3FileArchive
     {
@@ -917,6 +949,10 @@ Function Get-Q3AController
             }
         }
     }
+
+    # // ===========================================================================
+    # // | Template for all (queued/selected) maps to include in the configuration |
+    # // ===========================================================================
 
     Class Q3AMapItem
     {
@@ -966,6 +1002,10 @@ Function Get-Q3AController
             Return "{0} {1} {2}" -f $This.Date, $This.Time, $This.Name
         }
     }
+    
+    # // ==================================================================
+    # // | Template for a newly created configuration, or an existing one |
+    # // ==================================================================
 
     Class Q3AMapConfig
     {
@@ -1072,6 +1112,10 @@ Function Get-Q3AController
         }
     }
 
+    # // =========================================================================
+    # // | Simply meant to validate a given path, and which object is referenced |
+    # // =========================================================================
+
     Class Q3AValidatePath
     {
         [UInt32]   $Status
@@ -1114,6 +1158,10 @@ Function Get-Q3AController
         }
     }
 
+    # // ==================================================
+    # // | Only meant to categorize Xaml testing criteria |
+    # // ==================================================
+
     Class Q3AControllerFlag
     {
         [UInt32] $Index
@@ -1130,6 +1178,10 @@ Function Get-Q3AController
             $This.Status = $Status
         }
     }
+    
+    # // ====================================================================
+    # // | Provides the option to import map information as an input object |
+    # // ====================================================================
 
     Class Q3AInputObject
     {
@@ -1151,6 +1203,10 @@ Function Get-Q3AController
             Return "<Q3A.Input.Object>"
         }
     }
+
+    # // ====================================================================================
+    # // | Controller of the entire utility and all of the above classes, acts as a factory |
+    # // ====================================================================================
 
     Class Q3AController
     {
@@ -1645,6 +1701,7 @@ Function Get-Q3AController
         }
     }
 
+    # [Determine whether or not a list was provided as a parameter]
     If ($List)
     {
         $Ctrl = [Q3AController]::New($List)
@@ -1654,58 +1711,17 @@ Function Get-Q3AController
         $Ctrl = [Q3AController]::New()
     }
 
+    # [Initialize GUI, or return object]
     Switch ($Mode)
     {
-        0
+        0 # initializes the GUI
         {
             $Ctrl.StageXaml()
             $Ctrl.Xaml.Invoke()
         }
-        1
+        1 # 1 returns the object which can still initialize the GUI
         {
             $Ctrl
         }
     }
 }
-
-# [If list...]
-$List = ("20kdm2"         , "Return to Castle: Quake"          , "0,1"   ,  "8/10"),
-("acid3dm9"       , "Chlorophyl"                       , "0,1,2" ,  "8/10"),
-("auh3dm1"        , "Overwhelming Hostility"           , "0,1"   ,  "8/10"),
-("devdm3"         , "Infernal Genesis"                 , "0,1"   , "10/10"),
-("dubenigma"      , "Lucid Enigma"                     , "0,1,2" ,  "9/10"),
-("fr3dm1"         , "Iron Yard"                        , "0,1,2" , "10/10"),
-("geit3dm6"       , "Black Shining Leather"            , "0,1,2" ,  "8/10"),
-("hub3aeroq3"     , "Aerowalk"                         , "1"     , "10/10"),
-("hub3dm1"        , "Dismemberment"                    , "1"     , "10/10"),
-("ik3dm2"         , "Meatball Grinder"                 , "0,1"   ,  "9/10"),
-("jof3dm2"        , "The Forlorn Hope"                 , "0,1"   ,  "8/10"),
-("kamq3dm2"       , "Discontent"                       , "0,1"   ,  "8/10"),
-("lun3dm2"        , "Lets Drink Beer and Shoot Things" , "0,1"   , "10/10"),
-("lun3_20b1"      , "Ludonarrative Dissonance"         , "0,1"   ,  "8/10"),
-("mrcq3t4"        , "Prophecy"                         , "0,1"   ,  "8/10"),
-("mrcq3t6"        , "Bitter Embrace"                   , "1"     , "10/10"),
-("phantq3dm1_rev" , "Battleforged"                     , "0,1"   , "10/10"),
-("pro-q3tourney7" , "Almost Lost"                      , "0,1,2" ,  "9/10"),
-("pukka3tourney6" , "Kamasutra"                        , "0,1"   ,  "9/10"),
-("qfraggel3ffa"   , "Swiss Cheese Trickster"           , "0,2"   ,  "8/10"),
-("rdogdm4"        , "Epoch"                            , "0,1,2" ,  "8/10"),
-("rota3dm3"       , "Marilyn"                          , "0,1,2" ,  "8/10"),
-("rota3dm4"       , "Rashmi"                           , "0,2"   ,  "8/10"),
-("storm3tourney1" , "Gloom"                            , "0,1"   ,  "8/10"),
-("storm3tourney2" , "Nuclear Wasteland"                , "0,1"   ,  "9/10"),
-("storm3tourney5" , "Cajun Hell"                       , "0,1,2" , "10/10"),
-("storm3tourney8" , "Devilish"                         , "0,1,2" ,  "9/10"),
-("tig_den"        , "Tigs Den"                         , "0,1"   , "10/10"),
-("ts_dm4"         , "Perfect Place"                    , "0,1,2" ,  "9/10"),
-("ts_t6"          , "Brains War"                       , "0,1,2" ,  "9/10"),
-("tymo3dm5"       , "Stabilized Warfare: Resurrection" , "0,1,2" ,  "9/10"),
-("unitooldm4"     , "Peccary of Destiny"               , "0,1,2" ,  "8/10"),
-("unitooldm6"     , "Dumb All Over"                    , "0,1,2" ,  "9/10"),
-("uzul3"          , "Uzuldaroum III"                   , "0,1,2" ,  "8/10"),
-("wvwq3dm6"       , "Kryptonite"                       , "0,1"   ,  "8/10"),
-("ztn3dm1"        , "Blood Run"                        , "0,1"   , "10/10"),
-("ztn3dm2"        , "Beatbox"                          , "0,1"   , "10/10")
-
-# [Load GUI]
-$Ctrl      = Get-Q3AController -Mode 0 -List $List
