@@ -7,7 +7,7 @@
 [[Video](#video)] - [[Document](#document)] - [[Link](#link)]
 
 <p align="center" width="100%">
-    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/edit/main/Video/20231121/thumbnail.jpg">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Video/20231121/thumbnail.jpg">
 </p>
 
 ## Video
