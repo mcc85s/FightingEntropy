@@ -2,12 +2,12 @@
 
 | Description |
 |:------------|
-| In this video, I cover a video that I released almost (2) years ago called '[FightingEntropy(π)] FEInfrastructure Preview/Demo' which is described in this particular video. |
+| In this video, I cover a video that I released almost (2) years ago called **[FightingEntropy(π)] FEInfrastructure Preview/Demo** which is described in this particular video. |
 
 [[Video](#video)] - [[Document](#document)] - [[Link](#link)]
 
 <p align="center" width="100%">
-    <img width="66%" src="">
+    <img width="66%" src="https://github.com/mcc85s/FightingEntropy/edit/main/Video/20231121/thumbnail.jpg">
 </p>
 
 ## Video
