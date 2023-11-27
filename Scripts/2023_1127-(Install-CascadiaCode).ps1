@@ -12,7 +12,7 @@ If (Test-Path $Destination)
     Expand-Archive -Path $Destination -DestinationPath $Extract -Verbose
 }
 
-$List        = Get-ChildItem -Path $Extract -Recurse | ? Extension -match "(ttf|ttc|otf)" | ? Name -match "^CascadiaCode\-"
+$List        = Get-ChildItem -Path "$Extract\ttf" | ? Extension -match ttf
 
 If ($List.Count -gt 1)
 {
@@ -24,4 +24,4 @@ If ($List.Count -gt 1)
 }
 
 Remove-Item $Destination -Verbose
-Remove-Item $Extract\* -Recurse -Confirm:0 -Verbose
+Remove-Item $Extract -Recurse -Confirm:0 -Verbose
