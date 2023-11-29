@@ -1,0 +1,22 @@
+{
+    "name": "bossmode",
+    "displayName": "BossMode",
+    "description": "Color Theme",
+    "publisher": "mcc85s",
+    "version": "0.1.0",
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "categories": [
+        "Themes"
+    ],
+    "contributes": {
+        "themes": [
+            {
+                "label": "BossMode",
+                "uiTheme": "vs-dark",
+                "path": "./themes/BossMode-color-theme.json"
+            }
+        ]
+    }
+}
