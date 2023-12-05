@@ -32,7 +32,7 @@
 .Example
 #>
 
-Function Get-ViperBomb2
+Function Get-ViperBomb
 {
     [CmdLetBinding()]Param(
         [ValidateSet(0,1,2)]
@@ -13662,6 +13662,7 @@ Function Get-ViperBomb2
         1
         {
             $Ctrl = [ViperBombController]::New()
+            $Ctrl.RefreshAll()
             $Ctrl.StageXaml()
             $Ctrl.Invoke()
         }
