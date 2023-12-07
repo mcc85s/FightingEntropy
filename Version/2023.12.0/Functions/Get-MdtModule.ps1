@@ -183,7 +183,7 @@ Function Get-MdtModule
     
                     If (![System.IO.File]::Exists($Item.FilePath()))
                     {
-                        Invoke-RestMethod -URI $Item.Resource -OutFile $Item.FilePath()
+                        Start-BitsTransfer -Source $Item.Resource -Destination $Item.FilePath()
                     }
     
                     $Process = Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
