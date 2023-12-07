@@ -52,14 +52,17 @@ Class DhcpServerV4ScopeRangeItem
 
 Class DhcpServerV4Scope
 {
-    [String]      $Server
-    [String]     $ScopeID
-    [Object]       $Range
-    [Object]      $Option
+    [String]   $Server
+    [String]  $ScopeID
+    [String]  $Network
+    [String]  $Netmask
+    [Object]    $Range
+    [Object]   $Option
     DhcpServerV4Scope([String]$Server,[String]$ScopeID)
     {
         $This.Server  = $Server
         $This.ScopeID = $ScopeID
+        $This.GetNetmask()
         $This.SetRange()
         $This.Option  = @( )
     }
@@ -106,12 +109,11 @@ Class DhcpServerV4Scope
         $Item.Reserve    = 0
         $Item.MacAddress = ""
     }
-    SetRange()
+    GetNetmask()
     {
-        $This.Range      = @( )
-
         # [Determine Netmask from prefix]
         $Start           = $This.ScopeID -Split "\/"
+        $This.Network    = $Start[0]
         $Prefix          = [UInt32]$Start[1]
         $X               = 0
         $Array           = Do
@@ -125,14 +127,18 @@ Class DhcpServerV4Scope
         }
         Until ($X -eq 32)
 
-        $Netmask       = @($Array -join "" -Split "\." | % { [Convert]::ToInt32($_,2 ) }) -join "."
+        $This.Netmask       = @($Array -join "" -Split "\." | % { [Convert]::ToInt32($_,2 ) }) -join "."
+    }
+    SetRange()
+    {
+        $This.Range      = @( )
 
         # [Determine wildcard from netmask]
-        $Wildcard      = @($Netmask -Split "\." | % { 256-$_ }) -join "."
+        $Wildcard      = @($This.Netmask -Split "\." | % { 256-$_ }) -join "."
 
         # [Split netmask, wildcard, and address]
-        $xAddress      = $Start[0] -Split "\."
-        $xNetmask      = $Netmask -Split "\."
+        $xAddress      = $This.Network -Split "\."
+        $xNetmask      = $This.Netmask -Split "\."
         $xWildcard     = $Wildcard -Split "\."
 
         # [Convert wildcard into total host range]
@@ -257,3 +263,45 @@ $Ctrl.AddOption(32,"Router Solicit","192.168.42.129")
 $Ctrl.AddOption(40,"NIS Domain Name","securedigitsplus.com")
 $Ctrl.AddOption(64,"NIS+ Domain Name","securedigitsplus.com")
 $Ctrl.AddOption(66,"Boot Server Hostname","dsc1.securedigitsplus.com")
+
+# Configure Dhcp
+$Splat = @{
+
+    StartRange = $Ctrl.Range[1].IPAddress
+    EndRange   = $Ctrl.Range[-2].IPAddress
+    Name       = $Ctrl.Network
+    SubnetMask = $Ctrl.Netmask
+}
+
+Add-DhcpServerV4Scope @Splat -Verbose
+Add-DhcpServerInDc -Verbose
+
+ForEach ($Value in $Ctrl.Range | ? Reserve)
+{
+    $Splat         = @{ 
+ 
+        ScopeId    = $Ctrl.Network
+        StartRange = $Value.IPAddress
+        EndRange   = $Value.IPAddress
+    }
+
+    Add-DhcpServerV4ExclusionRange @Splat -Verbose
+}
+
+ForEach ($Item in $Ctrl.Option)
+{
+    Set-DhcpServerV4OptionValue -OptionID $Item.ID -Value $Item.Value
+}
+     
+netsh dhcp add securitygroups
+Restart-Service dhcpserver
+
+
+$Splat    = @{ 
+ 
+    Path  = "HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12"
+    Name  = "ConfigurationState"
+    Value = 2
+}
+
+Set-ItemProperty @Splat -Verbose
