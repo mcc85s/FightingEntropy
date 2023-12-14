@@ -2689,7 +2689,52 @@ Function New-VmController
         }
         GetNetworkRange()
         {
-            "192.168.42.0/24"
+            $Address       = $This.Base.Trusted.Split(".")
+            $xNetmask      = $This.Base.Netmask  -Split "\."
+            $xWildCard     = $This.Base.Wildcard -Split "\."
+            $Total         = $xWildcard -join "*" | Invoke-Expression
+
+            # Convert wildcard into total host range
+            $Hash          = @{ }
+            ForEach ($X in 0..3)
+            { 
+                $Value = Switch ($xWildcard[$X])
+                {
+                    1       
+                    { 
+                        $Address[$X]
+                    }
+                    Default
+                    {
+                        ForEach ($Item in 0..255 | ? { $_ % $xWildcard[$X] -eq 0 })
+                        {
+                            "{0}..{1}" -f $Item, ($Item+($xWildcard[$X]-1))
+                        }
+                    }
+                    255
+                    {
+                        "{0}..{1}" -f $xNetmask[$X],($xNetmask[$X]+$xWildcard[$X])
+                    }
+                }
+
+                $Hash.Add($X,$Value)
+            }
+
+            # Build host range
+            $xRange   = @{ }
+            ForEach ($0 in $Hash[0])
+            {
+                ForEach ($1 in $Hash[1])
+                {
+                    ForEach ($2 in $Hash[2])
+                    {
+                        ForEach ($3 in $Hash[3])
+                        {
+                            $xRange.Add($xRange.Count,"$0/$1/$2/$3")
+                        }
+                    }
+                }
+            }
 
             Switch ($xRange.Count)
             {
