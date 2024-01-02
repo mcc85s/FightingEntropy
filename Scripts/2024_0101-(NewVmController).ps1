@@ -1678,6 +1678,10 @@ Class NewVmControllerNetworkMaster
         [Console]::WriteLine("Refreshing [~] (Adapter + Config + Switch) Interface(s)")
         $This.Interface.Refresh($This.Main,$This.Switch.Output)
     }
+    [Object[]] GetPhysical()
+    {
+        Return $This.Adapter.Output | ? Type -eq Physical | ? Assigned -eq 0
+    }
     [String] ToString()
     {
         Return "<FEModule.NewVmController.Network.Master>"
@@ -1692,7 +1696,7 @@ Class NewVmControllerNetworkMaster
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 #>
 
-Enum NewVmCredentialSlotType
+Enum NewVmControllerCredentialSlotType
 {
     Setup
     System
@@ -1701,15 +1705,15 @@ Enum NewVmCredentialSlotType
     Microsoft
 }
 
-Class NewVmCredentialSlotItem
+Class NewVmControllerCredentialSlotItem
 {
     [UInt32]       $Index
     [String]        $Name
     [String] $Description
-    NewVmCredentialSlotItem([String]$Name)
+    NewVmControllerCredentialSlotItem([String]$Name)
     {
-        $This.Index = [UInt32][NewVmCredentialSlotType]::$Name
-        $This.Name  = [NewVmCredentialSlotType]::$Name
+        $This.Index = [UInt32][NewVmControllerCredentialSlotType]::$Name
+        $This.Name  = [NewVmControllerCredentialSlotType]::$Name
     }
     [String] ToString()
     {
@@ -1717,16 +1721,16 @@ Class NewVmCredentialSlotItem
     }
 }
 
-Class NewVmCredentialSlotList
+Class NewVmControllerCredentialSlotList
 {
     [Object] $Output
-    NewVmCredentialSlotList()
+    NewVmControllerCredentialSlotList()
     {
         $This.Refresh()
     }
-    [Object] NewVmCredentialSlotItem([String]$Name)
+    [Object] NewVmControllerCredentialSlotItem([String]$Name)
     {
-        Return [NewVmCredentialSlotItem]::New($Name)
+        Return [NewVmControllerCredentialSlotItem]::New($Name)
     }
     Clear()
     {
@@ -1736,9 +1740,9 @@ Class NewVmCredentialSlotList
     {
         $This.Clear()
 
-        ForEach ($Name in [System.Enum]::GetNames([NewVmCredentialSlotType]))
+        ForEach ($Name in [System.Enum]::GetNames([NewVmControllerCredentialSlotType]))
         {
-            $Item             = $This.NewVmCredentialSlotItem($Name)
+            $Item             = $This.NewVmControllerCredentialSlotItem($Name)
             $Item.Description = Switch ($Item.Name)
             {
                 Setup     { "System setup account"      }
@@ -1761,7 +1765,7 @@ Class NewVmCredentialSlotList
     }
 }
 
-Class NewVmCredentialItem
+Class NewVmControllerCredentialItem
 {
     [UInt32]            $Index
     [Guid]               $Guid
@@ -1771,7 +1775,7 @@ Class NewVmCredentialItem
     [PSCredential] $Credential
     [String]              $Pin
     [UInt32]          $Profile
-    NewVmCredentialItem([UInt32]$Index,[Object]$Type,[PSCredential]$Credential)
+    NewVmControllerCredentialItem([UInt32]$Index,[Object]$Type,[PSCredential]$Credential)
     {
         $This.Index      = $Index
         $This.Guid       = $This.NewGuid()
@@ -1780,7 +1784,7 @@ Class NewVmCredentialItem
         $This.Credential = $Credential
         $This.Pass       = $This.Mask()
     }
-    NewVmCredentialItem([Object]$Serial)
+    NewVmControllerCredentialItem([Object]$Serial)
     {
         $This.Index      = $Serial.Index
         $This.Guid       = $Serial.Guid
@@ -1808,31 +1812,31 @@ Class NewVmCredentialItem
     }
 }
 
-Class NewVmCredentialMaster
+Class NewVmControllerCredentialMaster
 {
     Hidden [Object] $Slot
     [Object]      $Output
-    NewVmCredentialMaster()
+    NewVmControllerCredentialMaster()
     {
-        $This.Slot = $This.NewVmCredentialSlotList()
+        $This.Slot = $This.NewVmControllerCredentialSlotList()
+
         $This.Clear()
     }
     Clear()
     {
         $This.Output = @( )
-        $This.Setup()
     }
-    [Object] NewVmCredentialSlotList()
+    [Object] NewVmControllerCredentialSlotList()
     {
-        Return [NewVmCredentialSlotList]::New()
+        Return [NewVmControllerCredentialSlotList]::New()
     }
-    [Object] NewVmCredentialItem([UInt32]$Index,[String]$Type,[PSCredential]$Credential)
+    [Object] NewVmControllerCredentialItem([UInt32]$Index,[String]$Type,[PSCredential]$Credential)
     {
-        Return [NewVmCredentialItem]::New($Index,$Type,$Credential)
+        Return [NewVmControllerCredentialItem]::New($Index,$Type,$Credential)
     }
-    [Object] NewVmCredentialItem([Object]$Serial)
+    [Object] NewVmControllerCredentialItem([Object]$Serial)
     {
-        Return [NewVmCredentialItem]::New($Serial)
+        Return [NewVmControllerCredentialItem]::New($Serial)
     }
     [PSCredential] SetCredential([String]$Username,[String]$Pass)
     {
@@ -1898,7 +1902,7 @@ Class NewVmCredentialMaster
         }
  
         $Credential   = $This.SetCredential($Username,$Pass)
-        $This.Output += $This.NewVmCredentialItem($This.Output.Count,$This.Slot.Output[$Type],$Credential)
+        $This.Output += $This.NewVmControllerCredentialItem($This.Output.Count,$This.Slot.Output[$Type],$Credential)
     }
     Add([UInt32]$Type,[String]$Username,[SecureString]$Pass)
     {
@@ -1908,7 +1912,7 @@ Class NewVmCredentialMaster
         }
         
         $Credential   = $This.SetCredential($Username,$Pass)
-        $This.Output += $This.VmCredentialItem($This.Output.Count,$This.Slot.Output[$Type],$Credential)
+        $This.Output += $This.NewVmControllerCredentialItem($This.Output.Count,$This.Slot.Output[$Type],$Credential)
     }
     [String] ToString()
     {
@@ -3126,8 +3130,6 @@ Class NewVmControllerDataGridMaster
     }
 }
 
-#>
-
 # [Master Controller]
 
 Class NewVmControllerMaster
@@ -3137,6 +3139,7 @@ Class NewVmControllerMaster
     [Object] $Validation
     [Object]   $DataGrid
     [Object]    $Network
+    [Object] $Credential
     NewVmControllerMaster()
     {
         # Loads module controller
@@ -3153,6 +3156,9 @@ Class NewVmControllerMaster
 
         # Loads the network master
         $This.Network    = $This.Get("Network")
+
+        # Loads the credential master
+        $This.Credential = $This.Get("Credential")
 
         # Creates various validation entries
         $This.SetValidation()
@@ -3224,18 +3230,23 @@ Class NewVmControllerMaster
             }
             Validation
             {
-                $This.Update(0,"Getting [~] Validation controller")
+                $This.Update(0,"Getting [~] Validation Master")
                 $Item = [NewVmControllerValidationMaster]::New()
             }
             DataGrid
             {
-                $This.Update(0,"Getting [~] GUI subcontrols")
+                $This.Update(0,"Getting [~] DataGrid Master")
                 $Item = [NewVmControllerDataGridMaster]::New()
             }
             Network
             {
-                $This.Update(0,"Getting [~] Network Controller")
+                $This.Update(0,"Getting [~] Network Master")
                 $Item = [NewVmControllerNetworkMaster]::New()
+            }
+            Credential
+            {
+                $This.Update(0,"Getting [~] Credential Master")
+                $Item = [NewVmControllerCredentialMaster]::New()
             }
         }
 
@@ -3263,6 +3274,10 @@ Class NewVmControllerMaster
 
         Return $Item | % { $This.NewVmControllerProperty($_) }
     }
+    [String] Escape([String]$Entry)
+    {
+        Return [Regex]::Escape($Entry)
+    }
     Reset([Object]$xSender,[Object]$Object)
     {
         $xSender.Items.Clear()
@@ -3289,9 +3304,36 @@ Class NewVmControllerMaster
     }
     ToggleSetMain()
     {
-        $List = $This.Validation.Output | ? Name -match "(NetworkDomain|NetworkNetBios)"
+        $List = $This.Validation.Output | ? Name -match "Network(Domain|NetBios)"
 
         $This.Xaml.IO.NetworkSetMain.IsEnabled = 0 -notin $List.Status
+    }
+    ToggleCredentialCreate()
+    {
+        Switch ($This.Xaml.IO.CredentialType.SelectedIndex)
+        {
+            Default
+            {
+                $This.CheckUsername()
+                $This.CheckPassword()
+                $This.CheckConfirm()
+
+                $List = $This.Validation.Output | ? Name -match "Credential(Username|Password|Confirm)"
+
+                $This.Xaml.IO.CredentialCreate.IsEnabled = 0 -notin $List.Status
+            }
+            4
+            {
+                $This.CheckUsername()
+                $This.CheckPassword()
+                $This.CheckConfirm()
+                $This.CheckPin()
+
+                $List = $This.Validation.Output | ? Name -match "Credential(Username|Password|Confirm|Pin)"
+
+                $This.Xaml.IO.CredentialCreate.IsEnabled = 0 -notin $List.Status
+            }
+        }            
     }
     CheckDomain()
     {
@@ -3415,6 +3457,93 @@ Class NewVmControllerMaster
 
         $This.Xaml.IO.NetworkSwitchCreate.IsEnabled     = $Item.Status
     }
+    CheckUsername()
+    {
+        $Item    = $This.Validation.Get("CredentialUsername")
+        $Text    = $Item.Control.Text
+
+        If ($Text -eq "")
+        {
+            $X   = "[!] Username is null"
+        }
+        ElseIf ($Text -in $This.Credential.Output)
+        {
+            $X   = "[!] Username is already specified"
+        }
+        Else
+        {
+            $X   = "[+] Passed"
+        }
+
+        $Item.Reason = $X
+        $Item.Status = [UInt32]($Item.Reason -eq "[+] Passed")
+
+        $This.Xaml.IO.CredentialUsernameIcon.Source  = $This.IconStatus($Item.Status)
+        $This.Xaml.IO.CredentialUsernameIcon.ToolTip = $Item.Reason
+    }
+    CheckPassword()
+    {
+        $Item     = $This.Validation.Get("CredentialPassword")
+        $Password = $Item.Control.Password
+
+        If ($Password -eq "")
+        {
+            $X    = "[!] Password cannot be null"
+        }
+        Else
+        {
+            $X    = "[+] Passed"
+        }
+
+        $Item.Reason  = $X
+        $Item.Status  = [UInt32]($Item.Reason -eq "[+] Passed")
+
+        $This.Xaml.IO.CredentialPasswordIcon.Source  = $This.IconStatus($Item.Status)
+        $This.Xaml.IO.CredentialPasswordIcon.ToolTip = $Item.Reason
+    }
+    CheckConfirm()
+    {
+        $Password   = $This.Validation.Get("CredentialPassword")
+        $Item       = $This.Validation.Get("CredentialConfirm")
+
+        If ($Password.Status -ne 1)
+        {
+            $X      = "[!] Password is null"
+        }
+        ElseIf ($This.Escape($Password.Control.Password) -ne $This.Escape($Item.Control.Password))
+        {
+            $X      = "[!] Password and confirmation do not match"
+        }
+        Else
+        {
+            $X      = "[+] Passed"
+        }
+
+        $Item.Reason = $X
+        $Item.Status = [UInt32]($Item.Reason -eq "[+] Passed")
+
+        $This.Xaml.IO.CredentialConfirmIcon.Source  = $This.IconStatus($Item.Status)
+        $This.Xaml.IO.CredentialConfirmIcon.ToolTip = $Item.Reason
+    }
+    CheckPin()
+    {
+        $Item   = $This.Validation.Get("CredentialPin")
+
+        If ($Item.Control.Password.Length -le 3)
+        {
+            $X  = "[!] Insufficient pin length"    
+        }
+        Else
+        {
+            $X  = "[+] Passed"
+        }
+
+        $Item.Reason = $X
+        $Item.Status = [UInt32]($Item.Reason -eq "[+] Passed")
+        
+        $This.Xaml.IO.CredentialPinIcon.Source  = $This.IconStatus($Item.Status)
+        $This.Xaml.IO.CredentialPinIcon.ToolTip = $Item.Reason
+    }
     SetMain()
     {
         # [GUI approach]
@@ -3440,12 +3569,12 @@ Class NewVmControllerMaster
 
         $This.SetMain()
     }
-    RefreshNetwork()
+    SwitchRefresh()
     {
         $This.Network.Refresh()
         $This.SwitchConfig()
     }
-    NetworkRangeScan()
+    SwitchRangeScan()
     {
         $Ctrl      = $This
 
@@ -3499,10 +3628,6 @@ Class NewVmControllerMaster
         $Ctrl.Reset($Ctrl.Xaml.IO.NetworkRangeHost,$Interface.Selected.Host)
         $Ctrl.Reset($Ctrl.Xaml.IO.NetworkDhcp,$Ctrl.Property($Interface.Selected.Dhcp))
     }
-    [Object[]] GetAvailablePhysical()
-    {
-        Return $This.Network.Adapter.Output | ? Type -eq Physical | ? Assigned -eq 0
-    }
     SwitchConfig()
     {
         $List      = $This.Network.Interface.Output
@@ -3512,12 +3637,10 @@ Class NewVmControllerMaster
             $List  = $List | ? State -match $Property
         }
 
-        $Available = $This.GetAvailablePhysical()
-
         $This.DataGrid.Network.Refresh($List)
 
         $This.Reset($This.Xaml.IO.NetworkInterface,$This.DataGrid.Network.Output)
-        $This.Reset($This.Xaml.IO.NetworkSwitchAdapter,$Available.Name)
+        $This.Reset($This.Xaml.IO.NetworkSwitchAdapter,$This.Network.GetPhysical().Name)
     }
     SwitchInterface()
     {
@@ -3547,7 +3670,7 @@ Class NewVmControllerMaster
 
             # [Adapter]
             $Ctrl.Xaml.IO.NetworkSwitchAdapter.IsEnabled  = 1
-            $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,$Ctrl.GetAvailablePhysical().Name)
+            $Ctrl.Reset($Ctrl.Xaml.IO.NetworkSwitchAdapter,$Ctrl.Network.GetPhysical().Name)
             If ($Ctrl.Xaml.IO.NetworkSwitchAdapter.Items.Count -gt 0)
             {
                 $Ctrl.Xaml.IO.NetworkSwitchAdapter.SelectedIndex = 0
@@ -3608,7 +3731,7 @@ Class NewVmControllerMaster
         {
             0
             {
-                $This.Reset($This.Xaml.IO.NetworkSwitchAdapter,$This.GetAvailablePhysical().Name)
+                $This.Reset($This.Xaml.IO.NetworkSwitchAdapter,$This.Network.GetPhysical().Name)
                 
                 If ($This.Xaml.NetworkSwitchAdapter.Items.Count -gt 0)
                 {
@@ -3704,7 +3827,7 @@ Class NewVmControllerMaster
 
         $This.Update(1,"Created [+] [VmSwitch]: $Name")
 
-        $Ctrl.RefreshNetwork()
+        $Ctrl.SwitchRefresh()
     }
     SwitchRemove()
     {
@@ -3717,7 +3840,7 @@ Class NewVmControllerMaster
 
         $This.Update(1,"Removed [+] [VmSwitch]: $Name")
 
-        $Ctrl.RefreshNetwork()
+        $Ctrl.SwitchRefresh()
     }
     SwitchPanel([String]$Name)
     {
@@ -3731,6 +3854,147 @@ Class NewVmControllerMaster
 
         $Ctrl.Xaml.IO."Network$Name`Panel".Visibility = "Visible"
     }
+    CredentialRefresh()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Credential.Clear()
+        $Ctrl.Credential.Setup()
+
+        $Ctrl.CredentialPopulate()
+    }
+    CredentialPopulate()
+    {
+        $Ctrl = $This
+
+        $Ctrl.DataGrid.Credential.Refresh($Ctrl.Credential.Output)
+        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialOutput,$Ctrl.DataGrid.Credential.Output)
+    }
+    CredentialSelect()
+    {
+        $Ctrl     = $This
+
+        $Selected = $Ctrl.Xaml.IO.CredentialOutput.SelectedItem
+        $PinToken = [UInt32]($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
+
+        Switch -Regex ($Selected.Type)
+        {
+            "^\<New\>"
+            {
+                $Ctrl.Xaml.IO.CredentialType.IsEnabled         = 1
+                $Ctrl.Xaml.IO.CredentialDescription.IsEnabled  = 1
+                $Ctrl.Xaml.IO.CredentialCreate.IsEnabled       = 0
+                $Ctrl.Xaml.IO.CredentialRemove.IsEnabled       = 0
+    
+                # [Username]
+                $Ctrl.Xaml.IO.CredentialUsername.IsEnabled     = 1
+                $Ctrl.Xaml.IO.CredentialUsername.Text          = ""
+                $Ctrl.Xaml.IO.CredentialUsernameIcon.Source    = $Null
+    
+                # [Password]
+                $Ctrl.Xaml.IO.CredentialPassword.IsEnabled     = 1
+                $Ctrl.Xaml.IO.CredentialPassword.Password      = ""
+                $Ctrl.Xaml.IO.CredentialPasswordIcon.Source    = $Null
+    
+                # [Confirm]
+                $Ctrl.Xaml.IO.CredentialConfirm.IsEnabled      = 1
+                $Ctrl.Xaml.IO.CredentialConfirm.Password       = ""
+                $Ctrl.Xaml.IO.CredentialConfirmIcon.Source     = $Null
+    
+                # [Pin]
+                $Ctrl.Xaml.IO.CredentialPin.Visibility         = @("Collapsed","Visible")[$PinToken]
+                $Ctrl.Xaml.IO.CredentialPin.Password           = $Null
+    
+                $Ctrl.Xaml.IO.CredentialPinIcon.Visibility     = @("Collapsed","Visible")[$PinToken]
+                $Ctrl.Xaml.IO.CredentialPinIcon.Source         = $Null
+            }
+            Default
+            {
+                $Item = $Ctrl.Credential.Output | ? Guid -eq $Selected.Guid
+
+                $Ctrl.Xaml.IO.CredentialType.IsEnabled         = 0
+                $Ctrl.Xaml.IO.CredentialDescription.IsEnabled  = 0
+                $Ctrl.Xaml.IO.CredentialCreate.IsEnabled       = 0
+                $Ctrl.Xaml.IO.CredentialRemove.IsEnabled       = 1
+    
+                # [Username]
+                $Ctrl.Xaml.IO.CredentialUsername.IsEnabled     = 0
+                $Ctrl.Xaml.IO.CredentialUsername.Text          = $Item.Username
+                $Ctrl.Xaml.IO.CredentialUsernameIcon.Source    = $Ctrl.Module._Control("success.png").Fullname
+                
+                # [Password]
+                $Ctrl.Xaml.IO.CredentialPassword.IsEnabled     = 0
+                $Ctrl.Xaml.IO.CredentialPassword.Password      = $Item.Password()
+                $Ctrl.Xaml.IO.CredentialPasswordIcon.Source    = $Ctrl.Module._Control("success.png").Fullname
+                
+                # [Confirm]
+                $Ctrl.Xaml.IO.CredentialConfirm.IsEnabled      = 0
+                $Ctrl.Xaml.IO.CredentialConfirm.Password       = $Item.Password()
+                $Ctrl.Xaml.IO.CredentialConfirmIcon.Source     = $Ctrl.Module._Control("success.png").Fullname
+                
+                # [Pin]
+                $Ctrl.Xaml.IO.CredentialPin.Visibility         = @("Collapsed","Visible")[$PinToken]
+                $Ctrl.Xaml.IO.CredentialPin.Password           = $Item.Pin
+    
+                $Ctrl.Xaml.IO.CredentialPinIcon.Visibility     = @("Collapsed","Visible")[$PinToken]
+                $Ctrl.Xaml.IO.CredentialPinIcon.Source         = $Ctrl.Module._Control("success.png").Fullname
+            }
+        }
+
+        $Ctrl.Reset($Ctrl.Xaml.IO.CredentialDescription,
+                    $Ctrl.Credential.Slot.Output[$Ctrl.Xaml.IO.CredentialType.SelectedIndex])
+    }
+    CredentialGenerate()
+    {
+        $Ctrl = $This
+
+        $Entry                                    = $Ctrl.Credential.Generate()
+        $Ctrl.Xaml.IO.CredentialPassword.Password = $Entry
+        $Ctrl.Xaml.IO.CredentialConfirm.Password  = $Entry
+    }
+    CredentialRemove()
+    {
+        $Ctrl = $This
+
+        If ($Ctrl.Credential.Output.Count -eq 1)
+        {
+            [System.Windows.MessageBox]::Show("Must have at least (1) account, use refresh to reset")
+        }
+        Else
+        {
+            $Guid = $Ctrl.Xaml.IO.CredentialOutput.SelectedItem.Guid
+            $Ctrl.Credential.Output = @($Ctrl.Credential.Output | ? Guid -ne $Guid)
+            $Ctrl.Credential.Rerank()
+        }
+
+        $Ctrl.CredentialPopulate()
+    }
+    CredentialCreate([UInt32]$Index,[String]$Username,[SecureString]$Password)
+    {
+        $Ctrl = $This
+
+        $Ctrl.Credential.Add($Index,$Username,$Password)
+
+        If ($Ctrl.Xaml.IO.CredentialType.SelectedIndex -eq 4)
+        {
+            $Cred     = $Ctrl.Credential.Output | ? Username -eq $Ctrl.Xaml.IO.CredentialUsername.Text
+            $Cred.Pin = $Ctrl.Xaml.IO.CredentialPin.Password
+        }
+
+        $Ctrl.Credential.Rerank()
+        
+        $Ctrl.CredentialPopulate()
+    }
+    CredentialAssign()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Template.SetAccount($Ctrl.Credential.Output)
+        
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
+                
+        [System.Windows.MessageBox]::Show("Accounts: ($($Ctrl.Template.Account.Count))","Assigned [+] Credential(s)")
+    }
     Initial([String]$Name)
     {
         Switch ($Name)
@@ -3739,6 +4003,22 @@ Class NewVmControllerMaster
             {
                 $This.Xaml.IO.NetworkSetMain.IsEnabled = 0
                 $This.Xaml.IO.NetworkRefresh.IsEnabled = 0
+            }
+            Credential
+            {
+
+            }
+            Image
+            {
+
+            }
+            Template
+            {
+
+            }
+            Node
+            {
+
             }
         }
     }
@@ -3774,7 +4054,7 @@ Class NewVmControllerMaster
 
                 $Ctrl.Xaml.IO.NetworkRefresh.Add_Click(
                 {
-                    $Ctrl.RefreshNetwork()
+                    $Ctrl.SwitchRefresh()
                 })
 
                 $Ctrl.Xaml.IO.NetworkProperty.Add_SelectionChanged(
@@ -3809,7 +4089,7 @@ Class NewVmControllerMaster
 
                 $Ctrl.Xaml.IO.NetworkRangeScan.Add_Click(
                 {
-                    $Ctrl.NetworkRangeScan()
+                    $Ctrl.SwitchRangeScan()
                 })
 
                 $Ctrl.Xaml.IO.NetworkPanel.Add_SelectionChanged(
@@ -3830,13 +4110,76 @@ Class NewVmControllerMaster
                     # [System.Windows.MessageBox]::Show("Interface(s) ($($Ctrl.Template.Network.Count))","Assigned [+] Network(s)")
                 })
             }
-        }
-    }
-    Handle([String]$Name)
-    {
-        Switch ($Name)
-        {
-            Network
+            Credential
+            {
+                $Ctrl.Xaml.IO.CredentialRefresh.Add_Click(
+                {
+                    $Ctrl.CredentialRefresh()
+                })
+
+                $Ctrl.Xaml.IO.CredentialType.Add_SelectionChanged(
+                {   
+                    $Ctrl.CredentialSelect()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialUsername.Add_TextChanged(
+                {
+                    $Ctrl.ToggleCredentialCreate()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialPassword.Add_PasswordChanged(
+                {
+                    $Ctrl.ToggleCredentialCreate()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialConfirm.Add_PasswordChanged(
+                {
+                    $Ctrl.ToggleCredentialCreate()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialPin.Add_PasswordChanged(
+                {
+                    $Ctrl.ToggleCredentialCreate()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialGenerate.Add_Click(
+                {
+                    $Ctrl.CredentialGenerate()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialOutput.Add_SelectionChanged(
+                {
+                    $Ctrl.CredentialSelect()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialRemove.Add_Click(
+                {
+                    $Ctrl.CredentialRemove()
+                })
+                
+                $Ctrl.Xaml.IO.CredentialCreate.Add_Click(
+                {
+                    $Ctrl.CredentialCreate($Ctrl.Xaml.IO.CredentialType.SelectedIndex,
+                                           $Ctrl.Xaml.IO.CredentialUsername.Text,
+                                           $Ctrl.Xaml.IO.CredentialPassword.SecurePassword)
+                })
+
+                $Ctrl.Xaml.IO.CredentialAssign.Add_Click(
+                {
+                    $Ctrl.CredentialAssign()
+                })
+
+                $Ctrl.CredentialRefresh()
+            }
+            Image
+            {
+
+            }
+            Template
+            {
+
+            }
+            Node
             {
 
             }
@@ -3846,9 +4189,11 @@ Class NewVmControllerMaster
     {
         # [Event handler stuff]
         $This.Stage("Network")
+        $This.Stage("Credential")
 
         # [Initial properties/settings]
         $This.Initial("Network")
+        $This.Initial("Credential")
     }
     Reload()
     {
@@ -3876,7 +4221,7 @@ Class NewVmControllerMaster
 
 If (!(Get-Module FightingEntropy))
 {
-    Import-Module FightingEntropy
+    Import-Module FightingEntropy -Force -Verbose
 }
 
 $Ctrl = [NewVmControllerMaster]::New()
