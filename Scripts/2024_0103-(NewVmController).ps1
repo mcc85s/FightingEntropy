@@ -2476,7 +2476,7 @@ Class NewVmControllerTemplateRoleList
 
         ForEach ($Name in [System.Enum]::GetNames([NewVmControllerTemplateRoleType]))
         {
-            $Item             = $This.VmRoleItem($Name)
+            $Item             = $This.NewVmControllerTemplateRoleItem($Name)
             $Item.Description = Switch ($Item.Name)
             {
                 Server { "Windows Server 2016/2019/2022" }
@@ -3959,6 +3959,304 @@ Class NewVmControllerXaml
     '                </Grid>',
     '            </Grid>',
     '        </TabItem>',
+    '        <TabItem Header="Template">',
+    '            <Grid>',
+    '                <Grid.RowDefinitions>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="*"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="10"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="*"/>',
+    '                </Grid.RowDefinitions>',
+    '                <Grid Grid.Row="0">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="105"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="25"/>',
+    '                        <ColumnDefinition Width="90"/>',
+    '                        <ColumnDefinition Width="90"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0" Content="[Template]:"/>',
+    '                    <TextBox Grid.Column="1"',
+    '                             Text="&lt;Set template export path&gt;"',
+    '                             Name="TemplateExportPath"/>',
+    '                    <Image Grid.Column="2"',
+    '                           Name="TemplateExportPathIcon"/>',
+    '                    <Button Grid.Column="3"',
+    '                            Content="Browse"',
+    '                            Name="TemplateExportBrowse"/>',
+    '                    <Button Grid.Column="4"',
+    '                            Content="Set"',
+    '                            Name="TemplateSetPath"/>',
+    '                </Grid>',
+    '                <DataGrid Grid.Row="1"',
+    '                              Name="TemplateOutput"',
+    '                              ScrollViewer.CanContentScroll="True"',
+    '                              ScrollViewer.VerticalScrollBarVisibility="Auto"',
+    '                              ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+    '                    <DataGrid.RowStyle>',
+    '                        <Style TargetType="{x:Type DataGridRow}">',
+    '                            <Style.Triggers>',
+    '                                <Trigger Property="IsMouseOver" Value="True">',
+    '                                    <Setter Property="ToolTip">',
+    '                                        <Setter.Value>',
+    '                                            <TextBlock Text="{Binding Image}"',
+    '                                                       TextWrapping="Wrap"',
+    '                                                       FontFamily="Consolas"',
+    '                                                       Background="#000000"',
+    '                                                       Foreground="#00FF00"/>',
+    '                                        </Setter.Value>',
+    '                                    </Setter>',
+    '                                </Trigger>',
+    '                            </Style.Triggers>',
+    '                        </Style>',
+    '                    </DataGrid.RowStyle>',
+    '                    <DataGrid.Columns>',
+    '                        <DataGridTextColumn Header="Name"',
+    '                                            Binding="{Binding Name}"',
+    '                                            Width="*"/>',
+    '                        <DataGridTextColumn Header="Role"',
+    '                                            Binding="{Binding Role}"',
+    '                                            Width="70"/>',
+    '                        <DataGridTextColumn Header="Memory"',
+    '                                            Binding="{Binding Memory}"',
+    '                                            Width="75"/>',
+    '                        <DataGridTextColumn Header="Hard Drive"',
+    '                                            Binding="{Binding Hdd}"',
+    '                                            Width="75"/>',
+    '                        <DataGridTextColumn Header="Gen."',
+    '                                            Binding="{Binding Gen}"',
+    '                                            Width="40"/>',
+    '                        <DataGridTextColumn Header="Cores"',
+    '                                            Binding="{Binding Core}"',
+    '                                            Width="40"/>',
+    '                        <DataGridTemplateColumn Header="Account" Width="90">',
+    '                            <DataGridTemplateColumn.CellTemplate>',
+    '                                <DataTemplate>',
+    '                                    <ComboBox SelectedIndex="0"',
+    '                                              Style="{StaticResource DGCombo}"',
+    '                                              ItemsSource="{Binding Account}">',
+    '                                    </ComboBox>',
+    '                                </DataTemplate>',
+    '                            </DataGridTemplateColumn.CellTemplate>',
+    '                        </DataGridTemplateColumn>',
+    '                        <DataGridTemplateColumn Header="Switch" Width="90">',
+    '                            <DataGridTemplateColumn.CellTemplate>',
+    '                                <DataTemplate>',
+    '                                    <ComboBox SelectedIndex="0"',
+    '                                              Style="{StaticResource DGCombo}"',
+    '                                              ItemsSource="{Binding Switch}">',
+    '                                    </ComboBox>',
+    '                                </DataTemplate>',
+    '                            </DataGridTemplateColumn.CellTemplate>',
+    '                        </DataGridTemplateColumn>',
+    '                    </DataGrid.Columns>',
+    '                </DataGrid>',
+    '                <Grid Grid.Row="2">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Button Grid.Column="0"',
+    '                            Content="Create"',
+    '                            Name="TemplateCreate"/>',
+    '                    <Button Grid.Column="1"',
+    '                            Content="Remove"',
+    '                            Name="TemplateRemove"/>',
+    '                    <Button Grid.Column="2"',
+    '                            Content="Export"',
+    '                            Name="TemplateExport"/>',
+    '                </Grid>',
+    '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+    '                <Grid Grid.Row="4">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="105"/>',
+    '                        <ColumnDefinition Width="120"/>',
+    '                        <ColumnDefinition Width="25"/>',
+    '                        <ColumnDefinition Width="80"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0"',
+    '                           Content="[Name/Role]:"/>',
+    '                    <TextBox Grid.Column="1"',
+    '                             Name="TemplateName"/>',
+    '                    <Image Grid.Column="2"',
+    '                           Name="TemplateNameIcon"/>',
+    '                    <ComboBox Grid.Column="3" Name="TemplateRole">',
+    '                        <ComboBoxItem Content="Server"/>',
+    '                        <ComboBoxItem Content="Client"/>',
+    '                        <ComboBoxItem Content="Unix"/>',
+    '                    </ComboBox>',
+    '                    <DataGrid Grid.Column="4"',
+    '                              HeadersVisibility="None"',
+    '                              Margin="10"',
+    '                              Name="TemplateRoleDescription">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Description"',
+    '                                                Binding="{Binding Description}"',
+    '                                                Width="*"/>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                </Grid>',
+    '                <Grid Grid.Row="5">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="105"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="25"/>',
+    '                        <ColumnDefinition Width="90"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0"',
+    '                           Content="[Root Path]:"/>',
+    '                    <TextBox Grid.Column="1"',
+    '                             Name="TemplateRootPath"',
+    '                             Text="&lt;Set virtual machine root path&gt;"/>',
+    '                    <Image Grid.Column="2"',
+    '                           Name="TemplateRootPathIcon"/>',
+    '                    <Button Grid.Column="3"',
+    '                            Name="TemplateRootPathBrowse"',
+    '                            Content="Browse"/>',
+    '                </Grid>',
+    '                <TabControl Grid.Row="6">',
+    '                    <TabItem Header="Specs">',
+    '                        <Grid Height="40" VerticalAlignment="Top">',
+    '                            <Grid.ColumnDefinitions>',
+    '                                <ColumnDefinition Width="105"/>',
+    '                                <ColumnDefinition Width="50"/>',
+    '                                <ColumnDefinition Width="95"/>',
+    '                                <ColumnDefinition Width="*"/>',
+    '                                <ColumnDefinition Width="110"/>',
+    '                                <ColumnDefinition Width="50"/>',
+    '                                <ColumnDefinition Width="95"/>',
+    '                                <ColumnDefinition Width="50"/>',
+    '                            </Grid.ColumnDefinitions>',
+    '                            <Label    Grid.Column="0"',
+    '                                      Content="[Memory/GB]:"',
+    '                                      Style="{StaticResource LabelRed}"/>',
+    '                            <ComboBox Grid.Column="1"',
+    '                                      Name="TemplateMemory"',
+    '                                      SelectedIndex="0">',
+    '                                <ComboBoxItem Content="2"/>',
+    '                                <ComboBoxItem Content="4"/>',
+    '                                <ComboBoxItem Content="8"/>',
+    '                                <ComboBoxItem Content="16"/>',
+    '                            </ComboBox>',
+    '                            <Label Grid.Column="2"',
+    '                                   Content="[Drive/GB]:"',
+    '                                   Style="{StaticResource LabelRed}"/>',
+    '                            <ComboBox Grid.Column="3"',
+    '                                      Name="TemplateHardDrive"',
+    '                                      SelectedIndex="1">',
+    '                                <ComboBoxItem Content="32"/>',
+    '                                <ComboBoxItem Content="64"/>',
+    '                                <ComboBoxItem Content="128"/>',
+    '                                <ComboBoxItem Content="256"/>',
+    '                            </ComboBox>',
+    '                            <Label Grid.Column="4"',
+    '                                   Content="[Generation]:"',
+    '                                   Style="{StaticResource LabelRed}"/>',
+    '                            <ComboBox Grid.Column="5"',
+    '                                      Name="TemplateGeneration"',
+    '                                      SelectedIndex="1">',
+    '                                <ComboBoxItem Content="1"/>',
+    '                                <ComboBoxItem Content="2"/>',
+    '                            </ComboBox>',
+    '                            <Label Grid.Column="6"',
+    '                                   Content="[CPU/Core]:"',
+    '                                   Style="{StaticResource LabelRed}"/>',
+    '                            <ComboBox Grid.Column="7"',
+    '                                      Name="TemplateCore"',
+    '                                      SelectedIndex="1">',
+    '                                <ComboBoxItem Content="1"/>',
+    '                                <ComboBoxItem Content="2"/>',
+    '                                <ComboBoxItem Content="3"/>',
+    '                                <ComboBoxItem Content="4"/>',
+    '                            </ComboBox>',
+    '                        </Grid>',
+    '                    </TabItem>',
+    '                    <TabItem Header="Switch">',
+    '                        <Grid>',
+    '                            <Grid.ColumnDefinitions>',
+    '                                <ColumnDefinition Width="70"/>',
+    '                                <ColumnDefinition Width="*"/>',
+    '                            </Grid.ColumnDefinitions>',
+    '                            <Grid Grid.Column="0">',
+    '                                <Grid.RowDefinitions>',
+    '                                    <RowDefinition Height="40"/>',
+    '                                    <RowDefinition Height="*"/>',
+    '                                    <RowDefinition Height="40"/>',
+    '                                </Grid.RowDefinitions>',
+    '                                <Button Grid.Row="0"',
+    '                                        Name="TemplateNetworkUp"',
+    '                                        Content="[Up]"/>',
+    '                                <Button Grid.Row="2"',
+    '                                        Name="TemplateNetworkDown"',
+    '                                        Content="[Down]"/>',
+    '                            </Grid>',
+    '                            <DataGrid Grid.Column="1" Name="TemplateNetworkOutput">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Alias"',
+    '                                            Binding="{Binding Interface.Name}"',
+    '                                            Width="125"/>',
+    '                                    <DataGridTextColumn Header="IpAddress"',
+    '                                            Binding="{Binding Interface.IpAddress}"',
+    '                                            Width="125"/>',
+    '                                    <DataGridTextColumn Header="Description"',
+    '                                            Binding="{Binding Interface.Description}"',
+    '                                            Width="*"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                        </Grid>',
+    '                    </TabItem>',
+    '                    <TabItem Header="Credentials">',
+    '                        <DataGrid Name="TemplateCredentialOutput">',
+    '                            <DataGrid.Columns>',
+    '                                <DataGridTextColumn Header="Type"',
+    '                                            Binding="{Binding Type}"',
+    '                                            Width="90"/>',
+    '                                <DataGridTextColumn Header="Username"',
+    '                                            Binding="{Binding Username}"',
+    '                                            Width="*"/>',
+    '                            </DataGrid.Columns>',
+    '                        </DataGrid>',
+    '                    </TabItem>',
+    '                    <TabItem Header="Image">',
+    '                        <DataGrid Name="TemplateImageOutput">',
+    '                            <DataGrid.RowStyle>',
+    '                                <Style TargetType="{x:Type DataGridRow}">',
+    '                                    <Style.Triggers>',
+    '                                        <Trigger Property="IsMouseOver" Value="True">',
+    '                                            <Setter Property="ToolTip">',
+    '                                                <Setter.Value>',
+    '                                                    <TextBlock Text="{Binding Fullname}"',
+    '                                                       TextWrapping="Wrap"',
+    '                                                       FontFamily="Consolas"',
+    '                                                       Background="#000000"',
+    '                                                       Foreground="#00FF00"/>',
+    '                                                </Setter.Value>',
+    '                                            </Setter>',
+    '                                        </Trigger>',
+    '                                    </Style.Triggers>',
+    '                                </Style>',
+    '                            </DataGrid.RowStyle>',
+    '                            <DataGrid.Columns>',
+    '                                <DataGridTextColumn Header="Type"',
+    '                                            Binding="{Binding File.Type}"',
+    '                                            Width="90"/>',
+    '                                <DataGridTextColumn Header="Name"',
+    '                                            Binding="{Binding File.Name}"',
+    '                                            Width="*"/>',
+    '                                <DataGridTextColumn Header="Edition"',
+    '                                            Binding="{Binding Edition.Label}"',
+    '                                            Width="150"/>',
+    '                            </DataGrid.Columns>',
+    '                        </DataGrid>',
+    '                    </TabItem>',
+    '                </TabControl>',
+    '            </Grid>',
+    '        </TabItem>',
     '    </TabControl>',
     '</Window>' -join "`n")
 }
@@ -4355,6 +4653,8 @@ Class NewVmControllerMaster
     [Object]    $Network
     [Object] $Credential
     [Object]      $Image
+    [Object]   $Template
+    [Object]       $Node
     NewVmControllerMaster()
     {
         # Loads module controller
@@ -4373,6 +4673,9 @@ Class NewVmControllerMaster
 
         # Loads the image master
         $This.Image      = $This.Get("Image")
+
+        # Loads the template measter
+        $This.Template   = $This.Get("Template")
     }
     Reinstantiate()
     {
@@ -4474,6 +4777,11 @@ Class NewVmControllerMaster
             {
                 $This.Update(0,"Getting [~] Image Master")
                 $Item = [NewVmControllerImageMaster]::New()
+            }
+            Template
+            {
+                $This.Update(0,"Getting [~] Template Master")
+                $Item = [NewVmControllerTemplateMaster]::New()
             }
         }
 
@@ -4597,6 +4905,12 @@ Class NewVmControllerMaster
                 $This.Xaml.IO.CredentialCreate.IsEnabled = 0 -notin $List.Status
             }
         }            
+    }
+    ToggleTemplateCreate()
+    {
+        $List = $This.Validation.Output | ? Name -match ^Template
+
+        $This.Xaml.IO.TemplateCreate.IsEnabled = 0 -in $List.Status
     }
     CheckDomain()
     {
@@ -4811,11 +5125,47 @@ Class NewVmControllerMaster
     {
         $Ctrl                 = $This
 
-        $Item                 = $This.Validation.Get($Name)
-        $Icon                 = $This.Xaml.Get("$Name`Icon")
+        $Item                 = $Ctrl.Validation.Get($Name)
+        $Text                 = $Item.Control.Text
+        $Icon                 = $Ctrl.Xaml.Get("$Name`Icon")
 
-        $Item.Status          = $Ctrl.Validation.CheckPath($Item.Control.Text).Status
+        $Item.Status          = $Ctrl.Validation.CheckPath($Text).Status
         $Icon.Control.Source  = $Ctrl.IconStatus($Item.Status)
+    }
+    CheckTemplateExportPath()
+    {
+        $Ctrl                 = $This
+
+        $Item                 = $Ctrl.Validation.Get("TemplateExportPath")
+        $Text                 = $Item.Control.Text
+        $Icon                 = $Ctrl.Xaml.Get("TemplateExportPathIcon")
+
+        $Item.Status          = $Ctrl.Validation.CheckPath($Text).Status
+        $Icon.Control.Source  = $Ctrl.IconStatus($Item.Status)
+    }
+    CheckTemplateName()
+    {
+        $Ctrl                 = $This
+
+        $Item                 = $Ctrl.Validation.Get("TemplateName")
+        $Text                 = $Item.Control.Text
+        $Icon                 = $Ctrl.Xaml.Get("TemplateNameIcon")
+
+        $Item.Status          = [UInt32]($Text -match "[a-zA-Z]{1}[a-zA-Z0-9]{0,14}") # -and $Text -notin $This.Node.Host.Name)
+        $Icon.Control.Source  = $This.IconStatus($Item.Status)
+
+        $This.ToggleTemplateCreate()
+    }
+    CheckTemplateRootPath()
+    {
+        $Ctrl                 = $This
+
+        $Item                 = $Ctrl.Validation.Get("TemplateRootPath")
+        $Text                 = $Item.Control.Text
+        $Icon                 = $Ctrl.Xaml.Get("TemplateRootPathIcon")
+
+        $Item.Status          = $Ctrl.Validation.CheckPath($Text).Status
+        $Icon.Control.Source  = $This.IconStatus($Item.Status)
     }
     SetMain()
     {
@@ -5380,6 +5730,244 @@ Class NewVmControllerMaster
             [System.Windows.MessageBox]::Show($Ctrl.Image.Current().Fullname,"Assigned [+] Image [$($Ctrl.Image.Current().Name)]")
         }
     }
+    TemplatePopulate()
+    {
+        $Ctrl = $This
+
+        $Ctrl.DataGrid.Template.Refresh($Ctrl.Template.Output)
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.DataGrid.Template.Output)
+    }
+    TemplateReset()
+    {
+        $Ctrl = $This
+
+        $Ctrl.DataGrid.Template.Clear()
+        $Ctrl.Template.Populate()
+    }
+    TemplateExportPath()
+    {
+        $Ctrl = $This
+
+        If ($Ctrl.Xaml.IO.TemplateExportPath.Text -eq "")
+        {
+            $Ctrl.Xaml.IO.TemplateExportPath.Text       = "<Set template export path>"
+            $Ctrl.Xaml.IO.TemplateExportPathIcon.Source = $Null
+        }
+        Else
+        {
+            $Ctrl.CheckTemplateExportPath()
+            $Ctrl.ToggleTemplateCreate()
+        }
+
+        $Item = $Ctrl.Validation.Get("TemplateExportPath")
+        $Ctrl.Xaml.IO.TemplateSetPath.IsEnabled = $Item.Status
+    }
+    TemplateExportBrowse()
+    {
+        $Ctrl = $This
+
+        $Ctrl.FolderBrowse("TemplateExportPath")
+    }
+    TemplateSetPath()
+    {
+        $Ctrl = $This
+
+        $Item = $Ctrl.Validation.Get("TemplateExportPath")
+        Switch ($Item.Status)
+        {
+            0
+            {
+                [System.Windows.MessageBox]::Show("Invalid path designated","Exception [!] Path error")
+            }
+            1
+            {
+                $This.Template.SetPath($This.Xaml.IO.TemplateExportPath.Text)
+
+                $This.Xaml.IO.TemplateExportPath.IsEnabled   = 0
+                $This.Xaml.IO.TemplateExportBrowse.IsEnabled = 0
+                $This.Xaml.IO.TemplateSetPath.IsEnabled      = 0
+                $This.Xaml.IO.TemplateOutput.IsEnabled       = 1
+            }
+        }
+    }
+    TemplateRootPath()
+    {
+        $Ctrl = $This
+
+        If ($Ctrl.Xaml.IO.TemplateRootPath.Text -eq "")
+        {
+            $Ctrl.Xaml.IO.TemplateRootPath.Text = "<Set virtual machine root path>"
+            $Ctrl.Xaml.IO.TemplateRootPathIcon.Source = $Null
+        }
+        Else
+        {
+            $Ctrl.CheckTemplateRootPath()
+            $Ctrl.ToggleTemplateCreate()
+        }
+    }
+    TemplateRootPathBrowse()
+    {
+        $Ctrl = $This
+
+        $Ctrl.FolderBrowse("TemplateRootPath")
+    }
+    TemplateCreate()
+    {
+        $Ctrl = $This
+
+        If ($Ctrl.Xaml.IO.TemplateName.Text -notmatch "(\w|\d)")
+        {
+            [System.Windows.MessageBox]::Show("Must enter a name","Error")
+        }
+    
+        ElseIf ($Ctrl.Xaml.IO.TemplateName.Text -in $Ctrl.Template.Name)
+        {
+            [System.Windows.MessageBox]::Show("Duplicate name","Error")
+        }
+    
+        Else
+        {
+            $Ctrl.Template.Add($Ctrl.Xaml.IO.TemplateName.Text,
+                               $Ctrl.Xaml.IO.TemplateRole.SelectedIndex,
+                               $Ctrl.Xaml.IO.TemplateRootPath.Text,
+                               $Ctrl.Xaml.IO.TemplateMemory.SelectedItem.Content,
+                               $Ctrl.Xaml.IO.TemplateHardDrive.SelectedItem.Content,
+                               $Ctrl.Xaml.IO.TemplateGeneration.SelectedItem.Content,
+                               $Ctrl.Xaml.IO.TemplateCore.SelectedItem.Content)
+            
+            $Ctrl.TemplatePopulate()
+    
+            $Ctrl.Xaml.Get("TemplateName").Text            = ""
+            $Ctrl.Xaml.Get("TemplateRootPath").Text        = "<Set virtual machine root path>"
+            $Ctrl.Xaml.Get("TemplateRootPathIcon").Source  = $Null
+        }
+    }
+    templateRemove()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Template.Output = @($Ctrl.Template.Output | ? Name -ne $Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Name)
+
+        $Ctrl.TemplatePopulate()
+    }
+    TemplateRole()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Reset($Ctrl.Xaml.IO.TemplateRoleDescription,
+                    $Ctrl.Template.Role.Output[$Ctrl.Xaml.IO.TemplateRole.SelectedIndex])
+    }
+    TemplateHandle()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Xaml.IO.TemplateCreate.IsEnabled              = 0
+        $Ctrl.Xaml.IO.TemplateRemove.IsEnabled              = 0
+        $Ctrl.Xaml.IO.TemplateExport.IsEnabled              = 0
+        $Ctrl.Xaml.IO.TemplateName.IsEnabled                = 0
+        $Ctrl.Xaml.IO.TemplateRole.IsEnabled                = 0
+        $Ctrl.Xaml.IO.TemplateRootPath.IsEnabled            = 0
+        $Ctrl.Xaml.IO.TemplateRootPathIcon.IsEnabled        = 0
+        $Ctrl.Xaml.IO.TemplateRootPathBrowse.IsEnabled      = 0
+        $Ctrl.Xaml.IO.TemplateMemory.IsEnabled              = 0
+        $Ctrl.Xaml.IO.TemplateHardDrive.IsEnabled           = 0
+        $Ctrl.Xaml.IO.TemplateGeneration.IsEnabled          = 0
+        $Ctrl.Xaml.IO.TemplateCore.IsEnabled                = 0
+
+        $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex          = 1
+        $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
+        $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
+        $Ctrl.Xaml.IO.TemplateCore.SelectedIndex            = 1
+
+        $Ctrl.Xaml.IO.TemplateRootPathIcon.Source           = $Null
+
+        If ($Ctrl.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
+        {
+            $Ctrl.Xaml.IO.TemplateName.IsEnabled            = 1
+            $Ctrl.Xaml.IO.TemplateRole.IsEnabled            = 1
+            $Ctrl.Xaml.IO.TemplateRootPath.IsEnabled        = 1
+            $Ctrl.Xaml.IO.TemplateRootPathIcon.IsEnabled    = 1
+            $Ctrl.Xaml.IO.TemplateRootPathBrowse.IsEnabled  = 1
+            $Ctrl.Xaml.IO.TemplateMemory.IsEnabled          = 1
+            $Ctrl.Xaml.IO.TemplateHardDrive.IsEnabled       = 1
+            $Ctrl.Xaml.IO.TemplateGeneration.IsEnabled      = 1
+            $Ctrl.Xaml.IO.TemplateCore.IsEnabled            = 1
+
+            $Selected = $Ctrl.Xaml.IO.TemplateOutput.SelectedItem
+            $Item     = $Ctrl.Template.Output | ? Guid -eq $Selected.Guid
+
+            If (!!$Item)
+            {
+                $Ctrl.Xaml.IO.TemplateCreate.IsEnabled          = 0
+                $Ctrl.Xaml.IO.TemplateRemove.IsEnabled          = 1
+                $Ctrl.Xaml.IO.TemplateExport.IsEnabled          = 1
+                $Ctrl.Xaml.IO.TemplateName.Text                 = $Item.Name
+                $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
+
+                $Ctrl.Xaml.IO.TemplateRootPath.Text             = $Item.Base
+                $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex      = Switch -Regex ($Item.Memory.Size)
+                {
+                    "2.00 GB" { 0 } "4.00 GB" { 1 } "8.00 GB" { 2 } "16.00 GB" { 3 }
+                }
+
+                $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex   = Switch -Regex ($Item.Hdd.Size)
+                {
+                    "32.00 GB" { 0 } "64.00 GB" { 1 } "128.00 GB" { 2 } "256.00 GB" { 3 }
+                }
+
+                $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
+                $Ctrl.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Core]
+                $Ctrl.Xaml.IO.TemplateCreate.IsEnabled          = 0
+            }
+            Else
+            {
+                $Ctrl.Xaml.IO.TemplateName.Text                 = ""
+                $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = 1
+                $Ctrl.Xaml.IO.TemplateRootPath.Text             = "<Set virtual machine root path>"
+                $Ctrl.Xaml.IO.TemplateRootPathIcon.Source       = $Null
+            }
+        }
+    }
+    TemplateExport()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Template.Export($Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
+    }
+    TemplateNetworkUp()
+    {
+        $Ctrl = $This
+
+        $List    = $Ctrl.Xaml.IO.TemplateNetworkOutput.Items
+        $Current = $Ctrl.Xaml.IO.TemplateNetworkOutput.SelectedItem
+        $Item    = $List | ? Index -eq $Current.Index
+        $Target  = $List | ? Index -eq ($Current.Index - 1)
+
+        If ($Current.Index -ge 1)
+        {
+            $Item.Index --
+            $Target.Index ++
+            $Ctrl.Template.Network = $List | Sort-Object Index
+            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+        }
+    }
+    TemplateNetworkDown()
+    {
+        $Ctrl    = $This
+
+        $List    = $Ctrl.Xaml.IO.TemplateNetworkOutput.Items
+        $Current = $Ctrl.Xaml.IO.TemplateNetworkOutput.SelectedItem
+        $Item    = $List | ? Index -eq $Current.Index
+        $Target  = $List | ? Index -eq ($Current.Index + 1)
+
+        If ($Current.Index -le ($List.Count-2))
+        {
+            $Item.Index ++
+            $Target.Index --
+            $Ctrl.Template.Network = $List | Sort-Object Index
+            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+        }
+    }
     Stage([String]$Name)
     {
         $This.Update(0,"Staging [~] $Name")
@@ -5563,7 +6151,73 @@ Class NewVmControllerMaster
             }
             Template
             {
+                $Ctrl.Xaml.IO.TemplateExportPath.Add_TextChanged(
+                {
+                    $Ctrl.TemplateExportPath()
+                })
 
+                $Ctrl.Xaml.IO.TemplateExportBrowse.Add_Click(
+                {
+                    $Ctrl.TemplateExportBrowse()
+                })
+
+                $Ctrl.Xaml.IO.TemplateSetPath.Add_Click(
+                {
+                    $Ctrl.TemplateSetPath()
+                })
+
+                $Ctrl.Xaml.IO.TemplateName.Add_TextChanged(
+                {
+                    $Ctrl.CheckTemplateName()
+                    $Ctrl.ToggleTemplateCreate()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateRootPath.Add_TextChanged(
+                {
+                    $Ctrl.TemplateRootPath()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateRootPathBrowse.Add_Click(
+                {
+                    $Ctrl.TemplateRootPathBrowse()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateCreate.Add_Click(
+                {
+                    $Ctrl.TemplateCreate()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateOutput.Add_SelectionChanged(
+                {
+                    $Ctrl.TemplateHandle()
+                })
+
+                $Ctrl.Xaml.IO.TemplateRole.Add_SelectionChanged(
+                {
+                    $Ctrl.TemplateRole()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateRemove.Add_Click(
+                {
+                    $Ctrl.TemplateRemove()
+                })
+                    
+                $Ctrl.Xaml.IO.TemplateExport.Add_Click(
+                {
+                    $Ctrl.TemplateExport()
+                })
+
+                $Ctrl.Xaml.IO.TemplateNetworkUp.Add_Click(
+                {
+                    $Ctrl.TemplateNetworkUp()
+                })
+
+                $Ctrl.Xaml.IO.TemplateNetworkDown.Add_Click(
+                {
+                    $Ctrl.TemplateNetworkDown()
+                })
+                    
+                $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.DataGrid.Template.Output)
             }
             Node
             {
@@ -5594,7 +6248,15 @@ Class NewVmControllerMaster
             }
             Template
             {
+                $This.Xaml.IO.TemplateCreate.IsEnabled       = 0
+                $This.Xaml.IO.TemplateRemove.IsEnabled       = 0
+                $This.Xaml.IO.TemplateExport.IsEnabled       = 0
+        
+                $This.Xaml.IO.TemplateRole.SelectedIndex     = 0
 
+                $This.Xaml.IO.TemplateExportPathIcon.Source  = $Null
+                $This.Xaml.IO.TemplateExportBrowse.IsEnabled = 1
+                $This.Xaml.IO.TemplateOutput.IsEnabled       = 0
             }
             Node
             {
@@ -5608,11 +6270,13 @@ Class NewVmControllerMaster
         $This.Stage("Network")
         $This.Stage("Credential")
         $This.Stage("Image")
+        $This.Stage("Template")
 
         # [Initial properties/settings]
         $This.Initial("Network")
         $This.Initial("Credential")
         $This.Initial("Image")
+        $This.Initial("Template")
     }
     Reload()
     {
@@ -5646,58 +6310,3 @@ If (!(Get-Module FightingEntropy))
 $Ctrl = [NewVmControllerMaster]::New()
 $Ctrl.Reload()
 
-<#
-$Ctrl.Image.SetSource($Ctrl.Xaml.IO.ImagePath.Text)
-$Ctrl.Image.Refresh()
-
-ForEach ($X in 0..($Ctrl.Image.Store.Count-1))
-{
-    $Ctrl.Image.Select($X)
-    $Ctrl.Update(0,"Processing [~] $($Ctrl.Image.Current().Name)")
-    
-    # [$Ctrl.Image.ProcessSlot()]
-    
-    $Current         = $Ctrl.Image.Current()
-    $Ctrl.Image.Status     = "Loading [~] {0}" -f $Current.Name
-
-    If (!$Current.GetDiskImage().Attached)
-    {
-        $Current.MountDiskImage()
-    }
-    $Ctrl.Image.Load()
-
-    Load()
-    {
-        If (!$This.Current().GetDiskImage().Attached)
-        {
-            $This.Current().MountDiskImage()
-        }
-    }
-    Unload()
-    {
-        If (!!$This.Current().GetDiskImage().Attached)
-        {
-            $This.Current().DismountDiskImage()
-        }
-    }
-
-    $File            = $Current.InstallWim()
-    $Current.Type    = @("Non-Windows","Windows")[$File.Count -ne 0]
-    $This.Status     = "Type [+] {0}" -f $Current.Type
-
-    If ($Current.Type -eq "Windows")
-    {
-        If ($File.Count -gt 1)
-        {
-            $File        = $File | ? Fullname -match x64
-        }
-
-        $This.GetWindowsImage($File.Fullname)
-    }
-    
-    $This.Status     = "Unloading [~] {0}" -f $Current.Name
-    $This.Unload()
-}
-
-$Ctrl.Reset($Ctrl.Xaml.IO.ImageStore,$Ctrl.Image.Store)
-#>
