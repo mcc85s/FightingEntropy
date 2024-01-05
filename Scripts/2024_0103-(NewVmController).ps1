@@ -1992,7 +1992,7 @@ Class NewVmControllerImageByteSize
     {
         $This.Size   = Switch -Regex ($This.Unit)
         {
-            ^Byte     {     "{0} B" -f  $This.Bytes/1    }
+            ^Byte     {     "{0} B" -f  $This.Bytes      }
             ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
             ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
             ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
@@ -2521,7 +2521,7 @@ Class NewVmControllerTemplateByteSize
     {
         $This.Size   = Switch -Regex ($This.Unit)
         {
-            ^Byte     {     "{0} B" -f  $This.Bytes/1    }
+            ^Byte     {     "{0} B" -f  $This.Bytes      }
             ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
             ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
             ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
@@ -2546,19 +2546,24 @@ Class NewVmControllerTemplateNetworkItem
     [String]   $Gateway
     [String[]]     $Dns
     [Object]      $Dhcp
-    NewVmControllerTemplateNetworkItem([UInt32]$Index,[Object]$Network,[String]$IpAddress)
+    NewVmControllerTemplateNetworkItem([Object]$Network)
     {
-        $This.Index     = $Index
-        $This.IPAddress = $IpAddress
-        $This.Domain    = $Network.Base.Domain
-        $This.NetBios   = $Network.Base.NetBios
-        $This.Trusted   = $Network.Base.Trusted
-        $This.Prefix    = $Network.Base.Prefix
-        $This.Netmask   = $Network.Base.Netmask
-        $This.Gateway   = $Network.Base.Gateway
-        $This.Dns       = $Network.Base.Dns
-        $This.Dhcp      = $Network.Dhcp
+        $This.Index       = $Network.Index
+        $Selected         = $Network.Selected
+
+        # [IP Address]
+        $This.IPAddress   = $Network.FirstAvailableIpAddress()
+
+        $This.Domain      = $Selected.Domain
+        $This.NetBios     = $Selected.NetBios
+        $This.Trusted     = $Selected.Trusted
+        $This.Prefix      = $Selected.Prefix
+        $This.Netmask     = $Selected.Netmask
+        $This.Gateway     = $Selected.Gateway
+        $This.Dns         = $Selected.Dns
+        $This.Dhcp        = $Selected.Dhcp
     }
+
     [String] ToString()
     {
         Return "<FEVirtual.NewVmController.Template.Network.Item>"
@@ -2610,11 +2615,12 @@ Class NewVmControllerTemplateNetworkRangeDivisionBlock
         Return "<FEVirtual.NewVmController.Template.Network.Range.Division.Block>"
     }
 }
-    
+
 Class NewVmControllerTemplateNetworkRangeDivisionList
 {
     [UInt32]           $Index
     [Object]       $Interface
+    [Object]        $Selected
     [Object]           $Range
     [UInt64]           $Total
     [UInt64]           $Block
@@ -2622,12 +2628,14 @@ Class NewVmControllerTemplateNetworkRangeDivisionList
     [Object]         $Process
     [Object]          $Output
     Hidden [Object] $Runspace
-    NewVmControllerTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
+    NewVmControllerTemplateNetworkRangeDivisionList([Object]$Interface)
     {
-        $This.Index     = $Index
+        $This.Index     = $Interface.Index
         $This.Interface = $Interface
-        $This.Range     = $This.Interface.Range
-        $This.Total     = $This.Interface.Range.Total
+        $This.Selected  = $Interface.Selected
+
+        $This.Range     = $This.Selected.Range
+        $This.Total     = $This.Selected.Range.Total
 
         If ($This.Total -le 256)
         {
@@ -2652,6 +2660,14 @@ Class NewVmControllerTemplateNetworkRangeDivisionList
     {
         Return [NewVmControllerTemplateNetworkRangeDivisionBlock]::New($Index,$Range)
     }
+    [Object] CreateRunspace()
+    {
+        Return [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+    }
+    [Object] CreatePowerShell()
+    {
+        Return [PowerShell]::Create()
+    }
     AddBlock([String[]]$Range)
     {
         $This.Process += $This.NewVmControllerTemplateNetworkRangeDivisionBlock($This.Process.Count,$Range)
@@ -2662,33 +2678,110 @@ Class NewVmControllerTemplateNetworkRangeDivisionList
 
         If ($This.Type -eq "Single")
         {
-            $This.AddBlock($This.Range.Output)
-            $This.PingSweep(0)
-        }
+            $This.AddBlock($This.Range.Host)
+            $Object        = $This.Process[0]
 
+            $HostList      = $Object.Host.IpAddress
+
+            $This.Runspace = $This.CreateRunspace()
+            $PS            = $This.CreatePowerShell()
+            $PS.Runspace   = $This.Runspace
+
+            $This.Runspace.Open()
+            [Void]$PS.AddScript(
+            {
+                Param ($HostList)
+
+                $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+                $Option   = [System.Net.NetworkInformation.PingOptions]::New()
+                $Ping     = @{ }
+                ForEach ($X in 0..($HostList.Count-1))
+                {
+                    $Item = [System.Net.NetworkInformation.Ping]::New()
+                    $Ping.Add($X,$Item.SendPingAsync($HostList[$X],100,$Buffer,$Option))
+                }
+
+                $Ping[0..($Ping.Count-1)]
+            })
+
+            $PS.AddArgument($HostList)
+            $Async        = $PS.BeginInvoke()
+            $Out          = $PS.EndInvoke($Async)
+            $PS.Dispose()
+            $This.Runspace.Dispose()
+
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $Object.Host[$X].Status = [UInt32]($Out[$X].Result.Status -eq "Success")
+            }
+
+            $Object.Alive = ($Object.Host | ? Status).Count
+        }
         If ($This.Type -eq "Multiple")
         {
-            $End = 0
-            $X   = 0
+            $End             = 0
+            $X               = 0
+            $Count           = $This.Total/256
+            $This.Process    = @( )
+
             Do
             {
-                $This.AddBlock($This.Range.Output[($X*256)..(($X*256)+255)])
-                $This.PingSweep($X)
-
-                If ($This.Process[$X].Alive -eq 0)
+                $HostList      = $This.Range.Host[($X*256)..(($X*256)+255)]
+                $This.AddBlock($HostList)
+                $Object        = $This.Process[$X]
+            
+                $This.Runspace = $This.CreateRunspace()
+                $PS            = $This.CreatePowerShell()
+                $PS.Runspace   = $This.Runspace
+            
+                $This.Runspace.Open()
+                [Void]$PS.AddScript(
+                {
+                    Param ($HostList)
+            
+                    $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+                    $Option   = [System.Net.NetworkInformation.PingOptions]::New()
+                    $Ping     = @{ }
+                    ForEach ($X in 0..($HostList.Count-1))
+                    {
+                        $Item = [System.Net.NetworkInformation.Ping]::New()
+                        $Ping.Add($X,$Item.SendPingAsync($HostList[$X],100,$Buffer,$Option))
+                    }
+            
+                    $Ping[0..($Ping.Count-1)]
+                })
+            
+                $PS.AddArgument($Object.Host.IpAddress)
+                $Async        = $PS.BeginInvoke()
+                $Out          = $PS.EndInvoke($Async)
+                $PS.Dispose()
+                $This.Runspace.Dispose()
+            
+                ForEach ($I in 0..($Out.Count-1))
+                {
+                    $Object.Host[$I].Status = [UInt32]($Out[$I].Result.Status -eq "Success")
+                }
+            
+                $Object.Alive = ($Object.Host | ? Status).Count
+                
+                If ($Object.Alive -eq 0)
                 {
                     $End ++
                 }
 
                 $X ++
             }
-            Until ($End -eq 1)
+            Until ($End -eq 1 -or $X -eq $Count)
         }
 
-        $This.Process.Host | ? IpAddress -eq $This.Interface.Base.Network   | % { $_.Status = 1 }
-        $This.Process.Host | ? IpAddress -eq $This.Interface.Base.Broadcast | % { $_.Status = 1 }
+        ForEach ($Item in "Network","Broadcast")
+        { 
+            $Node        = $This.Process.Host | ? IpAddress -eq $This.Interface.Selected.$Item
+            $Node.Status = 1 
+        }
 
         $This.Output = $This.Process.Host
+
     }
     [String] FirstAvailableIpAddress()
     {
@@ -2696,47 +2789,9 @@ Class NewVmControllerTemplateNetworkRangeDivisionList
         $Item.Status = 1
         Return $Item.IpAddress
     }
-    PingSweep([UInt32]$Index)
-    {
-        $Object        = $This.Process[$Index]
-        $HostList      = $Object.Host.IpAddress
-        $This.Runspace = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-        $PS            = [PowerShell]::Create()
-        $PS.Runspace   = $This.Runspace
-
-        $This.Runspace.Open()
-        [Void]$PS.AddScript(
-        {
-            Param ($HostList)
-
-            $Buffer   = 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
-            $Option   = New-Object System.Net.NetworkInformation.PingOptions
-            $Ping     = @{ }
-            ForEach ($X in 0..($HostList.Count-1))
-            {
-                $Item = New-Object System.Net.NetworkInformation.Ping
-                $Ping.Add($X,$Item.SendPingAsync($HostList[$X],100,$Buffer,$Option))
-            }
-
-            $Ping[0..($Ping.Count-1)]
-        })
-
-        $PS.AddArgument($HostList)
-        $Async        = $PS.BeginInvoke()
-        $Out          = $PS.EndInvoke($Async)
-        $PS.Dispose()
-        $This.Runspace.Dispose()
-
-        ForEach ($X in 0..($Out.Count-1))
-        {
-            $Object.Host[$X].Status = [UInt32]($Out[$X].Result.Status -eq "Success")
-        }
-
-        $Object.Alive = ($Object.Host | ? Status).Count
-    }
     [String] ToString()
     {
-        Return "<FEVirtual.NewVmController.Template.Network.Range.Division.List>"
+        Return "<FEModule.NewVmController.Template.Network.Range.Division.List>"
     }
 }
     
@@ -2792,7 +2847,7 @@ Class NewVmControllerTemplateItem
         Return "<FEVirtual.NewVmController.Template.Item>"
     }
 }
-    
+
 Class NewVmControllerTemplateMaster
 {
     Hidden [Object] $Role
@@ -2814,13 +2869,13 @@ Class NewVmControllerTemplateMaster
     {
         Return [NewVmControllerTemplateRoleList]::New()
     }
-    [Object] NewVmControllerTemplateNetworkItem([UInt32]$Index,[Object]$Network,[String]$IpAddress)
+    [Object] NewVmControllerTemplateNetworkItem([Object]$Network)
     {
-        Return [NewVmControllerTemplateNetworkItem]::New($Index,$Network,$IpAddress)
+        Return [NewVmControllerTemplateNetworkItem]::New($Network)
     }
-    [Object] NewVmControllerTemplateNetworkRangeDivisionList([UInt32]$Index,[Object]$Interface)
+    [Object] NewVmControllerTemplateNetworkRangeDivisionList([Object]$Interface)
     {
-        Return [NewVmControllerTemplateNetworkRangeDivisionList]::New($Index,$Interface)
+        Return [NewVmControllerTemplateNetworkRangeDivisionList]::New($Interface)
     }
     [Object] NewVmControllerTemplateItem(
     [UInt32] $Index,
@@ -2858,14 +2913,9 @@ Class NewVmControllerTemplateMaster
         }
         $This.Path      = $Path
     }
-    SetNetwork([Object[]]$Interface)
+    SetNetwork([Object]$Interface)
     {
-        $This.Network = @( )
-        
-        ForEach ($Item in $Interface)
-        {
-            $This.Network += $This.NewVmControllerTemplateNetworkRangeDivisionList($This.Network.Count,$Item)
-        }
+        $This.Network   = $This.NewVmControllerTemplateNetworkRangeDivisionList($Interface)
     }
     SetImage([Object]$Image)
     {
@@ -2889,24 +2939,29 @@ Class NewVmControllerTemplateMaster
             Throw "Item already exists"
         }
 
-        $Node       = @( ) 
+        $Node       = @( )
 
         ForEach ($Item in $This.Network)
         { 
-            $Node  += $This.NewVmControllerTemplateNetworkItem($Node.Count,
-                                                  $Item.Interface,
-                                                  $Item.FirstAvailableIPAddress())
+            $Node = $This.NewVmControllerTemplateNetworkItem($Item)
         }
 
         $This.Output += $This.NewVmControllerTemplateItem($This.Output.Count,
         $Name,
         $This.Role.Output[$Role],
         $Root,
-        $This.VmByteSize("Memory",$Ram),
-        $This.VmByteSize("Drive",$Hdd),
+        $This.NewVmControllerTemplateByteSize("Memory",$Ram),
+        $This.NewVmControllerTemplateByteSize("Drive",$Hdd),
         $Gen,
         $Core,
         $Node)
+
+        $This.Rerank()
+    }
+    Remove([String]$Name)
+    {
+        $This.Output = @($This.Output | ? Name -ne $Name)
+        $This.Rerank()
     }
     Export([UInt32]$Index)
     {
@@ -2934,9 +2989,2539 @@ Class NewVmControllerTemplateMaster
             [System.Windows.MessageBox]::Show("Something failed... bye.","Exception [!] Unknown failure")
         }
     }
+    Rerank()
+    {
+        For ($X = 0; $X -lt $This.Output.Count; $X++)
+        {
+            $This.Output[$X].Index = $X
+        }
+    }
     [String] ToString()
     {
-        Return "<FEVirtual.NewVmController.Template.Master>"
+        Return "<FEModule.NewVmController.Template.Master>"
+    }
+}
+
+<#
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ Node(s)    ]__________________________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+#>
+
+Class NewVmControllerNodeByteSize
+{
+    [String]   $Name
+    [UInt64]  $Bytes
+    [String]   $Unit
+    [String]   $Size
+    NewVmControllerNodeByteSize([String]$Name,[UInt64]$Bytes)
+    {
+        $This.Name   = $Name
+        $This.Bytes  = $Bytes
+        $This.GetUnit()
+        $This.GetSize()
+    }
+    GetUnit()
+    {
+        $This.Unit   = Switch ($This.Bytes)
+        {
+            {$_ -lt 1KB}                 {     "Byte" }
+            {$_ -ge 1KB -and $_ -lt 1MB} { "Kilobyte" }
+            {$_ -ge 1MB -and $_ -lt 1GB} { "Megabyte" }
+            {$_ -ge 1GB -and $_ -lt 1TB} { "Gigabyte" }
+            {$_ -ge 1TB}                 { "Terabyte" }
+        }
+    }
+    GetSize()
+    {
+        $This.Size   = Switch -Regex ($This.Unit)
+        {
+            ^Byte     {     "{0} B" -f  $This.Bytes      }
+            ^Kilobyte { "{0:n2} KB" -f ($This.Bytes/1KB) }
+            ^Megabyte { "{0:n2} MB" -f ($This.Bytes/1MB) }
+            ^Gigabyte { "{0:n2} GB" -f ($This.Bytes/1GB) }
+            ^Terabyte { "{0:n2} TB" -f ($This.Bytes/1TB) }
+        }
+    }
+    [String] ToString()
+    {
+        Return $This.Size
+    }
+}
+
+Class NewVmControllerNodeDhcp
+{
+    [String]        $Name
+    [String]  $SubnetMask
+    [String]     $Network
+    [String]  $StartRange
+    [String]    $EndRange
+    [String]   $Broadcast
+    [String[]] $Exclusion
+    NewVmControllerNodeDhcp([Object]$Dhcp)
+    {
+        $This.Name       = $Dhcp.Name
+        $This.SubnetMask = $Dhcp.SubnetMask
+        $This.Network    = $Dhcp.Network
+        $This.StartRange = $Dhcp.StartRange
+        $This.EndRange   = $Dhcp.EndRange
+        $This.Broadcast  = $Dhcp.Broadcast
+        $This.Exclusion  = $Dhcp.Exclusion
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Dhcp>"
+    }
+}
+
+Class NewVmControllerNodeNetworkItem
+{
+    Hidden [UInt32]  $Index
+    Hidden [Object] $Switch
+    [String]     $IpAddress
+    [String]        $Domain
+    [String]       $NetBios
+    [String]       $Trusted
+    [String]        $Prefix
+    [String]       $Netmask
+    [String]       $Gateway
+    [String[]]         $Dns
+    [Object]          $Dhcp
+    NewVmControllerNodeNetworkItem([Object]$Network,[Object]$Node)
+    {
+        $This.Index     = $Node.Index
+        $This.Switch    = $Network.Interface.Name
+        $This.IpAddress = $Node.IpAddress
+        $This.Domain    = $Node.Domain
+        $This.NetBios   = $Node.NetBios
+        $This.Trusted   = $Node.Trusted
+        $This.Prefix    = $Node.Prefix
+        $This.Netmask   = $Node.Netmask
+        $This.Gateway   = $Node.gateway
+        $This.Dns       = $Node.Dns
+        $This.Dhcp      = $Node.Dhcp
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Network.Item>"
+    }
+}
+
+Class NewVmControllerNodeSecurity
+{
+    Hidden [String]  $Name
+    [Object]     $Property
+    [Object] $KeyProtector
+    NewVmControllerNodeSecurity([String]$Name)
+    {
+        $This.Name         = $Name
+        $This.Refresh()
+    }
+    Refresh()
+    {
+        $This.Property     = Get-VmSecurity $This.Name -EA 0
+        $This.KeyProtector = Get-VmKeyProtector -VmName $This.Name -EA 0
+    }
+    [Void] SetVmKeyProtector()
+    {
+        If ($This.KeyProtector.Length -le 4)
+        {
+            Set-VmKeyProtector -VmName $This.Name -NewLocalKeyProtector -Verbose
+            $This.Refresh()
+        }
+    }
+    ToggleTpm()
+    {
+        $This.Refresh()
+        If ($This.KeyProtector.Length -le 4)
+        {
+            $This.SetVmKeyProtector()
+        }
+        Switch ([UInt32]$This.Property.TpmEnabled)
+        {
+            0
+            {
+                Enable-VmTpm -VmName $This.Name -EA 0
+            }
+            1
+            {
+                Disable-VmTpm -VmName $This.Name -EA 0
+            }
+        }
+        $This.Refresh()
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Security>"
+    }
+}
+
+Class NewVmControllerNodeTemplate
+{
+    [UInt32]     $Index
+    [String]      $Name
+    [Object]      $Role
+    [Guid]        $Guid
+    [String]      $Root
+    [Object]    $Memory
+    [Object]       $Hdd
+    [UInt32]       $Gen
+    [Uint32]      $Core
+    [Object]   $Account
+    [Object]   $Network
+    [Object]     $Image
+    NewVmControllerNodeTemplate([UInt32]$Index,[Object]$File)
+    {
+        $This.Index     = $Index
+        $Item           = Import-CliXml -Path $File.Fullname
+        $This.Name      = $Item.Name
+        $This.Role      = $This.NewVmControllerTemplateRoleItem($Item.Role.Name)
+        $This.Guid      = $Item.Guid
+        $This.Root      = $Item.Root
+        $This.Memory    = $This.NewVmControllerNodeByteSize("Memory",$Item.Memory.Bytes)
+        $This.Hdd       = $This.NewVmControllerNodeByteSize("Hdd",$Item.Hdd.Bytes)
+        $This.Gen       = $Item.Gen
+        $This.Core      = $Item.Core
+ 
+        $This.SetAccount($Item.Account)
+        $This.SetNetwork($Item.Network,$Item.Node)
+        $This.SetImage($Item.Image)
+    }
+    [Object] NewVmControllerTemplateRoleItem([String]$Name)
+    {
+        Return [NewVmControllerTemplateRoleItem]::New($Name)
+    }
+    [Object] NewVmControllerNodeByteSize([String]$Name,[UInt64]$Bytes)
+    {
+        Return [NewVmControllerNodeByteSize]::New($Name,$Bytes)
+    }
+    [Object] NewVmControllerCredentialItem([Object]$Serial)
+    {
+        Return [NewVmControllerCredentialItem]::New($Serial)
+    }
+    [Object] NewVmControllerNodeNetworkItem([Object]$Network,[Object]$Node)
+    {
+        Return [NewVmControllerNodeNetworkItem]::New($Network,$Node)
+    }
+    [Object] NewVmControllerImageObject([Object]$File,[Object]$Edition)
+    {
+        Return [NewVmControllerImageObject]::New($File,$Edition)
+    }
+    SetAccount([Object[]]$Account)
+    {
+        # Deserialize the accounts
+        $This.Account = @( )
+        
+        ForEach ($Item in $Account)
+        {
+            $This.Account += $This.NewVmControllerCredentialItem($Item)
+        }
+    }
+    SetNetwork([Object[]]$Network,[Object[]]$Node)
+    {
+        # Merge the interface and node properties
+        $This.Network = @( )
+ 
+        If ($Network.Count -eq 1)
+        {
+            $This.Network += $This.NewVmControllerNodeNetworkItem($Network,$Node)
+        }
+    
+        If ($Network.Count -gt 1)
+        {
+            ForEach ($X in 0..($Network.Count-1))
+            {
+                $This.Network += $This.NewVmControllerNodeNetworkItem($Network[$X],$Node[$X])
+            }
+        }
+    }
+    SetImage([Object]$Image)
+    {
+        # Merge the image object
+        $This.Image = $This.NewVmControllerImageObject($Image.File,$Image.Edition)
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Template>"
+    }
+}
+
+Class NewVmControllerNodeItem
+{
+    [UInt32]      $Index
+    [Guid]         $Guid
+    [Object]       $Name
+    [Object]     $Memory
+    [Object]       $Path
+    [Object]        $Vhd
+    [Object]    $VhdSize
+    [Object] $Generation
+    [UInt32]       $Core
+    [Object] $SwitchName
+    [Object]    $Network
+    NewVmControllerNodeItem([Object]$Node)
+    {
+        $This.Index      = $Node.Index
+        $This.Guid       = $This.NewGuid()
+        $This.Name       = $Node.Name
+        $This.Memory     = $This.NewVmControllerNodeByteSize("Memory",$Node.Memory)
+        $This.Path       = $Node.Base, $Node.Name -join '\'
+        $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Base, $Node.Name
+        $This.VhdSize    = $This.NewVmControllerNodeByteSize("HDD",$Node.HDD)
+    }
+    [Object] NewGuid()
+    {
+        Return [Guid]::NewGuid()
+    }
+    [Object] NewVmControllerNodeByteSize([String]$Name,[UInt64]$Bytes)
+    {
+        Return [NewVmControllerNodeByteSize]::New($Name,$Bytes)
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Item>"
+    }
+}
+
+Class NewVmControllerNodeHost
+{
+    [UInt32]      $Index
+    [Guid]         $Guid
+    [Object]       $Name
+    [Object]     $Memory
+    [Object]       $Path
+    [Object]        $Vhd
+    [Object]    $VhdSize
+    [Object] $Generation
+    [UInt32]       $Core
+    [Object] $SwitchName
+    NewVmControllerNodeHost([UInt32]$Index,[Object]$Node)
+    {
+        $This.Index      = $Node.Index
+        $This.Guid       = $Node.Id
+        $This.Name       = $Node.Name
+        $This.Memory     = $This.NewVmControllerNodeByteSize("Memory",$Node.MemoryStartup)
+        $This.Path       = $Node.Path
+        $This.Vhd        = $Node.HardDrives[0].Path
+        $This.VhdSize    = $This.NewVmControllerNodeByteSize("HDD",$This.Drive())
+        $This.Generation = $Node.Generation
+        $This.Core       = $Node.ProcessorCount
+        $This.SwitchName = $Node.NetworkAdapters[0].SwitchName
+    }
+    [UInt64] Drive()
+    {
+        Return Get-Item $This.Vhd | % Length
+    }
+    [Object] NewVmControllerNodeByteSize([String]$Name,[UInt64]$Bytes)
+    {
+        Return [NewVmControllerNodeByteSize]::New($Name,$Bytes)
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Host>"
+    }
+}
+
+Class NewVmControllerNodeSlot
+{
+    [String] $Index
+    [Guid]    $Guid
+    [String]  $Name
+    [String]  $Type
+    NewVmControllerNodeSlot([UInt32]$Index,[Object]$Node)
+    {
+        $This.Index      = $Index
+        $This.Guid       = $Node.Guid
+        $This.Name       = $Node.Name
+        $This.Type       = Switch -Regex ($Node.GetType().Name)
+        {
+            "NewVmControllerNodeHost"     { "Host"     }
+            "NewVmControllerNodeTemplate" { "Template" }
+        }
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Slot>"
+    }
+}
+
+Class NewVmControllerNodeScriptBlockLine
+{
+    [UInt32] $Index
+    [String]  $Line
+    NewVmControllerNodeScriptBlockLine([UInt32]$Index,[String]$Line)
+    {
+        $This.Index = $Index
+        $This.Line  = $Line
+    }
+    [String] ToString()
+    {
+        Return $This.Line
+    }
+}
+
+Class NewVmControllerNodeScriptBlockItem
+{
+    [UInt32]       $Index
+    [UInt32]       $Phase
+    [String]        $Name
+    [String] $DisplayName
+    [Object]     $Content
+    [UInt32]    $Complete
+    NewVmControllerNodeScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
+    {
+        $This.Index       = $Index
+        $This.Phase       = $Phase
+        $This.Name        = $Name
+        $This.DisplayName = $DisplayName
+        
+        $This.Load($Content)
+    }
+    Clear()
+    {
+        $This.Content     = @( )
+    }
+    Load([String[]]$Content)
+    {
+        $This.Clear()
+        $This.Add("# $($This.DisplayName)")
+
+        ForEach ($Line in $Content)
+        {
+            $This.Add($Line)
+        }
+
+        $This.Add('')
+    }
+    [Object] NewVmControllerNodeScriptBlockLine([UInt32]$Index,[String]$Line)
+    {
+        Return [NewVmControllerNodeScriptBlockLine]::New($Index,$Line)
+    }
+    Add([String]$Line)
+    {
+        $This.Content += $This.NewVmControllerNodeScriptBlockLine($This.Content.Count,$Line)
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.ScriptBlock.Item>"
+    }
+}
+
+Class NewVmControllerNodeScriptBlockController
+{
+    [UInt32] $Selected
+    [UInt32]    $Count
+    [Object]   $Output
+    NewVmControllerNodeScriptBlockController()
+    {
+        $This.Clear()
+    }
+    Clear()
+    {
+        $This.Output = @( )
+        $This.Count  = 0
+    }
+    Reset()
+    {
+        ForEach ($Item in $This.Output)
+        {
+            $Item.Complete = 0
+        }
+
+        $This.Selected = 0
+    }
+    [Object] NewVmControllerNodeScriptBlockItem([UInt32]$Index,[UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
+    {
+        Return [NewVmControllerNodeScriptBlockItem]::New($Index,$Phase,$Name,$DisplayName,$Content)
+    }
+    Add([String]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
+    {
+        $This.Output += $This.NewVmController.NodeScriptBlockItem($This.Output.Count,$Phase,$Name,$DisplayName,$Content)
+        $This.Count   = $This.Output.Count
+    }
+    Select([UInt32]$Index)
+    {
+        If ($Index -gt $This.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $This.Selected = $Index
+    }
+    [Object] Current()
+    {
+        Return $This.Output[$This.Selected] 
+    }
+    [Object] Get([String]$Name)
+    {
+        Return $This.Output | ? Name -eq $Name
+    }
+    [Object] Get([UInt32]$Index)
+    {
+        Return $This.Output | ? Index -eq $Index
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.ScriptBlock.Controller>"
+    }
+}
+
+Class NewVmControllerNodePropertyItem
+{
+    [UInt32] $Index
+    [String]  $Name
+    [Object] $Value
+    NewVmControllerNodePropertyItem([UInt32]$Index,[Object]$Property)
+    {
+        $This.Index = $Index
+        $This.Name  = $Property.Name
+        $This.Value = $Property.Value
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Property.Item>"
+    }
+}
+
+Class NewVmControllerNodePropertyList
+{
+    [String]   $Name
+    [UInt32]  $Count
+    [Object] $Output
+    NewVmControllerNodePropertyList()
+    {
+        $This.Name = "Node.Property.List"
+        $This.Clear()
+    }
+    Clear()
+    {
+        $This.Output = @( )
+    }
+    [Object] NewVmControllerNodeVmNodePropertyItem([UInt32]$Index,[Object]$Property)
+    {
+        Return [NewVmControllerNodePropertyItem]::New($Index,$Property)
+    }
+    Add([Object]$Property)
+    {
+        $This.Output += $This.NewVmControllerNodePropertyItem($This.Output.Count,$Property)
+        $This.Count   = $This.Output.Count
+    }
+    [String] ToString()
+    {
+        Return "({0}) <FEModule.NewVmController.Node.Property.List>" -f $This.Count
+    }
+}
+
+Class NewVmControllerNodeCheckpoint
+{
+    Hidden [Object] $Checkpoint
+    [UInt32]             $Index
+    [String]              $Name
+    [String]              $Type
+    [DateTime]            $Time
+    NewVmControllerNodeCheckPoint([UInt32]$Index,[Object]$Checkpoint)
+    {
+        $This.Checkpoint = $Checkpoint
+        $This.Index      = $Index
+        $This.Name       = $Checkpoint.Name
+        $This.Type       = $Checkpoint.SnapshotType
+        $This.Time       = $Checkpoint.CreationTime
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Checkpoint>"
+    }
+}
+
+Class NewVmControllerNodeNetwork
+{
+    [String]    $Domain
+    [String]   $NetBios
+    [String] $IPAddress
+    [String]   $Network
+    [String] $Broadcast
+    [String]   $Trusted
+    [UInt32]    $Prefix
+    [String]   $Netmask
+    [String]   $Gateway
+    [String[]]     $Dns
+    [Object]      $Dhcp
+    [UInt32]  $Transmit
+    NewVmControllerNodeNetwork([Object]$Node)
+    {
+        $This.Domain    = $Node.Domain
+        $This.NetBios   = $Node.NetBios
+        $This.IPAddress = $Node.IpAddress
+        $This.Network   = $Node.Dhcp.Network
+        $This.Broadcast = $Node.Dhcp.Broadcast
+        $This.Trusted   = $Node.Trusted
+        $This.Prefix    = $Node.Prefix
+        $This.Netmask   = $Node.Netmask
+        $This.Gateway   = $Node.Gateway
+        $This.Dns       = $Node.Dns
+        $This.Dhcp      = $Node.Dhcp
+        $This.Transmit  = @(13000,$Node.Transmit)[!!$Node.Transmit]
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Network>"
+    }
+}
+
+Class NewVmControllerNodeObject
+{
+    Hidden [Object]   $Object
+    Hidden [UInt32]     $Mode
+    [Object]         $Console
+    [Object]            $Name
+    [Object]            $Role
+    [Object]            $Guid
+    [Object]            $Path
+    [Object]          $Memory
+    [Object]         $VhdSize
+    [Object]             $Vhd
+    [Object]      $Generation
+    [UInt32]            $Core
+    [Object]          $Switch
+    [Object]        $Firmware
+    [UInt32]          $Exists
+    [Object]         $Account
+    [Object]         $Network
+    [Object]           $Image
+    [Object]          $Script
+    [Object]      $Checkpoint
+    Hidden [Object] $Security
+    Hidden [Object] $Property
+    Hidden [Object]  $Control
+    Hidden [Object] $Keyboard
+    NewVmControllerNodeObject([Object]$Node)
+    {
+        # Meant to build a new VM
+        $This.Mode       = 1
+        $This.Name       = $Node.Name
+        $This.Role       = $Node.Role
+
+        $This.StartConsole()
+        [Void]$This.Get()
+
+        Switch ($This.Exists)
+        {
+            0
+            {
+                $This.Guid       = $Node.Guid
+                $This.Path       = "{0}\{1}" -f $Node.Root, $Node.Name
+                $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Node.Root, $Node.Name
+                $This.Memory     = $This.NewVmControllerNodeByteSize("Memory",$Node.Memory.Bytes)
+                $This.VhdSize    = $This.NewVmControllerNodeByteSize("Hdd",$Node.Hdd.Bytes)
+                $This.Generation = $Node.Gen
+                $This.Core       = $Node.Core
+                $This.Switch     = @($Node.Network.Switch)
+            }
+            1
+            {
+                $This.Memory     = $This.NewVmControllerNodeByteSize("Ram",$This.Object.MemoryStartup)
+                $This.Path       = $This.Object.Path
+                $xVhd            = Get-Vhd $This.Object.HardDrives[0].Path
+                $This.Vhd        = @($xVhd.Path,$xVhd.ParentPath)[!!$xVhd.ParentPath]
+                $This.VhdSize    = $xVhd.Size
+                $This.Generation = $This.Object.Generation
+                $This.Core       = $This.Object.ProcessorCount
+                $This.Switch     = @($This.Object.NetworkAdapters.SwitchName)
+            }
+        }
+
+        $This.Account    = $Node.Account
+        $This.Network    = $Node.Network
+        $This.Image      = $Node.Image
+        $This.Script     = $This.NewVmControllerNodeScriptBlockController()
+        $This.Security   = $This.NewVmControllerNodeSecurity()
+    }
+    StartConsole()
+    {
+        # Instantiates and initializes the console
+        $This.Console = New-FEConsole
+        $This.Console.Initialize()
+        $This.Status()
+    }
+    Status()
+    {
+        # If enabled, shows the last item added to the console
+        If ($This.Mode -gt 0)
+        {
+            [Console]::WriteLine($This.Console.Last())
+        }
+    }
+    Update([Int32]$State,[String]$Status)
+    {
+        # Updates the console
+        $This.Console.Update($State,$Status)
+        $This.Status()
+    }
+    Error([String]$Status)
+    {
+        $This.Console.Update(-1,$Status)
+    }
+    DumpConsole()
+    {
+        $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
+        $This.Update(100,"[+] Dumping console: [$xPath]")
+        $This.Console.Finalize()
+        
+        $Value = $This.Console.Output | % ToString
+
+        [System.IO.File]::WriteAllLines($xPath,$Value)
+    }
+    [String] LogPath()
+    {
+        $xPath = $This.ProgramData()
+
+        ForEach ($Folder in $This.Author(), "Logs")
+        {
+            $xPath = $xPath, $Folder -join "\"
+            If (![System.IO.Directory]::Exists($xPath))
+            {
+                [System.IO.Directory]::CreateDirectory($xPath)
+            }
+        }
+
+        Return $xPath
+    }
+    [String] Now()
+    {
+        Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+    }
+    [Object] Wmi([String]$Type)
+    {
+        Return Get-WmiObject $Type -Namespace Root\Virtualization\V2
+    }
+    [Object] NewVmControllerNodeByteSize([String]$Name,[UInt64]$Bytes)
+    {
+        Return [NewVmControllerNodeByteSize]::New($Name,$Bytes)
+    }
+    [Object] NewVmControllerNodeNetwork([Object]$Node)
+    {
+        Return [NewVmControllerNodeNetwork]::New($Node)
+    }
+    [Object] NewVmControllerNodeCheckPoint([UInt32]$Index,[Object]$Checkpoint)
+    {
+        Return [NewVmControllerNodeCheckPoint]::New($Index,$Checkpoint)
+    }
+    [Object] NewVmControllerNodePropertyList()
+    {
+        Return [NewVmControllerNodePropertyList]::New()
+    }
+    [Object] NewVmControllerNodeScriptBlockController()
+    {
+        Return [NewVmControllerNodeScriptBlockController]::New()
+    }
+    [Object] NewVmControllerNodeSecurity()
+    {
+        Return [NewVmControllerNodeSecurity]::New($This.Name)
+    }
+    [Object] Get()
+    {
+        $This.Object   = Get-VM -Name $This.Name -EA 0
+        $This.Exists   = $This.Object.Count -gt 0
+        $This.Guid     = @($Null,$This.Object.Id)[$This.Exists]
+
+        Return @($Null,$This.Object)[$This.Exists]
+    }
+    [String] Hostname()
+    {
+        Return [Environment]::MachineName
+    }
+    [String] ProgramData()
+    {
+        Return [Environment]::GetEnvironmentVariable("ProgramData")
+    }
+    [String] Author()
+    {
+        Return "Secure Digits Plus LLC"
+    }
+    [String] GuestName()
+    {
+        Return $This.Network.Hostname()
+    }
+    Connect()
+    {
+        $This.Update(0,"[~] Connecting : $($This.Name)")
+        $Splat           = @{
+
+            Filepath     = "vmconnect"
+            ArgumentList = @($This.Hostname(),$This.Name)
+            Verbose      = $True
+            PassThru     = $True
+        }
+
+        Start-Process @Splat
+    }
+    New()
+    {
+        $Null = $This.Get()
+        If ($This.Exists -ne 0)
+        {
+            $This.Error("[!] Exists : $($This.Name)")
+        }
+
+        $Splat                = @{
+
+            Name               = $This.Name
+            MemoryStartupBytes = $This.Memory.Bytes
+            Path               = $This.Path
+            NewVhdPath         = $This.Vhd
+            NewVhdSizeBytes    = $This.VhdSize.Bytes
+            Generation         = $This.Generation
+            SwitchName         = $This.Switch[0]
+        }
+
+        $This.Update(0,"[~] Creating : $($This.Name)")
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { New-VM @Splat }
+            2       { New-VM @Splat -Verbose }
+        }
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Set-VMMemory -VmName $This.Name -DynamicMemoryEnabled 0 }
+            2       { Set-VMMemory -VmName $This.Name -DynamicMemoryEnabled 0 -Verbose }
+        }
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Enable-VmResourceMetering -VmName $This.Name }
+            2       { Enable-VmResourceMetering -VmName $This.Name -Verbose }
+        }
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Set-Vm -Name $This.Name -CheckpointType Standard } 
+            2       { Set-Vm -Name $This.Name -CheckpointType Standard -Verbose -EA 0 } 
+        }
+
+        $Item                  = $This.Get()
+        $This.Firmware         = $This.GetVmFirmware()
+        $This.SetVMProcessor()
+        $This.Security.Refresh()
+
+        $This.Script           = $This.NewVmControllerNodeScriptBlockController()
+        $This.Property         = $This.NewVmControllerNodePropertyList()
+
+        ForEach ($Property in $Item.PSObject.Properties)
+        {
+            $This.Property.Add($Property)
+        }
+    }
+    Start()
+    {
+        $Vm = $This.Get()
+        If (!$Vm)
+        {
+            $This.Error("[!] Exception : $($This.Name) [does not exist]")
+        }
+        
+        ElseIf ($Vm.State -eq "Running")
+        {
+            $This.Error("[!] Exception : $($This.Name) [already started]")
+        }
+
+        Else
+        {
+            $This.Update(1,"[~] Starting : $($This.Name)")
+
+            # Verbosity level
+            Switch ($This.Mode) 
+            { 
+                Default { $Vm | Start-VM }
+                2       { $Vm | Start-VM -Verbose }
+            }
+        }
+    }
+    Stop()
+    {
+        [Void]$This.Get()
+        If (!$This.Object)
+        {
+            $This.Error("[!] Exception : $($This.Name) [does not exist]")
+        }
+
+        ElseIf ($This.Object.State -ne "Running")
+        {
+            $This.Error("[!] Exception : $($This.Name) [not running]")
+        }
+
+        Else
+        {
+            $This.Update(0,"[~] Stopping : $($This.Name)")
+        
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { $This.Get() | ? State -ne Off | Stop-VM -Force }
+                2       { $This.Get() | ? State -ne Off | Stop-VM -Force -Verbose }
+            }
+        }
+    }
+    Reset()
+    {
+        $Vm = $This.Get()
+        If (!$Vm)
+        {
+            $This.Error("[!] Exception : $($This.Name) [does not exist]")
+        }
+
+        ElseIf ($Vm.State -ne "Running")
+        {
+            $This.Error("[!] Exception : $($This.Name) [not running]")
+        }
+
+        Else
+        {
+            $This.Update(0,"[~] Restarting : $($This.Name)")
+            $This.Stop()
+            $This.Start()
+            $This.Idle(5,5)
+        }
+    }
+    Remove()
+    {
+        $Vm = $This.Get()
+        If (!$Vm)
+        {
+            $This.Error("[!] Exception : $($This.Name) [does not exist]")
+        }
+
+        $This.Update(0,"[~] Removing : $($This.Name)")
+
+        If ($Vm.State -ne "Off")
+        {
+            $This.Update(0,"[~] State : $($This.Name) [attempting shutdown]")
+            Switch -Regex ($Vm.State)
+            {
+                "(^Paused$|^Saved$)"
+                { 
+                    $This.Start()
+                    Do
+                    {
+                        Start-Sleep 1
+                    }
+                    Until ($This.Get().State -eq "Running")
+                }
+            }
+
+            $This.Stop()
+            Do
+            {
+                Start-Sleep 1
+            }
+            Until ($This.Get().State -eq "Off")
+        }
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { $This.Get() | Remove-VM -Confirm:$False -Force -EA 0 } 
+            2       { $This.Get() | Remove-VM -Confirm:$False -Force -Verbose -EA 0 } 
+        }
+        
+        $This.Firmware         = $Null
+        $This.Exists           = 0
+
+        $This.Update(0,"[~] Vhd  : [$($This.Vhd)]")
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Remove-Item $This.Vhd -Confirm:$False -Force -EA 0 } 
+            2       { Remove-Item $This.Vhd -Confirm:$False -Force -Verbose -EA 0 } 
+        }
+        
+        $This.Update(0,"[~] Path : [$($This.Path)]")
+        ForEach ($Item in Get-ChildItem $This.Path -Recurse | Sort-Object -Descending)
+        {
+            $This.Update(0,"[~] $($Item.Fullname)")
+
+            # Verbosity level
+            Switch ($This.Mode)
+            { 
+                Default { Remove-Item $Item.Fullname -Confirm:$False -EA 0 } 
+                2       { Remove-Item $Item.Fullname -Confirm:$False -Verbose -EA 0 } 
+            }
+        }
+
+        $Parent = Split-Path $This.Path -Parent
+        $Leaf   = Split-Path $Parent -Leaf
+        If ($Leaf -eq $This.Name)
+        {
+            $This.Update(0,"[~] $($Item.Fullname)")
+
+            # Verbosity level
+            Switch ($This.Mode)
+            { 
+                Default { Remove-Item $Parent -Recurse -Confirm:$False -EA 0 } 
+                2       { Remove-Item $Parent -Recurse -Confirm:$False -Verbose -EA 0 } 
+            }
+        }
+
+        $This.Update(1,"[ ] Removed : $($Item.Fullname)")
+
+        $This.DumpConsole()
+    }
+    GetCheckpoint()
+    {
+        $This.Update(0,"[~] Getting Checkpoint(s)")
+
+        $This.Checkpoint = @( )
+        $List            = Switch ($This.Mode)
+        { 
+            Default { Get-VmCheckpoint -VMName $This.Name -EA 0 } 
+            2       { Get-VmCheckpoint -VMName $This.Name -Verbose -EA 0 } 
+        }
+        
+        If ($List.Count -gt 0)
+        {
+            ForEach ($Item in $List)
+            {
+                $This.Checkpoint += $This.VmCheckpoint($This.Checkpoint.Count,$Item)
+            }
+        }
+    }
+    NewCheckpoint()
+    {
+        $ID = "{0}-{1}" -f $This.Name, $This.Now()
+        $This.Update(0,"[~] New Checkpoint [$ID]")
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { $This.Get() | Checkpoint-Vm -SnapshotName $ID }
+            2       { $This.Get() | Checkpoint-Vm -SnapshotName $ID -Verbose -EA 0 } 
+        }
+
+        $This.GetCheckpoint()
+    }
+    RestoreCheckpoint([UInt32]$Index)
+    {
+        If ($Index -gt $This.Checkpoint.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $Item = $This.Checkpoint[$Index]
+
+        $This.Update(0,"[~] Restoring Checkpoint [$($Item.Name)]")
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Restore-VMCheckpoint -Name $Item.Name -VMName $This.Name -Confirm:0 -EA 0 }
+            2       { Restore-VMCheckpoint -Name $Item.Name -VMName $This.Name -Confirm:0 -Verbose -EA 0 } 
+        }
+    }
+    RestoreCheckpoint([String]$String)
+    {
+        $Item = $This.Checkpoint | ? Name -match $String
+
+        If (!$Item)
+        {
+            Throw "Invalid entry"
+        }
+        ElseIf ($Item.Count -gt 1)
+        {
+            $This.Update(0,"[!] Multiple entries detected, select index or limit search string")
+
+            $D = (([String[]]$Item.Index) | Sort-Object Length)[-1].Length
+            $Item | % {
+
+                $Line = "({0:d$D}) [{1}]: {2}" -f $_.Index, $_.Time.ToString("MM-dd-yyyy HH:mm:ss"), $_.Name
+                [Console]::WriteLine($Line)
+            }
+        }
+        Else
+        {
+            $This.RestoreCheckpoint($Item.Index)
+        }
+    }
+    RemoveCheckpoint([UInt32]$Index)
+    {
+        If ($Index -gt $This.Checkpoint.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $Item = $This.Checkpoint[$Index]
+
+        $This.Update(0,"[~] Removing Checkpoint [$($Item.Name)]")
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Remove-VMCheckpoint -Name $Item.Name -VMName $This.Name -Confirm:0 -EA 0 }
+            2       { Remove-VMCheckpoint -Name $Item.Name -VMName $This.Name -Confirm:0 -Verbose -EA 0 } 
+        }
+
+        $This.GetCheckpoint()
+    }
+    [Object] Measure()
+    {
+        If (!$This.Exists)
+        {
+            Throw "Cannot measure a virtual machine when it does not exist"
+        }
+
+        Return Measure-Vm -Name $This.Name
+    }
+    [String] GetRegistryPath()
+    {
+        Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+    }
+    [Object] GetVmFirmware()
+    {
+        $This.Update(0,"[~] Getting VmFirmware : $($This.Name)")
+        $Item = Switch ($This.Generation) 
+        { 
+            1
+            {
+                # Verbosity level
+                Switch ($This.Mode)
+                { 
+                    Default { Get-VmBios -VmName $This.Name } 
+                    2       { Get-VmBios -VmName $This.Name -Verbose } 
+                }
+            }
+            2 
+            {
+                # Verbosity level
+                Switch ($This.Mode)
+                {
+                    Default { Get-VmFirmware -VmName $This.Name }
+                    2       { Get-VmFirmware -VmName $This.Name -Verbose }
+                }
+            } 
+        }
+
+        Return $Item
+    }
+    [Object] GetVmDvdDrive()
+    {
+        $This.Update(0,"[~] Getting VmDvdDrive : $($This.Name)")
+        $Item = Switch ($This.Mode)
+        { 
+            Default { Get-VmDvdDrive -VmName $This.Name } 
+            2       { Get-VmDvdDrive -VmName $This.Name -Verbose } 
+        }
+
+        Return $Item
+    }
+    SetVmProcessor()
+    {
+        $This.Update(0,"[~] Setting VmProcessor (Count): [$($This.Core)]")
+        
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Set-VmProcessor -VMName $This.Name -Count $This.Core }
+            2       { Set-VmProcessor -VMName $This.Name -Count $This.Core -Verbose }
+        }
+    }
+    SetVmDvdDrive([String]$Path)
+    {
+        If (![System.IO.File]::Exists($Path))
+        {
+            $This.Error("[!] Invalid path : [$Path]")
+        }
+
+        $This.Update(0,"[~] Setting VmDvdDrive (Path): [$Path]")
+
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Set-VmDvdDrive -VMName $This.Name -Path $Path } 
+            2       { Set-VmDvdDrive -VMName $This.Name -Path $Path -Verbose }
+        }
+    }
+    SetVmBootOrder([UInt32]$1,[UInt32]$2,[UInt32]$3)
+    {
+        $This.Update(0,"[~] Setting VmFirmware (Boot order) : [$1,$2,$3]")
+
+        $Fw = $This.GetVmFirmware()
+            
+        # Verbosity level
+        Switch ($This.Mode) 
+        { 
+            Default { Set-VMFirmware -VMName $This.Name -BootOrder $Fw.BootOrder[$1,$2,$3] } 
+            2       { Set-VMFirmware -VMName $This.Name -BootOrder $Fw.BootOrder[$1,$2,$3] -Verbose } 
+        }
+    }
+    SetVmSecureBoot([String]$Template)
+    {
+        $This.Update(0,"[~] Setting VmFirmware (Secure Boot) On, $Template")
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Set-VMFirmware -VMName $This.Name -EnableSecureBoot On -SecureBootTemplate $Template }
+            2       { Set-VMFirmware -VMName $This.Name -EnableSecureBoot On -SecureBootTemplate $Template -Verbose }
+        }
+    }
+    AddVmDvdDrive()
+    {
+        $This.Update(0,"[+] Adding VmDvdDrive")
+
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Add-VmDvdDrive -VMName $This.Name }
+            2       { Add-VmDvdDrive -VMName $This.Name -Verbose }
+        }
+    }
+    AddVmNetworkAdapter([String]$SwitchName,[String]$Name)
+    {
+        $This.Update(0,"[+] Adding VmNetworkAdapter")
+
+        # Verbosity level
+
+        $Splat = @{ 
+
+            VmName     = $This.name
+            SwitchName = $SwitchName
+            Name       = $Name
+        }
+
+        Switch ($This.Mode)
+        {
+            Default { Add-VMNetworkAdapter @Splat }
+            2       { Add-VMNetworkAdapter @Splat -Verbose }
+        }
+    }
+    LoadIso()
+    {
+        $Item = $This.GetVmDvdDrive()
+        If (!$Item.Path -or $Item.Path -ne $This.Image.File.Fullname)
+        {
+            $This.LoadIso($This.Image.File.Fullname)
+        }
+    }
+    LoadIso([String]$Path)
+    {
+        If (![System.IO.File]::Exists($Path))
+        {
+            $This.Error("[!] Invalid ISO path : [$Path]")
+        }
+
+        Else
+        {
+            $This.SetVmDvdDrive($Path)
+        }
+    }
+    UnloadIso()
+    {
+        $This.Update(0,"[+] Unloading ISO")
+        
+        # Verbosity level
+        Switch ($This.Mode)
+        {
+            Default { Set-VmDvdDrive -VMName $This.Name -Path $Null }
+            2       { Set-VmDvdDrive -VMName $This.Name -Path $Null -Verbose }
+        }
+    }
+    SetIsoBoot()
+    {
+        If ($This.Generation -eq 2)
+        {
+            $This.SetVmBootOrder(2,0,1)
+        }
+    }
+    [String[]] GetMacAddress()
+    {
+        $String = $This.Get().NetworkAdapters[0].MacAddress
+        $Mac    = ForEach ($X in 0,2,4,6,8,10)
+        {
+            $String.Substring($X,2)
+        }
+
+        Return $Mac -join "-"
+    }
+    KeyEntry([Char]$Char)
+    {
+        $Int = [UInt32]$Char
+            
+        If ($Int -in @(33..38+40..43+58+60+62..90+94+95+123..126))
+        {
+            Switch ($Int)
+            {
+                {$_ -in 65..90}
+                {
+                    # Lowercase
+                    $Int = [UInt32][Char]([String]$Char).ToUpper()
+                }
+                {$_ -in 33,64,35,36,37,38,40,41,94,42}
+                {
+                    # Shift+number symbols
+                    $Int = Switch ($Int)
+                    {
+                        33  { 49 } 64  { 50 } 35  { 51 }
+                        36  { 52 } 37  { 53 } 94  { 54 }
+                        38  { 55 } 42  { 56 } 40  { 57 }
+                        41  { 48 }
+                    }
+                }
+                {$_ -in 58,43,60,95,62,63,126,123,124,125,34}
+                {
+                    # Non-number symbols
+                    $Int = Switch ($Int)
+                    {
+                        58  { 186 } 43  { 187 } 60  { 188 } 
+                        95  { 189 } 62  { 190 } 63  { 191 } 
+                        126 { 192 } 123 { 219 } 124 { 220 } 
+                        125 { 221 } 34  { 222 }
+                    }
+                }
+            }
+
+            [Void]$This.Keyboard.PressKey(16)
+            Start-Sleep -Milliseconds 10
+            
+            [Void]$This.Keyboard.TypeKey($Int)
+            Start-Sleep -Milliseconds 10
+
+            [Void]$This.Keyboard.ReleaseKey(16)
+            Start-Sleep -Milliseconds 10
+        }
+        Else
+        {
+            Switch ($Int)
+            {
+                {$_ -in 97..122} # Lowercase
+                {
+                    $Int = [UInt32][Char]([String]$Char).ToUpper()
+                }
+                {$_ -in 48..57} # Numbers
+                {
+                    $Int = [UInt32][Char]$Char
+                }
+                {$_ -in 32,59,61,44,45,46,47,96,91,92,93,39}
+                {
+                    $Int = Switch ($Int)
+                    {
+                        32  {  32 } 59  { 186 } 61  { 187 } 
+                        44  { 188 } 45  { 189 } 46  { 190 }
+                        47  { 191 } 96  { 192 } 91  { 219 }
+                        92  { 220 } 93  { 221 } 39  { 222 }
+                    }
+                }
+            }
+
+            [Void]$This.Keyboard.TypeKey($Int)
+            Start-Sleep -Milliseconds 30
+        }
+    }
+    LineEntry([String]$String)
+    {
+        ForEach ($Char in [Char[]]$String)
+        {
+            $This.KeyEntry($Char)
+        }
+    }
+    TypeKey([UInt32]$Index)
+    {
+        $This.Update(0,"[+] Typing key : [$Index]")
+        $This.Keyboard.TypeKey($Index)
+        Start-Sleep -Milliseconds 125
+    }
+    PressKey([UInt32]$Index)
+    {
+        $This.Update(0,"[+] Pressing key : [$Index]")
+        $This.Keyboard.PressKey($Index)
+    }
+    ReleaseKey([UInt32]$Index)
+    {
+        $This.Update(0,"[+] Releasing key : [$Index]")
+        $This.Keyboard.ReleaseKey($Index)
+    }
+    SpecialKey([UInt32]$Index)
+    {
+        $This.Update(0,"[+] Special key : [$Index]")
+        $This.Keyboard.PressKey(18)
+        $This.Keyboard.TypeKey($Index)
+        $This.Keyboard.ReleaseKey(18)
+    }
+    ShiftKey([UInt32[]]$Index)
+    {
+        $This.Update(0,"[+] Shift key : [$Index]")
+        $This.Keyboard.PressKey(16)
+        ForEach ($X in $Index)
+        {
+            $This.Keyboard.TypeKey($X)
+        }
+        $This.Keyboard.ReleaseKey(16)
+    }
+    AltKey([UInt32[]]$Index)
+    {
+        $This.Update(0,"[+] Alt key : [$Index]")
+        $This.Keyboard.PressKey(16)
+        ForEach ($X in $Index)
+        {
+            $This.Keyboard.TypeKey($X)
+        }
+        $This.Keyboard.ReleaseKey(16)
+    }
+    CtrlKey([UInt32[]]$Index)
+    {
+        $This.Update(0,"[+] Ctrl key : [$Index]")
+        $This.Keyboard.PressKey(18)
+        ForEach ($X in $Index)
+        {
+            $This.Keyboard.TypeKey($X)
+        }
+        $This.Keyboard.ReleaseKey(18)
+    }
+    WinKey([UInt32[]]$Index)
+    {
+        $This.Update(0,"[+] Win key : [$Index]")
+        $This.Keyboard.PressKey(91)
+        ForEach ($X in $Index)
+        {
+            $This.Keyboard.TypeKey($X)
+        }
+        $This.Keyboard.ReleaseKey(91)
+    }
+    TypeCtrlAltDel()
+    {
+        $This.Update(0,"[+] Typing (CTRL + ALT + DEL)")
+        $This.Keyboard.TypeCtrlAltDel()
+    }
+    TypeChain([UInt32[]]$Array)
+    {
+        ForEach ($Key in $Array)
+        {
+            $This.TypeKey($Key)
+            Start-Sleep -Milliseconds 125
+        }
+    }
+    TypeLine([String]$String)
+    {
+        $This.Update(0,"[+] Typing line")
+        $This.LineEntry($String)
+    }
+    TypeText([String]$String)
+    {
+        $This.Update(0,"[+] Typing text : [$String]")
+        $This.LineEntry($String)
+    }
+    TypeMask([String]$String)
+    {
+        $This.Update(0,"[+] Typing text : [<Masked>]")
+        $This.LineEntry($String)
+    }
+    TypePassword([Object]$Account)
+    {
+        $This.Update(0,"[+] Typing password : [<Password>]")
+        $This.LineEntry($Account.Password())
+        Start-Sleep -Milliseconds 125
+    }
+    Idle([UInt32]$Percent,[UInt32]$Seconds)
+    {
+        $This.Update(0,"[~] Idle : $($This.Name) [CPU <= $Percent% for $Seconds second(s)]")
+        
+        $C = 0
+        Do
+        {
+            Switch ([UInt32]($This.Get().CpuUsage -le $Percent))
+            {
+                0 { $C = 0 } 1 { $C ++ }
+            }
+
+            Start-Sleep -Seconds 1
+        }
+        Until ($C -ge $Seconds)
+
+        $This.Update(1,"[+] Idle complete")
+    }
+    Uptime([UInt32]$Mode,[UInt32]$Seconds)
+    {
+        $Mark = @("<=",">=")[$Mode]
+        $Flag = 0
+        $This.Update(0,"[~] Uptime : $($This.Name) [Uptime $Mark $Seconds second(s)]")
+        Do
+        {
+            Start-Sleep -Seconds 1
+            $Uptime        = $This.Get().Uptime.TotalSeconds
+            [UInt32] $Flag = Switch ($Mode) { 0 { $Uptime -le $Seconds } 1 { $Uptime -ge $Seconds } }
+        }
+        Until ($Flag)
+        $This.Update(1,"[+] Uptime complete")
+    }
+    Timer([UInt32]$Seconds)
+    {
+        $This.Update(0,"[~] Timer : $($This.Name) [Span = $Seconds]")
+
+        $C = 0
+        Do
+        {
+            Start-Sleep -Seconds 1
+            $C ++
+        }
+        Until ($C -ge $Seconds)
+
+        $This.Update(1,"[+] Timer")
+    }
+    Connection()
+    {
+        $This.Update(0,"[~] Connection : $($This.Name) [Await response]")
+
+        Do
+        {
+            Start-Sleep 1
+        }
+        Until (Test-Connection $This.Network.IpAddress -EA 0)
+
+        $This.Update(1,"[+] Connection")
+    }
+    [Void] AddScript([UInt32]$Phase,[String]$Name,[String]$DisplayName,[String[]]$Content)
+    {
+        $This.Script.Add($Phase,$Name,$DisplayName,$Content)
+        $This.Update(0,"[+] Added (Script) : $Name")
+    }
+    [Object] GetScript([UInt32]$Index)
+    {
+        $Item = $This.Script.Get($Index)
+        If (!$Item)
+        {
+            $This.Error("[!] Invalid index")
+        }
+        
+        Return $Item
+    }
+    [Object] GetScript([String]$Name)
+    {
+        $Item = $This.Script.Get($Name)
+        If (!$Item)
+        {
+            $This.Error("[!] Invalid name")
+        }
+        
+        Return $Item
+    }
+    [Void] RunScript()
+    {
+        $Current = $This.Script.Current()
+
+        If ($Current.Complete -eq 1)
+        {
+            $This.Error("[!] Exception (Script) : [$($Current.Name)] already completed")
+        }
+
+        $This.Update(0,"[~] Running (Script) : [$($Current.Name)]")
+
+        ForEach ($Line in $Current.Content)
+        {
+            Switch -Regex ($Line)
+            {
+                "^\<Idle\[\d+\,\d+\]\>$"
+                {
+                    $X = [Regex]::Matches($Line,"\d+").Value
+                    $This.Idle($X[0],$X[1])
+                }
+                "^\<Uptime\[\d+\,\d+\]\>$"
+                {
+                    $X = [Regex]::Matches($Line,"\d+").Value
+                    $This.Uptime($X[0],$X[1])
+                }
+                "^\<Timer\[\d+\]\>$"
+                {
+                    $X = [Regex]::Matches($Line,"\d+").Value
+                    $This.Timer($X)
+                }
+                "^\<Pass\[.+\]\>$"
+                {
+                    $Line = $Matches[0].Substring(6).TrimEnd(">").TrimEnd("]")
+                    $This.TypeMask($Line)
+                    $This.TypeKey(13)
+                }
+                "^$"
+                {
+                    $This.Idle(5,2)
+                }
+                Default
+                {
+                    $This.TypeLine($Line)
+                    $This.TypeKey(13)
+                }
+            }
+        }
+
+        $This.Update(1,"[+] Complete (Script) : [$($Current.Name)]")
+
+        $Current.Complete = 1
+        $This.Script.Selected ++
+    }
+    [Void] TransmitScript()
+    {
+        $Current    = $This.Script.Current()
+
+        If ($Current.Complete -eq 1)
+        {
+            $This.Error("[!] Exception (Script) : [$($Current.Name)] already completed")
+        }
+
+        $This.Update(0,"[~] Transmitting (Script) : [$($Current.Name)]")
+
+        $Content = ForEach ($Line in $Current.Content.Line)
+        {
+            Switch -Regex ($Line)
+            {
+                "^\<Idle\[\d+\,\d+\]\>$"
+                {
+                    $Null
+                }
+                "^\<Uptime\[\d+\,\d+\]\>$"
+                {
+                    $Null
+                }
+                "^\<Timer\[\d+\]\>$"
+                {
+                    $Null
+                }
+                "^\<Pass\[.+\]\>$"
+                {
+                    $Null
+                }
+                "^$"
+                {
+                    $Null
+                }
+                Default
+                {
+                    $Line
+                }
+            }
+        }
+
+        $Source     = $This.Network.IpAddress
+        $Port       = $This.Network.Transmit
+
+        $Command    = @("`$Script = Start-TcpSession -Server -Source $Source -Port $Port",
+                        '$Script.Initialize()')
+
+        ForEach ($Item in $Command)
+        {
+            $This.TypeLine($Item)
+            $This.TypeKey(13)
+        }
+
+        Start-TcpSession -Client -Source $Source -Port $Port -Content $Content | % Initialize
+
+        $This.TypeLine('$Script.Content.Message -join "" | Invoke-Expression')
+        $This.TypeKey(13)
+
+        $This.Update(1,"[+] Complete (Script) : [$($Current.Name)]")
+
+        $Current.Complete     ++
+        $This.Script.Selected ++
+    }
+    [Void] InitTransmitTcp()
+    {
+        $This.Update(0,"[~] Initializing [Transmission Control Script]")
+        $This.TypeLine("irm https://www.github.com/mcc85s/FightingEntropy/blob/main/Scripts/Initialize-VmNode.ps1?raw=true | iex")
+        $This.TypeKey(13)
+
+        $This.Idle(5,2)
+
+        $Line  = "`$Ctrl = Initialize-VmNode"
+        $Line += " -Index {0}"     -f 0
+        $Line += " -Name {0}"      -f $This.Name
+        $Line += " -IpAddress {0}" -f $This.Network.IpAddress
+        $Line += " -Domain {0}"    -f $This.Network.Domain
+        $Line += " -NetBios {0}"   -f $This.Network.NetBios
+        $Line += " -Trusted {0}"   -f $This.Network.Trusted
+        $Line += " -Prefix {0}"    -f $This.Network.Prefix
+        $Line += " -Netmask {0}"   -f $This.Network.Netmask
+        $Line += " -Gateway {0}"   -f $This.Network.Gateway
+        $Line += " -Dns @('{0}')"  -f ($This.Network.Dns -join "','")
+        $Line += " -Transmit {0}"  -f $This.Network.Transmit
+        $This.TypeLine($Line)
+        $This.TypeKey(13)
+        $This.Idle(5,2)
+
+        $This.TypeLine('$Ctrl.Initialize()')
+        $This.TypeKey(13)
+        $This.Idle(5,2)
+    }
+    [Void] TransmitTcp()
+    {
+        $Splat = @{ 
+
+            Source  = $This.Network.IpAddress
+            Port    = $This.Network.Transmit
+            Content = $This.Script.Output[1].Content.Line
+        }
+
+        $xScript = Start-TcpSession -Client @Splat
+        $xScript.Initialize()
+    }
+    [String] ToString()
+    {
+        Return "<FEVirtual.VmNode[Object]>"
+    }
+}
+
+Class NewVmControllerNodeWindows : NewVmControllerNodeObject
+{
+    NewVmControllerNodeWindows([Switch]$Flags,[Object]$Vm) : base($Flags,$Vm)
+    {   
+        
+    }
+    NewVmControllerNodeWindows([Object]$File) : base($File)
+    {
+
+    }
+    [UInt32] NetworkSetupMode()
+    {
+        $Arp = (arp -a) -match $This.GetMacAddress() -Split " " | ? Length -gt 0
+
+        Return !!$Arp
+    }
+    SetAdmin([Object]$Account)
+    {
+        $This.Update(0,"[~] Setting : Administrator password")
+        ForEach ($X in 0..1)
+        {
+            $This.TypePassword($Account)
+            $This.TypeKey(9)
+            Start-Sleep -Milliseconds 125
+        }
+
+        $This.TypeKey(9)
+        Start-Sleep -Milliseconds 125
+        $This.TypeKey(13)
+    }
+    Login([Object]$Account)
+    {
+        $This.Update(0,"[~] Login : [Account: $($Account.Username)")
+        $This.TypeCtrlAltDel()
+        $This.Timer(5)
+        $This.TypePassword($Account)
+        Start-Sleep -Milliseconds 125
+        $This.TypeKey(13)
+    }
+    LaunchPs()
+    {
+        # Open Start Menu
+        $This.PressKey(91)
+        $This.TypeKey(88)
+        $This.ReleaseKey(91)
+        $This.Timer(2)
+
+        Switch ($This.Role)
+        {
+            Server
+            {
+                # Open Command Prompt
+                $This.TypeKey(65)
+                $This.Timer(2)
+
+                # Maximize window
+                $This.PressKey(91)
+                $This.TypeKey(38)
+                $This.ReleaseKey(91)
+                $This.Timer(1)
+
+                # Start PowerShell
+                $This.TypeText("PowerShell")
+                $This.TypeKey(13)
+                $This.Timer(1)
+            }
+            Client
+            {
+                # // Open [PowerShell]
+                $This.TypeKey(65)
+                $This.Timer(2)
+                $This.TypeKey(37)
+                $This.Timer(2)
+                $This.TypeKey(13)
+                $This.Timer(4)
+
+                # // Maximize window
+                $This.PressKey(91)
+                $This.TypeKey(38)
+                $This.ReleaseKey(91)
+                $This.Timer(1)
+            }
+        }
+
+        # Wait for PowerShell engine to get ready for input
+        $This.Idle(5,5)
+    }
+    [String[]] Initialize()
+    {
+        # Set IP Address
+        $Content = @(
+        '$Index = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
+        '$Interface = Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $Index';
+        '$Interface | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:0 -Verbose';
+        '$Interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:0 -Verbose';
+        '$Splat = @{';
+        '    InterfaceIndex  = $Index';
+        '    AddressFamily = "IPv4"';
+        '    PrefixLength = {0}' -f $This.Network.Prefix;
+        '    ValidLifetime = [Timespan]::MaxValue';
+        '    IPAddress = "{0}"' -f $This.Network.IpAddress;
+        '    DefaultGateway = "{0}"' -f $This.Network.Gateway;
+        '}';
+        'New-NetIPAddress @Splat';
+        'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses {0} -Verbose' -f ($This.Network.Dns -join ',');
+        "`$Desc = 'Allows content to be {0} over TCP/$($This.Network.Transmit)'";
+        '$Splat = @{ ';
+        '    Description = $Desc -f "sent"';
+        '    LocalPort = {0}' -f $This.Network.Transmit;
+        '}';
+        'New-NetFirewallRule @Splat -Direction Inbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
+        '$Splat = @{';
+        '    Description = $Desc -f "received"';
+        '    RemotePort  = {0}' -f $This.Network.Transmit;
+        '}';
+        'New-NetFirewallRule @Splat -Direction Outbound -DisplayName TCPSession -Protocol TCP -Action Allow -Verbose';
+        '$Base = "https://www.github.com/mcc85s/FightingEntropy/blob/main/Version/2023.12.0"'
+        '$Url = "$Base/FightingEntropy.ps1?raw=true"';
+        'Invoke-RestMethod $Url | Invoke-Expression';
+        '$Module.Latest()')
+
+        Return $Content
+    }
+    [String[]] ImportFeModule()
+    {
+        Return 'Set-ExecutionPolicy Bypass -Scope Process -Force', 'Import-Module FightingEntropy -Force -Verbose'
+    }
+    [String[]] PrepPersistentInfo()
+    {
+        # Prepare the correct persistent information
+        $List = @( ) 
+
+        $List += '$P = @{ }'
+        ForEach ($P in @($This.Network.PSObject.Properties | ? Name -ne Dhcp))
+        { 
+            $List += Switch -Regex ($P.TypeNameOfValue)
+            {
+                Default
+                {
+                    '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
+                }
+                "\[\]"
+                {
+                    '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
+                }
+            }
+        }
+        
+        If ($This.Role -eq "Server")
+        {
+            $List += '$P.Add($P.Count,("Dhcp","$Dhcp"))'
+        }
+        
+        $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Path -Name $_[0] -Value $_[1] -Verbose }'
+
+        If ($This.Role -eq "Server")
+        {
+            $List += '$P = @{ }'
+            
+            ForEach ($P in @($This.Network.Dhcp.PSObject.Properties))
+            {
+                $List += Switch -Regex ($P.TypeNameOfValue)
+                {
+                    Default
+                    {
+                        '$P.Add($P.Count,("{0}","{1}"))' -f $P.Name, $P.Value
+                    }
+                    "\[\]"
+                    {
+                        '$P.Add($P.Count,("{0}",@([String[]]"{1}")))' -f $P.Name, ($P.Value -join "`",`"")
+                    }
+                }
+            }
+
+            $List += '$P[0..($P.Count-1)] | % { Set-ItemProperty -Path $Dhcp -Name $_[0] -Value $_[1] -Verbose }'
+        }
+
+        Return $List
+    }
+    SetPersistentInfo()
+    {
+        # [Phase 1] Set persistent information
+        $This.Script.Add(1,"SetPersistentInfo","Set persistent information",@(
+        '$Root      = "{0}"' -f $This.GetRegistryPath();
+        '$Name      = "{0}"' -f $This.Name;
+        '$Path      = "$Root\ComputerInfo"';
+        'Rename-Computer $Name -Force -EA 0';
+        'If (!(Test-Path $Root))';
+        '{';
+        '    New-Item -Path $Root -Verbose';
+        '}';
+        'New-Item -Path $Path -Verbose';
+        If ($This.Role -eq "Server")
+        {
+            '$Dhcp = "$Path\Dhcp"';
+            'New-Item $Dhcp';
+        }
+        $This.PrepPersistentInfo()))
+    }
+    SetTimeZone()
+    {
+        # [Phase 2] Set time zone
+        $This.Script.Add(2,"SetTimeZone","Set time zone",@('Set-Timezone -Name "{0}" -Verbose' -f (Get-Timezone).Id))
+    }
+    SetComputerInfo()
+    {
+        # [Phase 3] Set computer info
+        $This.Script.Add(3,"SetComputerInfo","Set computer info",@(
+        '$Item           = Get-ItemProperty "{0}\ComputerInfo"' -f $This.GetRegistryPath() 
+        '$TrustedHost    = $Item.Trusted';
+        '$IPAddress      = $Item.IpAddress';
+        '$PrefixLength   = $Item.Prefix';
+        '$DefaultGateway = $Item.Gateway';
+        '$Dns            = $Item.Dns'))
+    }
+    SetIcmpFirewall()
+    {
+        $Content = Switch ($This.Role)
+        {
+            Server
+            {
+                'Get-NetFirewallRule | ? DisplayName -match "(Printer.+IcmpV4)" | Enable-NetFirewallRule -Verbose'
+            }
+            Client
+            {
+                'Get-NetFirewallRule | ? DisplayName -match "(Printer.+IcmpV4)" | Enable-NetFirewallRule -Verbose',
+                'Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private -Verbose'
+            }
+        }
+
+        # [Phase 4] Enable IcmpV4
+        $This.Script.Add(4,"SetIcmpFirewall","Enable IcmpV4",@($Content))
+    }
+    SetInterfaceNull()
+    {
+        # [Phase 5] Get InterfaceIndex, get/remove current (IP address + Net Route)
+        $This.Script.Add(5,"SetInterfaceNull","Get InterfaceIndex, get/remove current (IP address + Net Route)",@(
+        '$Index              = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex';
+        '$Interface          = Get-NetIPAddress    -AddressFamily IPv4 -InterfaceIndex $Index';
+        '$Interface          | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:$False -Verbose';
+        '$Interface          | Remove-NetRoute     -AddressFamily IPv4 -Confirm:$False -Verbose'))
+    }
+    SetStaticIp()
+    {
+        # [Phase 6] Set static IP Address
+        $This.Script.Add(6,"SetStaticIp","Set (static IP Address + Dns server)",@(
+        '$Splat              = @{';
+        ' ';
+        '    InterfaceIndex  = $Index';
+        '    AddressFamily   = "IPv4"';
+        '    PrefixLength    = $Item.Prefix';
+        '    ValidLifetime   = [Timespan]::MaxValue';
+        '    IPAddress       = $Item.IPAddress';
+        '    DefaultGateway  = $Item.Gateway';
+        '}';
+        'New-NetIPAddress @Splat';
+        'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $Item.Dns'))
+    }
+    SetWinRm()
+    {
+        # [Phase 7] Set WinRM (Config)
+        $This.Script.Add(7,"SetWinRm","Set (WinRM Config/Self-Signed Certificate/HTTPS Listener)",@(
+        'winrm quickconfig';
+        '<Timer[2]>';
+        'y';
+        '<Timer[3]>';
+        If ($This.Role -eq "Client")
+        {
+            'y';
+            '<Timer[3]>';
+        }
+        'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $Item.Trusted';
+        '<Timer[4]>';
+        'y'))
+    }
+    SetWinRmFirewall()
+    {
+        # [Phase 8] Set WinRm (Self-Signed Certificate/HTTPS Listener/Firewall)
+        $This.Script.Add(8,"SetWinRmFirewall",'Set WinRm Firewall',@(
+        '$Cert           = New-SelfSignedCertificate -DnsName $Item.IpAddress -CertStoreLocation Cert:\LocalMachine\My';
+        '$Thumbprint     = $Cert.Thumbprint';
+        '$Hash           = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"';
+        "`$Str            = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`"";
+        'Invoke-Expression ($Str -f $Hash)'
+        '$Splat          = @{';
+        ' ';
+        '    Name        = "WinRM/HTTPS"';
+        '    DisplayName = "Windows Remote Management (HTTPS-In)"';
+        '    Direction   = "In"';
+        '    Action      = "Allow"';
+        '    Protocol    = "TCP"';
+        '    LocalPort   = 5986';
+        '}';
+        'New-NetFirewallRule @Splat -Verbose'))
+    }
+    SetRemoteDesktop()
+    {
+        # [Phase 9] Set Remote Desktop
+        $This.Script.Add(9,"SetRemoteDesktop",'Set Remote Desktop',@(
+        'Set-ItemProperty "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -Value 0';
+        'Enable-NetFirewallRule -DisplayGroup "Remote Desktop"'))
+    }
+    InstallFeModule()
+    {
+        # [Phase 10] Install [FightingEntropy()]
+        $This.Script.Add(10,"InstallFeModule","Install [FightingEntropy()]",@(
+        '[Net.ServicePointManager]::SecurityProtocol = 3072';
+        'Set-ExecutionPolicy Bypass -Scope Process -Force';
+        '$Install = "https://github.com/mcc85s/FightingEntropy/blob/main/Version/2023.8.0/FightingEntropy.ps1?raw=true"';
+        'Invoke-RestMethod $Install | Invoke-Expression';
+        '$Module.Latest()';
+        '<Idle[5,5]>';
+        'Import-Module FightingEntropy'))
+    }
+    InstallChoco()
+    {
+        # [Phase 11] Install Chocolatey
+        $This.Script.Add(11,"InstallChoco","Install Chocolatey",@(
+        "Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression"))
+    }
+    InstallVsCode()
+    {
+        # [Phase 12] Install Visual Studio Code
+        $This.Script.Add(12,"InstallVsCode","Install Visual Studio Code",@("choco install vscode -y"))
+    }
+    InstallBossMode()
+    {
+        # [Phase 13] Install BossMode (vscode color theme)
+        $This.Script.Add(13,"InstallBossMode","Install BossMode (vscode color theme)",@(
+        '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
+        '$ArgumentList = "--install-extension SecureDigitsPlus.bossmode"';
+        'Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process'))
+    }
+    InstallPsExtension()
+    {
+        # [Phase 14] Install Visual Studio Code (PowerShell Extension)
+        $This.Script.Add(14,"InstallPsExtension","Install Visual Studio Code (PowerShell Extension)",@(
+        '$FilePath     = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd"';
+        '$ArgumentList = "--install-extension ms-vscode.PowerShell"';
+        'Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -NoNewWindow | Wait-Process'))
+    }
+    RestartComputer()
+    {
+        # [Phase 15] Restart computer
+        $This.Script.Add(15,'Restart','Restart computer',@('Restart-Computer'))
+    }
+    ConfigureDhcp()
+    {
+        # [Phase 16] Configure Dhcp
+        $This.Script.Add(16,'ConfigureDhcp','Configure Dhcp',@(
+        '$Root           = "{0}"' -f $This.GetRegistryPath()
+        '$Path           = "$Root\ComputerInfo"'
+        '$Item           = Get-ItemProperty $Path' 
+        '$Item.Dhcp      = Get-ItemProperty $Item.Dhcp';
+        ' ';
+        '$Splat = @{ ';
+        '   ';
+        '    StartRange = $Item.Dhcp.StartRange';
+        '    EndRange   = $Item.Dhcp.EndRange';
+        '    Name       = $Item.Dhcp.Name';
+        '    SubnetMask = $Item.Dhcp.SubnetMask';
+        '}';
+        ' ';
+        'Add-DhcpServerV4Scope @Splat -Verbose';
+        'Add-DhcpServerInDc -Verbose';
+        ' ';
+        'ForEach ($Value in $Item.Dhcp.Exclusion)';
+        '{';
+        '    $Splat         = @{ ';
+        ' ';
+        '        ScopeId    = $Item.Dhcp.Network';
+        '        StartRange = $Value';
+        '        EndRange   = $Value';
+        '    }';
+        ' ';
+        '    Add-DhcpServerV4ExclusionRange @Splat -Verbose';
+        ' ';
+        '   (3,$Item.Gateway),';
+        '   (6,$Item.Dns),';
+        '   (15,$Item.Domain),';
+        '   (28,$Item.Dhcp.Broadcast) | % {';
+        '    ';
+        '       Set-DhcpServerV4OptionValue -OptionId $_[0] -Value $_[1] -Verbose'
+        '   }';
+        '}';
+        'netsh dhcp add securitygroups';
+        'Restart-Service dhcpserver';
+        ' ';
+        '$Splat    = @{ ';
+        ' ';
+        '    Path  = "HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12"';
+        '    Name  = "ConfigurationState"';
+        '    Value = 2';
+        '}';
+        ' ';
+        'Set-ItemProperty @Splat -Verbose'))
+    }
+    InitializeFeAd([String]$Pass)
+    {
+        $This.Script.Add(17,'InitializeAd','Initialize [FightingEntropy()] AdInstance',@(
+        '$Password = Read-Host "Enter password" -AsSecureString';
+        '<Timer[2]>';
+        '{0}' -f $Pass;
+        '$Ctrl = Initialize-FeAdInstance';
+        ' ';
+        '# Set location';
+        '$Ctrl.SetLocation("1718 US-9","Clifton Park","NY",12065,"US")';
+        ' ';
+        '# Add Organizational Unit';
+        '$Ctrl.AddAdOrganizationalUnit("DevOps","Developer(s)/Operator(s)")';
+        ' ';
+        '# Get Organizational Unit';
+        '$Ou     = $Ctrl.GetAdOrganizationalUnit("DevOps")';
+        ' ';
+        '# Add Group';
+        '$Ctrl.AddAdGroup("Engineering","Security","Global","Secure Digits Plus LLC",$Ou.DistinguishedName)';
+        ' ';
+        '# Get Group';
+        '$Group  = $Ctrl.GetAdGroup("Engineering")';
+        ' ';
+        '# Add-AdPrincipalGroupMembership';
+        '$Ctrl.AddAdPrincipalGroupMembership($Group.Name,@("Administrators","Domain Admins"))';
+        ' ';
+        '# Add User';
+        '$Ctrl.AddAdUser("Michael","C","Cook","mcook85",$Ou.DistinguishedName)';
+        ' ';
+        '# Get User';
+        '$User   = $Ctrl.GetAdUser("Michael","C","Cook")';
+        ' ';
+        '# Set [User.General (Description, Office, Email, Homepage)]';
+        '$User.SetGeneral("Beginning the fight against ID theft and cybercrime",';
+        '                 "<Unspecified>",';
+        '                 "michael.c.cook.85@gmail.com",';
+        '                 "https://github.com/mcc85s/FightingEntropy")';
+        ' ';
+        '# Set [User.Address (StreetAddress, City, State, PostalCode, Country)] ';
+        '$User.SetLocation($Ctrl.Location)';
+        ' ';
+        '# Set [User.Profile (ProfilePath, ScriptPath, HomeDirectory, HomeDrive)]';
+        '$User.SetProfile("","","","")';
+        ' ';
+        '# Set [User.Telephone (HomePhone, OfficePhone, MobilePhone, Fax)]';
+        '$User.SetTelephone("","518-406-8569","518-406-8569","")';
+        ' ';
+        '# Set [User.Organization (Title, Department, Company)]';
+        '$User.SetOrganization("CEO/Security Engineer","Engineering","Secure Digits Plus LLC")';
+        ' ';
+        '# Set [User.AccountPassword]';
+        '$User.SetAccountPassword($Password)';
+        ' ';
+        '# Add user to group';
+        '$Ctrl.AddAdGroupMember($Group,$User)';
+        ' ';
+        '# Set user primary group';
+        '$User.SetPrimaryGroup($Group)'))
+    }
+    Load()
+    {
+        $This.SetPersistentInfo()
+        $This.SetTimeZone()
+        $This.SetComputerInfo()
+        $This.SetIcmpFirewall()
+        $This.SetInterfaceNull()
+        $This.SetStaticIp()
+        $This.SetWinRm()
+        $This.SetWinRmFirewall()
+        $This.SetRemoteDesktop()
+        $This.InstallFeModule()
+        $This.InstallChoco()
+        $This.InstallVsCode()
+        $This.InstallBossMode()
+        $This.InstallPsExtension()
+        $This.RestartComputer()
+        $This.ConfigureDhcp()
+    }
+    [Object] PSSession([Object]$Account)
+    {
+        # Creates session object
+        $This.Update(0,"[~] PSSession Token")
+        $Splat = @{
+
+            ComputerName  = $This.Network.IpAddress
+            Port          = 5986
+            Credential    = $Account.Credential
+            SessionOption = New-PSSessionOption -SkipCACheck
+            UseSSL        = $True
+        }
+
+        Return $Splat
+    }
+}
+
+Class NewVmControllerNodeLinux : NewVmControllerNodeObject
+{
+    NewVmControllerNodeLinux([Switch]$Flags,[Object]$Vm) : base($Flags,$Vm)
+    {   
+        
+    }
+    NewVmControllerNodeLinux([Object]$File) : base($File)
+    {
+
+    }
+    Login([Object]$Account)
+    {
+        # Login
+        $This.Update(0,"Login [+] [$($This.Name): $([DateTime]::Now)]")
+        $This.TypeKey(9)
+        $This.TypeKey(13)
+        $This.Timer(1)
+        $This.TypePassword($Account.Password())
+        $This.TypeKey(13)
+        $This.Idle(0,5)
+    }
+    Initial()
+    {
+        $This.Update(0,"Running [~] Initial Login")
+        # Learn your way around...?
+
+        $This.TypeKey(32)
+        $This.Timer(1)
+        $This.TypeKey(27)
+        $This.Timer(1)
+    }
+    LaunchTerminal()
+    {
+        $This.Update(0,"Launching [~] Terminal")
+
+        # // Launch terminal
+        $This.TypeKey(91)
+        $This.Timer(2)
+        $This.TypeLine("terminal")
+        $This.Timer(2)
+        $This.TypeKey(13)
+        $This.Timer(2)
+        
+        # // Maximize window
+        $This.PressKey(91)
+        $This.TypeKey(38)
+        $This.ReleaseKey(91)
+        $This.Idle(0,5)
+    }
+    Super([Object]$Account)
+    {
+        $This.Update(0,"Super User [~]")
+
+        # // Accessing super user
+        ForEach ($Key in [Char[]]"su -")
+        {
+            $This.LinuxKey($Key)
+            Start-Sleep -Milliseconds 25
+        }
+
+        $This.TypeKey(13)
+        $This.Timer(1)
+        $This.LinuxPassword($Account.Password())
+        $This.TypeKey(13)
+        $This.Idle(5,2)
+    }
+    [String] RichFirewallRule()
+    {
+        $Line = "firewall-cmd --permanent --zone=public --add-rich-rule='"
+        $Line += 'rule family="ipv4" '
+        $Line += 'source address="{0}/{1}" ' -f $This.Network.Ipaddress, $This.Network.Prefix
+        $Line += 'port port="3389" '
+        $Line += "protocol=`"tcp`" accept'"
+
+        Return $Line
+    }
+    SubscriptionInfo([Object]$User)
+    {
+        # [Phase 1] Set subscription service to access (yum/rpm)
+        $This.Script.Add(1,"SetSubscriptionInfo","Set subscription information",@(
+        "subscription-manager register";
+        "<Timer[1]>";
+        $User.Username;
+        "<Timer[1]>";
+        "<Pass[$($User.Password())]>";
+        ))
+    }
+    GroupInstall()
+    {
+        # [Phase 2] Install groupinstall workgroup
+        $This.Script.Add(2,"GroupInstall","Install groupinstall workgroup",@(
+        "dnf groupinstall workstation -y";
+        "";
+        ))
+    }
+    InstallEpel()
+    {
+        # [Phase 3] (Set/Install) epel-release
+        $This.Script.Add(3,"EpelRelease","Set EPEL Release Repo",@(
+        'subscription-manager repos --enable codeready-builder-for-rhel-9-x86_64-rpms';
+        "<Timer[30]>";
+        "";
+        "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y";
+        "";
+        ))
+    }
+    InstallPs()
+    {
+        # [Phase 4] (Set/Install) [PowerShell]
+        $This.Script.Add(4,"InstallPs","(Set/Install) [PowerShell]",@(
+        "curl https://packages.microsoft.com/config/rhel/8/prod.repo | tee /etc/yum.repos.d/microsoft.repo";
+        "";
+        "dnf install powershell -y"
+        ))
+    }
+    InstallRdp()
+    {
+        # [Phase 5] Install [Remote Desktop] Tools
+        $This.Script.Add(5,"InstallRdp","(Set/Install) [Remote Desktop] Tools",@(
+        "dnf install tigervnc-server tigervnc -y";
+        "<Timer[5]>";
+        "";
+        "yum --enablerepo=epel install xrdp -y";
+        "<Timer[5]>";
+        "";
+        "systemctl start xrdp.service";
+        "";
+        "systemctl enable xrdp.service"
+        ""
+        ))
+    }
+    SetFirewall()
+    {
+        # [Phase 6] Set firewall
+        $This.Script.Add(6,"SetFirewall","Set firewall rule and restart",@(
+        $This.RichFirewallRule();
+        "";
+        "firewall-cmd --reload"
+        ))
+    }
+    InstallVSCode()
+    {
+        # [Phase 7] Install [Visual Studio Code]
+        $This.Script.Add(7,"InstallVsCode","(Set/Install) [Visual Studio Code]",@(
+        '$Link  = "https://packages.microsoft.com"';
+        '$Keys  = "{0}/keys/microsoft.asc" -f $Link';
+        '$Repo  = "{0}/yumrepos/vscode" -f $Link';
+        '$Path  = "/etc/yum.repos.d/vscode.repo"';
+        '$Text  = @( )';
+        '$Text += "[code]"';
+        '$Text += "name=Visual Studio Code"';
+        '$Text += "baseurl={0}" -f $Repo';
+        '$Text += "enabled=1"';
+        '$Text += "gpgcheck=1"';
+        '$Text += "gpgkey={0}" -f $Keys';
+        '[System.IO.File]::WriteAllLines($Path,$Text)';
+        "";
+        'rpm --import $Keys';
+        "";
+        'yum install code -y'
+        ))
+    }
+    InstallPsExtension()
+    {
+        # [Phase 8] Install [PowerShell Extension]
+        $This.Script.Add(7,"InstallPsExtension","Install [PowerShell Extension]",@(
+        'code --install-extension ms-vscode.powershell'
+        ))
+    }
+    Load([Object]$User)
+    {
+        $This.SubscriptionInfo($User)
+        $This.GroupInstall()
+        $This.InstallEpel()
+        $This.InstallPs()
+        $This.InstallRdp()
+        $This.SetFirewall()
+        $This.InstallVSCode()
+        $This.InstallPsExtension()
+    }
+}
+
+Class NewVmControllerNodeMaster
+{
+    [UInt32] $Selected
+    [String]     $Path
+    [Object]     $Host
+    [Object] $Template
+    [Object]   $Object
+    NewVmControllerNodeMaster()
+    {
+        $This.Refresh()
+    }
+    SetPath([String]$Path)
+    {
+        If (![System.IO.Directory]::Exists($Path))
+        {
+            Throw "Invalid path"
+        }
+
+        $This.Path = $Path
+    }
+    Select([UInt32]$Index)
+    {
+        If ($Index -gt $This.Object.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $This.Selected = $Index
+    }
+    [Object] Current()
+    {
+        Return $This.Object[$This.Selected]
+    }
+    Clear([String]$Slot)
+    {
+        Switch -Regex ($Slot)
+        {
+            "Host"     { $This.Host     = @( ) }
+            "Template" { $This.Template = @( ) }
+            "Object"   { $This.Object   = @( ) }
+        }
+    }
+    [Object] NewVmControllerNodeHost([UInt32]$Index,[Object]$VmNode)
+    {
+        Return [NewVmControllerNodeHost]::New($Index,$VmNode)
+    }
+    [Object] NewVmControllerNodeTemplate([UInt32]$Index,[Object]$File)
+    {
+        Return [NewVmControllerNodeTemplate]::New($Index,$File)
+    }
+    [Object] NewVmControllerNodeSlot([UInt32]$Index,[Object]$Node)
+    {
+        Return [NewVmControllerNodeSlot]::New($Index,$Node)
+    }
+    [Object] NewVmControllerNodeObject([Object]$Node)
+    {
+        Return [NewVmControllerNodeObject]::New($Node)
+    }
+    [Object] NewVmControllerNodeWindows([Object]$Node)
+    {
+        Return [NewVmControllerNodeWindows]::New($Node)
+    }
+    [Object] NewVmControllerNodeLinux([Object]$Node)
+    {
+        Return [NewVmControllerNodeLinux]::New($Node)
+    }
+    [Object[]] GetVm()
+    {
+        Return Get-Vm
+    }
+    [Object[]] GetTemplate()
+    {
+        Return Get-ChildItem $This.Path | ? Extension -eq .fex
+    }
+    [Object] Create([UInt32]$Index)
+    {
+        If ($Index -gt $This.Template.Count)
+        {
+            Throw "Invalid index"
+        }
+
+        $Temp = $This.Template[$Index]
+
+        If ($Temp.Name -in $This.Object)
+        {
+            Throw "Item is already in the object list"
+        }
+
+        $Item = Switch -Regex ($Temp.Role.Name)
+        {
+            "(^Server$|^Client$)"
+            {
+                $This.NewVmControllerNodeWindows($Temp)
+            }
+            "(^Unix$)"
+            {
+                $This.NewVmControllerNodeLinux($Temp)
+            }
+        }
+
+        Return $Item
+    }
+    AddTemplate([Object]$Template)
+    {
+        $This.Template += $This.NewVmControllerNodeTemplate($This.Template.Count,$Template)
+    }
+    AddHost([Object]$Node)
+    {
+        $This.Host     += $This.NewVmControllerNodeHost($This.Host.Count,$Node)
+    }
+    AddObject([Object]$Node)
+    {
+        $This.Object   += $This.NewVmControllerNodeSlot($This.Object.Count,$Node)
+    }
+    Refresh([String]$Type)
+    {
+        If ($Type -notin "Host","Template","Object")
+        {
+            Throw "Invalid type"
+        }
+
+        $This.Clear($Type)
+    
+        Switch ($Type)
+        {
+            "Host"
+            {
+                ForEach ($Item in $This.GetVm())
+                {
+                    $This.AddHost($Item)
+                }
+            }
+            "Template"
+            {
+                If ($This.Path)
+                {
+                    ForEach ($Item in $This.GetTemplate())
+                    {
+                        $This.AddTemplate($Item)
+                    }
+                }
+            }
+            "Object"
+            {
+                ForEach ($Item in $This.Host)
+                {
+                    $This.Object += $This.NewVmControllerNodeSlot($This.Object.Count,$Item)
+                }
+
+                ForEach ($Item in $This.Template)
+                {
+                    $This.Object += $This.NewVmControllerNodeSlot($This.Object.Count,$Item)
+                }
+            }
+        }
+    }
+    Refresh()
+    {
+        ForEach ($Item in "Host","Template","Object")
+        {
+            $This.Refresh($Item)
+        }
+    }
+    [Object] Control([String]$Path)
+    {
+        If (![System.IO.File]::Exists($Path))
+        {
+            Throw "Invalid path"
+        }
+
+        Return $This.NewVmControllerNodeWindows($This.NewVmControllerNodeTemplate(0,(Get-Item $Path)))
+    }
+    [String] ToString()
+    {
+        Return "<FEModule.NewVmController.Node.Master>"
     }
 }
 
@@ -3466,10 +6051,10 @@ Class NewVmControllerXaml
     '                                                Width="35"/>',
     '                            <DataGridTextColumn Header="Status"',
     '                                                Binding="{Binding Status}"',
-    '                                                Width="60"/>',
+    '                                                Width="50"/>',
     '                            <DataGridTextColumn Header="Type"',
     '                                                Binding="{Binding Type}"',
-    '                                                Width="60"/>',
+    '                                                Width="75"/>',
     '                            <DataGridTextColumn Header="Class"',
     '                                                Binding="{Binding Class}"',
     '                                                Width="40"/>',
@@ -4195,13 +6780,11 @@ Class NewVmControllerXaml
     '                                        Name="TemplateNetworkDown"',
     '                                        Content="[Down]"/>',
     '                            </Grid>',
-    '                            <DataGrid Grid.Column="1" Name="TemplateNetworkOutput">',
+    '                            <DataGrid Grid.Column="1"',
+    '                                      Name="TemplateNetworkOutput">',
     '                                <DataGrid.Columns>',
     '                                    <DataGridTextColumn Header="Alias"',
     '                                            Binding="{Binding Interface.Name}"',
-    '                                            Width="125"/>',
-    '                                    <DataGridTextColumn Header="IpAddress"',
-    '                                            Binding="{Binding Interface.IpAddress}"',
     '                                            Width="125"/>',
     '                                    <DataGridTextColumn Header="Description"',
     '                                            Binding="{Binding Interface.Description}"',
@@ -4250,11 +6833,98 @@ Class NewVmControllerXaml
     '                                            Width="*"/>',
     '                                <DataGridTextColumn Header="Edition"',
     '                                            Binding="{Binding Edition.Label}"',
-    '                                            Width="150"/>',
+    '                                            Width="200"/>',
     '                            </DataGrid.Columns>',
     '                        </DataGrid>',
     '                    </TabItem>',
     '                </TabControl>',
+    '            </Grid>',
+    '        </TabItem>',
+    '        <TabItem Header="Node">',
+    '            <Grid>',
+    '                <Grid.RowDefinitions>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="110"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="10"/>',
+    '                    <RowDefinition Height="*"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                </Grid.RowDefinitions>',
+    '                <Grid Grid.Row="0">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="90"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="90"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0"',
+    '                           Content="[Node]:"/>',
+    '                    <TextBox Grid.Column="1"',
+    '                             Text="&lt;Manage virtual machine hosts + templates&gt;"',
+    '                             IsReadOnly="True"/>',
+    '                    <Button Grid.Column="2"',
+    '                            Content="Refresh"',
+    '                            Name="NodeRefresh"/>',
+    '                </Grid>',
+    '                <DataGrid Grid.Row="1"',
+    '                          Name="NodeOutput">',
+    '                    <DataGrid.Columns>',
+    '                        <DataGridTextColumn Header="Index"',
+    '                                            Binding="{Binding Index}"',
+    '                                            Width="40"/>',
+    '                        <DataGridTextColumn Header="Guid"',
+    '                                            Binding="{Binding Guid}"',
+    '                                            Width="350"/>',
+    '                        <DataGridTextColumn Header="Name"',
+    '                                            Binding="{Binding Name}"',
+    '                                            Width="*"/>',
+    '                        <DataGridTextColumn Header="Type"',
+    '                                            Binding="{Binding Type}"',
+    '                                            Width="100"/>',
+    '                    </DataGrid.Columns>',
+    '                </DataGrid>',
+    '                <Grid Grid.Row="2">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Button Grid.Column="0"',
+    '                            Content="Create"',
+    '                            Name="NodeCreate"/>',
+    '                    <Button Grid.Column="1"',
+    '                            Content="Remove"',
+    '                            Name="NodeRemove"/>',
+    '                </Grid>',
+    '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
+    '                <DataGrid Grid.Row="4"',
+    '                          Name="NodeExtension">',
+    '                    <DataGrid.Columns>',
+    '                        <DataGridTextColumn Header="Name"',
+    '                                            Binding="{Binding Name}"',
+    '                                            Width="150"/>',
+    '                        <DataGridTextColumn Header="Value"',
+    '                                            Binding="{Binding Value}"',
+    '                                            Width="*"/>',
+    '                    </DataGrid.Columns>',
+    '                </DataGrid>',
+    '                <Grid Grid.Row="5">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="25"/>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Button Grid.Column="0"',
+    '                            Content="Import"',
+    '                            Name="NodeImport"/>',
+    '                    <TextBox Grid.Column="1"',
+    '                             Name="NodePath"',
+    '                             Text="&lt;Set path to import control template(s)&gt;"/>',
+    '                    <Image   Grid.Column="2"',
+    '                             Name="NodePathIcon"/>',
+    '                    <Button  Grid.Column="3"',
+    '                             Name="NodePathBrowse"',
+    '                             Content="Browse"/>',
+    '                </Grid>',
     '            </Grid>',
     '        </TabItem>',
     '    </TabControl>',
@@ -4539,7 +7209,8 @@ Class NewVmControllerDataGridTemplateItem
         $This.Name     = "<New>"
         $This.Account  = "-"
         $This.Switch   = "-"
-        $This.Image    = "Null template"
+        $This.Image    = "<Null template>"
+        $This.Guid     = $This.NewGuid()
     }
     NewVmControllerDataGridTemplateItem([Object]$Template)
     {
@@ -4660,8 +7331,6 @@ Class NewVmControllerMaster
         # Loads module controller
         $This.Module     = $This.Get("Module")
 
-        $This.Reinstantiate()
-
         # Loads DataGrid master
         $This.DataGrid   = $This.Get("DataGrid")
 
@@ -4674,15 +7343,20 @@ Class NewVmControllerMaster
         # Loads the image master
         $This.Image      = $This.Get("Image")
 
-        # Loads the template measter
+        # Loads the template master
         $This.Template   = $This.Get("Template")
+
+        # Loads the node master
+        $This.Node       = $This.Get("Node")
+
+        $This.Reinstantiate()
     }
     Reinstantiate()
     {
         # Loads XAML
         $This.Xaml       = $This.Get("Xaml")
 
-        # Loads Validation master
+        # Loads validation master
         $This.Validation = $This.Get("Validation")
     
         # Creates various validation entries
@@ -4783,6 +7457,11 @@ Class NewVmControllerMaster
                 $This.Update(0,"Getting [~] Template Master")
                 $Item = [NewVmControllerTemplateMaster]::New()
             }
+            Node
+            {
+                $This.Update(0,"Getting [~] Node Master")
+                $Item = [NewVmControllerNodeMaster]::New()
+            }
         }
 
         Return $Item
@@ -4868,7 +7547,7 @@ Class NewVmControllerMaster
         (3,"TemplateExportPath"),
         (3,"TemplateName"),
         (3,"TemplateRootPath"),
-        (4,"NodeTemplatePath")  | % { 
+        (4,"NodePath")  | % { 
 
             $This.Validation.Add($_[0],$This.Xaml.Get($_[1]))
         }
@@ -4908,9 +7587,33 @@ Class NewVmControllerMaster
     }
     ToggleTemplateCreate()
     {
-        $List = $This.Validation.Output | ? Name -match ^Template
+        $Ctrl = $This
 
-        $This.Xaml.IO.TemplateCreate.IsEnabled = 0 -in $List.Status
+        $List = $Ctrl.Validation.Output | ? Name -match Template
+
+        $Item = $Ctrl.Validation.Get("TemplateRootPath")
+        $Icon = $Ctrl.Xaml.Get("TemplateRootPathIcon")
+
+        If (0 -in $List.Status)
+        {
+            $X = "[!] Invalid <template root path>"
+        }
+        ElseIf ($Ctrl.Xaml.IO.TemplateName.Text -in $This.Template.Output.Name)
+        {
+            $X = "[!] Duplicate template name"
+        }
+        Else
+        {
+            $X = "[+] Passed"
+        }
+
+        $Item.Reason = $X
+        $Item.Status = [UInt32]($Item.Reason -eq "[+] Passed")
+
+        $Icon.Control.Source  = $This.IconStatus($Item.Status)
+        $Icon.Control.ToolTip = $Item.Reason
+
+        $This.Xaml.IO.TemplateCreate.IsEnabled = $Item.Status
     }
     CheckDomain()
     {
@@ -5165,6 +7868,15 @@ Class NewVmControllerMaster
         $Icon                 = $Ctrl.Xaml.Get("TemplateRootPathIcon")
 
         $Item.Status          = $Ctrl.Validation.CheckPath($Text).Status
+        $Icon.Control.Source  = $This.IconStatus($Item.Status)
+    }
+    CheckNodePath()
+    {
+        $Item         = $This.Validation.Get("NodePath")
+        $Icon         = $This.Xaml.Get("NodePathIcon")
+
+        $Item.Status  = $This.Validation.CheckPath($Item.Control.Text).Status
+
         $Icon.Control.Source  = $This.IconStatus($Item.Status)
     }
     SetMain()
@@ -5477,6 +8189,57 @@ Class NewVmControllerMaster
 
         $Ctrl.Xaml.IO."Network$Name`Panel".Visibility = "Visible"
     }
+    SwitchNetworkName()
+    {
+        $Ctrl = $This
+
+        $Item      = $Ctrl.Validation.Get("NetworkName")
+        $Button    = $Ctrl.Xaml.Get("NetworkAssign")
+        $Icon      = $Ctrl.Xaml.Get("NetworkNameIcon")
+
+        $Guid      = $Ctrl.Xaml.IO.NetworkInterface.SelectedItem.Guid
+        $Interface = $Ctrl.Network.Interface.Output | ? SwitchId -eq $Guid
+
+        If (!$Interface.Base.Dhcp)
+        {
+            $X     = "[!] Must have a <Dhcp object> prepared"
+        }
+        Else
+        {
+            $X     = "[+] Passed"
+        }
+
+        $Item.Reason = $X
+        $Item.Status = [UInt32]($Item.Reason -eq "[+] Passed")
+
+        $Button.Control.IsEnabled = $Item.Status
+        $Icon.Control.Source = $Ctrl.IconStatus($Item.Status)
+    }
+    SwitchAssign()
+    {
+        $Ctrl = $This
+
+        # Assigns the selected network(s) to the template object
+        $Guid      = $Ctrl.Xaml.IO.NetworkInterface.SelectedItem.Guid
+        $Interface = $Ctrl.Network.Interface.Output | ? SwitchId -eq $Guid
+        
+        If (!$Interface.Selected)
+        {
+            [System.Windows.MessageBox]::Show("<No selected network>","Error [!]")
+        }
+        Else
+        {
+            $Ctrl.Template.SetNetwork($Interface)
+
+            # Refreshes the UI template network object
+            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
+    
+            # Shows message detailing network switch count
+            [System.Windows.MessageBox]::Show("Interface(s) ($($Ctrl.Template.Network.Count))","Assigned [+] Network(s)")
+
+            # Add logic to disable the items in this panel $Ctrl.Xaml.Types
+        }
+    }
     CredentialInitialize()
     {
         $Ctrl = $This
@@ -5634,6 +8397,8 @@ Class NewVmControllerMaster
         $Ctrl.Reset($Ctrl.Xaml.IO.TemplateCredentialOutput,$Ctrl.Template.Account)
                 
         [System.Windows.MessageBox]::Show("Accounts: ($($Ctrl.Template.Account.Count))","Assigned [+] Credential(s)")
+
+        # Add logic to disable the items in this panel $Ctrl.Xaml.Types
     }
     ImagePathBrowse()
     {
@@ -5693,7 +8458,7 @@ Class NewVmControllerMaster
         $Ctrl.Image.Select($Ctrl.Xaml.IO.ImageStore.SelectedIndex)
 
         $Current = $Ctrl.Image.Current()
-        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Ctrl.Image.Current().Content)
+        $Ctrl.Reset($Ctrl.Xaml.IO.ImageStoreContent,$Current.Content)
 
         $Ctrl.Xaml.IO.ImageName.Text  = $Current.Name
     }
@@ -5723,12 +8488,13 @@ Class NewVmControllerMaster
         }
         Else
         {
-            # $Ctrl.Template.SetImage($Ctrl.Image.NewVmControllerImageObject($List,$List2))
-            # $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
+            $Ctrl.Template.SetImage($Ctrl.Image.NewVmControllerImageObject($List,$List2))
+            $Ctrl.Reset($Ctrl.Xaml.IO.TemplateImageOutput,$Ctrl.Template.Image)
 
-            # [System.Windows.MessageBox]::Show($Ctrl.Template.Image.File.Fullname,"Assigned [+] Image [$($Ctrl.Image.Current().Name)]")
-            [System.Windows.MessageBox]::Show($Ctrl.Image.Current().Fullname,"Assigned [+] Image [$($Ctrl.Image.Current().Name)]")
+            [System.Windows.MessageBox]::Show($Ctrl.Template.Image.File.Fullname,"Assigned [+] $($Ctrl.Template.Image.Edition.DestinationName)")
         }
+
+        # Add logic to disable the items in this panel $Ctrl.Xaml.Types
     }
     TemplatePopulate()
     {
@@ -5781,14 +8547,16 @@ Class NewVmControllerMaster
             }
             1
             {
-                $This.Template.SetPath($This.Xaml.IO.TemplateExportPath.Text)
+                $This.Template.SetPath($Ctrl.Xaml.IO.TemplateExportPath.Text)
 
-                $This.Xaml.IO.TemplateExportPath.IsEnabled   = 0
-                $This.Xaml.IO.TemplateExportBrowse.IsEnabled = 0
-                $This.Xaml.IO.TemplateSetPath.IsEnabled      = 0
-                $This.Xaml.IO.TemplateOutput.IsEnabled       = 1
+                $Ctrl.Xaml.IO.TemplateExportPath.IsEnabled   = 0
+                $Ctrl.Xaml.IO.TemplateExportBrowse.IsEnabled = 0
+                $Ctrl.Xaml.IO.TemplateSetPath.IsEnabled      = 0
+                $Ctrl.Xaml.IO.TemplateOutput.IsEnabled       = 1
             }
         }
+
+        $Ctrl.TemplatePopulate()
     }
     TemplateRootPath()
     {
@@ -5837,12 +8605,12 @@ Class NewVmControllerMaster
             
             $Ctrl.TemplatePopulate()
     
-            $Ctrl.Xaml.Get("TemplateName").Text            = ""
-            $Ctrl.Xaml.Get("TemplateRootPath").Text        = "<Set virtual machine root path>"
-            $Ctrl.Xaml.Get("TemplateRootPathIcon").Source  = $Null
+            $Ctrl.Xaml.Get("TemplateName").Control.Text            = ""
+            $Ctrl.Xaml.Get("TemplateRootPath").Control.Text        = "<Set virtual machine root path>"
+            $Ctrl.Xaml.Get("TemplateRootPathIcon").Control.Source  = $Null
         }
     }
-    templateRemove()
+    TemplateRemove()
     {
         $Ctrl = $This
 
@@ -5861,78 +8629,99 @@ Class NewVmControllerMaster
     {
         $Ctrl = $This
 
+        # [Buttons]
         $Ctrl.Xaml.IO.TemplateCreate.IsEnabled              = 0
         $Ctrl.Xaml.IO.TemplateRemove.IsEnabled              = 0
         $Ctrl.Xaml.IO.TemplateExport.IsEnabled              = 0
+
+        # [Template]
         $Ctrl.Xaml.IO.TemplateName.IsEnabled                = 0
         $Ctrl.Xaml.IO.TemplateRole.IsEnabled                = 0
+
+        # [Root Path]
         $Ctrl.Xaml.IO.TemplateRootPath.IsEnabled            = 0
         $Ctrl.Xaml.IO.TemplateRootPathIcon.IsEnabled        = 0
         $Ctrl.Xaml.IO.TemplateRootPathBrowse.IsEnabled      = 0
-        $Ctrl.Xaml.IO.TemplateMemory.IsEnabled              = 0
-        $Ctrl.Xaml.IO.TemplateHardDrive.IsEnabled           = 0
-        $Ctrl.Xaml.IO.TemplateGeneration.IsEnabled          = 0
-        $Ctrl.Xaml.IO.TemplateCore.IsEnabled                = 0
-
-        $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex          = 1
-        $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
-        $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
-        $Ctrl.Xaml.IO.TemplateCore.SelectedIndex            = 1
-
         $Ctrl.Xaml.IO.TemplateRootPathIcon.Source           = $Null
 
-        If ($Ctrl.Xaml.IO.TemplateOutput.SelectedIndex -ne -1)
+        # [Specs]
+        $Ctrl.Xaml.IO.TemplateMemory.IsEnabled              = 0
+        $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex          = 1
+
+        $Ctrl.Xaml.IO.TemplateHardDrive.IsEnabled           = 0
+        $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex       = 1
+
+        $Ctrl.Xaml.IO.TemplateGeneration.IsEnabled          = 0
+        $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex      = 1
+
+        $Ctrl.Xaml.IO.TemplateCore.IsEnabled                = 0
+        $Ctrl.Xaml.IO.TemplateCore.SelectedIndex            = 1
+
+        $Selected = $Ctrl.Xaml.IO.TemplateOutput.SelectedItem
+        $Item     = $Ctrl.Template.Output | ? Guid -eq $Selected.Guid
+
+        If (!$Item)
         {
             $Ctrl.Xaml.IO.TemplateName.IsEnabled            = 1
+            $Ctrl.Xaml.IO.TemplateName.Text                 = ""
+
             $Ctrl.Xaml.IO.TemplateRole.IsEnabled            = 1
+            $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = 1
+            
             $Ctrl.Xaml.IO.TemplateRootPath.IsEnabled        = 1
             $Ctrl.Xaml.IO.TemplateRootPathIcon.IsEnabled    = 1
             $Ctrl.Xaml.IO.TemplateRootPathBrowse.IsEnabled  = 1
+
             $Ctrl.Xaml.IO.TemplateMemory.IsEnabled          = 1
             $Ctrl.Xaml.IO.TemplateHardDrive.IsEnabled       = 1
             $Ctrl.Xaml.IO.TemplateGeneration.IsEnabled      = 1
             $Ctrl.Xaml.IO.TemplateCore.IsEnabled            = 1
 
-            $Selected = $Ctrl.Xaml.IO.TemplateOutput.SelectedItem
-            $Item     = $Ctrl.Template.Output | ? Guid -eq $Selected.Guid
+            $Ctrl.Xaml.IO.TemplateRootPath.Text             = "<Set virtual machine root path>"
+            $Ctrl.Xaml.IO.TemplateRootPathIcon.Source       = $Null
 
-            If (!!$Item)
+            $Ctrl.Xaml.IO.TemplateNetworkOutput.IsEnabled    = 1
+            $Ctrl.Xaml.IO.TemplateCredentialOutput.IsEnabled = 1
+            $Ctrl.Xaml.IO.TemplateImageOutput.IsEnabled      = 1
+        }
+        If (!!$Item)
+        {
+            $Ctrl.Xaml.IO.TemplateCreate.IsEnabled          = 0
+            $Ctrl.Xaml.IO.TemplateRemove.IsEnabled          = 1
+            $Ctrl.Xaml.IO.TemplateExport.IsEnabled          = 1
+
+            $Ctrl.Xaml.IO.TemplateName.Text                 = $Item.Name
+            $Ctrl.Xaml.IO.TemplateNameIcon.Source           = $Null
+
+            $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
+
+            $Ctrl.Xaml.IO.TemplateRootPath.Text             = $Item.Root
+
+            $Ctrl.CheckTemplateRootPath()
+
+            $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex      = Switch -Regex ($Item.Memory.Size)
             {
-                $Ctrl.Xaml.IO.TemplateCreate.IsEnabled          = 0
-                $Ctrl.Xaml.IO.TemplateRemove.IsEnabled          = 1
-                $Ctrl.Xaml.IO.TemplateExport.IsEnabled          = 1
-                $Ctrl.Xaml.IO.TemplateName.Text                 = $Item.Name
-                $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = $Item.Role.Index
-
-                $Ctrl.Xaml.IO.TemplateRootPath.Text             = $Item.Base
-                $Ctrl.Xaml.IO.TemplateMemory.SelectedIndex      = Switch -Regex ($Item.Memory.Size)
-                {
-                    "2.00 GB" { 0 } "4.00 GB" { 1 } "8.00 GB" { 2 } "16.00 GB" { 3 }
-                }
-
-                $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex   = Switch -Regex ($Item.Hdd.Size)
-                {
-                    "32.00 GB" { 0 } "64.00 GB" { 1 } "128.00 GB" { 2 } "256.00 GB" { 3 }
-                }
-
-                $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}[$Item.Gen]
-                $Ctrl.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}[$Item.Core]
-                $Ctrl.Xaml.IO.TemplateCreate.IsEnabled          = 0
+                "2.00 GB" { 0 } "4.00 GB" { 1 } "8.00 GB" { 2 } "16.00 GB" { 3 }
             }
-            Else
+
+            $Ctrl.Xaml.IO.TemplateHardDrive.SelectedIndex   = Switch -Regex ($Item.Hdd.Size)
             {
-                $Ctrl.Xaml.IO.TemplateName.Text                 = ""
-                $Ctrl.Xaml.IO.TemplateRole.SelectedIndex        = 1
-                $Ctrl.Xaml.IO.TemplateRootPath.Text             = "<Set virtual machine root path>"
-                $Ctrl.Xaml.IO.TemplateRootPathIcon.Source       = $Null
+                "32.00 GB" { 0 } "64.00 GB" { 1 } "128.00 GB" { 2 } "256.00 GB" { 3 }
             }
+
+            $Ctrl.Xaml.IO.TemplateGeneration.SelectedIndex  = @{"1"=0;"2"=1}["$($Item.Gen)"]
+            $Ctrl.Xaml.IO.TemplateCore.SelectedIndex        = @{"1"=0;"2"=1;"3"=2;"4"=3}["$($Item.Core)"]
+
+            $Ctrl.Xaml.IO.TemplateNetworkOutput.IsEnabled    = 0
+            $Ctrl.Xaml.IO.TemplateCredentialOutput.IsEnabled = 0
+            $Ctrl.Xaml.IO.TemplateImageOutput.IsEnabled      = 0
         }
     }
     TemplateExport()
     {
         $Ctrl = $This
 
-        $Ctrl.Template.Export($Ctrl.Xaml.IO.TemplateOutput.SelectedIndex)
+        $Ctrl.Template.Export($Ctrl.Xaml.IO.TemplateOutput.SelectedItem.Index)
     }
     TemplateNetworkUp()
     {
@@ -5967,6 +8756,105 @@ Class NewVmControllerMaster
             $Ctrl.Template.Network = $List | Sort-Object Index
             $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
         }
+    }
+    NodeRefresh()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Node.Refresh()
+        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+        $Ctrl.Reset($Ctrl.Xaml.IO.NodeExtension,$Null)
+    }
+    NodePath()
+    {
+        $Ctrl = $This
+        $Item = $This.Validation.Get("NodePath")
+
+        $Ctrl.CheckNodePath()
+
+        If ($Ctrl.Xaml.IO.NodePath.Text -eq "")
+        {
+            $Ctrl.Xaml.IO.NodePath.Text       = "<Set path to import control template(s)>"
+            $Ctrl.Xaml.IO.NodePathIcon.Source = $Null
+        }
+
+        $Ctrl.Xaml.IO.NodeImport.IsEnabled = $Item.Status
+    }
+    NodePathBrowse()
+    {
+        $Ctrl = $This
+
+        $Ctrl.FolderBrowse("NodePath")
+    }
+    NodeImport()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Update(0,"Setting [~] Node template import path")
+        $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodePath.Text)
+        $Ctrl.Node.Refresh()
+        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+    }
+    NodeHandle()
+    {
+        $Ctrl = $This
+
+        $Ctrl.Xaml.IO.NodeCreate.IsEnabled = 0
+        $Ctrl.Xaml.IO.NodeRemove.IsEnabled = 0
+        $Ctrl.Xaml.IO.NodeRefresh.IsEnabled = 1
+
+        If ($Ctrl.Xaml.IO.NodeOutput.SelectedIndex -ne -1)
+        {
+            $Selected = $Ctrl.Xaml.IO.NodeOutput.SelectedItem
+            $Mode     = $Selected.Type -eq "Template"
+            $Slot     = @($Ctrl.Node.Host,$Ctrl.Node.Template)[$Mode]
+            $Item     = $Slot | ? Guid -eq $Selected.Guid
+            $Ctrl.Reset($Ctrl.Xaml.IO.NodeExtension,$Ctrl.Property($Item))
+
+            $Ctrl.Xaml.IO.NodeCreate.IsEnabled = $Mode
+            $Ctrl.Xaml.IO.NodeRemove.IsEnabled = 1
+        }
+    }
+    NodeCreate()
+    {
+        $Ctrl = $This
+        $Item = $Ctrl.Xaml.IO.NodeOutput.SelectedItem
+                
+        Switch ($Item.Type)
+        {
+            Host
+            {
+                [System.Windows.MessageBox]::Show("Invalid type","Error")
+            }
+            Template
+            {
+                [System.Windows.MessageBox]::Show("Not yet implemented","Error")
+            }
+        }
+    }
+    NodeRemove()
+    {
+        $Ctrl = $This
+
+        $Item = $Ctrl.Xaml.IO.NodeOutput.SelectedItem
+        Switch ($Item.Type)
+        {
+            Host
+            {
+                $xNode = $Ctrl.Node.Host | ? Guid -eq $Item.Guid
+                $Vm    = $Ctrl.Node.VmNodeObject($xNode)
+                $Vm.Remove()
+            }
+            Template
+            {
+                $xNode = Get-ChildItem $Ctrl.Node.Path | ? Name -match $Item.Name
+                Remove-Item $xNode.Fullname -Verbose
+            }
+        }
+
+        $Ctrl.Node.Refresh()
+        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+        $Ctrl.Reset($Ctrl.Xaml.IO.NodeExtension,$Null)
     }
     Stage([String]$Name)
     {
@@ -6045,15 +8933,7 @@ Class NewVmControllerMaster
 
                 $Ctrl.Xaml.IO.NetworkAssign.Add_Click(
                 {
-                    # Assigns the selected network(s) to the template object
-                    # $Item = $Ctrl.Xaml.IO.NetworkOutput.Items | ? Profile
-                    # $Ctrl.Template.SetNetwork($Item)
-
-                    # Refreshes the UI template network object
-                    # $Ctrl.Reset($Ctrl.Xaml.IO.TemplateNetworkOutput,$Ctrl.Template.Network)
-
-                    # Shows message detailing network switch count
-                    # [System.Windows.MessageBox]::Show("Interface(s) ($($Ctrl.Template.Network.Count))","Assigned [+] Network(s)")
+                    $Ctrl.SwitchAssign()
                 })
             }
             Credential
@@ -6110,7 +8990,7 @@ Class NewVmControllerMaster
 
                 $Ctrl.Xaml.IO.CredentialAssign.Add_Click(
                 {
-                    # $Ctrl.CredentialAssign()
+                    $Ctrl.CredentialAssign()
                 })
 
                 $Ctrl.Xaml.IO.CredentialType.SelectedIndex = 0
@@ -6222,6 +9102,42 @@ Class NewVmControllerMaster
             Node
             {
 
+                $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Host)
+                    
+                $Ctrl.Xaml.IO.NodeRefresh.Add_Click(
+                {
+                    $Ctrl.NodeRefresh()
+                })
+                
+                $Ctrl.Xaml.IO.NodePath.Add_TextChanged(
+                {
+                    $Ctrl.NodePath()
+                })
+                
+                $Ctrl.Xaml.IO.NodePathBrowse.Add_Click(
+                {
+                    $Ctrl.NodePathBrowse()
+                })
+                
+                $Ctrl.Xaml.IO.NodeImport.Add_Click(
+                {
+                    $Ctrl.NodeImport()
+                })
+                
+                $Ctrl.Xaml.IO.NodeOutput.Add_SelectionChanged(
+                {
+                    $Ctrl.NodeHandle()
+                })
+                
+                $Ctrl.Xaml.IO.NodeCreate.Add_Click(
+                {
+                    $Ctrl.NodeCreate()
+                })
+                
+                $Ctrl.Xaml.IO.NodeRemove.Add_Click(
+                {
+                    $Ctrl.NodeRemove()
+                })
             }
         }
     }
@@ -6260,7 +9176,9 @@ Class NewVmControllerMaster
             }
             Node
             {
-
+                $This.Xaml.IO.NodeCreate.IsEnabled           = 0
+                $This.Xaml.IO.NodeRemove.IsEnabled           = 0
+                $This.Xaml.IO.NodeImport.IsEnabled           = 0
             }
         }
     }
@@ -6271,12 +9189,14 @@ Class NewVmControllerMaster
         $This.Stage("Credential")
         $This.Stage("Image")
         $This.Stage("Template")
+        $This.Stage("Node")
 
         # [Initial properties/settings]
         $This.Initial("Network")
         $This.Initial("Credential")
         $This.Initial("Image")
         $This.Initial("Template")
+        $This.Initial("Node")
     }
     Reload()
     {
@@ -6309,4 +9229,3 @@ If (!(Get-Module FightingEntropy))
 
 $Ctrl = [NewVmControllerMaster]::New()
 $Ctrl.Reload()
-
