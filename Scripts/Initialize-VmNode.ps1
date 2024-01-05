@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2023-05-06 05:49:54                                                                  //
+\\  Date       : 2024-01-05 14:03:22                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2023-05-06
+    Modified   : 2024-01-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -236,6 +236,38 @@ Function Initialize-VmNode
         }
     }
 
+    Class VmNetworkDhcp
+    {
+        [String]        $Name
+        [String]  $SubnetMask
+        [String]     $Network
+        [String]  $StartRange
+        [String]    $EndRange
+        [String]   $Broadcast
+        [String[]] $Exclusion
+        VmNetworkDhcp(
+        [String]$Name,
+        [String]$SubnetMask,
+        [String]$Network,
+        [String]$StartRange,
+        [String]$EndRange,
+        [String]$Broadcast,
+        [String[]]$Exclusion)
+        {
+            $This.Name       = $Name
+            $This.SubnetMask = $SubnetMask
+            $This.Network    = $Network
+            $This.StartRange = $StartRange
+            $This.EndRange   = $EndRange
+            $This.Broadcast  = $Broadcast
+            $This.Exclusion  = $Exclusion
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.NewVmController.Node.Dhcp>"
+        }
+    }
+
     Class VmNetworkNode
     {
         [UInt32]     $Index
@@ -275,9 +307,27 @@ Function Initialize-VmNode
             $This.Dns       = $Dns
             $This.Transmit  = $Transmit
         }
-        SetDhcp([Object]$Dhcp)
+        [Object] VmNetworkDhcp(
+        [String]$Name,
+        [String]$SubnetMask,
+        [String]$Network,
+        [String]$StartRange,
+        [String]$EndRange,
+        [String]$Broadcast,
+        [String[]]$Exclusion)
         {
-            $This.Dhcp = $Dhcp
+            Return [VmNetworkDhcp]::New($Name,$SubnetMask,$Network,$StartRange,$EndRange,$Broadcast,$Exclusion)
+        }
+        SetDhcp(
+        [String]$Name,
+        [String]$SubnetMask,
+        [String]$Network,
+        [String]$StartRange,
+        [String]$EndRange,
+        [String]$Broadcast,
+        [String[]]$Exclusion)
+        {
+            $This.Dhcp = $This.VmNetworkDhcp($Name,$SubnetMask,$Network,$StartRange,$EndRange,$Broadcast,$Exclusion)
         }
         [String] Hostname()
         {
@@ -285,7 +335,7 @@ Function Initialize-VmNode
         }
         [String] ToString()
         {
-            Return "<FEVirtual.VmNetwork[Node]>"
+            Return "<FEModule.VmNetwork.Node>"
         }
     }
 
@@ -358,6 +408,10 @@ Function Initialize-VmNode
         {
             Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
         }
+        [String] GetComputerInfoPath()
+        {
+            Return "{0}\ComputerInfo" -f $This.GetRegistryPath()
+        }
         [Object] GetNetAdapter()
         {
             Return Get-NetAdapter | ? Status -eq Up
@@ -405,19 +459,30 @@ Function Initialize-VmNode
             Return $Item
         }
         [Object] VmNetworkNode(
-        [String]     $Index,
-        [String]      $Name,
-        [String] $IpAddress,
-        [String]    $Domain,
-        [String]   $NetBios,
-        [String]   $Trusted,
-        [UInt32]    $Prefix,
-        [String]   $Netmask,
-        [String]   $Gateway,
-        [String[]]     $Dns,
-        [UInt32]  $Transmit)
+        [String]      $Index ,
+        [String]       $Name ,
+        [String]  $IpAddress ,
+        [String]     $Domain ,
+        [String]    $NetBios ,
+        [String]    $Trusted ,
+        [UInt32]     $Prefix ,
+        [String]    $Netmask ,
+        [String]    $Gateway ,
+        [String[]]      $Dns ,
+        [UInt32]   $Transmit )
         {
             Return [VmNetworkNode]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns,$Transmit)
+        }
+        SetDhcp(
+        [String]        $Name ,
+        [String]  $SubnetMask ,
+        [String]     $Network ,
+        [String]  $StartRange ,
+        [String]    $EndRange ,
+        [String]   $Broadcast ,
+        [String[]] $Exclusion )
+        {
+            $This.Network.SetDhcp($Name,$SubnetMask,$Network,$StartRange,$EndRange,$Broadcast,$Exclusion)
         }
         [Object] VmNodeScript([UInt32]$Index,[String]$Content)
         {
@@ -466,6 +531,14 @@ Function Initialize-VmNode
                 New-NetFirewallRule @Splat -Verbose
             }
         }
+        [Object] GetComputerInfo()
+        {
+            $Path      = $This.GetComputerInfoPath()
+            $Item      = Get-ItemProperty $Path
+            $Item.Dhcp = Get-ItemProperty "$Path\Dhcp"
+
+            Return $Item
+        }
         Initialize()
         {
             $This.SetNewIpAddress()
@@ -484,7 +557,10 @@ Function Initialize-VmNode
                 New-Item -Path $Root -Verbose
             }
 
-            New-Item -Path $Path
+            If (!(Test-Path $Path))
+            {
+                New-Item -Path $Path -Verbose
+            }
 
             ForEach ($Property in $This.Network.PSObject.Properties)
             {
@@ -500,7 +576,37 @@ Function Initialize-VmNode
                     }
                 }
 
-                Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
+                If ($Property.Name -eq "Dhcp")
+                {
+                    New-Item "$Path\Dhcp" -Verbose -EA 0
+                }
+
+                Else
+                {
+                    Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
+                }
+            }
+
+            ForEach ($Property in $This.Network.Dhcp.PSObject.Properties)
+            {
+                $Value = Switch -Regex ($Property.TypeNameOfValue)
+                {
+                    Default
+                    {
+                        $Property.Value
+                    }
+                    "\[\]"
+                    {
+                        '@([String[]]"{0}")))' -f ($Property.Value -join "`",`"")
+                    }
+                }
+
+                Set-ItemProperty -Path "$Path\Dhcp" -Name $Property.Name -Value $Value -Verbose
+            }
+
+            If ([Environment]::GetEnvironmentVariable("ComputerName") -ne $This.Network.Name)
+            {
+                Rename-Computer -NewName $This.Network.Name
             }
         }
         Receive()
