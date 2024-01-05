@@ -6867,19 +6867,33 @@ Class NewVmControllerXaml
     '                </Grid>',
     '                <DataGrid Grid.Row="1"',
     '                          Name="NodeOutput">',
+    '                    <DataGrid.RowStyle>',
+    '                        <Style TargetType="{x:Type DataGridRow}">',
+    '                            <Style.Triggers>',
+    '                                <Trigger Property="IsMouseOver" Value="True">',
+    '                                    <Setter Property="ToolTip">',
+    '                                        <Setter.Value>',
+    '                                            <TextBlock Text="&lt;virtual machine host/template&gt;"',
+    '                                                       TextWrapping="Wrap"',
+    '                                                       FontFamily="Consolas"',
+    '                                                       Background="#000000"',
+    '                                                       Foreground="#00FF00"/>',
+    '                                        </Setter.Value>',
+    '                                    </Setter>',
+    '                                </Trigger>',
+    '                            </Style.Triggers>',
+    '                        </Style>',
+    '                    </DataGrid.RowStyle>',
     '                    <DataGrid.Columns>',
-    '                        <DataGridTextColumn Header="Index"',
-    '                                            Binding="{Binding Index}"',
-    '                                            Width="40"/>',
-    '                        <DataGridTextColumn Header="Guid"',
-    '                                            Binding="{Binding Guid}"',
-    '                                            Width="350"/>',
     '                        <DataGridTextColumn Header="Name"',
     '                                            Binding="{Binding Name}"',
     '                                            Width="*"/>',
     '                        <DataGridTextColumn Header="Type"',
     '                                            Binding="{Binding Type}"',
     '                                            Width="100"/>',
+    '                        <DataGridTextColumn Header="Guid"',
+    '                                            Binding="{Binding Guid}"',
+    '                                            Width="350"/>',
     '                    </DataGrid.Columns>',
     '                </DataGrid>',
     '                <Grid Grid.Row="2">',
@@ -6897,6 +6911,23 @@ Class NewVmControllerXaml
     '                <Border Grid.Row="3" Background="Black" Margin="4"/>',
     '                <DataGrid Grid.Row="4"',
     '                          Name="NodeExtension">',
+    '                    <DataGrid.RowStyle>',
+    '                        <Style TargetType="{x:Type DataGridRow}">',
+    '                            <Style.Triggers>',
+    '                                <Trigger Property="IsMouseOver" Value="True">',
+    '                                    <Setter Property="ToolTip">',
+    '                                        <Setter.Value>',
+    '                                            <TextBlock Text="&lt;virtual machine host/template properties&gt;"',
+    '                                                       TextWrapping="Wrap"',
+    '                                                       FontFamily="Consolas"',
+    '                                                       Background="#000000"',
+    '                                                       Foreground="#00FF00"/>',
+    '                                        </Setter.Value>',
+    '                                    </Setter>',
+    '                                </Trigger>',
+    '                            </Style.Triggers>',
+    '                        </Style>',
+    '                    </DataGrid.RowStyle>',
     '                    <DataGrid.Columns>',
     '                        <DataGridTextColumn Header="Name"',
     '                                            Binding="{Binding Name}"',
@@ -8792,8 +8823,7 @@ Class NewVmControllerMaster
 
         $Ctrl.Update(0,"Setting [~] Node template import path")
         $Ctrl.Node.SetPath($Ctrl.Xaml.IO.NodePath.Text)
-        $Ctrl.Node.Refresh()
-        $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Object)
+        $Ctrl.NodeRefresh()
     }
     NodeHandle()
     {
@@ -9100,10 +9130,7 @@ Class NewVmControllerMaster
                 $Ctrl.Reset($Ctrl.Xaml.IO.TemplateOutput,$Ctrl.DataGrid.Template.Output)
             }
             Node
-            {
-
-                $Ctrl.Reset($Ctrl.Xaml.IO.NodeOutput,$Ctrl.Node.Host)
-                    
+            {       
                 $Ctrl.Xaml.IO.NodeRefresh.Add_Click(
                 {
                     $Ctrl.NodeRefresh()
