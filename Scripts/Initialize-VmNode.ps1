@@ -572,7 +572,7 @@ Function Initialize-VmNode
                     }
                     "\[\]"
                     {
-                        '@([String[]]"{0}")))' -f ($Property.Value -join "`",`"")
+                        '@([String[]]"{0}")' -f ($Property.Value -join "`",`"")
                     }
                 }
 
@@ -596,7 +596,7 @@ Function Initialize-VmNode
                     }
                     "\[\]"
                     {
-                        '@([String[]]"{0}")))' -f ($Property.Value -join "`",`"")
+                        '@([String[]]"{0}")' -f ($Property.Value -join "`",`"")
                     }
                 }
 
