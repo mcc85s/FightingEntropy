@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-05 14:03:22                                                                  //
+\\  Date       : 2024-01-06 17:43:55                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-05
+    Modified   : 2024-01-06
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -579,12 +579,11 @@ Function Initialize-VmNode
                 If ($Property.Name -eq "Dhcp")
                 {
                     New-Item "$Path\Dhcp" -Verbose -EA 0
+                    $Value = "$Path\Dhcp"
                 }
 
-                Else
-                {
-                    Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
-                }
+                
+                Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
             }
 
             ForEach ($Property in $This.Network.Dhcp.PSObject.Properties)
@@ -608,6 +607,10 @@ Function Initialize-VmNode
             {
                 Rename-Computer -NewName $This.Network.Name
             }
+        }
+        Transmit()
+        {
+            
         }
         Receive()
         {
