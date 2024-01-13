@@ -413,3 +413,29 @@ Function Get-MdtModule
         }
     }
 }
+
+<#
+"Application Compatibility Toolkit",                                                             "10.1.18362.1"
+"Imaging And Configuration Designer",                                                            "10.1.18362.1"
+"Imaging Designer",                                                                              "10.1.18362.1"
+"Imaging Tools Support",                                                                         "10.1.18362.1"
+"Kits Configuration Installer",                                                                  "10.1.18362.1"
+"Microsoft Deployment Toolkit (6.3.8456.1000)",                                                   "6.3.8456.1000"
+"MXAx64",                                                                                        "10.1.18362.1"
+"OEM Test Certificates",                                                                         "10.1.18362.1"
+"Toolkit Documentation",                                                                         "10.1.18362.1"
+"UEV Tools on amd64",                                                                            "10.1.18362.1"
+"User State Migration Tool",                                                                     "10.1.18362.1"
+"Volume Activation Management Tool",                                                             "10.1.18362.1"
+"Windows Assessment and Deployment Kit - Windows 10",                                            "10.1.18362.1"
+"Windows Deployment Customizations",                                                             "10.1.18362.1"
+"Windows Deployment Tools",                                                                      "10.1.18362.1"
+"Windows System Image Manager",                                                                  "10.1.18362.1"
+"WPT Redistributables",                                                                          "10.1.18362.1"
+"WPTx64",                                                                                        "10.1.18362.1"
+"Windows Assessment and Deployment Kit Windows Preinstallation Environment Add-ons - Windows 10","10.1.18362.1"
+"Windows PE ARM ARM64",                                                                          "10.1.18362.1"
+"Windows PE ARM ARM64 wims",                                                                     "10.1.18362.1"
+"Windows PE x86 x64",                                                                            "10.1.18362.1"
+"Windows PE x86 x64 wims",                                                                       "10.1.18362.1"
+#>
