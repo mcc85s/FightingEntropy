@@ -1,0 +1,35 @@
+{
+    "terminal.integrated.defaultProfile.windows": "PowerShell (v5)",
+    "terminal.integrated.profiles.windows": {
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        },
+        "PowerShell (v5)": {
+            "path": "${env:windir}\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"
+        },
+        "PowerShell (v6+)": {
+            "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+        },
+        "Node.js": {
+            "path": "C:\\Program Files\\nodejs\\node.exe"
+        }
+    },
+    "powershell.powerShellDefaultVersion": "Windows PowerShell (x64)",
+    "editor.unicodeHighlight.invisibleCharacters": false,
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "editor.fontFamily": "Cascadia Code",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.colorTheme": "BossMode",
+    "powershell.analyzeOpenDocumentsOnly": true
+}
