@@ -6,19 +6,18 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-12 21:35:11                                                                  //
+\\  Date       : 2024-01-15 23:50:17                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-MdtModule.ps1
     Solution   : [FightingEntropy()][2024.1.0]
     Purpose    : Retrieves the location of the MicrosoftDeploymentToolkit.psd1 file,
-                 (and/or) installs:
-                  (MDT/WinADK/WinPE) if they are not present
+                 (and/or) installs (MDT/WinADK/WinPE) if they are not present
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2024-01-12
+    Modified   : 2024-01-15
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -29,59 +28,6 @@ Function Get-MdtModule
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param([Parameter(ParameterSetName=1)][Switch]$Install)
-
-    Class WindowsPackageExtension
-    {
-        [UInt32]           $Index
-        [String]            $Name
-        [String]         $Version
-        WindowsPackageExtension([UInt32]$Index,[Object]$Package)
-        {
-            $This.Index    = $Index
-            $This.Name     = $Package.Name
-            $This.Version  = $Package.Version
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.Windows.Package.Extension>"
-        }
-    }
-
-    Class WindowsPackageList
-    {
-        [Object] $Output
-        WindowsPackageList()
-        {
-            $This.Refresh()
-        }
-        [Object] WindowsPackageExtension([UInt32]$Index,[Object]$Package)
-        {
-            Return [WindowsPackageExtension]::New($Index,$Package)
-        }
-        [Object[]] GetPackage()
-        {
-            Return Get-Package | Sort-Object Name
-        }
-        Clear()
-        {
-            $This.Output = @( )
-        }
-        Refresh()
-        {
-            $This.Clear()
-
-            $Package = $This.GetPackage()
-
-            ForEach ($Item in $Package)
-            {
-                $This.Output += $This.WindowsPackageExtension($This.Output.Count,$Item)
-            }
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.Windows.Package.List>"
-        }
-    }
 
     Class MdtByteSize
     {
@@ -191,18 +137,6 @@ Function Get-MdtModule
         [Object] MdtDependencyItem([String]$Name)
         {
             Return [MdtDependencyItem]::New($Name)
-        }
-        [Object] WindowsPackageList()
-        {
-            Return [WindowsPackageList]::New()
-        }
-        [String[]] WinPEPackages()
-        {
-            Return "Windows Assessment and Deployment Kit Windows Preinstallation Environment Add-ons - Windows 10",
-            "Windows PE ARM ARM64",
-            "Windows PE ARM ARM64 wims",  
-            "Windows PE x86 x64",         
-            "Windows PE x86 x64 wims"
         }
         [UInt32] Arch()
         {
@@ -314,7 +248,6 @@ Function Get-MdtModule
         Install()
         {
             $This.Refresh()
-            $Complete = $Null
 
             If (!$This.Status)
             {
@@ -328,7 +261,6 @@ Function Get-MdtModule
                 If ($List.Count -gt 0)
                 {
                     [Net.ServicePointManager]::SecurityProtocol = 3072
-                    $Package = $This.WindowsPackageList()
 
                     ForEach ($Item in $List)
                     {
@@ -343,39 +275,49 @@ Function Get-MdtModule
                         }
     
                         $Process = Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
-                        Do
+                        While (!$Process.HasExited)
                         {
-                            $C = 0
                             For ($X = 0; $X -le 100; $X++)
                             {
                                 Write-Progress -Activity "Installing : $($Item.Name)/$($Item.DisplayName) $($Item.Version)" -PercentComplete $X
-
-                                Switch ($C)
-                                {
-                                    {$_ -lt 5}
-                                    {
-                                        Start-Sleep 1
-                                        $C ++
-                                    }
-                                    {$_ -ge 5}
-                                    {
-                                        $C = 0
-                                        $This.Refresh()
-                                        If ($Item.Index -ne 2)
-                                        {
-                                            $Complete = $Process.HasExited -or $Item.Installed
-                                        }
-                                        If ($Item.Index -eq 2)
-                                        {
-                                            $Package.Refresh()
-                                            $Complete = $This.WinPEPackages() -in $Package.Output.Name
-                                        }
-                                    }
-                                }
+                                Start-Sleep -Milliseconds 50
                             }
                         }
-                        Until ($Complete)
+
+                        $This.Refresh()
                     }
+                }
+            }
+        }
+        Uninstall()
+        {
+            $Registry = $This.RefreshRegistry()
+
+            ForEach ($Item in $This.Output)
+            {
+                $Object         = $Registry | ? DisplayName -match $Item.DisplayName
+                $Item.Installed = [UInt32]!!$Object
+
+                If ($Item.Installed)
+                {
+                    [Console]::WriteLine("Uninstalling [~] $($Item.DisplayName)")
+
+                    If (!$Object.QuietUninstallString)
+                    {
+                        $FilePath = "msiexec.exe"
+                        $ArgumentList = "/x $($Object.PSChildName) /qn"
+                    }
+                    Else
+                    {
+                        $Object.QuietUninstallString -match "^\`".+\`"" > $Null
+                        $FilePath     = $Matches[0]
+                        $ArgumentList = $Object.QuietUninstallString.Replace($FilePath,"").TrimStart(" ")
+                    }
+
+                    Start-Process -FilePath $FilePath -ArgumentList $ArgumentList
+                    Write-Progress -Activity "Uninstalling : $($Item.Name)/$($Item.DisplayName) $($Item.Version)" -PercentComplete 100
+
+                    $Item.Installed = 0
                 }
             }
         }
@@ -398,6 +340,7 @@ Function Get-MdtModule
     }
 
     $Mdt = [MdtDependencyController]::New()
+
     Switch ($PSCmdlet.ParameterSetName)
     {
         0
@@ -413,29 +356,3 @@ Function Get-MdtModule
         }
     }
 }
-
-<#
-"Application Compatibility Toolkit",                                                             "10.1.18362.1"
-"Imaging And Configuration Designer",                                                            "10.1.18362.1"
-"Imaging Designer",                                                                              "10.1.18362.1"
-"Imaging Tools Support",                                                                         "10.1.18362.1"
-"Kits Configuration Installer",                                                                  "10.1.18362.1"
-"Microsoft Deployment Toolkit (6.3.8456.1000)",                                                   "6.3.8456.1000"
-"MXAx64",                                                                                        "10.1.18362.1"
-"OEM Test Certificates",                                                                         "10.1.18362.1"
-"Toolkit Documentation",                                                                         "10.1.18362.1"
-"UEV Tools on amd64",                                                                            "10.1.18362.1"
-"User State Migration Tool",                                                                     "10.1.18362.1"
-"Volume Activation Management Tool",                                                             "10.1.18362.1"
-"Windows Assessment and Deployment Kit - Windows 10",                                            "10.1.18362.1"
-"Windows Deployment Customizations",                                                             "10.1.18362.1"
-"Windows Deployment Tools",                                                                      "10.1.18362.1"
-"Windows System Image Manager",                                                                  "10.1.18362.1"
-"WPT Redistributables",                                                                          "10.1.18362.1"
-"WPTx64",                                                                                        "10.1.18362.1"
-"Windows Assessment and Deployment Kit Windows Preinstallation Environment Add-ons - Windows 10","10.1.18362.1"
-"Windows PE ARM ARM64",                                                                          "10.1.18362.1"
-"Windows PE ARM ARM64 wims",                                                                     "10.1.18362.1"
-"Windows PE x86 x64",                                                                            "10.1.18362.1"
-"Windows PE x86 x64 wims",                                                                       "10.1.18362.1"
-#>
