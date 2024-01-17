@@ -6,17 +6,17 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-06 17:43:55                                                                  //
+\\  Date       : 2024-01-17 16:51:43                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
-    Solution   : [FightingEntropy()][2023.4.0]
+    Solution   : [FightingEntropy()][2024.1.0]
     Purpose    : For implementing various [controls] and [persistence] in [deployed virtual machines].
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-06
+    Modified   : 2024-01-17
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -359,6 +359,11 @@ Function Initialize-VmNode
         [String[]]     $Dns,
         [UInt32]  $Transmit)
         {
+            If (!$This.IsVirtualMachine())
+            {
+                Throw "[!] This is not a Hyper-V VM"
+            }
+
             $This.Network    = $This.VmNetworkNode($Index,
                                                    $Name,
                                                    $IpAddress,
@@ -411,6 +416,11 @@ Function Initialize-VmNode
         [String] GetComputerInfoPath()
         {
             Return "{0}\ComputerInfo" -f $This.GetRegistryPath()
+        }
+        [UInt32] IsVirtualMachine()
+        {
+            $Computer = Get-CimInstance Win32_ComputerSystem
+            Return $Computer.Model -eq 'Virtual Machine'
         }
         [Object] GetNetAdapter()
         {
@@ -608,9 +618,44 @@ Function Initialize-VmNode
                 Rename-Computer -NewName $This.Network.Name
             }
         }
-        Transmit()
+        SetPowerShellProfile()
         {
-            
+            $Script = @("# Set [TLS 1.2]","[Net.ServicePointManager]::SecurityProtocol = 3072")
+            $Path   = "$Env:UserProfile\Documents\WindowsPowerShell\Microsoft.PowerShell_Profile.ps1"
+
+            # Ensure that the file exists
+            If (![System.IO.File]::Exists($Path))
+            {
+                [System.IO.File]::Create($Path).Dispose()
+            }
+
+            # Get file content
+            $File    = [System.IO.File]::ReadAllLines($Path)
+
+            # Capture profile to output array
+            $Array   = @( )
+            ForEach ($Line in $File)
+            {
+                $Array += $Line
+            }
+
+            # Ensure script lines are not duplicating items in file
+            ForEach ($Line in $Script)
+            {
+                If ($Line -notin $Array)
+                {
+                    $Array += $Line
+                }
+            }
+
+            # Write to file
+            [System.IO.File]::WriteAllLines($Path,$Array)
+        }
+        Instantiate()
+        {
+            $This.Initialize()
+            $This.Persistence()
+            $This.SetPowerShellProfile()
         }
         Receive()
         {
