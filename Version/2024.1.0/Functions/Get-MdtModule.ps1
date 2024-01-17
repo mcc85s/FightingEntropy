@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-15 23:50:17                                                                  //
+\\  Date       : 2024-01-16 20:11:20                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-MdtModule.ps1
@@ -17,7 +17,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2024-01-15
+    Modified   : 2024-01-16
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -27,7 +27,10 @@
 Function Get-MdtModule
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
-    Param([Parameter(ParameterSetName=1)][Switch]$Install)
+    Param(
+    [Parameter(ParameterSetName=1)][Switch]$Install,
+    [Parameter(ParameterSetName=2)][Switch]$Uninstall,
+    [Parameter(ParameterSetName=3)][Switch]$Toolkit)
 
     Class MdtByteSize
     {
@@ -120,19 +123,40 @@ Function Get-MdtModule
 
     Class MdtDependencyController
     {
-        [String]            $Path
-        [UInt32]          $Status
-        [Object]          $Output
+        Hidden [UInt32] $Server
+        Hidden [UInt32]  $Admin
+        [UInt32]        $Status
+        [String]          $Path
+        [Object]        $Output
         MdtDependencyController()
         {
-            $Cim = Get-CimInstance Win32_OperatingSystem
-            If ($Cim.Caption -notmatch "Server")
+            $This.GetOs()
+            $This.GetIdentity()
+
+            If (!$This.Server)
             {
-                Throw "Invalid operating system"
+                Throw "[!] Invalid operating system (Must use Windows Server)"
+            }
+
+            ElseIf (!$This.Admin)
+            {
+                Throw "[!] Invalid administrator account (Must run as administrator)"
             }
             
             $This.Populate()
             $This.Refresh()
+        }
+        GetOs()
+        {
+            $Caption     = Get-CimInstance Win32_OperatingSystem | % Caption
+            $This.Server = $Caption -match "Server"
+        }
+        GetIdentity()
+        {
+            $Principal   = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
+            $Roles       = "Administrator","Administrators" | % { [UInt32]$Principal.IsInRole($_) }
+
+            $This.Admin  = $True -in $Roles
         }
         [Object] MdtDependencyItem([String]$Name)
         {
@@ -245,6 +269,10 @@ Function Get-MdtModule
         {
             Return !!(Test-Connection -Count 1 -ComputerName 1.1.1.1)
         }
+        [String] Activity([String]$Action,[Object]$Item)
+        {
+            Return "$Action : {0} ({1}) / {2} v{3}" -f $Item.Name, $Item.Size, $Item.DisplayName, $Item.Version
+        }
         Install()
         {
             $This.Refresh()
@@ -274,15 +302,54 @@ Function Get-MdtModule
                             Start-BitsTransfer -Source $Item.Resource -Destination $Item.FilePath()
                         }
     
-                        $Process = Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
-                        While (!$Process.HasExited)
+                        $Start = [DateTime]::Now
+
+                        Start-Process -FilePath $Item.FilePath() -ArgumentList $Item.Arguments -PassThru
+                        Start-Sleep 2
+
+                        # [EXE]
+                        $Flag = Switch ($Item.Name)
                         {
-                            For ($X = 0; $X -le 100; $X++)
+                            Mdt
                             {
-                                Write-Progress -Activity "Installing : $($Item.Name)/$($Item.DisplayName) $($Item.Version)" -PercentComplete $X
-                                Start-Sleep -Milliseconds 50
+                                "(MicrosoftDeploymentToolkit)"
+                            }
+                            WinAdk
+                            {
+                                "(adksetup|winadk1903)"
+                            }
+                            WinPe
+                            {
+                                "(adkwinpesetup|winpe1903)"
                             }
                         }
+
+                        $Process = $Null
+
+                        # [Activity]
+                        $Activity  = $This.Activity("Installing",$Item)
+                        Write-Progress -Activity $Activity -PercentComplete 0
+
+                        # [Loop]
+                        $X = -1
+                        Do
+                        {
+                            If ($X -in -1,100)
+                            {
+                                $X        = 0
+                                $Process = Get-Process | ? Name -match $Flag
+                            }
+
+                            Write-Progress -Activity $Activity -PercentComplete $X
+                            Start-Sleep -Milliseconds 125
+
+                            $X ++
+                        }
+                        Until ($Process.Count -eq 0)
+
+                        Write-Progress -Activity $Activity -Complete
+                        $Elapsed = "{0} [{1}]" -f $Activity, [TimeSpan]([DateTime]::Now - $Start)
+                        [Console]::WriteLine($Elapsed)
 
                         $This.Refresh()
                     }
@@ -297,15 +364,15 @@ Function Get-MdtModule
             {
                 $Object         = $Registry | ? DisplayName -match $Item.DisplayName
                 $Item.Installed = [UInt32]!!$Object
-
+            
                 If ($Item.Installed)
-                {
-                    [Console]::WriteLine("Uninstalling [~] $($Item.DisplayName)")
-
+                {            
                     If (!$Object.QuietUninstallString)
                     {
                         $FilePath = "msiexec.exe"
                         $ArgumentList = "/x $($Object.PSChildName) /qn"
+            
+                        $Process = Get-Process | ? Name -eq msiexec
                     }
                     Else
                     {
@@ -313,11 +380,56 @@ Function Get-MdtModule
                         $FilePath     = $Matches[0]
                         $ArgumentList = $Object.QuietUninstallString.Replace($FilePath,"").TrimStart(" ")
                     }
-
+            
+                    $Start = [DateTime]::Now
                     Start-Process -FilePath $FilePath -ArgumentList $ArgumentList
-                    Write-Progress -Activity "Uninstalling : $($Item.Name)/$($Item.DisplayName) $($Item.Version)" -PercentComplete 100
+                    Start-Sleep 2
+            
+                    # [EXE]
+                    $Flag = Switch ($Item.Name)
+                    {
+                        Mdt
+                        {
+                            "(MicrosoftDeploymentToolkit)"
+                        }
+                        WinAdk
+                        {
+                            "(adksetup|winadk1903)"
+                        }
+                        WinPe
+                        {
+                            "(adkwinpesetup|winpe1903)"
+                        }
+                    }
 
-                    $Item.Installed = 0
+                    $Process   = $Null
+            
+                    # [Activity]
+                    $Activity  = $This.Activity("Uninstalling",$Item)
+            
+                    Write-Progress -Activity $Activity -PercentComplete 0
+            
+                    $X = -1
+                    Do
+                    {
+                        If ($X -in -1,100)
+                        {
+                            $X        = 0
+                            $Process = Get-Process | ? Name -match $Flag
+                        }
+            
+                        Write-Progress -Activity $Activity -PercentComplete $X
+                        Start-Sleep -Milliseconds 125
+            
+                        $X ++
+                    }
+                    Until ($Process.Count -eq 0)
+            
+                    Write-Progress -Activity $Activity -Complete
+                    $Elapsed = "{0} [{1}]" -f $Activity, [TimeSpan]([DateTime]::Now - $Start)
+                    [Console]::WriteLine($Elapsed)
+            
+                    $This.Refresh()
                 }
             }
         }
@@ -340,7 +452,6 @@ Function Get-MdtModule
     }
 
     $Mdt = [MdtDependencyController]::New()
-
     Switch ($PSCmdlet.ParameterSetName)
     {
         0
@@ -349,9 +460,23 @@ Function Get-MdtModule
         }
         1
         {
-            If (!$Mdt.Status)
+            Switch (!$Mdt.Status)
             {
-                $Mdt.Install()
+                0 { $Mdt.Install() } 1 { Throw "(Mdt/WinAdk/WinPe) already installed" }
+            }
+        }
+        2
+        {
+            Switch ($Mdt.Status)
+            {
+                0 { Throw "(Mdt/WinAdk/WinPe) not installed" } 1 { $Mdt.Uninstall() }
+            }
+        }
+        3
+        {
+            Switch ($Mdt.Status)
+            {
+                0 { $Null } 1 { $Mdt.Path }
             }
         }
     }
