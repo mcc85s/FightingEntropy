@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-17 16:51:43                                                                  //
+\\  Date       : 2024-01-17 17:41:26                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -622,6 +622,13 @@ Function Initialize-VmNode
         {
             $Script = @("# Set [TLS 1.2]","[Net.ServicePointManager]::SecurityProtocol = 3072")
             $Path   = "$Env:UserProfile\Documents\WindowsPowerShell\Microsoft.PowerShell_Profile.ps1"
+            $Parent = $Path | Split-Path -Parent
+
+            # Ensure that the directory exists
+            If (![System.IO.Directory]::Exists($Parent))
+            {
+                [System.IO.Directory]::CreateDirectory($Parent)
+            }
 
             # Ensure that the file exists
             If (![System.IO.File]::Exists($Path))
