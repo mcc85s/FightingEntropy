@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-17 17:41:26                                                                  //
+\\  Date       : 2024-01-18 00:56:58                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-17
+    Modified   : 2024-01-18
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -26,19 +26,20 @@
 
 Function Initialize-VmNode
 {
-    [CmdLetBinding()]
+    [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-    [Parameter(Mandatory)][String]     $Index,
-    [Parameter(Mandatory)][String]      $Name,
-    [Parameter(Mandatory)][String] $IpAddress,
-    [Parameter(Mandatory)][String]    $Domain,
-    [Parameter(Mandatory)][String]   $NetBios,
-    [Parameter(Mandatory)][String]   $Trusted,
-    [Parameter(Mandatory)][UInt32]    $Prefix,
-    [Parameter(Mandatory)][String]   $Netmask,
-    [Parameter(Mandatory)][String]   $Gateway,
-    [Parameter(Mandatory)][String[]]     $Dns,
-    [Parameter(Mandatory)][UInt32]  $Transmit)
+    [Parameter(ParameterSetName=0,Mandatory)][String]     $Index,
+    [Parameter(ParameterSetName=0,Mandatory)][String]      $Name,
+    [Parameter(ParameterSetName=0,Mandatory)][String] $IpAddress,
+    [Parameter(ParameterSetName=0,Mandatory)][String]    $Domain,
+    [Parameter(ParameterSetName=0,Mandatory)][String]   $NetBios,
+    [Parameter(ParameterSetName=0,Mandatory)][String]   $Trusted,
+    [Parameter(ParameterSetName=0,Mandatory)][UInt32]    $Prefix,
+    [Parameter(ParameterSetName=0,Mandatory)][String]   $Netmask,
+    [Parameter(ParameterSetName=0,Mandatory)][String]   $Gateway,
+    [Parameter(ParameterSetName=0,Mandatory)][String[]]     $Dns,
+    [Parameter(ParameterSetName=0,Mandatory)][UInt32]  $Transmit,
+    [Parameter(ParameterSetName=1)][Switch]$Reinitialize)
 
     Class SocketTcpMessage
     {
@@ -339,13 +340,43 @@ Function Initialize-VmNode
         }
     }
 
+    Class VmNodeSmbShare
+    {
+        [String] $Name
+        VmNodeSmbShare([String]$Name)
+        {
+            $This.Name  = $Name
+        }
+        [String] LocalStatusPath()
+        {
+            Return "{0}:\status" -f $This.Name
+        }
+        Write([String]$Status)
+        {
+            Set-Content -Path $This.LocalStatusPath() -Value $Status
+        }
+    }
+
+    Class VmNodeFunction
+    {
+        [String] $Path
+        [UInt32] $Exists
+        VmNodeFunction([String]$Path)
+        {
+            $This.Path   = $Path
+            $This.Exists = [System.IO.File]::Exists($Path)
+        }
+    }
+
     Class VmNodeControl
     {
-        [Object] $Network
-        [Object] $Adapter
-        [UInt32] $Index
-        [Object] $Interface
+        [String]   $Function
+        [Object]    $Network
+        [Object]    $Adapter
+        [UInt32]      $Index
+        [Object]  $Interface
         [Object] $ScriptList
+        [Object]        $Smb
         VmNodeControl(
         [String]     $Index,
         [String]      $Name,
@@ -376,10 +407,49 @@ Function Initialize-VmNode
                                                    $Dns,
                                                    $Transmit)
 
+            $This.Main()
+        }
+        VmNodeControl([Switch]$Flags)
+        {
+            If (!$This.IsVirtualMachine())
+            {
+                Throw "[!] This is not a Hyper-V VM"
+            }
+
+            $Path      = "HKLM:\Software\Policies\Secure Digits Plus LLC\ComputerInfo"
+            $Item      = Get-ItemProperty $Path
+            $Item.Dhcp = Get-ItemProperty $Path\Dhcp
+
+            $This.Network    = $This.VmNetworkNode($Item.Index,
+                                                   $Item.Name,
+                                                   $Item.IpAddress,
+                                                   $Item.Domain,
+                                                   $Item.NetBios,
+                                                   $Item.Trusted,
+                                                   $Item.Prefix,
+                                                   $Item.Netmask,
+                                                   $Item.Gateway,
+                                                   $Item.Dns,
+                                                   $Item.Transmit)
+
+            $This.Main()
+
+            If ($Item.Smb)
+            {
+                $This.SetSmb($Item.Smb)
+            }
+        }
+        Main()
+        {
+            $This.Function   = $This.VmNodeFunction($This.FunctionPath())
             $This.Adapter    = $This.GetNetAdapter()
             $This.Index      = $This.Adapter.InterfaceIndex
             $This.Interface  = $This.GetNetIpAddress()
             $This.ScriptList = @( )
+        }
+        [Object] VmNodeFunction([String]$Path)
+        {
+            Return [VmNodeFunction]::New($Path)
         }
         [String] Label()
         {
@@ -494,6 +564,17 @@ Function Initialize-VmNode
         {
             $This.Network.SetDhcp($Name,$SubnetMask,$Network,$StartRange,$EndRange,$Broadcast,$Exclusion)
         }
+        [Object] VmNodeSmbShare([String]$Name)
+        {
+            Return [VmNodeSmbShare]::New($Name)
+        }
+        SetSmb([String]$Drive)
+        {
+            $This.Smb = $This.VmNodeSmbShare($Drive)
+            $Root     = $This.GetRegistryPath()
+            $Path     = "$Root\ComputerInfo"
+            Set-ItemProperty -Path $Path -Name Smb -Value $This.Smb.Name
+        }
         [Object] VmNodeScript([UInt32]$Index,[String]$Content)
         {
             Return [VmNodeScript]::New($Index,$Content)
@@ -591,7 +672,6 @@ Function Initialize-VmNode
                     New-Item "$Path\Dhcp" -Verbose -EA 0
                     $Value = "$Path\Dhcp"
                 }
-
                 
                 Set-ItemProperty -Path $Path -Name $Property.Name -Value $Value -Verbose
             }
@@ -688,7 +768,32 @@ Function Initialize-VmNode
                 $Item.Execute()
             }
         }
+        [String] FunctionPath()
+        {
+            Return "$Env:ProgramData\Secure Digits Plus LLC\ComputerInfo\Initialize-VmNode.ps1"
+        }
+        WriteScript([String[]]$Content)
+        {
+            $Parent = $This.Function.Path | Split-Path -Parent
+
+            If (![System.IO.Directory]::Exists($Parent))
+            {
+                [System.IO.Directory]::CreateDirectory($Parent)
+            }
+
+            [System.IO.File]::WriteAllLines($Script,$Content)
+        }
     }
 
-    [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns,$Transmit)
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0
+        {
+            [VmNodeControl]::New($Index,$Name,$IpAddress,$Domain,$NetBios,$Trusted,$Prefix,$Netmask,$Gateway,$Dns,$Transmit)
+        }
+        1
+        {
+            [VmNodeControl]::New([Switch]$True)
+        }
+    }
 }
