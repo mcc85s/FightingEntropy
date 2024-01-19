@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-18 00:56:58                                                                  //
+\\  Date       : 2024-01-18 19:01:36                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -28,17 +28,17 @@ Function Initialize-VmNode
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-    [Parameter(ParameterSetName=0,Mandatory)][String]     $Index,
-    [Parameter(ParameterSetName=0,Mandatory)][String]      $Name,
-    [Parameter(ParameterSetName=0,Mandatory)][String] $IpAddress,
-    [Parameter(ParameterSetName=0,Mandatory)][String]    $Domain,
-    [Parameter(ParameterSetName=0,Mandatory)][String]   $NetBios,
-    [Parameter(ParameterSetName=0,Mandatory)][String]   $Trusted,
-    [Parameter(ParameterSetName=0,Mandatory)][UInt32]    $Prefix,
-    [Parameter(ParameterSetName=0,Mandatory)][String]   $Netmask,
-    [Parameter(ParameterSetName=0,Mandatory)][String]   $Gateway,
-    [Parameter(ParameterSetName=0,Mandatory)][String[]]     $Dns,
-    [Parameter(ParameterSetName=0,Mandatory)][UInt32]  $Transmit,
+    [Parameter(ParameterSetName=0,Position=0,Mandatory)][String]     $Index,
+    [Parameter(ParameterSetName=0,Position=1,Mandatory)][String]      $Name,
+    [Parameter(ParameterSetName=0,Position=2,Mandatory)][String] $IpAddress,
+    [Parameter(ParameterSetName=0,Position=3,Mandatory)][String]    $Domain,
+    [Parameter(ParameterSetName=0,Position=4,Mandatory)][String]   $NetBios,
+    [Parameter(ParameterSetName=0,Position=5,Mandatory)][String]   $Trusted,
+    [Parameter(ParameterSetName=0,Position=6,Mandatory)][UInt32]    $Prefix,
+    [Parameter(ParameterSetName=0,Position=7,Mandatory)][String]   $Netmask,
+    [Parameter(ParameterSetName=0,Position=8,Mandatory)][String]   $Gateway,
+    [Parameter(ParameterSetName=0,Position=9,Mandatory)][String[]]     $Dns,
+    [Parameter(ParameterSetName=0,Position=10,Mandatory)][UInt32]  $Transmit,
     [Parameter(ParameterSetName=1)][Switch]$Reinitialize)
 
     Class SocketTcpMessage
@@ -342,18 +342,28 @@ Function Initialize-VmNode
 
     Class VmNodeSmbShare
     {
-        [String] $Name
-        VmNodeSmbShare([String]$Name)
+        [String] $Path
+        [UInt32] $Exists
+        VmNodeSmbShare([String]$Path)
         {
-            $This.Name  = $Name
+            $This.Path   = $Path
+            $This.Check()
+        }
+        Check()
+        {
+            $This.Exists = [System.IO.Directory]::Exists($This.Path)
         }
         [String] LocalStatusPath()
         {
-            Return "{0}:\status" -f $This.Name
+            Return "{0}\status" -f $This.Path
         }
         Write([String]$Status)
         {
             Set-Content -Path $This.LocalStatusPath() -Value $Status
+        }
+        [String] ToString()
+        {
+            Return $This.Path
         }
     }
 
@@ -364,13 +374,21 @@ Function Initialize-VmNode
         VmNodeFunction([String]$Path)
         {
             $This.Path   = $Path
-            $This.Exists = [System.IO.File]::Exists($Path)
+            $This.Check()
+        }
+        Check()
+        {
+            $This.Exists = [System.IO.File]::Exists($This.Path)
+        }
+        [String] ToString()
+        {
+            Return $This.Path
         }
     }
 
     Class VmNodeControl
     {
-        [String]   $Function
+        [Object]   $Function
         [Object]    $Network
         [Object]    $Adapter
         [UInt32]      $Index
@@ -416,21 +434,54 @@ Function Initialize-VmNode
                 Throw "[!] This is not a Hyper-V VM"
             }
 
-            $Path      = "HKLM:\Software\Policies\Secure Digits Plus LLC\ComputerInfo"
+            $Path      = $This.GetComputerInfoPath()
             $Item      = Get-ItemProperty $Path
-            $Item.Dhcp = Get-ItemProperty $Path\Dhcp
 
-            $This.Network    = $This.VmNetworkNode($Item.Index,
-                                                   $Item.Name,
-                                                   $Item.IpAddress,
-                                                   $Item.Domain,
-                                                   $Item.NetBios,
-                                                   $Item.Trusted,
-                                                   $Item.Prefix,
-                                                   $Item.Netmask,
-                                                   $Item.Gateway,
-                                                   $Item.Dns,
-                                                   $Item.Transmit)
+            # [Dhcp]
+            $Item.Dhcp = Get-ItemProperty $Path\Dhcp
+            If ($Item.Dhcp)
+            {
+                $Item.Dhcp.Exclusion = $Item.Dhcp.Exclusion | Invoke-Expression
+                If ($Item.IpAddress -notin $Item.Dhcp.Exclusion)
+                {
+                    $Item.Dhcp.Exclusion += $Item.IpAddress
+                }
+
+                $List = @( )
+                ForEach ($IpAddress in $Item.Dhcp.Exclusion)
+                {
+                    $List += [IpAddress]"$IpAddress"
+                }
+
+                $Item.Dhcp.Exclusion = $List | Sort-Object Address | % IpAddressToString
+            }
+
+            # [Dns]
+            $Item.Dns = $Item.Dns | Invoke-Expression
+
+            # [Network]
+            $This.Network = $This.VmNetworkNode($Item.Index,
+                                                $Item.Name,
+                                                $Item.IpAddress,
+                                                $Item.Domain,
+                                                $Item.NetBios,
+                                                $Item.Trusted,
+                                                $Item.Prefix,
+                                                $Item.Netmask,
+                                                $Item.Gateway,
+                                                $Item.Dns,
+                                                $Item.Transmit)
+
+            If ($Item.Dhcp)
+            {
+                $This.Network.SetDhcp($Item.Dhcp.Name,
+                                      $Item.Dhcp.SubnetMask,
+                                      $Item.Dhcp.Network,
+                                      $Item.Dhcp.StartRange,
+                                      $Item.Dhcp.EndRange,
+                                      $Item.Dhcp.Broadcast,
+                                      $Item.Dhcp.Exclusion)
+            }
 
             $This.Main()
 
@@ -567,13 +618,6 @@ Function Initialize-VmNode
         [Object] VmNodeSmbShare([String]$Name)
         {
             Return [VmNodeSmbShare]::New($Name)
-        }
-        SetSmb([String]$Drive)
-        {
-            $This.Smb = $This.VmNodeSmbShare($Drive)
-            $Root     = $This.GetRegistryPath()
-            $Path     = "$Root\ComputerInfo"
-            Set-ItemProperty -Path $Path -Name Smb -Value $This.Smb.Name
         }
         [Object] VmNodeScript([UInt32]$Index,[String]$Content)
         {
@@ -772,7 +816,7 @@ Function Initialize-VmNode
         {
             Return "$Env:ProgramData\Secure Digits Plus LLC\ComputerInfo\Initialize-VmNode.ps1"
         }
-        WriteScript([String[]]$Content)
+        SetFunction([String[]]$Function)
         {
             $Parent = $This.Function.Path | Split-Path -Parent
 
@@ -781,7 +825,39 @@ Function Initialize-VmNode
                 [System.IO.Directory]::CreateDirectory($Parent)
             }
 
-            [System.IO.File]::WriteAllLines($Script,$Content)
+            [System.IO.File]::WriteAllLines($This.FunctionPath(),$Function)
+
+            $This.Function.Check()
+
+            If ($This.Function.Exists)
+            {
+                $Root     = $This.GetRegistryPath()
+                $Path     = "$Root\ComputerInfo"
+                Set-ItemProperty -Path $Path -Name Function -Value $This.Function.Path
+            }
+        }
+        SetSmb([String]$Drive)
+        {
+            $This.Smb = $This.VmNodeSmbShare($Drive)
+            If ($This.Smb.Exists)
+            {
+                $Root     = $This.GetRegistryPath()
+                $Path     = "$Root\ComputerInfo"
+                Set-ItemProperty -Path $Path -Name Smb -Value $This.Smb.Path
+            }
+        }
+        Status([String]$Status)
+        {
+            If (!$This.Smb.Exists)
+            {
+                Throw "[!] Smb not connected"
+            }
+
+            $This.Smb.Write($Status)
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.Initialize.VmNode>"
         }
     }
 
