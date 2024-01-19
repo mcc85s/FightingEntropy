@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Script                                                                                            \\
-\\  Date       : 2024-01-18 19:01:36                                                                  //
+\\  Date       : 2024-01-19 00:05:39                                                                  //
  \\==================================================================================================// 
 
     FileName   : 
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-18
+    Modified   : 2024-01-19
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -344,18 +344,65 @@ Function Initialize-VmNode
     {
         [String] $Path
         [UInt32] $Exists
-        VmNodeSmbShare([String]$Path)
+        [UInt32] $Connected
+        [String] $LocalPath
+        [String] $RemotePath
+        [String] $Username
+        [String] $Password
+        VmNodeSmbShare([Hashtable]$Share)
         {
-            $This.Path   = $Path
+            $This.Path       = $Share.LocalPath
+            $This.LocalPath  = $This.Path
+            $This.RemotePath = $Share.RemotePath
+            $This.Username   = $Share.Username
+            $This.Password   = $Share.Password
             $This.Check()
+        }
+        [Hashtable] Splat()
+        {
+            Return @{ 
+
+                LocalPath    = $This.LocalPath
+                RemotePath   = $This.RemotePath
+                Username     = $This.Username
+                Password     = $This.Password
+            }
+        }
+        Connect()
+        {
+            $Share   = Get-SmbMapping | ? RemotePath -eq $This.RemotePath
+            If ($Share)
+            {
+                If ($Share.Status -ne "OK")
+                {
+                    net use /delete $This.LocalPath > $Null
+                    $Share = $Null
+                }
+            }
+            
+            If (!$Share)
+            {
+                $Target     = ($This.RemotePath -Split "\\")[2]
+                $Test       = Test-Connection -ComputerName $Target -Count 1
+                
+                If (!$Test)
+                {
+                    Throw "[!] Unable to connect to remote machine"
+                }
+            
+                $Splat      = $This.Splat()
+                $Share      = New-SmbMapping @Splat
+            }
+
+            $This.Connected = [UInt32]!!$Share
         }
         Check()
         {
-            $This.Exists = [System.IO.Directory]::Exists($This.Path)
+            $This.Exists = [System.IO.Directory]::Exists($This.LocalPath)
         }
         [String] LocalStatusPath()
         {
-            Return "{0}\status" -f $This.Path
+            Return "{0}\status" -f $This.LocalPath
         }
         Write([String]$Status)
         {
@@ -485,9 +532,28 @@ Function Initialize-VmNode
 
             $This.Main()
 
+            # [Smb]
             If ($Item.Smb)
             {
-                $This.SetSmb($Item.Smb)
+                $Item.Smb      = Get-ItemProperty $Item.Smb
+                $Splat         = @{ 
+
+                    LocalPath  = $Item.Smb.LocalPath
+                    RemotePath = $Item.Smb.RemotePath
+                    Username   = $Item.Smb.Username
+                    Password   = $Item.Smb.Password
+                }
+
+                If (!(Test-Path $Splat.LocalPath))
+                {
+                    New-SmbMapping @Splat -Verbose -EA 0
+                }
+
+                $This.Smb      = $This.VmNodeSmbShare($Splat)
+                If ($This.Smb.Connected -eq 0)
+                {
+                    $This.Smb.Connect()
+                }
             }
         }
         Main()
@@ -615,9 +681,9 @@ Function Initialize-VmNode
         {
             $This.Network.SetDhcp($Name,$SubnetMask,$Network,$StartRange,$EndRange,$Broadcast,$Exclusion)
         }
-        [Object] VmNodeSmbShare([String]$Name)
+        [Object] VmNodeSmbShare([Hashtable]$Drive)
         {
-            Return [VmNodeSmbShare]::New($Name)
+            Return [VmNodeSmbShare]::New($Drive)
         }
         [Object] VmNodeScript([UInt32]$Index,[String]$Content)
         {
@@ -836,14 +902,21 @@ Function Initialize-VmNode
                 Set-ItemProperty -Path $Path -Name Function -Value $This.Function.Path
             }
         }
-        SetSmb([String]$Drive)
+        SetSmb([Hashtable]$Drive)
         {
             $This.Smb = $This.VmNodeSmbShare($Drive)
             If ($This.Smb.Exists)
             {
                 $Root     = $This.GetRegistryPath()
                 $Path     = "$Root\ComputerInfo"
-                Set-ItemProperty -Path $Path -Name Smb -Value $This.Smb.Path
+                New-Item -Path "$Path\Smb"
+                Set-ItemProperty -Path $Path -Name Smb -Value "$Path\Smb"
+
+                $List     = $This.Smb.PSObject.Properties | ? Name -match "(LocalPath|RemotePath|Username|Password)"
+                ForEach ($Property in $List)
+                {
+                    Set-ItemProperty -Path "$Path\Smb" -Name $Property.Name -Value $Property.Value
+                }
             }
         }
         Status([String]$Status)
