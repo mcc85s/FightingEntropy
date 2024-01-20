@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2024-01-20 00:38:40                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2023.8.0]: 2024-01-20 14:20:03                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -743,45 +743,52 @@ Function FightingEntropy.Module
         }
         Download()
         {
-            Try
+            $X        = 0
+            $xContent = $Null
+            Do
             {
-                $xContent     = Invoke-WebRequest $This.Source -UseBasicParsing -TimeoutSec 5 | % Content
-
-                If (!$xContent)
+                Try
                 {
                     $xContent = Invoke-WebRequest $This.Source -UseBasicParsing -TimeoutSec 5 | % Content
+                    $X ++
                 }
-
-                Switch -Regex ($This.Name)
+                Catch
                 {
-                    "\.+(jpg|jpeg|png|bmp|ico)"
-                    {
-                        $This.Content = $xContent
-                    }
-                    "\.+(txt|xml|cs)"
-                    {
-                        $Array = $xContent -Split "`n"
-                        $Ct    = $Array.Count
-                        Do
-                        {
-                            If ($Array[$Ct] -notmatch "\w")
-                            {
-                                $Ct --
-                            }
-                        }
-                        Until ($Array[$Ct] -match "\w")
-    
-                        $This.Content = $Array[0..($Ct)] -join "`n"
-                    }
-                    Default
-                    {
-                        $This.Content = $xContent
-                    }
+                    
                 }
             }
-            Catch
+            Until (!!$xContent -or $X -eq 5)
+
+            If (!$xContent)
             {
-                Throw "Exception [!] An unspecified error occurred"
+                Throw "Exception [!] File {0} failed to download" -f $This.Name
+            }
+
+            Switch -Regex ($This.Name)
+            {
+                "\.+(jpg|jpeg|png|bmp|ico)"
+                {
+                    $This.Content = $xContent
+                }
+                "\.+(txt|xml|cs)"
+                {
+                    $Array = $xContent -Split "`n"
+                    $Ct    = $Array.Count
+                    Do
+                    {
+                        If ($Array[$Ct] -notmatch "\w")
+                        {
+                            $Ct --
+                        }
+                    }
+                    Until ($Array[$Ct] -match "\w")
+            
+                    $This.Content = $Array[0..($Ct)] -join "`n"
+                }
+                Default
+                {
+                    $This.Content = $xContent
+                }
             }
         }
         Write()
@@ -2613,7 +2620,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-20 00:38:40 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-20 14:20:03 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
