@@ -351,3 +351,5 @@ namespace Wifi
         IntPtr pDot11Ssid,
         IntPtr pIeData,
         IntPtr pReserved);
+    }
+}
