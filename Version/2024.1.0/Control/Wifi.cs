@@ -351,5 +351,125 @@ namespace Wifi
         IntPtr pDot11Ssid,
         IntPtr pIeData,
         IntPtr pReserved);
+        
+        [DllImport("Wlanapi.dll")]
+        public static extern uint WlanSetInterface(
+            IntPtr hClientHandle,
+            ref Guid pInterfaceGuid,
+            WLAN_INTF_OPCODE OpCode,
+            uint dwDataSize,
+            IntPtr pData ,
+            IntPtr pReserved
+        );
+
+        public enum WLAN_INTF_OPCODE
+        {
+            wlan_intf_opcode_autoconf_start = 0,
+            wlan_intf_opcode_autoconf_enabled,
+            wlan_intf_opcode_background_scan_enabled,
+            wlan_intf_opcode_media_streaming_mode,
+            wlan_intf_opcode_radio_state,
+            wlan_intf_opcode_bss_type,
+            wlan_intf_opcode_interface_state,
+            wlan_intf_opcode_current_connection,
+            wlan_intf_opcode_channel_number,
+            wlan_intf_opcode_supported_infrastructure_auth_cipher_pairs,
+            wlan_intf_opcode_supported_adhoc_auth_cipher_pairs,
+            wlan_intf_opcode_supported_country_or_region_string_list,
+            wlan_intf_opcode_current_operation_mode,
+            wlan_intf_opcode_supported_safe_mode,
+            wlan_intf_opcode_certified_safe_mode,
+            wlan_intf_opcode_autoconf_end = 268435455,
+            wlan_intf_opcode_msm_start = 268435712,
+            wlan_intf_opcode_statistics,
+            wlan_intf_opcode_rssi,
+            wlan_intf_opcode_msm_end = 536870911,
+            wlan_intf_opcode_security_start = 536936448,
+            wlan_intf_opcode_security_end = 805306367,
+            wlan_intf_opcode_ihv_start = 805306368,
+            wlan_intf_opcode_ihv_end = 1073741823,
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WlanPhyRadioState
+        {
+            public int dwPhyIndex;
+            public Dot11RadioState dot11SoftwareRadioState;
+            public Dot11RadioState dot11HardwareRadioState;
+        }
+
+        public enum Dot11RadioState : uint
+        {
+            Unknown = 0,
+            On,
+            Off
+        }
+
+        public enum WLAN_OPCODE_VALUE_TYPE
+        {
+            wlan_opcode_value_type_query_only = 0,
+            wlan_opcode_value_type_set_by_group_policy = 1,
+            wlan_opcode_value_type_set_by_user = 2,
+            wlan_opcode_value_type_invalid = 3
+        }
+
+        [DllImport("Wlanapi", EntryPoint = "WlanQueryInterface")]
+        public static extern uint WlanQueryInterface(
+            [In] IntPtr hClientHandle,
+            [In] ref Guid pInterfaceGuid,
+            WLAN_INTF_OPCODE OpCode,
+            IntPtr pReserved,
+            [Out] out uint pdwDataSize,
+            ref IntPtr ppData,
+            IntPtr pWlanOpcodeValueType
+        );
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WLAN_CONNECTION_ATTRIBUTES
+        {
+            public WLAN_INTERFACE_STATE isState;
+            public WLAN_CONNECTION_MODE wlanConnectionMode;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string strProfileName;
+            public WLAN_ASSOCIATION_ATTRIBUTES wlanAssociationAttributes;
+            public WLAN_SECURITY_ATTRIBUTES wlanSecurityAttributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct DOT11_MAC_ADDRESS
+        {
+             public byte one;
+             public byte two;
+             public byte three;
+             public byte four;
+             public byte five;
+             public byte six;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WLAN_ASSOCIATION_ATTRIBUTES
+        {
+            public DOT11_SSID dot11Ssid;
+            public DOT11_BSS_TYPE dot11BssType;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            public byte[] _dot11Bssid;
+            public DOT11_PHY_TYPE dot11PhyType;
+            public uint uDot11PhyIndex;
+            public uint wlanSignalQuality;
+            public uint ulRxRate;
+            public uint ulTxRate;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WLAN_SECURITY_ATTRIBUTES
+        {
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool bSecurityEnabled;
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool bOneXEnabled;
+            public DOT11_AUTH_ALGORITHM dot11AuthAlgorithm;
+            public DOT11_CIPHER_ALGORITHM dot11CipherAlgorithm;
+        }
     }
 }
