@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-21 19:12:27                                                                  //
+\\  Date       : 2024-01-22 18:42:49                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2024-01-21
+    Modified   : 2024-01-22
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -9271,7 +9271,7 @@ Function New-VmController
         }
     }
 
-    $Ctrl = [VmControllerMaster]::New()
+    $Ctrl = [NewVmControllerMaster]::New()
     Switch ($Mode)
     {
         0 
@@ -9284,5 +9284,4 @@ Function New-VmController
             $Ctrl
         }
     }
-    
 }
