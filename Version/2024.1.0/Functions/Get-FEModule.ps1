@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-22 17:21:38                                                                  //
+\\  Date       : 2024-01-22 18:10:06                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -684,7 +684,7 @@ Function Get-FEModule
                 {
                     $This.Content = $xContent
                 }
-                "\.+(txt|xml|cs)"
+                "\.+(txt|xml)"
                 {
                     $Array = $xContent -Split "`n"
                     $Ct    = $Array.Count
@@ -725,7 +725,7 @@ Function Get-FEModule
                     {
                         [System.IO.File]::WriteAllBytes($This.Fullname,[Byte[]]$This.Content)
                     }
-                    "\.+(xml|txt|cs)"
+                    "\.+(xml|txt)"
                     {
                         [System.IO.File]::WriteAllText($This.Fullname,$This.Content)
                     }
@@ -755,7 +755,7 @@ Function Get-FEModule
                     {
                         [System.IO.File]::ReadAllBytes($This.Fullname)
                     }
-                    "\.+(xml|txt|cs)"
+                    "\.+(xml|txt)"
                     {
                         [System.IO.File]::ReadAllText($This.Fullname,[System.Text.UTF8Encoding]$False)
                     }
@@ -1696,7 +1696,7 @@ Function Get-FEModule
                     ("up.png"                          , "09319D3535B26451D5B7A7F5F6F6897431EBDC6AED261288F13C2C65D50C4346") ,
                     ("vendorlist.txt"                  , "A37B6652014467A149AC6277D086B4EEE7580DDB548F81B0B2AA7AC78C240874") ,
                     ("warning.png"                     , "CC05A590DE7AD32AEB47E117AA2DD845F710080F9A3856FBCDC9BC68106C562F") ,
-                    ("Wifi.cs"                         , "653A421E4F29882DA8276F9D543FD792D249BE141F2043BDC65C17C6B6FAC77B") ,
+                    ("Wifi.cs"                         , "359975AFA9D69C9EC52C30BC0D0C203F4A9C5A44BA5588BAF04BC0C684B730B9") ,
                     ("zipcode.txt"                     , "E471E887F537FA295A070AB41E21DEE978181A92CB204CA1080C6DC32CBBE0D8") 
                 }
                 Function
