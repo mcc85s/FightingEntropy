@@ -10,7 +10,7 @@
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
-   Solution   : [FightingEntropy()][2024.8.0]
+   Solution   : [FightingEntropy()][2024.1.0]
    Purpose    : Loads the FightingEntropy module
    Author     : Michael C. Cook Sr.
    Contact    : @mcc85s
