@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-21 20:30:23                                                                  //
+\\  Date       : 2024-01-22 17:03:52                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2024-01-21
+   Modified   : 2024-01-22
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -229,7 +229,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Block]>"
+            Return "<FEModule.Theme.Block>"
         }
     }
 
@@ -248,7 +248,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Track]>"
+            Return "<FEModule.Theme.Track>"
         }
     }
 
@@ -396,7 +396,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Stack]>"
+            Return "<FEModule.Theme.Stack>"
         }
     }
 
@@ -419,7 +419,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[Property]>"
+            Return "<FEModule.OS.Property>"
         }
     }
 
@@ -444,7 +444,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[PropertySet]>"
+            Return "<FEModule.OS.Property.Set>"
         }
     }
 
@@ -566,7 +566,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[Controller]>"
+            Return "<FEModule.OS.Controller>"
         }
     }
 
@@ -574,7 +574,7 @@ Function Get-FEModule
     # // | Enumerates the manifest item types |
     # // ======================================
 
-    Enum ManifestListType
+    Enum ManifestSectionType
     {
         Control
         Function
@@ -585,13 +585,13 @@ Function Get-FEModule
     # // | Meant to determine longest file name and provide spacing |
     # // ============================================================
 
-    Class ManifestListItem
+    Class ManifestSection
     {
         [UInt32]  $Index
         [String] $Source
         [String]   $Name
         [String]   $Hash
-        ManifestListItem([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
+        ManifestSection([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
         {
             $This.Index  = $Index
             $This.Source = $Source
@@ -600,7 +600,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[ListItem]>"
+            Return "<FEModule.Manifest.Section>"
         }
     }
 
@@ -608,7 +608,7 @@ Function Get-FEModule
     # // | Manifest file -> filesystem object (collection/validation) |
     # // ==============================================================
 
-    Class ManifestFileEntry
+    Class ManifestFile
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -620,7 +620,7 @@ Function Get-FEModule
         Hidden [String]   $Source
         Hidden [UInt32]    $Match
         Hidden [Object]  $Content
-        ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
+        ManifestFile([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
         {
             $This.Index    = $Folder.Item.Count
             $This.Mode     = 0
@@ -772,7 +772,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[FileEntry]>"
+            Return "<FEModule.Manifest.File>"
         }
     }
 
@@ -780,7 +780,7 @@ Function Get-FEModule
     # // | Manifest folder -> filesystem object |
     # // ========================================
 
-    Class ManifestFolderEntry
+    Class ManifestFolder
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -790,7 +790,7 @@ Function Get-FEModule
         [UInt32]          $Exists
         Hidden [Object]     $Item
         Hidden [String]   $Source
-        ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
+        ManifestFolder([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
         {
             $This.Index     = $Index
             $This.Mode      = 1
@@ -852,7 +852,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[FolderEntry]>"
+            Return "<FEModule.Manifest.Folder>"
         }
     }
 
@@ -927,7 +927,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[Controller]>"
+            Return "<FEModule.Manifest.Controller>"
         }
     }
 
@@ -976,7 +976,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[Template]>"
+            Return "<FEModule.Registry.Template>"
         }
     }
 
@@ -984,7 +984,7 @@ Function Get-FEModule
     # // | Works as a PowerShell Registry provider |
     # // ===========================================
 
-    Class RegistryKeyTemp
+    Class RegistryTemporaryKey
     {
         Hidden [Microsoft.Win32.RegistryKey]    $Key
         Hidden [Microsoft.Win32.RegistryKey] $Subkey
@@ -993,7 +993,7 @@ Function Get-FEModule
         [String]                               $Path
         [String]                               $Name
         Hidden [String]                    $Fullname
-        RegistryKeyTemp([String]$Path)
+        RegistryTemporaryKey([String]$Path)
         {
             $This.Fullname = $Path
             $Split         = $Path -Split "\\"
@@ -1051,7 +1051,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[KeyTemp]>"
+            Return "<FEModule.Registry.Temporary.Key>"
         }
     }
     
@@ -1073,7 +1073,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[KeyProperty]>"
+            Return "<FEModule.Registry.Key.Property>"
         }
     }
 
@@ -1128,7 +1128,7 @@ Function Get-FEModule
                 Throw "Exception [!] Path already exists"
             }
 
-            $Key            = $This.RegistryKeyTemp($This.Path)
+            $Key            = $This.RegistryTemporaryKey($This.Path)
             $Key.Open()
             $Key.Create()
 
@@ -1151,7 +1151,7 @@ Function Get-FEModule
                 Throw "Exception [!] Registry path does not exist"
             }
 
-            $Key             = $This.RegistryKeyTemp($This.Path)
+            $Key             = $This.RegistryTemporaryKey($This.Path)
             $Key.Open()
             $Key.Create()
             $Key.Delete()
@@ -1172,13 +1172,13 @@ Function Get-FEModule
         {
             Return [RegistryKeyProperty]::New($Index,$Property)
         }
-        [Object] KeyTemp([String]$Path)
+        [Object] TemporaryKey([String]$Path)
         {
-            Return [RegistryKeyTemp]::New($Path)
+            Return [RegistryTemporaryKey]::New($Path)
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[Key]>"
+            Return "<FEModule.Registry.Key>"
         }
     }
 
@@ -1298,7 +1298,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Root[Controller]>"
+            Return "<FEModule.Root.Controller>"
         }
     }
 
@@ -1388,7 +1388,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Validate[File]>"
+            Return "<FEModule.Validate.File>"
         }
     }
 
@@ -1435,7 +1435,7 @@ Function Get-FEModule
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.MarkdownArchive[Entry]>"
+            Return "<FEModule.Markdown.Archive.Entry>"
         }
     }
 
@@ -1460,17 +1460,17 @@ Function Get-FEModule
         [Object]           $Root
         [Object]       $Manifest
         [Object]       $Registry
-        InstallController([Switch]$Flags)
+        ModuleController([Switch]$Flags)
         {
             $This.Mode = 0
             $This.Main()
         }
-        InstallController()
+        ModuleController()
         {
             $This.Mode = 0
             $This.Main()
         }
-        InstallController([UInt32]$Mode)
+        ModuleController([UInt32]$Mode)
         {
             $This.Mode = $Mode
             $This.Main()
@@ -1583,15 +1583,15 @@ Function Get-FEModule
             # Returns parsed FEModule version object 
             Return [FEVersion]::New("| $($This.Version) | $($This.Date) | $($This.Guid) |")
         }
-        [Object] ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
+        [Object] ManifestFolder([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
         {
             # Instantiates a new manifest folder, and can be used externally
-            Return [ManifestFolderEntry]::New($Index,$Type,$Resource,$Name)
+            Return [ManifestFolder]::New($Index,$Type,$Resource,$Name)
         }
-        [Object] ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash)
+        [Object] ManifestFile([Object]$Folder,[String]$Name,[String]$Hash)
         {
             # Instantiates a new manifest file, and can be used externally
-            Return [ManifestFileEntry]::New($Folder,$Name,$Hash,$This.SourceUrl())
+            Return [ManifestFile]::New($Folder,$Name,$Hash,$This.SourceUrl())
         }
         [Object] NewVersion([String]$Version)
         {
@@ -1668,9 +1668,9 @@ Function Get-FEModule
 
             Return $xName
         }
-        [Object] ManifestListItem([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
+        [Object] ManifestSection([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
         {
-            Return [ManifestListItem]::New($Index,$Source,$Name,$Hash)
+            Return [ManifestSection]::New($Index,$Source,$Name,$Hash)
         }
         [Object[]] GetManifestList([String]$Name)
         {
@@ -1716,7 +1716,7 @@ Function Get-FEModule
                     ("Get-FEDCPromo.ps1"               , "4F668EE8E56F9E8C74D5C015411C439DDC54978B55D0CEB6786D7412098A47CB") ,
                     ("Get-FEDevice.ps1"                , "409D7C7F190FCD690A6618B542C0352B6D682D2C7DE0A62973A2B9CB6266F98F") ,
                     ("Get-FEImageManifest.ps1"         , "F01DF0E164A47A56E2F9D9F4CD2F93F3C703B9AAA7C1C5750130623187BE1D5E") ,
-                    ("Get-FEModule.ps1"                , "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") ,
+                    ("Get-FEModule.ps1"                , "19DC7424F22E06C84985B342B23D3ECFA3F8FF3E5334FE24F5D04441B280CAD2") ,
                     ("Get-FENetwork.ps1"               , "874C435C5AFB476FCFA707FEEDEAB03AEA1526B40AAD5F8D78C00181E08093F2") ,
                     ("Get-FEProcess.ps1"               , "0D8AA28C157D001A5A1222DA72076C168075CC431BE0C4C88FA64434B96FB29C") ,
                     ("Get-FESystem.ps1"                , "45125620B1AB92BD84FCC54BB823C35BADA82092BA08B835D1E5F68ECEDBCAA0") ,
@@ -1769,7 +1769,7 @@ Function Get-FEModule
         }
         [String[]] ManifestEnum()
         {
-            Return [System.Enum]::GetNames([ManifestListType])
+            Return [System.Enum]::GetNames([ManifestSectionType])
         }
         LoadManifest()
         {
@@ -1780,7 +1780,7 @@ Function Get-FEModule
             {
                 ForEach ($Item in $This.GetManifestList($Type))
                 {
-                    $Out += $This.ManifestListItem($Out.Count,$Type,$Item[0],$Item[1])
+                    $Out += $This.ManifestSection($Out.Count,$Type,$Item[0],$Item[1])
                 }
             }
 
@@ -1808,7 +1808,7 @@ Function Get-FEModule
             $ID   = $This.GetFolderName($Type)
 
             # Instantiates the specified folder
-            $Item = $This.ManifestFolderEntry($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
+            $Item = $This.ManifestFolder($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
 
             # Logs validation of its existence, and adds if it does not
             Switch ([UInt32]!!$Item)
@@ -1842,7 +1842,7 @@ Function Get-FEModule
             }
 
             # Instantiates the specified file
-            $Item   = $This.ManifestFileEntry($Folder,$ID,$Hash)
+            $Item   = $This.ManifestFile($Folder,$ID,$Hash)
             $Label  = $ID.PadRight($Max," ")
 
             # Logs validation of its existence, and adds if it does not
@@ -1991,7 +1991,7 @@ Function Get-FEModule
                             $This.Update(1,"[@] Registry : $($Item.Fullname) ")
                             $This.Update(0," ".PadLeft(102," "))
     
-                            $Key = $This.Registry.KeyTemp($Item.Fullname)
+                            $Key = $This.Registry.TemporaryKey($Item.Fullname)
                             $Key.Open()
                             $Key.Create()
             
@@ -2192,7 +2192,7 @@ Function Get-FEModule
                             $This.Update(1,"[ ] Registry : $($Item.Fullname) ")
                             $This.Update(0," ".PadLeft(102," "))
 
-                            $Key            = $This.Registry.KeyTemp($Object.Path)
+                            $Key            = $This.Registry.TemporaryKey($Object.Path)
                             $Key.Open()
                             $Key.Create()
                             $Key.Remove()
@@ -2514,4 +2514,3 @@ Function Get-FEModule
         }
     }
 }
-
