@@ -1,8 +1,7 @@
-
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-21 16:17:22                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-21 20:40:54                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1531,7 +1530,7 @@ Function FightingEntropy.Module
     # // | Factory class to control all of the aforementioned classes |
     # // ==============================================================
 
-    Class InstallController
+    Class ModuleController
     {
         Hidden [UInt32]    $Mode
         Hidden [Object] $Console
@@ -1789,58 +1788,57 @@ Function FightingEntropy.Module
                 }
                 Function
                 {
-                    ("Copy-FileStream.ps1"             , "") ,
-                    ("Get-AssemblyList.ps1"            , "") ,
-                    ("Get-ControlExtension.ps1"        , "") ,
-                    ("Get-DcomSecurity.ps1"            , "") ,
-                    ("Get-EnvironmentKey.ps1"          , "") ,
-                    ("Get-EventLogArchive.ps1"         , "") ,
-                    ("Get-EventLogConfigExtension.ps1" , "") ,
-                    ("Get-EventLogController.ps1"      , "") ,
-                    ("Get-EventLogProject.ps1"         , "") ,
-                    ("Get-EventLogRecordExtension.ps1" , "") ,
-                    ("Get-EventLogXaml.ps1"            , "") ,
-                    ("Get-FEADLogin.ps1"               , "") ,
-                    ("Get-FEDCPromo.ps1"               , "") ,
-                    ("Get-FEDevice.ps1"                , "") ,
-                    ("Get-FEImageManifest.ps1"         , "") ,
-                    ("Get-FEModule.ps1"                , "") ,
-                    ("Get-FENetwork.ps1"               , "") ,
-                    ("Get-FEProcess.ps1"               , "") ,
-                    ("Get-FESystem.ps1"                , "") ,
-                    ("Get-MdtModule.ps1"               , "") ,
-                    ("Get-PowerShell.ps1"              , "") ,
-                    ("Get-PropertyItem.ps1"            , "") ,
-                    ("Get-PropertyObject.ps1"          , "") ,
-                    ("Get-PsdLog.ps1"                  , "") ,
-                    ("Get-PsdLogGUI.ps1"               , "") ,
-                    ("Get-PsdModule.ps1"               , "") ,
-                    ("Get-ThreadController.ps1"        , "") ,
-                    ("Get-UserProfile.ps1"             , "") ,
-                    ("Get-ViperBomb.ps1"               , "") ,
-                    ("Get-WhoisUtility.ps1"            , "") ,
-                    ("Initialize-FeAdInstance.ps1"     , "") ,
-                    ("Install-BossMode.ps1"            , "") ,
-                    ("Install-IISServer.ps1"           , "") ,
-                    ("Install-Psd.ps1"                 , "") ,
-                    ("Invoke-cimdb.ps1"                , "") ,
-                    ("New-Document.ps1"                , "") ,
-                    ("New-EnvironmentKey.ps1"          , "") ,
-                    ("New-FEConsole.ps1"               , "") ,
-                    ("New-FEFormat.ps1"                , "") ,
-                    ("New-FEInfrastructure.ps1"        , "") ,
-                    ("New-MarkdownFile.ps1"            , "") ,
-                    ("New-TranscriptionCollection.ps1" , "") ,
-                    ("New-VmController.ps1"            , "") ,
-                    ("Search-WirelessNetwork.ps1"      , "") ,
-                    ("Set-AdminAccount.ps1"            , "") ,
-                    ("Set-ScreenResolution.ps1"        , "") ,
-                    ("Show-ToastNotification.ps1"      , "") ,
-                    ("Start-TCPSession.ps1"            , "") ,
-                    ("Update-PowerShell.ps1"           , "") ,
-                    ("Write-Element.ps1"               , "") ,
-                    ("Write-Theme.ps1"                 , "") ,
-                    ("Write-Xaml.ps1"                  , "")
+                    ("Copy-FileStream.ps1"             , "862B3E6913475FC321387FAAE8C0BA3298759D7F55D7E11D2FDDF6E34257BECC") ,
+                    ("Get-AssemblyList.ps1"            , "EBEF2B109FE5646522579BDBBC6BE7BD7465C0CA5D10405248A13C9495FA40E4") ,
+                    ("Get-ControlExtension.ps1"        , "A7ABC20AA24A13DDFBE38DA83CB1DC52032504C60A6EAA055816DCDE94B01966") ,
+                    ("Get-DcomSecurity.ps1"            , "8507E507DECF99A078C45C3157F27D93DE35B0004F4C54DFBFF5ACB4559462A3") ,
+                    ("Get-EnvironmentKey.ps1"          , "AB1B926D0B567F9ED943D83C58BC0274129D9D0D2BFE7EAADEEBD99A6EAA448E") ,
+                    ("Get-EventLogArchive.ps1"         , "DFD1FF7AB141951938A931F3FDDFB275DC72C1151E02B2BFC3303080154E4995") ,
+                    ("Get-EventLogConfigExtension.ps1" , "48130EED8EED86A2B365912FF7BD440DE2310759159AE8EFCD8B03809C92BB5A") ,
+                    ("Get-EventLogController.ps1"      , "644BDF1ECBC6BF4A0E9D611D0F8C30115019D996CCB07184FAADEF30A73EFEB8") ,
+                    ("Get-EventLogProject.ps1"         , "29AEA454834222697F83400888FE74EEB77B6ABF43707D844AD5A7E77B24E3CB") ,
+                    ("Get-EventLogRecordExtension.ps1" , "D0A6C8AD8801060EF0EE7CDF39065321E16B233E9755E714DB0C030AC95BF9A0") ,
+                    ("Get-EventLogXaml.ps1"            , "CD667980014974ABC7287678E19C3959CE87660C09DBF2EBB96D18B962C3D390") ,
+                    ("Get-FEADLogin.ps1"               , "C900FE37D5FC0F63A1E0BC5DD9B36C57448331A8A479C2E0A31880E8D9E35CF4") ,
+                    ("Get-FEDCPromo.ps1"               , "4F668EE8E56F9E8C74D5C015411C439DDC54978B55D0CEB6786D7412098A47CB") ,
+                    ("Get-FEDevice.ps1"                , "409D7C7F190FCD690A6618B542C0352B6D682D2C7DE0A62973A2B9CB6266F98F") ,
+                    ("Get-FEImageManifest.ps1"         , "F01DF0E164A47A56E2F9D9F4CD2F93F3C703B9AAA7C1C5750130623187BE1D5E") ,
+                    ("Get-FEModule.ps1"                , "19DC7424F22E06C84985B342B23D3ECFA3F8FF3E5334FE24F5D04441B280CAD2") ,
+                    ("Get-FENetwork.ps1"               , "874C435C5AFB476FCFA707FEEDEAB03AEA1526B40AAD5F8D78C00181E08093F2") ,
+                    ("Get-FEProcess.ps1"               , "0D8AA28C157D001A5A1222DA72076C168075CC431BE0C4C88FA64434B96FB29C") ,
+                    ("Get-FESystem.ps1"                , "45125620B1AB92BD84FCC54BB823C35BADA82092BA08B835D1E5F68ECEDBCAA0") ,
+                    ("Get-MdtModule.ps1"               , "F4B9015A37930052ACDF583C8A35A22FF5C6F545720E2F888D671ADA811E79E7") ,
+                    ("Get-PowerShell.ps1"              , "8E566FA8AD0C23919501012AA7266691729D327F83D6C0792E4539EB583CA041") ,
+                    ("Get-PropertyItem.ps1"            , "92CF80AB4DD5115E333E1CE67F9E24DB7701FC0DEB15F16E11C06667325E5CD1") ,
+                    ("Get-PropertyObject.ps1"          , "5F722AE1FAA35C89D6588768B106344B193D2500474E5186BC9B8D22A3130B52") ,
+                    ("Get-PsdLog.ps1"                  , "6411411A6B660F72E872DDE58503039180380C39014983E51CE4D1DC40EE2882") ,
+                    ("Get-PsdLogGUI.ps1"               , "468EC4816E873926BE27A1F8432131F360816DB0A0BBDD7E3773E5EAD061DF8C") ,
+                    ("Get-PsdModule.ps1"               , "7CBDE4526EC57758002D00C6D8BE50C5E4E7292351C1E4ED2658224C40C407E7") ,
+                    ("Get-ThreadController.ps1"        , "2E731F4282F6CA2281E168E8DB6C7E6ED3811AA6F15347C10581A943DB2117B5") ,
+                    ("Get-UserProfile.ps1"             , "10E3A87935D90E61F0030011D4BEE99877E9B432A4B507EFE8577C87AEC2BE69") ,
+                    ("Get-ViperBomb.ps1"               , "58C1491DE7B8C9FD243462BA1041BC3AE08330C43B44DA3DB7B8727B83795BDF") ,
+                    ("Get-WhoisUtility.ps1"            , "CFFCA2A3C03293F9119B9BFEC3A99E8C4902999F66480D7D1617D2E3D2359C50") ,
+                    ("Initialize-FeAdInstance.ps1"     , "68064EBEF39724EF82FCCA7150063463265BBE0C2DDC1BFFE8497B884C810266") ,
+                    ("Install-IISServer.ps1"           , "C8C0EA6332560E3BCF0B37FBDF45436D54A65ED005705BE29AA25F18B33ABA54") ,
+                    ("Install-Psd.ps1"                 , "7CF53D11B15CF7E712A8E35142094C4563A9DCD08917C65D2022C7B014BE4E9F") ,
+                    ("Invoke-cimdb.ps1"                , "8835574220B607F27C45A831CD5CECBD6757364486AF9508DF71FC9495B82D0B") ,
+                    ("New-Document.ps1"                , "342AE1373890D6036AECF2A53D93F3A2C67E0CE3A951E002BDA117FEBF4C62FC") ,
+                    ("New-EnvironmentKey.ps1"          , "18A1BEBD461E666AAB42383B8C4ECA950929552B1C9704B53CBF6FF002936FFC") ,
+                    ("New-FEConsole.ps1"               , "89412440E1C2A65D7F33A7A93CAEC8B26C6E2E2A9E41E1DE320A401C87A7F871") ,
+                    ("New-FEFormat.ps1"                , "95126B932F16DB2634446B83372948F6538066D6B3A130D09D604AD315752099") ,
+                    ("New-FEInfrastructure.ps1"        , "D93A297BF83BEB130B9F9D24E855654F8FB670A594AC4AF8BC338C7CA6521F24") ,
+                    ("New-MarkdownFile.ps1"            , "5A3D759D55390C4F72AFC546C977E69F0F9BE5AF2A45D96010E8550B0CF27C2B") ,
+                    ("New-TranscriptionCollection.ps1" , "BC3B020A6F0CF8CD5CF8C06CF2EE725A7E3C2CC2886F471CB1806936032D4307") ,
+                    ("New-VmController.ps1"            , "6BB7336DD41EFA67808C8E4D335F072AF114F77E459B48743C291DCB3A1C14ED") ,
+                    ("Search-WirelessNetwork.ps1"      , "30A3024E8FCFAFC93B953CE44CC1E03FA901313063F29500207854E8F0E856D2") ,
+                    ("Set-AdminAccount.ps1"            , "C5E6A661A7DEF8B8C791DE1AED278586B2709A0C6A550FFF690FF707464DF732") ,
+                    ("Set-ScreenResolution.ps1"        , "9F14E7E9190ABD299F7A21F1E7A57809EBF0E5182099DE845573ABB2E55BDFCF") ,
+                    ("Show-ToastNotification.ps1"      , "61BDDF6AF8143CEA43FA1648F2AF172D68A1CCE4750D326449EB50A742EAC04F") ,
+                    ("Start-TCPSession.ps1"            , "878BA5EF733666431D5EC94C2C6C132B6E4F4F6DFA1664AE872F7F0F7FCD59CE") ,
+                    ("Update-PowerShell.ps1"           , "BA12BE91B23691DE30CCF7583CCFA397B56B7E9E8B89B157C9A79FC808F1F0C5") ,
+                    ("Write-Element.ps1"               , "D30BCDDD5352D70C730B70E458D4900CE7904EEDF9A387B29EA4F69EA3D16327") ,
+                    ("Write-Theme.ps1"                 , "1FC13440093B76ABADBD6960FBE788F5029FF288E8B3ABE95781994FD14935BB") ,
+                    ("Write-Xaml.ps1"                  , "33D7A14875469A67EB1DFEE2805DA27E734788A3CD001A45FAE46B6C7BDDC7CF")
                 }
                 Graphic
                 {
@@ -2443,6 +2441,11 @@ Function FightingEntropy.Module
                 }
             }
 
+            If ($List.Count -eq 0)
+            {
+                Throw "[!] No archive available, use Install()"
+            }
+
             $Item      = ($List | Sort-Object Real)[-1]
 
             $This.Update(0,"====[Downloading Latest Archive]====".PadRight(102,"="))
@@ -2574,11 +2577,11 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Installer[Controller]>"
+            Return "<FEModule.Module.Controller>"
         }
     }
 
-    [InstallController]::New($Mode)
+    [ModuleController]::New($Mode)
 }
 
 $Module = FightingEntropy.Module -Mode 0
@@ -2622,7 +2625,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-21 16:17:22 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-21 20:40:54 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
