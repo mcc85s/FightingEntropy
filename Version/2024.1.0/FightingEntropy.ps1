@@ -1,119 +1,124 @@
 <#
-     ____    ____________________________________________________________________________________________________        
-    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-21 20:40:54                                            ___//¯¯\\   
-     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+     ____    ____________________________________________________________________________________________________        
+    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-21 20:40:54                                            ___//¯¯\\   
+     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+
 \_______________________________________________________________________________________________________________________/
-  About /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-/¯¯¯¯¯¯¯                                                                                                                 
-    ____________________________________________________________________________________________
-    | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2024.1.0/FightingEntropy.ps1 |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    [FightingEntropy(π)] is a modification for [Windows PowerShell] that is meant for various tasks related to:
+  About /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯                                                                                                                 
+    ____________________________________________________________________________________________
+    | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2024.1.0/FightingEntropy.ps1 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-    [+] [system administration]
-    [+] [networking]
-    [+] [virtualization]
-    [+] [security]
-    [+] [graphic design]
-    [+] [system management/maintenance]
+    [FightingEntropy(π)] is a modification for [Windows PowerShell] that is meant for various tasks related to:
+    
+    [+] [system administration]
+    [+] [networking]
+    [+] [virtualization]
+    [+] [security]
+    [+] [graphic design]
+    [+] [system management/maintenance]
 
-    ...it'll eventually be usable on ALL platforms where [PowerShell] is able to be deployed.
-     __________________________________________________________________________________________
+    ...it'll eventually be usable on ALL platforms where [PowerShell] is able to be deployed.
+     __________________________________________________________________________________________
     //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-    \\ [Demo]                                                                                 //
-    //________________________________________________________________________________________\\
-    \\¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯//
-    // Date     || Name                                       || Url                          \\
-    \\__________||____________________________________________||______________________________//
-    //¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-    \\ 10/28/22 || [FightingEntropy(π)][2022.10.1]            || https://youtu.be/S7k4lZdPE-I //
-    // 04/03/23 || Virtual Lab - TCP Session                  || https://youtu.be/09c-fFbEQrU \\
-    \\ 03/20/23 || Virtual Lab - Desktop Deployment           || https://youtu.be/i2_fafoIx6I //
-    // 01/31/23 || New-VmController [Flight Test v2.0] Part I || https://youtu.be/nqTOmNIilxw \\
+    \\ [Demo]                                                                                 //
+    //________________________________________________________________________________________\\
+    \\¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯//
+    // Date     || Name                                       || Url                          \\
+    \\__________||____________________________________________||______________________________//
+    //¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯||¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+    \\ 10/28/22 || [FightingEntropy(π)][2022.10.1]            || https://youtu.be/S7k4lZdPE-I //
+    // 04/03/23 || Virtual Lab - TCP Session                  || https://youtu.be/09c-fFbEQrU \\
+    \\ 03/20/23 || Virtual Lab - Desktop Deployment           || https://youtu.be/i2_fafoIx6I //
+    // 01/31/23 || New-VmController [Flight Test v2.0] Part I || https://youtu.be/nqTOmNIilxw \\
     \\ 01/12/23 || Virtualization Lab - FEDCPromo             || https://youtu.be/9v7uJHF-cGQ //
     //__________||____________________________________________||______________________________\\
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    This module is rather [experimental] and incorporates [a lot of moving parts],
-    so it has [many areas of development]. 
+    This module is rather [experimental] and incorporates [a lot of moving parts],
+    so it has [many areas of development]. 
+    
+    The [end goal] of this [module], is to provide [heightened security] and [protection] against:
 
-    The [end goal] of this [module], is to provide [heightened security] and [protection] against:
+    [+] [identity theft]
+    [+] [cybercriminals]
+    [+] [douchebags]
+    [+] [malware]
+    [+] [viruses]
+    [+] [ransomware]
+    [+] [hackers who have malicious intent]
 
-    [+] [identity theft]
-    [+] [cybercriminals]
-    [+] [douchebags]
-    [+] [malware]
-    [+] [viruses]
-    [+] [ransomware]
-    [+] [hackers who have malicious intent]
+    Many of the tools in the wild are able to be circumvented by some of these [hackers] and [cybercriminals]. 
+    If you don't believe me...? That's fine. 
+    
+    That's why this link to a particular website about a particular event, exists.
+    ___________________________________________________________________________________
+    | https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Even the experts make mistakes.
 
-    Many of the tools in the wild are able to be circumvented by some of these [hackers] and [cybercriminals]. 
-    If you don't believe me...? That's fine. 
+    [FightingEntropy(π)] is meant to extend many of the capabilities that come with [Windows].
 
-    That's why this link to a particular website about a particular event, exists.
-    ___________________________________________________________________________________
-    | https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Even the experts make mistakes.
+    This file acts as the [installation/removal] process as well as for performing [validation] and [testing] purposes.
 
-    [FightingEntropy(π)] is meant to extend many of the capabilities that come with [Windows].
+    It is effectively a [shell] of the [entire module], and can be used to implement [updates] to the [module itself],
+    in a similar manner to how (Continuous Integration/Continuous Development) works (still a work in progress).
+    __________________________________________________________________________
+    | [FightingEntropy(π)][2024.1.0]                                         |
+    |========================================================================|
+    | Version   | Date                | Guid                                 |
+    |-----------|---------------------|--------------------------------------|
+    | 2024.1.0  | 01/21/2024 15:45:50 | 2a354137-91c8-49c3-92d0-ee6275dab2fc |
+    | 2023.8.0  | 08/07/2023 20:52:08 | 4b564727-b84b-4033-a716-36d1c5e3e62d |
+    | 2023.4.0  | 04/03/2023 18:53:49 | 75f64b43-3b02-46b1-b6a2-9e86cccf4811 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _________________
+    | Prerequisites |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    1) A system running [Windows PowerShell] on:
+       - [Windows 10/11]
+       - [Windows Server 2016/2019/2022]
 
-    This file acts as the [installation/removal] process as well as for performing [validation] and [testing] purposes.
+    2) [Execution Policy] must be set to [bypass]
 
-    It is effectively a [shell] of the [entire module], and can be used to implement [updates] to the [module itself],
-    in a similar manner to how (Continuous Integration/Continuous Development) works (still a work in progress).
-    __________________________________________________________________________
-    | [FightingEntropy(π)][2024.1.0]                                         |
-    |========================================================================|
-    | Version   | Date                | Guid                                 |
-    |-----------|---------------------|--------------------------------------|
-    | 2024.1.0  | 01/21/2024 15:45:50 | 2a354137-91c8-49c3-92d0-ee6275dab2fc |
-    | 2203.8.0  | 08/07/2023 20:52:08 | 4b564727-b84b-4033-a716-36d1c5e3e62d |
-    | 2023.4.0  | 04/03/2023 18:53:49 | 75f64b43-3b02-46b1-b6a2-9e86cccf4811 |
-    | 2022.12.0 | 12/14/2022 14:26:18 | 5e6c9634-1c88-49a2-8794-2970095d8793 |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    _________________
-    | Prerequisites |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    1) A system running [Windows PowerShell] on: 
-       - [Windows 10/11]
-       - [Windows Server 2016/2019/2021]
-
-    2) [Execution Policy] must be set to [bypass]
-
-    3) Must be running a [PowerShell] session with [administrative privileges]
-    ________________
-    | Installation |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    1) [Load the module into memory], which can be done be using this command:
-    _______________________________________________________________________________________________________________
-    | irm https://github.com/mcc85s/FightingEntropy/blob/main/Version/2024.1.0/FightingEntropy.ps1?raw=true | iex |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ...or just (copying + pasting) the content of the file...
+    3) Must be running a [PowerShell] session with [administrative privileges]
+    ________________
+    | Installation |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    1) As of 2024.1.0, this following link will host a [String] to the function that installs the latest version.
+    ___________________________________________________________________________
+    | https://github.com/mcc85s/FightingEntropy/blob/main/FightingEntropy.ps1 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Currently, that [String] points to this [file]…
     ____________________________________________________________________________________________
     | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2024.1.0/FightingEntropy.ps1 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ...into the [PowerShell] session, and pressing <Enter>
+    To invoke the command, use:
+    _______________________________________________________________________________________________________________
+    | irm https://github.com/mcc85s/FightingEntropy/blob/main/Version/2024.1.0/FightingEntropy.ps1?raw=true | iex |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...or just (copy + paste) the content of that [file] into a [PowerShell] console, and press <enter>
 
-    2) Once the [module is loaded into memory], enter the following:
-    __________________________________________________________________________________________________________________________
-    | Operation  | Instructions      | Description                                                                           |
-    |============|===================|=======================================================================================|
-    | Latest     | $Module.Latest()  | Retrieves the latest zip archive and updates any outstanding files (fastest)          |
-    | Install    | $Module.Install() | Installs the module by retrieving individual files in the manifest (thorough)         |
-    | Remove     | $Module.Remove()  | Removes all traces of the module from the system (does not consider extraneous paths) |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    _____________________________________________________________________________________________________
-    | Todo                                                                                              |
-    |---------------------------------------------------------------------------------------------------|
-    | PS Core         | Filter out stuff for PS Core, by building a different manifest                  |
-    | PS Server       | Filter out stuff for PS Server, **                                              |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-                                                                                                                 _______/
-\_______________________________________________________________________________________________________________/ About  
-  Function /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-/¯¯¯¯¯¯¯¯¯¯                                                                                                              
+    2) Once the [module is loaded into memory], it will create a variable called $Module, then enter the following:
+    ____________________________________________________________________________________________________
+    | Operation  | Instructions      | Description                                                     |
+    |============|===================|=================================================================|
+    | Latest     | $Module.Latest()  | Installs from the latest archive, and updates outstanding files |
+    | Install    | $Module.Install() | Installs from the embedded module manifest                      |
+    | Remove     | $Module.Remove()  | Removes all traces of the module, registry, files, etc.         |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________________
+    | Todo                                                                                              |
+    |---------------------------------------------------------------------------------------------------|
+    | PS Core         | Filter out stuff for PS Core, by building a different manifest                  |
+    | PS Server       | Filter out stuff for PS Server, **                                              |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+                                                                                                                 _______/
+\_______________________________________________________________________________________________________________/ About  
+  Function /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯¯¯¯                                                                                                              
 #>
 
 Function FightingEntropy.Module
@@ -316,7 +321,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Block]>"
+            Return "<FEModule.Theme.Block>"
         }
     }
 
@@ -335,7 +340,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Track]>"
+            Return "<FEModule.Theme.Track>"
         }
     }
 
@@ -483,7 +488,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Theme[Stack]>"
+            Return "<FEModule.Theme.Stack>"
         }
     }
 
@@ -506,7 +511,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[Property]>"
+            Return "<FEModule.OS.Property>"
         }
     }
 
@@ -531,7 +536,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[PropertySet]>"
+            Return "<FEModule.OS.Property.Set>"
         }
     }
 
@@ -653,7 +658,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.OS[Controller]>"
+            Return "<FEModule.OS.Controller>"
         }
     }
 
@@ -661,7 +666,7 @@ Function FightingEntropy.Module
     # // | Enumerates the manifest item types |
     # // ======================================
 
-    Enum ManifestListType
+    Enum ManifestSectionType
     {
         Control
         Function
@@ -672,13 +677,13 @@ Function FightingEntropy.Module
     # // | Meant to determine longest file name and provide spacing |
     # // ============================================================
 
-    Class ManifestListItem
+    Class ManifestSection
     {
         [UInt32]  $Index
         [String] $Source
         [String]   $Name
         [String]   $Hash
-        ManifestListItem([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
+        ManifestSection([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
         {
             $This.Index  = $Index
             $This.Source = $Source
@@ -687,7 +692,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[ListItem]>"
+            Return "<FEModule.Manifest.Section>"
         }
     }
 
@@ -695,7 +700,7 @@ Function FightingEntropy.Module
     # // | Manifest file -> filesystem object (collection/validation) |
     # // ==============================================================
 
-    Class ManifestFileEntry
+    Class ManifestFile
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -707,7 +712,7 @@ Function FightingEntropy.Module
         Hidden [String]   $Source
         Hidden [UInt32]    $Match
         Hidden [Object]  $Content
-        ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
+        ManifestFile([Object]$Folder,[String]$Name,[String]$Hash,[String]$Source)
         {
             $This.Index    = $Folder.Item.Count
             $This.Mode     = 0
@@ -859,7 +864,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[FileEntry]>"
+            Return "<FEModule.Manifest.File>"
         }
     }
 
@@ -867,7 +872,7 @@ Function FightingEntropy.Module
     # // | Manifest folder -> filesystem object |
     # // ========================================
 
-    Class ManifestFolderEntry
+    Class ManifestFolder
     {
         Hidden [UInt32]    $Index
         Hidden [UInt32]     $Mode
@@ -877,7 +882,7 @@ Function FightingEntropy.Module
         [UInt32]          $Exists
         Hidden [Object]     $Item
         Hidden [String]   $Source
-        ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
+        ManifestFolder([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name)
         {
             $This.Index     = $Index
             $This.Mode      = 1
@@ -939,7 +944,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[FolderEntry]>"
+            Return "<FEModule.Manifest.Folder>"
         }
     }
 
@@ -1014,7 +1019,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Manifest[Controller]>"
+            Return "<FEModule.Manifest.Controller>"
         }
     }
 
@@ -1063,7 +1068,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[Template]>"
+            Return "<FEModule.Registry.Template>"
         }
     }
 
@@ -1071,7 +1076,7 @@ Function FightingEntropy.Module
     # // | Works as a PowerShell Registry provider |
     # // ===========================================
 
-    Class RegistryKeyTemp
+    Class RegistryTemporaryKey
     {
         Hidden [Microsoft.Win32.RegistryKey]    $Key
         Hidden [Microsoft.Win32.RegistryKey] $Subkey
@@ -1080,7 +1085,7 @@ Function FightingEntropy.Module
         [String]                               $Path
         [String]                               $Name
         Hidden [String]                    $Fullname
-        RegistryKeyTemp([String]$Path)
+        RegistryTemporaryKey([String]$Path)
         {
             $This.Fullname = $Path
             $Split         = $Path -Split "\\"
@@ -1138,7 +1143,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[KeyTemp]>"
+            Return "<FEModule.Registry.Temporary.Key>"
         }
     }
     
@@ -1160,7 +1165,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[KeyProperty]>"
+            Return "<FEModule.Registry.Key.Property>"
         }
     }
 
@@ -1215,7 +1220,7 @@ Function FightingEntropy.Module
                 Throw "Exception [!] Path already exists"
             }
 
-            $Key            = $This.RegistryKeyTemp($This.Path)
+            $Key            = $This.RegistryTemporaryKey($This.Path)
             $Key.Open()
             $Key.Create()
 
@@ -1238,7 +1243,7 @@ Function FightingEntropy.Module
                 Throw "Exception [!] Registry path does not exist"
             }
 
-            $Key             = $This.RegistryKeyTemp($This.Path)
+            $Key             = $This.RegistryTemporaryKey($This.Path)
             $Key.Open()
             $Key.Create()
             $Key.Delete()
@@ -1259,13 +1264,13 @@ Function FightingEntropy.Module
         {
             Return [RegistryKeyProperty]::New($Index,$Property)
         }
-        [Object] KeyTemp([String]$Path)
+        [Object] TemporaryKey([String]$Path)
         {
-            Return [RegistryKeyTemp]::New($Path)
+            Return [RegistryTemporaryKey]::New($Path)
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Registry[Key]>"
+            Return "<FEModule.Registry.Key>"
         }
     }
 
@@ -1385,7 +1390,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Root[Controller]>"
+            Return "<FEModule.Root.Controller>"
         }
     }
 
@@ -1475,7 +1480,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.Validate[File]>"
+            Return "<FEModule.Validate.File>"
         }
     }
 
@@ -1522,7 +1527,7 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "<FightingEntropy.Module.MarkdownArchive[Entry]>"
+            Return "<FEModule.Markdown.Archive.Entry>"
         }
     }
 
@@ -1547,17 +1552,17 @@ Function FightingEntropy.Module
         [Object]           $Root
         [Object]       $Manifest
         [Object]       $Registry
-        InstallController([Switch]$Flags)
+        ModuleController([Switch]$Flags)
         {
             $This.Mode = 0
             $This.Main()
         }
-        InstallController()
+        ModuleController()
         {
             $This.Mode = 0
             $This.Main()
         }
-        InstallController([UInt32]$Mode)
+        ModuleController([UInt32]$Mode)
         {
             $This.Mode = $Mode
             $This.Main()
@@ -1670,15 +1675,15 @@ Function FightingEntropy.Module
             # Returns parsed FEModule version object 
             Return [FEVersion]::New("| $($This.Version) | $($This.Date) | $($This.Guid) |")
         }
-        [Object] ManifestFolderEntry([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
+        [Object] ManifestFolder([UInt32]$Index,[String]$Type,[String]$Resource,[String]$Name)
         {
             # Instantiates a new manifest folder, and can be used externally
-            Return [ManifestFolderEntry]::New($Index,$Type,$Resource,$Name)
+            Return [ManifestFolder]::New($Index,$Type,$Resource,$Name)
         }
-        [Object] ManifestFileEntry([Object]$Folder,[String]$Name,[String]$Hash)
+        [Object] ManifestFile([Object]$Folder,[String]$Name,[String]$Hash)
         {
             # Instantiates a new manifest file, and can be used externally
-            Return [ManifestFileEntry]::New($Folder,$Name,$Hash,$This.SourceUrl())
+            Return [ManifestFile]::New($Folder,$Name,$Hash,$This.SourceUrl())
         }
         [Object] NewVersion([String]$Version)
         {
@@ -1755,9 +1760,9 @@ Function FightingEntropy.Module
 
             Return $xName
         }
-        [Object] ManifestListItem([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
+        [Object] ManifestSection([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
         {
-            Return [ManifestListItem]::New($Index,$Source,$Name,$Hash)
+            Return [ManifestSection]::New($Index,$Source,$Name,$Hash)
         }
         [Object[]] GetManifestList([String]$Name)
         {
@@ -1803,7 +1808,7 @@ Function FightingEntropy.Module
                     ("Get-FEDCPromo.ps1"               , "4F668EE8E56F9E8C74D5C015411C439DDC54978B55D0CEB6786D7412098A47CB") ,
                     ("Get-FEDevice.ps1"                , "409D7C7F190FCD690A6618B542C0352B6D682D2C7DE0A62973A2B9CB6266F98F") ,
                     ("Get-FEImageManifest.ps1"         , "F01DF0E164A47A56E2F9D9F4CD2F93F3C703B9AAA7C1C5750130623187BE1D5E") ,
-                    ("Get-FEModule.ps1"                , "19DC7424F22E06C84985B342B23D3ECFA3F8FF3E5334FE24F5D04441B280CAD2") ,
+                    ("Get-FEModule.ps1"                , "3F27C8B61B4A3474BB436E4D555E600A46B3D4863801E4BE073247F6AB68F559") ,
                     ("Get-FENetwork.ps1"               , "874C435C5AFB476FCFA707FEEDEAB03AEA1526B40AAD5F8D78C00181E08093F2") ,
                     ("Get-FEProcess.ps1"               , "0D8AA28C157D001A5A1222DA72076C168075CC431BE0C4C88FA64434B96FB29C") ,
                     ("Get-FESystem.ps1"                , "45125620B1AB92BD84FCC54BB823C35BADA82092BA08B835D1E5F68ECEDBCAA0") ,
@@ -1856,7 +1861,7 @@ Function FightingEntropy.Module
         }
         [String[]] ManifestEnum()
         {
-            Return [System.Enum]::GetNames([ManifestListType])
+            Return [System.Enum]::GetNames([ManifestSectionType])
         }
         LoadManifest()
         {
@@ -1867,7 +1872,7 @@ Function FightingEntropy.Module
             {
                 ForEach ($Item in $This.GetManifestList($Type))
                 {
-                    $Out += $This.ManifestListItem($Out.Count,$Type,$Item[0],$Item[1])
+                    $Out += $This.ManifestSection($Out.Count,$Type,$Item[0],$Item[1])
                 }
             }
 
@@ -1895,7 +1900,7 @@ Function FightingEntropy.Module
             $ID   = $This.GetFolderName($Type)
 
             # Instantiates the specified folder
-            $Item = $This.ManifestFolderEntry($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
+            $Item = $This.ManifestFolder($This.Manifest.Output.Count,$Type,$This.Root.Resource,$ID)
 
             # Logs validation of its existence, and adds if it does not
             Switch ([UInt32]!!$Item)
@@ -1929,7 +1934,7 @@ Function FightingEntropy.Module
             }
 
             # Instantiates the specified file
-            $Item   = $This.ManifestFileEntry($Folder,$ID,$Hash)
+            $Item   = $This.ManifestFile($Folder,$ID,$Hash)
             $Label  = $ID.PadRight($Max," ")
 
             # Logs validation of its existence, and adds if it does not
@@ -2078,7 +2083,7 @@ Function FightingEntropy.Module
                             $This.Update(1,"[@] Registry : $($Item.Fullname) ")
                             $This.Update(0," ".PadLeft(102," "))
     
-                            $Key = $This.Registry.KeyTemp($Item.Fullname)
+                            $Key = $This.Registry.TemporaryKey($Item.Fullname)
                             $Key.Open()
                             $Key.Create()
             
@@ -2279,7 +2284,7 @@ Function FightingEntropy.Module
                             $This.Update(1,"[ ] Registry : $($Item.Fullname) ")
                             $This.Update(0," ".PadLeft(102," "))
 
-                            $Key            = $This.Registry.KeyTemp($Object.Path)
+                            $Key            = $This.Registry.TemporaryKey($Object.Path)
                             $Key.Open()
                             $Key.Create()
                             $Key.Remove()
