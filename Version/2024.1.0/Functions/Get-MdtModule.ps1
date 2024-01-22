@@ -6,18 +6,18 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-16 20:11:20                                                                  //
+\\  Date       : 2024-01-21 19:30:33                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-MdtModule.ps1
     Solution   : [FightingEntropy()][2024.1.0]
     Purpose    : Retrieves the location of the MicrosoftDeploymentToolkit.psd1 file,
-                 (and/or) installs (MDT/WinADK/WinPE) if they are not present
+                 (and/or) (installs/uninstalls) (MDT/WinADK/WinPE) if they are not present
     Author     : Michael C. Cook Sr.
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2024-01-16
+    Modified   : 2024-01-21
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
