@@ -2354,6 +2354,11 @@ Function Get-FEModule
                 }
             }
 
+            If ($List.Count -eq 0)
+            {
+                Throw "[!] No archive available, use Install()"
+            }
+
             $Item      = ($List | Sort-Object Real)[-1]
 
             $This.Update(0,"====[Downloading Latest Archive]====".PadRight(102,"="))
