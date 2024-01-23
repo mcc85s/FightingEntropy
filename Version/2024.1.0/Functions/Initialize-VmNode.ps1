@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-23 00:07:39                                                                  //
+\\  Date       : 2024-01-23 00:16:05                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -614,7 +614,7 @@ Function Initialize-VmNode
         }
         BuildRegistryPath()
         {
-            $Split = $This.GetComputerInfoPath() -Split "\"
+            $Split = $This.GetComputerInfoPath() -Split "\\"
             $xPath = $Split[0]
             ForEach ($X in 1..($Split.Count-1))
             {
