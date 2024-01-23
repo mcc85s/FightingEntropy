@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-21 19:28:46                                                                  //
+\\  Date       : 2024-01-22 21:29:10                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-21
+    Modified   : 2024-01-22
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -885,11 +885,23 @@ Function Initialize-VmNode
                 $Item.Execute()
             }
         }
-        [String] FunctionPath()
+        [String] FunctionStandalonePath()
         {
             Return "$Env:ProgramData\Secure Digits Plus LLC\ComputerInfo\Initialize-VmNode.ps1"
         }
-        SetFunction([String[]]$Function)
+        SetFunctionModule([String]$Path)
+        {
+            $This.Function.Path = $Path
+            $This.Function.Check()
+
+            If ($This.Function.Exists)
+            {
+                $Root     = $This.GetRegistryPath()
+                $Path     = "$Root\ComputerInfo"
+                Set-ItemProperty -Path $Path -Name Function -Value $This.Function.Path
+            }
+        }
+        SetFunctionStandalone([String[]]$Function)
         {
             $Parent = $This.Function.Path | Split-Path -Parent
 
@@ -898,7 +910,7 @@ Function Initialize-VmNode
                 [System.IO.Directory]::CreateDirectory($Parent)
             }
 
-            [System.IO.File]::WriteAllLines($This.FunctionPath(),$Function)
+            [System.IO.File]::WriteAllLines($This.FunctionStandalonePath(),$Function)
 
             $This.Function.Check()
 
