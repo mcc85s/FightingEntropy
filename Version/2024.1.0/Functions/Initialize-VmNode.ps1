@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-23 00:16:05                                                                  //
+\\  Date       : 2024-01-23 10:20:35                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-22
+    Modified   : 2024-01-23
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -574,6 +574,11 @@ Function Initialize-VmNode
             $Item = Get-ItemProperty $This.GetComputerInfoPath()
 
             # Automatically determine the function location
+            If ($Item.Function)
+            {
+                $This.Function = $This.VmNodeFunction($Item.Function)
+            }
+
             If (!$Item.Function)
             {
                 [Console]::WriteLine("[~] Getting available modules")
