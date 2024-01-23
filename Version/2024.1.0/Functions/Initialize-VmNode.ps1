@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-23 11:02:53                                                                  //
+\\  Date       : 2024-01-23 11:15:33                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -382,7 +382,7 @@ Function Initialize-VmNode
                 }
                 Else
                 {
-                    Get-Item $This.LocalPath | Out-Null
+                    Get-ChildItem $This.LocalPath | Out-Null
                 }
             }
             
@@ -400,7 +400,7 @@ Function Initialize-VmNode
                 $Share      = New-SmbMapping @Splat
                 If ($Share)
                 {
-                    Get-Item $This.LocalPath | Out-Null
+                    Get-ChildItem $This.LocalPath | Out-Null
                 }
             }
 
