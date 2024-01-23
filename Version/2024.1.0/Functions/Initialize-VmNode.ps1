@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-23 10:20:35                                                                  //
+\\  Date       : 2024-01-23 11:02:53                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -380,6 +380,10 @@ Function Initialize-VmNode
                     net use /delete $This.LocalPath > $Null
                     $Share = $Null
                 }
+                Else
+                {
+                    Get-Item $This.LocalPath | Out-Null
+                }
             }
             
             If (!$Share)
@@ -394,6 +398,10 @@ Function Initialize-VmNode
             
                 $Splat      = $This.Splat()
                 $Share      = New-SmbMapping @Splat
+                If ($Share)
+                {
+                    Get-Item $This.LocalPath | Out-Null
+                }
             }
 
             $This.Connected = [UInt32]!!$Share
