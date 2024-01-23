@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-22 21:29:10                                                                  //
+\\  Date       : 2024-01-22 23:50:14                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -40,6 +40,8 @@ Function Initialize-VmNode
     [Parameter(ParameterSetName=0,Position=9,Mandatory)][String[]]     $Dns,
     [Parameter(ParameterSetName=0,Position=10,Mandatory)][UInt32]  $Transmit,
     [Parameter(ParameterSetName=1)][Switch]$Reinitialize)
+
+
 
     Class SocketTcpMessage
     {
@@ -460,6 +462,8 @@ Function Initialize-VmNode
                 Throw "[!] This is not a Hyper-V VM"
             }
 
+            $This.SetFunction()
+
             $This.Network    = $This.VmNetworkNode($Index,
                                                    $Name,
                                                    $IpAddress,
@@ -480,6 +484,8 @@ Function Initialize-VmNode
             {
                 Throw "[!] This is not a Hyper-V VM"
             }
+
+            $This.SetFunction()
 
             $Path      = $This.GetComputerInfoPath()
             $Item      = Get-ItemProperty $Path
@@ -556,17 +562,102 @@ Function Initialize-VmNode
                 }
             }
         }
-        Main()
+        SetFunction([Switch]$Flags,[UInt32]$Mode)
+        {   
+            # Gets the registry information
+            $Item = Get-ItemProperty $This.GetComputerInfoPath()
+
+            # Automatically determine the function location
+            If (!$Item.Function)
+            {
+                [Console]::WriteLine("[~] Getting available modules")
+                $Installed    = Get-Module -ListAvailable
+                $xModule      = $Installed | ? Name -eq FightingEntropy
+
+                If ($xModule)
+                {
+                    # Module found, check typical path for Initialize-VmNode.ps1
+                    $Version  = $xModule.Version.ToString()
+                    $Resource = "{0}\{1}" -f $This.FunctionModulePath(), $Version
+                    $File     = "$Resource\Functions\Initialize-VmNode.ps1"
+                    Switch ([UInt32][System.IO.File]::Exists($File))
+                    {
+                        0
+                        {
+                            # File NOT found, write script block from memory and set the default path
+                            $This.WriteFunctionFromMemory()
+                            $This.Function = $This.VmNodeFunction($This.FunctionStandalonePath())
+                        }
+                        1
+                        {
+                            # File found, setting path
+                           $This.Function = $This.VmNodeFunction($File)
+                        }
+                    }
+                }
+                Else
+                {
+                    # Module NOT found, write script block from memory and set the default path
+                    $This.WriteFunctionFromMemory()
+                    $This.Function = $This.VmNodeFunction($This.FunctionStandalonePath())
+                }
+
+                # Sets the property in the registry
+                Set-ItemProperty -Path $This.GetComputerInfoPath() -Name Function -Value $This.Function.Path
+            }
+        }
+        BuildRegistryPath()
         {
-            $This.Function   = $This.VmNodeFunction($This.FunctionPath())
-            $This.Adapter    = $This.GetNetAdapter()
-            $This.Index      = $This.Adapter.InterfaceIndex
-            $This.Interface  = $This.GetNetIpAddress()
-            $This.ScriptList = @( )
+            $Split = $This.GetComputerInfoPath() -Split "\"
+            $xPath = $Split[0]
+            ForEach ($X in 1..($Split.Count-1))
+            {
+                $Item  = $Split[$X]
+                $xPath = $xPath, $Item -join "\"
+                If (!(Test-Path $xPath))
+                {
+                    New-Item -Path $xPath
+                }
+            }
+        }
+        WriteFunctionFromMemory()
+        {
+            $File     = $This.FunctionStandalonePath()
+            $xFunction = Get-ChildItem Function:\Initialize-VmNode
+            If (!$xFunction)
+            {
+                Throw "[!] Could not retrieve function from memory"
+            }
+            Else
+            {
+                Try
+                {
+                    [System.IO.File]::WriteAllLines($File,$xFunction.ScriptBlock)
+                }
+                Catch
+                {
+                    Throw "[!] Could not write function to file"
+                }
+            }
         }
         [Object] VmNodeFunction([String]$Path)
         {
             Return [VmNodeFunction]::New($Path)
+        }
+        [String] FunctionStandalonePath()
+        {
+            Return "$Env:ProgramData\Secure Digits Plus LLC\ComputerInfo\Initialize-VmNode.ps1"
+        }
+        [String] FunctionModulePath()
+        {
+            Return "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
+        }
+        Main()
+        {   
+            $This.Adapter    = $This.GetNetAdapter()
+            $This.Index      = $This.Adapter.InterfaceIndex
+            $This.Interface  = $This.GetNetIpAddress()
+            $This.ScriptList = @( )
         }
         [String] Label()
         {
@@ -598,7 +689,7 @@ Function Initialize-VmNode
         }
         [String] GetRegistryPath()
         {
-            Return "HKLM:\Software\Policies\Secure Digits Plus LLC"
+            Return "HKLM:\Software\Policies\{0}" -f $This.Author()
         }
         [String] GetComputerInfoPath()
         {
@@ -734,11 +825,7 @@ Function Initialize-VmNode
         }
         [Object] GetComputerInfo()
         {
-            $Path      = $This.GetComputerInfoPath()
-            $Item      = Get-ItemProperty $Path
-            $Item.Dhcp = Get-ItemProperty "$Path\Dhcp"
-
-            Return $Item
+            Return Get-ItemProperty $This.GetComputerInfoPath() -EA 0
         }
         Initialize()
         {
@@ -883,42 +970,6 @@ Function Initialize-VmNode
             {
                 [Console]::WriteLine($Item.Description)
                 $Item.Execute()
-            }
-        }
-        [String] FunctionStandalonePath()
-        {
-            Return "$Env:ProgramData\Secure Digits Plus LLC\ComputerInfo\Initialize-VmNode.ps1"
-        }
-        SetFunctionModule([String]$Path)
-        {
-            $This.Function.Path = $Path
-            $This.Function.Check()
-
-            If ($This.Function.Exists)
-            {
-                $Root     = $This.GetRegistryPath()
-                $Path     = "$Root\ComputerInfo"
-                Set-ItemProperty -Path $Path -Name Function -Value $This.Function.Path
-            }
-        }
-        SetFunctionStandalone([String[]]$Function)
-        {
-            $Parent = $This.Function.Path | Split-Path -Parent
-
-            If (![System.IO.Directory]::Exists($Parent))
-            {
-                [System.IO.Directory]::CreateDirectory($Parent)
-            }
-
-            [System.IO.File]::WriteAllLines($This.FunctionStandalonePath(),$Function)
-
-            $This.Function.Check()
-
-            If ($This.Function.Exists)
-            {
-                $Root     = $This.GetRegistryPath()
-                $Path     = "$Root\ComputerInfo"
-                Set-ItemProperty -Path $Path -Name Function -Value $This.Function.Path
             }
         }
         SetSmb([Hashtable]$Drive)
