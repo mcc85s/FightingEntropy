@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-23 10:23:49                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-23 11:04:51                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
@@ -1808,7 +1808,7 @@ Function FightingEntropy.Module
                     ("Get-FEDCPromo.ps1"               , "4F668EE8E56F9E8C74D5C015411C439DDC54978B55D0CEB6786D7412098A47CB") ,
                     ("Get-FEDevice.ps1"                , "409D7C7F190FCD690A6618B542C0352B6D682D2C7DE0A62973A2B9CB6266F98F") ,
                     ("Get-FEImageManifest.ps1"         , "F01DF0E164A47A56E2F9D9F4CD2F93F3C703B9AAA7C1C5750130623187BE1D5E") ,
-                    ("Get-FEModule.ps1"                , "74B3C2C0E1C6D0984FD0B57E7EE3219FA1F6BA801EEA85E3BA5B36B83560A72A") ,
+                    ("Get-FEModule.ps1"                , "4BA6B6170886EECB207D8D164C3D26024CBBE5F3DC0F7D3FE76CEC4364D81419") ,
                     ("Get-FENetwork.ps1"               , "874C435C5AFB476FCFA707FEEDEAB03AEA1526B40AAD5F8D78C00181E08093F2") ,
                     ("Get-FEProcess.ps1"               , "0D8AA28C157D001A5A1222DA72076C168075CC431BE0C4C88FA64434B96FB29C") ,
                     ("Get-FESystem.ps1"                , "45125620B1AB92BD84FCC54BB823C35BADA82092BA08B835D1E5F68ECEDBCAA0") ,
@@ -1824,7 +1824,7 @@ Function FightingEntropy.Module
                     ("Get-ViperBomb.ps1"               , "58C1491DE7B8C9FD243462BA1041BC3AE08330C43B44DA3DB7B8727B83795BDF") ,
                     ("Get-WhoisUtility.ps1"            , "CFFCA2A3C03293F9119B9BFEC3A99E8C4902999F66480D7D1617D2E3D2359C50") ,
                     ("Initialize-FeAdInstance.ps1"     , "68064EBEF39724EF82FCCA7150063463265BBE0C2DDC1BFFE8497B884C810266") ,
-                    ("Initialize-VmNode.ps1"           , "36440FF7A57B9E8C620AA2EB9C09F385F309F780DF65253416785F3F235258C9") ,
+                    ("Initialize-VmNode.ps1"           , "D3BAC2DA628443B928B373CA63AF1CB492BEF7AEAEAAD486BA2FB399972120FA") ,
                     ("Install-IISServer.ps1"           , "C8C0EA6332560E3BCF0B37FBDF45436D54A65ED005705BE29AA25F18B33ABA54") ,
                     ("Install-Psd.ps1"                 , "7CF53D11B15CF7E712A8E35142094C4563A9DCD08917C65D2022C7B014BE4E9F") ,
                     ("Invoke-cimdb.ps1"                , "8835574220B607F27C45A831CD5CECBD6757364486AF9508DF71FC9495B82D0B") ,
@@ -2631,7 +2631,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-23 10:23:49 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-23 11:04:51 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
