@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-22 23:58:02                                                                  //
+\\  Date       : 2024-01-23 00:07:39                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -563,7 +563,13 @@ Function Initialize-VmNode
             }
         }
         SetFunction()
-        {   
+        {
+            # Tests/Builds registry path
+            If (!(Test-Path $This.GetComputerInfoPath()))
+            {
+                $This.BuildRegistryPath()
+            }
+
             # Gets the registry information
             $Item = Get-ItemProperty $This.GetComputerInfoPath()
 
