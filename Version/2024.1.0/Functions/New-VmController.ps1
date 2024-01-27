@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-26 22:43:20                                                                  //
+\\  Date       : 2024-01-26 23:40:50                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -4831,13 +4831,13 @@ Function New-VmController
         {
             Return $This.NewVmControllerNodeTransmit($Name,$DisplayName,$Scriptlet).JsonString()
         }
-        [Void] TransmitTcp()
+        [Void] TransmitTcp([String[]]$Content)
         {
             $Splat = @{ 
 
                 Source  = $This.Network.IpAddress
                 Port    = $This.Network.Transmit
-                Content = $This.Script.Output[1].Content.Line
+                Content = $Content
             }
 
             $xScript = Start-TcpSession -Client @Splat
