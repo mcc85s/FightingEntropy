@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-26 22:48:04                                                                  //
+\\  Date       : 2024-01-26 23:48:02                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1732,7 +1732,7 @@ Function Get-FEModule
                     ("Get-ViperBomb.ps1"               , "58C1491DE7B8C9FD243462BA1041BC3AE08330C43B44DA3DB7B8727B83795BDF") ,
                     ("Get-WhoisUtility.ps1"            , "CFFCA2A3C03293F9119B9BFEC3A99E8C4902999F66480D7D1617D2E3D2359C50") ,
                     ("Initialize-FeAdInstance.ps1"     , "BE6FEF0399DA960BB25BC7748C07FA194F12C361F4C59498A86495EFDA0D20CC") ,
-                    ("Initialize-VmNode.ps1"           , "0B98F95D2630EABF716682595E42DB9FDBE41A024174341534A893AA71E91D0E") ,
+                    ("Initialize-VmNode.ps1"           , "1440C1EF6B2FCA9089C07BB1C6D5F78618320C3B9F85A508175F7A7B0B895D2E") ,
                     ("Install-IISServer.ps1"           , "C8C0EA6332560E3BCF0B37FBDF45436D54A65ED005705BE29AA25F18B33ABA54") ,
                     ("Install-Psd.ps1"                 , "7CF53D11B15CF7E712A8E35142094C4563A9DCD08917C65D2022C7B014BE4E9F") ,
                     ("Invoke-cimdb.ps1"                , "8835574220B607F27C45A831CD5CECBD6757364486AF9508DF71FC9495B82D0B") ,
@@ -1743,7 +1743,7 @@ Function Get-FEModule
                     ("New-FEInfrastructure.ps1"        , "D93A297BF83BEB130B9F9D24E855654F8FB670A594AC4AF8BC338C7CA6521F24") ,
                     ("New-MarkdownFile.ps1"            , "5A3D759D55390C4F72AFC546C977E69F0F9BE5AF2A45D96010E8550B0CF27C2B") ,
                     ("New-TranscriptionCollection.ps1" , "BC3B020A6F0CF8CD5CF8C06CF2EE725A7E3C2CC2886F471CB1806936032D4307") ,
-                    ("New-VmController.ps1"            , "0EA7364D2FE995844EB629EB1CD88EEB38F02F50686BADA18B867789CDAA6D7D") ,
+                    ("New-VmController.ps1"            , "CD7B43468F73E13595034206C10ADA34E05507C9D1ABACCF7B48B98F9E09ED98") ,
                     ("Search-WirelessNetwork.ps1"      , "30A3024E8FCFAFC93B953CE44CC1E03FA901313063F29500207854E8F0E856D2") ,
                     ("Set-AdminAccount.ps1"            , "C5E6A661A7DEF8B8C791DE1AED278586B2709A0C6A550FFF690FF707464DF732") ,
                     ("Set-ScreenResolution.ps1"        , "9F14E7E9190ABD299F7A21F1E7A57809EBF0E5182099DE845573ABB2E55BDFCF") ,
