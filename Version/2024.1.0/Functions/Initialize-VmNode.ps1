@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-26 23:37:46                                                                  //
+\\  Date       : 2024-01-27 00:10:36                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-26
+    Modified   : 2024-01-27
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -274,16 +274,6 @@ Function Initialize-VmNode
         Add([String]$Line)
         {
             $This.Content += $This.VmNodeScriptBlockLine($This.Content.Count,$Line)
-        }
-        Execute([UInt32]$Index)
-        {
-            If ($Index -gt $This.Script.Count)
-            {
-                Throw "[!] Invalid index"
-            }
-
-            $Item = $This.Script.Output[$Index]
-            $Item.Content.Line -join "`n" | Invoke-Expression
         }
         [String] ToString()
         {
@@ -1088,9 +1078,19 @@ Function Initialize-VmNode
                 Throw "Exception [!] Transmission error occurred"
             }
         }
+        Execute([UInt32]$Index)
+        {
+            If ($Index -gt $This.Script.Count)
+            {
+                Throw "[!] Invalid index"
+            }
+
+            $Item = $This.Script.Output[$Index]
+            $Item.Content.Line -join "`n" | Invoke-Expression
+        }
         Execute()
         {
-            ForEach ($Item in $This.ScriptList)
+            ForEach ($Item in $This.Script.Output)
             {
                 [Console]::WriteLine($Item.Description)
                 $Item.Execute()
