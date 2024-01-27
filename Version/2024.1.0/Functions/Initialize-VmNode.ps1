@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-26 22:44:15                                                                  //
+\\  Date       : 2024-01-26 23:37:46                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -275,9 +275,15 @@ Function Initialize-VmNode
         {
             $This.Content += $This.VmNodeScriptBlockLine($This.Content.Count,$Line)
         }
-        Execute()
+        Execute([UInt32]$Index)
         {
-            $This.Content.Line -join "`n" | Invoke-Expression
+            If ($Index -gt $This.Script.Count)
+            {
+                Throw "[!] Invalid index"
+            }
+
+            $Item = $This.Script.Output[$Index]
+            $Item.Content.Line -join "`n" | Invoke-Expression
         }
         [String] ToString()
         {
