@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-23 11:29:08                                                                  //
+\\  Date       : 2024-01-26 22:44:15                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-05-05
-    Modified   : 2024-01-23
+    Modified   : 2024-01-26
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -40,8 +40,6 @@ Function Initialize-VmNode
     [Parameter(ParameterSetName=0,Position=9,Mandatory)][String[]]     $Dns,
     [Parameter(ParameterSetName=0,Position=10,Mandatory)][UInt32]  $Transmit,
     [Parameter(ParameterSetName=1)][Switch]$Reinitialize)
-
-
 
     Class SocketTcpMessage
     {
@@ -222,20 +220,129 @@ Function Initialize-VmNode
         }
     }
 
-    Class VmNodeScript
+    Class VmNodeScriptBlockLine
     {
         [UInt32] $Index
-        [String] $Description
-        [String] $Content
-        VmNodeScript([UInt32]$Index,[String]$Content)
+        [String]  $Line
+        VmNodeScriptBlockLine([UInt32]$Index,[String]$Line)
+        {
+            $This.Index = $Index
+            $This.Line  = $Line
+        }
+        [String] ToString()
+        {
+            Return $This.Line
+        }
+    }
+
+    Class VmNodeScriptBlockItem
+    {
+        [UInt32]       $Index
+        [String]        $Name
+        [String] $DisplayName
+        [Object]     $Content
+        [UInt32]     $Timeout
+        [UInt32]    $Complete
+        VmNodeScriptBlockItem([UInt32]$Index,[Object]$Object)
         {
             $This.Index       = $Index
-            $This.Description = [Regex]::Matches($Content,"^#.+").Value
-            $This.Content     = $Content
+            $This.Name        = $Object.Name
+            $This.DisplayName = $Object.DisplayName
+            
+            $This.Load($Object.Content)
+        }
+        Clear()
+        {
+            $This.Content     = @( )
+        }
+        Load([String[]]$Content)
+        {
+            $This.Clear()
+            $This.Add("# $($This.DisplayName)")
+
+            ForEach ($Line in $Content)
+            {
+                $This.Add($Line)
+            }
+
+            $This.Add('')
+        }
+        [Object] VmNodeScriptBlockLine([UInt32]$Index,[String]$Line)
+        {
+            Return [VmNodeScriptBlockLine]::New($Index,$Line)
+        }
+        Add([String]$Line)
+        {
+            $This.Content += $This.VmNodeScriptBlockLine($This.Content.Count,$Line)
         }
         Execute()
         {
-            $This.Content | Invoke-Expression
+            $This.Content.Line -join "`n" | Invoke-Expression
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.VmNode.ScriptBlock.Item>"
+        }
+    }
+
+    Class VmNodeScriptBlockController
+    {
+        [UInt32] $Selected
+        [UInt32]    $Count
+        [Object]   $Output
+        VmNodeScriptBlockController()
+        {
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+            $This.Count  = 0
+        }
+        Reset()
+        {
+            ForEach ($Item in $This.Output)
+            {
+                $Item.Complete = 0
+            }
+
+            $This.Selected = 0
+        }
+        [Object] VmNodeScriptBlockItem([UInt32]$Index,[Object]$Object)
+        {
+            Return [VmNodeScriptBlockItem]::New($Index,$Object)
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $This.VmNodeScriptBlockItem($This.Count,$Object)
+            $This.Count   = $This.Output.Count
+        }
+        Select([UInt32]$Index)
+        {
+            If ($Index -gt $This.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.Selected = $Index
+        }
+        [Object] Current()
+        {
+            Return $This.Output[$This.Selected] 
+        }
+        [Object] Get([Object]$Value)
+        {
+            $Slot = Switch -Regex ($Value)
+            {
+                "^\d+$" { "Index" }
+                Default { "Name"  }
+            }
+
+            Return $This.Output | ? $Slot -eq $Value
+        }
+        [String] ToString()
+        {
+            Return "<FEModule.VmNode.ScriptBlock.Controller>"
         }
     }
 
@@ -442,7 +549,7 @@ Function Initialize-VmNode
         [Object]    $Adapter
         [UInt32]      $Index
         [Object]  $Interface
-        [Object] $ScriptList
+        [Object]     $Script
         [Object]        $Smb
         VmNodeControl(
         [String]     $Index,
@@ -663,12 +770,16 @@ Function Initialize-VmNode
         {
             Return "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
         }
+        [Object] VmNodeScriptBlockController()
+        {
+            Return [VmNodeScriptBlockController]::New()
+        }
         Main()
         {   
             $This.Adapter    = $This.GetNetAdapter()
             $This.Index      = $This.Adapter.InterfaceIndex
             $This.Interface  = $This.GetNetIpAddress()
-            $This.ScriptList = @( )
+            $This.Script     = $This.VmNodeScriptBlockController()
         }
         [String] Label()
         {
@@ -786,10 +897,6 @@ Function Initialize-VmNode
         [Object] VmNodeSmbShare([Hashtable]$Drive)
         {
             Return [VmNodeSmbShare]::New($Drive)
-        }
-        [Object] VmNodeScript([UInt32]$Index,[String]$Content)
-        {
-            Return [VmNodeScript]::New($Index,$Content)
         }
         [Object] SocketTcpServer()
         {
@@ -915,7 +1022,7 @@ Function Initialize-VmNode
         }
         SetPowerShellProfile()
         {
-            $Script = @("# Set [TLS 1.2]","[Net.ServicePointManager]::SecurityProtocol = 3072")
+            $xScript = @("# Set [TLS 1.2]","[Net.ServicePointManager]::SecurityProtocol = 3072")
             $Path   = "$Env:UserProfile\Documents\WindowsPowerShell\Microsoft.PowerShell_Profile.ps1"
             $Parent = $Path | Split-Path -Parent
 
@@ -942,7 +1049,7 @@ Function Initialize-VmNode
             }
 
             # Ensure script lines are not duplicating items in file
-            ForEach ($Line in $Script)
+            ForEach ($Line in $xScript)
             {
                 If ($Line -notin $Array)
                 {
@@ -961,14 +1068,14 @@ Function Initialize-VmNode
         }
         Receive()
         {
-            $Script           = $This.SocketTcpServer()
+            $xScript           = $This.SocketTcpServer()
 
             Try
             {
-                $Script.Initialize() 
+                $xScript.Initialize() 
+                $Object           = $xScript.Content.Message -join "" | ConvertFrom-Json
 
-                $Content          = $Script.Content.Message -join ''
-                $This.ScriptList += $This.VmNodeScript($This.ScriptList.Count,$Content)
+                $This.Script.Add($Object)
             }
             Catch
             {
