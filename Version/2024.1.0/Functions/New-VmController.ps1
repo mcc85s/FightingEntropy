@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-22 18:42:49                                                                  //
+\\  Date       : 2024-01-26 22:43:20                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-VmController.ps1
@@ -19,7 +19,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-29
-    Modified   : 2024-01-22
+    Modified   : 2024-01-26
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -3767,6 +3767,23 @@ Function New-VmController
         }
     }
 
+    Class NewVmControllerNodeTransmit
+    {
+        [String]        $Name
+        [String] $DisplayName
+        [String[]]   $Content
+        NewVmControllerNodeTransmit([String]$Name,[String]$DisplayName,[String[]]$Content)
+        {
+            $This.Name        = $Name
+            $This.DisplayName = $DisplayName
+            $This.Content     = $Content
+        }
+        [Object] JsonString()
+        {
+            Return ($This | ConvertTo-Json) -Split "`n"
+        }
+    }
+
     Class NewVmControllerNodeObject
     {
         Hidden [Object]   $Object
@@ -4805,6 +4822,14 @@ Function New-VmController
 
             $Current.Complete     ++
             $This.Script.Selected ++
+        }
+        [Object] NewVmControllerNodeTransmit([String]$Name,[String]$DisplayName,[String[]]$Scriptlet)
+        {
+            Return [NewVmControllerNodeTransmit]::New($Name,$DisplayName,$Scriptlet)
+        }
+        [String[]] TransmitScript([String]$Name,[String]$DisplayName,[String[]]$Scriptlet)
+        {
+            Return $This.NewVmControllerNodeTransmit($Name,$DisplayName,$Scriptlet).JsonString()
         }
         [Void] TransmitTcp()
         {
