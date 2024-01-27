@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-21 18:05:15                                                                  //
+\\  Date       : 2024-01-26 22:45:22                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-FeAdInstance.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2023-04-05
-    Modified   : 2024-01-21
+    Modified   : 2024-01-26
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : Finish and test
@@ -695,6 +695,297 @@ Function Initialize-FeAdInstance
         }
     }
 
+    # // ================
+    # // | Group Policy |
+    # // ================
+
+    Enum GpRegistryValueKindType
+    {
+        None         = -1;
+        Unknown      = 0;
+        String       = 1;
+        ExpandString = 2;
+        Binary       = 3;
+        DWord        = 4;
+        MultiString  = 7;
+        QWord        = 11;
+    }
+
+    Class GpRegistryValueKindItem
+    {
+        [Int32]  $Index
+        [String] $Name
+        [String] $Tag
+        [String] $Description
+        GpRegistryValueKindItem([String]$Name)
+        {
+            $This.Index = [Int32][GpRegistryValueKindType]::$Name
+            $This.Name  = [GpRegistryValueKindType]::$Name
+        }
+    }
+
+    Class GpRegistryValueKindList
+    {
+        [Object] $Output
+        GpRegistryValueKindList()
+        {
+            $This.Refresh()
+        }
+        [Object] GpRegistryValueKindItem([String]$Name)
+        {
+            Return [GpRegistryValueKindItem]::New($Name)
+        }
+        [String[]] GetNames()
+        {
+            Return [System.Enum]::GetNames([GpRegistryValueKindType])
+        }
+        Clear()
+        {
+            $This.Output = @( ) 
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Name in $This.GetNames())
+            {
+                $Item = $This.GpRegistryValueKindItem($Name)
+                $X    = Switch ($Item.Name)
+                {
+                    Unknown      { '(N/A)','unsupported registry data type'  }
+                    String       { '(REG_SZ)','null-terminated string'       }
+                    ExpandString { '(REG_EXPAND_SZ)','environment variables' }
+                    Binary       { '(REG_BINARY)','Binary data in ANY form'  }
+                    DWord        { '(REG_DWORD)','32-bit binary number'      }
+                    MultiString  { '(REG_MULTI_SZ)','Array of strings'       }
+                    QWord        { '(REG_QWORD)','64-bit binary number'      }
+                    None         { '(Null)','No data type'                   }
+                }
+
+                $Item.Tag         = $X[0]
+                $Item.Description = $X[1]
+
+                $This.Output     += $Item
+            }
+        }
+    }
+
+    Class GpRegistryProperty
+    {
+        [String]     $Name
+        [String]      $Key
+        [String] $Property
+        [String]     $Type
+        [Object]    $Value
+        GpRegistryProperty([String]$Name,[String]$Key,[String]$Property,[String]$Type,[Object]$Value)
+        {
+            $This.Name     = $Name
+            $This.Key      = $Key
+            $This.Property = $Property
+            $This.Type     = $Type
+            $This.Value    = $Value
+        }
+    }
+
+    Class GpPolicy
+    {
+        [Guid]                   $ID
+        [String]               $Name
+        [UInt32]             $Exists
+        Hidden [String] $DisplayName
+        [String]        $Description
+        Hidden [String]        $Path
+        [String]              $Owner
+        [String]             $Domain
+        [DateTime]          $Created
+        [DateTime]         $Modified
+        [Object]               $User
+        [Object]           $Computer
+        [String]             $Server
+        [String]             $Target
+        [Object]           $Property
+        [String]             $Status
+        GpPolicy([Object]$Gpo)
+        {
+            $This.ID   = $Gpo.ID
+            $This.Name = $This.DisplayName = $Gpo.DisplayName
+            $This.Check()
+
+            $This.Property    = @( )
+        }
+        GpPolicy([String]$Name,[String]$Domain,[String]$Server,[String]$Description)
+        {
+            $This.Name        = $This.DisplayName = $Name
+            $This.Check()
+
+            $This.Domain      = $Domain
+            $This.Server      = $Server
+            $This.Description = $Description
+
+            $This.Property    = @( )
+        }
+        [Object] GpRegistryProperty([String]$Name,[String]$Key,[String]$Property,[String]$Type,[Object]$Value)
+        {
+            Return [GpRegistryProperty]::New($Name,$Key,$Property,$Type,$Value)
+        }
+        [String] DateString([DateTime]$Date)
+        {
+            Return $Date.ToString("MM/dd/yyyy HH:mm:ss")
+        }
+        [Object] Get()
+        {
+            $Item = Get-GPO -Name $This.Name -EA 0
+            If (!$Item)
+            {
+                $This.Path        = $Null
+                $This.Owner       = $Null
+                $This.User        = $Null
+                $This.Computer    = $Null
+                $This.Status      = $Null
+            }
+            Else
+            {
+                $This.Id          = $Item.Id
+                $This.Description = $Item.Description
+                $This.Path        = $Item.Path
+                $This.Owner       = $Item.Owner
+                $This.Domain      = $Item.DomainName
+        
+                $This.Created     = $This.DateString($Item.CreationTime)
+                $This.Modified    = $This.DateString($Item.ModificationTime)
+        
+                $This.User        = $Item.User
+                $This.Computer    = $Item.Computer
+                $This.Status      = $Item.GpoStatus
+            }
+
+            Return $Item
+        }
+        [UInt32] Exist()
+        {
+            Return !!$This.Get()
+        }
+        Check()
+        {
+            $This.Exists = Try { [UInt32]!!$This.Get() } Catch { 0 }
+        }
+        Remove()
+        {
+            $This.Check()
+
+            If ($This.Exists)
+            {
+                Remove-Gpo -Name $This.Name -EA 0
+            }
+
+            $This.Check()
+        }
+        Create()
+        {
+            $This.Check()
+
+            If (!$This.Exists)
+            {
+                New-GPO -Name $This.Name -Comment $This.Description -Domain $This.Domain -Server $This.Server -Verbose
+            }
+
+            $This.Check()
+        }
+        AddProperty([String]$Name,[String]$Key,[String]$Property,[String]$Type,[Object]$Value)
+        {
+            $This.Property += $This.GpRegistryProperty($Name,$Key,$Property,$Type,$Value)
+        }
+        SetProperty([UInt32]$Index)
+        {
+            If ($Index -gt $This.Property.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            $This.SetGpRegistryValue($This.Property[$Index])
+        }
+        SetGpRegistryValue([Object]$Property)
+        {
+            If ($This.Exists)
+            {
+                $Splat = @{
+
+                    Name      = $Property.Name
+                    Key       = $Property.Key
+                    ValueName = $Property.Property
+                    Type      = $Property.Type
+                    Value     = $Property.Value
+                }
+
+                Set-GPRegistryValue @Splat -Verbose
+            }
+        }
+    }
+
+    Class GpPolicyController
+    {
+        Hidden [Object] $Slot
+        [String] $Domain
+        [String] $Server
+        [Object] $Policy
+        GpPolicyController()
+        {
+            $This.Slot   = $This.GpRegistryValueKindList()
+            $This.Domain = $Env:UserDnsDomain
+            $This.Server = "$Env:ComputerName.$Env:UserDnsDomain".ToLower()
+            
+            $This.Refresh()
+        }
+        Clear()
+        {
+            $This.Policy = @( )
+        }
+        [Object[]] GetGpo()
+        {
+            Return Get-GPO -All
+        }
+        [Object] GpRegistryValueKindList()
+        {
+            Return [GpRegistryValueKindList]::New()
+        }
+        [Object] GpPolicy([Object]$Gpo)
+        {
+            Return [GpPolicy]::New($Gpo)
+        }
+        [Object] GpPolicy([String]$Name,[String]$Domain,[String]$Server,[String]$Description)
+        {
+            Return [GpPolicy]::New($Name,$Domain,$Server,$Description)
+        }
+        Refresh()
+        {
+            $This.Clear()
+
+            ForEach ($Item in $This.GetGpo())
+            {
+                $This.Add($Item)
+            }
+        }
+        Add([Object]$Item)
+        {
+            $This.Policy += $This.GpPolicy($Item)
+        }
+        Add([String]$Name,[String]$Description)
+        {
+            $This.Policy += $This.GpPolicy($Name,$This.Domain,$This.Server,$Description)
+        }
+        [Object] Get([Object]$Value)
+        {
+            If ($Value -match "^\d+$")
+            {
+                Return $This.Policy[$Value]
+            }
+            Else
+            {
+                Return $This.Policy | ? Name -eq $Value
+            }
+        }
+    }
+
     # // ==================================================================
     # // | Controller for Active Directory object (navigation/population) |
     # // ==================================================================
@@ -703,11 +994,13 @@ Function Initialize-FeAdInstance
     {
         [Object]    $Types
         [Object]   $Object
+        [Object]   $Policy
         [Object] $Location
         FeAdController()
         {
             $This.Types  = $This.FeAdObjectSlotList()
             $This.Object = $This.FeAdObjectList()
+            $This.Policy = $This.GpPolicyController()
         }
         Refresh()
         {
@@ -748,6 +1041,10 @@ Function Initialize-FeAdInstance
         [Object] FeAdUser([Switch]$Flags,[Object]$Object)
         {
             Return [FeAdUser]::New($Flags,$Object)
+        }
+        [Object] GpPolicyController()
+        {
+            Return [GpPolicyController]::New()
         }
         [Object[]] Get([UInt32]$Index)
         {
@@ -951,6 +1248,7 @@ Function Initialize-FeAdInstance
                 Add-AdGroupMember @Splat -Verbose -EA 0
             }
         }
+
     }
 
     [FeAdController]::New()
