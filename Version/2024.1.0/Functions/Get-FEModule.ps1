@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-27 00:12:16                                                                  //
+\\  Date       : 2024-01-28 21:58:00                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1732,7 +1732,7 @@ Function Get-FEModule
                     ("Get-ViperBomb.ps1"               , "58C1491DE7B8C9FD243462BA1041BC3AE08330C43B44DA3DB7B8727B83795BDF") ,
                     ("Get-WhoisUtility.ps1"            , "CFFCA2A3C03293F9119B9BFEC3A99E8C4902999F66480D7D1617D2E3D2359C50") ,
                     ("Initialize-FeAdInstance.ps1"     , "BE6FEF0399DA960BB25BC7748C07FA194F12C361F4C59498A86495EFDA0D20CC") ,
-                    ("Initialize-VmNode.ps1"           , "20BF0A6F27F9DF6A555598C956472A4290F9E926A7FF5894C59AC4888AB4AC41") ,
+                    ("Initialize-VmNode.ps1"           , "5A86F46A71E147D6F069A45403B6A550548B946039353ECA4C836EE04DBAD912") ,
                     ("Install-IISServer.ps1"           , "C8C0EA6332560E3BCF0B37FBDF45436D54A65ED005705BE29AA25F18B33ABA54") ,
                     ("Install-Psd.ps1"                 , "7CF53D11B15CF7E712A8E35142094C4563A9DCD08917C65D2022C7B014BE4E9F") ,
                     ("Invoke-cimdb.ps1"                , "8835574220B607F27C45A831CD5CECBD6757364486AF9508DF71FC9495B82D0B") ,
