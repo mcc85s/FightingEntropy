@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-27 00:10:36                                                                  //
+\\  Date       : 2024-01-28 21:56:35                                                                  //
  \\==================================================================================================// 
 
     FileName   : Initialize-VmNode.ps1
@@ -1071,6 +1071,7 @@ Function Initialize-VmNode
                 $xScript.Initialize() 
                 $Object           = $xScript.Content.Message -join "" | ConvertFrom-Json
 
+                [Console]::WriteLine("Received [~] ($($Object.Name)/$($Object.DisplayName))")
                 $This.Script.Add($Object)
             }
             Catch
@@ -1085,14 +1086,21 @@ Function Initialize-VmNode
                 Throw "[!] Invalid index"
             }
 
-            $Item = $This.Script.Output[$Index]
-            $Item.Content.Line -join "`n" | Invoke-Expression
+            $Object  = $This.Script.Output[$Index]
+            $Start   = [DateTime]::Now
+
+            [Console]::WriteLine("Executing [~] $($Object.DisplayName)")
+
+            ($Object.Content.Line -join "`n") | Invoke-Expression
+
+            $Elapsed = [TimeSpan]([DateTime]::Now-$Start)
+
+            [Console]::WriteLine("Completed [+] [$Elapsed]")
         }
         Execute()
         {
             ForEach ($Item in $This.Script.Output)
             {
-                [Console]::WriteLine($Item.Description)
                 $Item.Execute()
             }
         }
