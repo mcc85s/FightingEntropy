@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-29 18:41:38                                                                  //
+\\  Date       : 2024-01-29 19:11:30                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2023-04-06
-   Modified   : 2024-01-27
+   Modified   : 2024-01-29
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -749,7 +749,7 @@ Function Get-FEModule
 
             Try
             {
-                Switch -Regex ($This.Name)
+                $xContent = Switch -Regex ($This.Name)
                 {
                     "\.+(jpg|jpeg|png|bmp|ico)"
                     {
@@ -764,6 +764,8 @@ Function Get-FEModule
                         [System.IO.File]::ReadAllLines($This.Fullname,[System.Text.UTF8Encoding]$False)
                     }
                 }
+
+                $This.Content = $xContent
             }
             Catch
             {
