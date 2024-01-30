@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-29 19:11:30                                                                  //
+\\  Date       : 2024-01-29 20:15:48                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -2457,6 +2457,14 @@ Function Get-FEModule
 
             Expand-Archive $Target -DestinationPath $This.Root.Resource -Force
             [System.IO.File]::Delete($Target)
+
+            # Add bytes (13+10) to match GitHub
+            ForEach ($Item in $This.Manifest.Output | % Item | ? Name -match "(.cs|.ps1)")
+            {
+                $Bytes    = [System.IO.File]::ReadAllBytes($Item.Fullname)+13,10
+                [System.IO.File]::WriteAllBytes($Item.Fullname,$Bytes)
+            }
+
             $This.Manifest.Validate()
 
             $This.Update(0,"=".PadLeft(102,"="))
