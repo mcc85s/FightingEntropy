@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-29 20:35:16                                                                  //
+\\  Date       : 2024-01-29 20:58:48                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1391,72 +1391,6 @@ Function Get-FEModule
         [String] ToString()
         {
             Return "<FEModule.Validate.File>"
-        }
-    }
-
-    # // ==================================================
-    # // | Packages an archive from existing module files |
-    # // ==================================================
-
-    Class ModuleArchive
-    {
-        [String]     $Parent
-        [String]       $Path
-        [String]    $Version
-        [String] $Repository
-        [String]       $Name
-        [String]   $Fullname
-        [DateTime]     $Date
-        [String]       $Link
-        [String]       $Hash
-        ModuleArchive([Object]$Module)
-        {
-            $xPath           = $Module.Root.Resource.Fullname
-            $This.Parent     = $xPath | Split-Path -Parent
-            $This.Path       = $xPath
-            $This.Version    = $xPath | Split-Path -Leaf
-            $This.Repository = $Module.Source
-        }
-        [String] GetName()
-        {
-            Return [DateTime]::Now.ToString("yyyy-MM-dd_HHmmss")
-        }
-        [Object] CompLevel()
-        {
-            Return [System.IO.Compression.CompressionLevel]::Fastest
-        }
-        [String] Markdown()
-        {
-            Return '| `{0}` | [[**{1}.zip**]({2})] | `{3}` |' -f $This.Date.ToString("yyyy-MM-dd HH:mm:ss"),
-                                                                 $This.Name,
-                                                                 $This.Link,
-                                                                 $This.Hash
-        }
-        [String] Source()
-        {
-            
-            Return "{0}/blob/main/Version/{1}/Archive/{2}.zip" -f $This.Repository, $This.Version, $This.Name
-        }
-        [Object] Get()
-        {
-            $This.Date       = Get-Item $This.Fullname | % LastWriteTime
-            $This.Link       = $This.Source()
-            $This.Hash       = Get-FileHash $This.Fullname | % Hash
-
-            Return $This
-        }
-        Create()
-        {
-            $This.Name       = $This.GetName()
-            $This.Fullname   = "{0}\{1}.zip" -f $This.Parent, $This.Name
-
-            [System.IO.Compression.ZipFile]::CreateFromDirectory($This.Path,$This.Fullname,"Fastest",0)
-
-            $This.Get()
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.Archive>"
         }
     }
 
