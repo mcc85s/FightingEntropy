@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-29 20:37:05                                            ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2024.1.0]: 2024-01-29 21:00:50                                            ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
@@ -1486,72 +1486,6 @@ Function FightingEntropy.Module
         }
     }
 
-    # // ==================================================
-    # // | Packages an archive from existing module files |
-    # // ==================================================
-
-    Class ModuleArchive
-    {
-        [String]     $Parent
-        [String]       $Path
-        [String]    $Version
-        [String] $Repository
-        [String]       $Name
-        [String]   $Fullname
-        [DateTime]     $Date
-        [String]       $Link
-        [String]       $Hash
-        ModuleArchive([Object]$Module)
-        {
-            $xPath           = $Module.Root.Resource.Fullname
-            $This.Parent     = $xPath | Split-Path -Parent
-            $This.Path       = $xPath
-            $This.Version    = $xPath | Split-Path -Leaf
-            $This.Repository = $Module.Source
-        }
-        [String] GetName()
-        {
-            Return [DateTime]::Now.ToString("yyyy-MM-dd_HHmmss")
-        }
-        [Object] CompLevel()
-        {
-            Return [System.IO.Compression.CompressionLevel]::Fastest
-        }
-        [String] Markdown()
-        {
-            Return '| `{0}` | [[**{1}.zip**]({2})] | `{3}` |' -f $This.Date.ToString("yyyy-MM-dd HH:mm:ss"),
-                                                                 $This.Name,
-                                                                 $This.Link,
-                                                                 $This.Hash
-        }
-        [String] Source()
-        {
-            
-            Return "{0}/blob/main/Version/{1}/Archive/{2}.zip" -f $This.Repository, $This.Version, $This.Name
-        }
-        [Object] Get()
-        {
-            $This.Date       = Get-Item $This.Fullname | % LastWriteTime
-            $This.Link       = $This.Source()
-            $This.Hash       = Get-FileHash $This.Fullname | % Hash
-
-            Return $This
-        }
-        Create()
-        {
-            $This.Name       = $This.GetName()
-            $This.Fullname   = "{0}\{1}.zip" -f $This.Parent, $This.Name
-
-            [System.IO.Compression.ZipFile]::CreateFromDirectory($This.Path,$This.Fullname,"Fastest",0)
-
-            $This.Get()
-        }
-        [String] ToString()
-        {
-            Return "<FEModule.Archive>"
-        }
-    }
-
     # // ===============================================================
     # // | Specifically meant to categorize available version archives |
     # // ===============================================================
@@ -1880,7 +1814,7 @@ Function FightingEntropy.Module
                     ("Get-FEDCPromo.ps1"               , "4F668EE8E56F9E8C74D5C015411C439DDC54978B55D0CEB6786D7412098A47CB") ,
                     ("Get-FEDevice.ps1"                , "409D7C7F190FCD690A6618B542C0352B6D682D2C7DE0A62973A2B9CB6266F98F") ,
                     ("Get-FEImageManifest.ps1"         , "F01DF0E164A47A56E2F9D9F4CD2F93F3C703B9AAA7C1C5750130623187BE1D5E") ,
-                    ("Get-FEModule.ps1"                , "CD8846AD08681D0C93A32781BFBA4FF63639AFDD3A4E134956801A21A8A05B52") ,
+                    ("Get-FEModule.ps1"                , "B27247673722D735B627B37DD29496B50C43ACB8F23855742BD978C46096BD2D") ,
                     ("Get-FENetwork.ps1"               , "874C435C5AFB476FCFA707FEEDEAB03AEA1526B40AAD5F8D78C00181E08093F2") ,
                     ("Get-FEProcess.ps1"               , "0D8AA28C157D001A5A1222DA72076C168075CC431BE0C4C88FA64434B96FB29C") ,
                     ("Get-FESystem.ps1"                , "45125620B1AB92BD84FCC54BB823C35BADA82092BA08B835D1E5F68ECEDBCAA0") ,
@@ -2711,7 +2645,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-29 20:37:05 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2024-01-29 21:00:50 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
