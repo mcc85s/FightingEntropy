@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2024.1.0]                                                        \\
-\\  Date       : 2024-01-29 20:58:48                                                                  //
+\\  Date       : 2024-01-29 21:02:12                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1670,10 +1670,6 @@ Function Get-FEModule
             }
 
             Return $xName
-        }
-        [Object] ModuleArchive()
-        {
-            Return [ModuleArchive]::New($This)
         }
         [Object] ManifestSection([UInt32]$Index,[String]$Source,[String]$Name,[String]$Hash)
         {
