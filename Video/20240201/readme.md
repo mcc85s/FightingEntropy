@@ -2,7 +2,7 @@
 
 | Description |
 |:------------|
-| In this video, I will be building a brand-new Hyper-V VM using the function [New-VmController] in [FightingEntropy(π)][2024.1.0], to deploy [Windows Server 2016] to meet certain criteria:<br><br>- ADDS domain controller + DHCP server + DNS server + IIS server + WDS server + MDT server<br>- Create an [organizational unit]<br> + [security group] + [user (domain admin)] + [group policy]<br>- Allow [Remote Desktop] + [WinRM console] connection for that [user (domain admin)<br>- Do MOST of these automatically using the functions in [FightingEntropy(π)][2024.1.0]<br>- Convey senior level (software development + networking) experience
+| In this video, I will be building a brand-new Hyper-V VM using the function [New-VmController] in [FightingEntropy(π)][2024.1.0], to deploy [Windows Server 2016] to meet certain criteria:<br><br>- ADDS domain controller + DHCP server + DNS server + IIS server + WDS server + MDT server<br>- Create an [organizational unit] + [security group] + [user (domain admin)] + [group policy]<br>- Allow [Remote Desktop] + [WinRM console] connection for that [user (domain admin)<br>- Do MOST of these automatically using the functions in [FightingEntropy(π)][2024.1.0]<br>- Convey senior level (software development + networking) experience
 
 [[Video](#video)] - [[Document](#document)] - [[Script](#script)] - [[Link](#link)]
 
