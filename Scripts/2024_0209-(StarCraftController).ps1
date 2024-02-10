@@ -4,8 +4,8 @@ Class StarCraftControllerXaml
     '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
     '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
     '        Title="StarCraft Controller"',
-    '        Height="510"',
-    '        Width="640"',
+    '        Height="500"',
+    '        Width="800"',
     '        ResizeMode="NoResize"',
     '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2023.4.0\Graphics\icon.ico"',
     '        HorizontalAlignment="Center"',
@@ -241,11 +241,13 @@ Class StarCraftControllerXaml
     '            <Setter Property="Margin" Value="4"/>',
     '        </Style>',
     '    </Window.Resources>',
-    '    <Grid>',
+    '    <Grid Margin="5">',
     '        <Grid.RowDefinitions>',
     '            <RowDefinition Height="40"/>',
     '            <RowDefinition Height="40"/>',
     '            <RowDefinition Height="*"/>',
+    '            <RowDefinition Height="40"/>',
+    '            <RowDefinition Height="50"/>',
     '            <RowDefinition Height="40"/>',
     '        </Grid.RowDefinitions>',
     '        <Grid Grid.Row="0">',
@@ -277,7 +279,8 @@ Class StarCraftControllerXaml
     '                     IsEnabled="False"/>',
     '        </Grid>',
     '        <DataGrid Grid.Row="2"',
-    '                  Name="GameLoadout">',
+    '                  Name="GameLoadout"',
+    '                  IsReadOnly="True">',
     '            <DataGrid.RowStyle>',
     '                <Style TargetType="{x:Type DataGridRow}">',
     '                    <Style.Triggers>',
@@ -296,44 +299,124 @@ Class StarCraftControllerXaml
     '                </Style>',
     '            </DataGrid.RowStyle>',
     '            <DataGrid.Columns>',
-    '                <DataGridTextColumn Header="Index"',
+    '                <DataGridTextColumn Header="#"',
     '                                    Binding="{Binding Index}"',
-    '                                    Width="40"/>',
-    '                <DataGridTextColumn Header="Rank"',
+    '                                    Width="30"/>',
+    '                <DataGridTextColumn Header="%"',
     '                                    Binding="{Binding Rank}"',
-    '                                    Width="40"/>',
+    '                                    Width="30"/>',
+    '                <DataGridTextColumn Header="Race"',
+    '                                    Binding="{Binding Race}"',
+    '                                    Width="55"/>',
+    '                <DataGridTextColumn Header="Title"',
+    '                                    Binding="{Binding Title}"',
+    '                                    Width="175"/>',
+    '                <DataGridTextColumn Header="Start"',
+    '                                    Binding="{Binding Start}"',
+    '                                    Width="165"/>',
+    '                <DataGridTextColumn Header="End"',
+    '                                    Binding="{Binding End}"',
+    '                                    Width="165"/>',
+    '                <DataGridTextColumn Header="Duration"',
+    '                                    Binding="{Binding Duration}"',
+    '                                    Width="125"/>',
+    '            </DataGrid.Columns>',
+    '        </DataGrid>',
+    '        <Grid Grid.Row="3">',
+    '            <Grid.ColumnDefinitions>',
+    '                <ColumnDefinition Width="60"/>',
+    '                <ColumnDefinition Width="*"/>',
+    '                <ColumnDefinition Width="60"/>',
+    '                <ColumnDefinition Width="*"/>',
+    '                <ColumnDefinition Width="60"/>',
+    '                <ColumnDefinition Width="*"/>',
+    '            </Grid.ColumnDefinitions>',
+    '            <Label Grid.Column="0"',
+    '                   Content="Start"',
+    '                   Style="{StaticResource LabelGray}"/>',
+    '            <TextBox Grid.Column="1"',
+    '                     Name="GameDurationStart"',
+    '                     IsReadOnly="True"/>',
+    '            <Label Grid.Column="2"',
+    '                   Content="End"',
+    '                   Style="{StaticResource LabelGray}"/>',
+    '            <TextBox Grid.Column="3"',
+    '                     Name="GameDurationEnd"',
+    '                     IsReadOnly="True"/>',
+    '            <Label Grid.Column="4"',
+    '                   Content="Span"',
+    '                   Style="{StaticResource LabelGray}"/>',
+    '            <TextBox Grid.Column="5"',
+    '                     Name="GameDurationSpan"',
+    '                     IsReadOnly="True"/>',
+    '        </Grid>',
+    '        <DataGrid Grid.Row="4"',
+    '                  Name="GameCurrent"',
+    '                  IsReadOnly="True">',
+    '            <DataGrid.RowStyle>',
+    '                <Style TargetType="{x:Type DataGridRow}">',
+    '                    <Style.Triggers>',
+    '                        <Trigger Property="IsMouseOver" Value="True">',
+    '                            <Setter Property="ToolTip">',
+    '                                <Setter.Value>',
+    '                                    <TextBlock Text="&lt;Campaign Selection&gt;"',
+    '                                               TextWrapping="Wrap"',
+    '                                               FontFamily="Consolas"',
+    '                                               Background="#000000"',
+    '                                               Foreground="#00FF00"/>',
+    '                                </Setter.Value>',
+    '                            </Setter>',
+    '                        </Trigger>',
+    '                    </Style.Triggers>',
+    '                </Style>',
+    '            </DataGrid.RowStyle>',
+    '            <DataGrid.Columns>',
+    '                <DataGridTextColumn Header="#"',
+    '                                    Binding="{Binding Index}"',
+    '                                    Width="30"/>',
+    '                <DataGridTextColumn Header="%"',
+    '                                    Binding="{Binding Rank}"',
+    '                                    Width="30"/>',
     '                <DataGridTextColumn Header="Race"',
     '                                    Binding="{Binding Race}"',
     '                                    Width="60"/>',
     '                <DataGridTextColumn Header="Title"',
     '                                    Binding="{Binding Title}"',
-    '                                    Width="200"/>',
+    '                                    Width="175"/>',
     '                <DataGridTextColumn Header="Start"',
     '                                    Binding="{Binding Start}"',
-    '                                    Width="*"/>',
+    '                                    Width="165"/>',
     '                <DataGridTextColumn Header="End"',
     '                                    Binding="{Binding End}"',
-    '                                    Width="*"/>',
+    '                                    Width="165"/>',
     '                <DataGridTextColumn Header="Duration"',
     '                                    Binding="{Binding Duration}"',
-    '                                    Width="*"/>',
+    '                                    Width="125"/>',
     '            </DataGrid.Columns>',
     '        </DataGrid>',
-    '        <Grid Grid.Row="3">',
+    '        <Grid Grid.Row="5">',
     '            <Grid.ColumnDefinitions>',
+    '                <ColumnDefinition Width="*"/>',
+    '                <ColumnDefinition Width="*"/>',
     '                <ColumnDefinition Width="*"/>',
     '                <ColumnDefinition Width="*"/>',
     '                <ColumnDefinition Width="*"/>',
     '            </Grid.ColumnDefinitions>',
     '            <Button Grid.Column="0"',
     '                    Content="Start"',
-    '                   Name="GameStart"/>',
+    '                    Name="GameStart"/>',
     '            <Button Grid.Column="1"',
     '                    Content="Next Level"',
-    '                   Name="GameNextLevel"/>',
+    '                    Name="GameNextLevel"/>',
     '            <Button Grid.Column="2"',
     '                    Content="End"',
-    '                   Name="GameEnd"/>',
+    '                    Name="GameEnd"/>',
+    '            <Button Grid.Column="3"',
+    '                    Content="Reset"',
+    '                    Name="GameReset"/>',
+    '            <Button Grid.Column="4"',
+    '                    Content="Save"',
+    '                    Name="GameSave"/>',
     '        </Grid>',
     '    </Grid>',
     '</Window>' -join "`n")
@@ -604,14 +687,78 @@ Class StarCraftCampaign
     }
 }
 
+Class StarCraftDuration
+{
+    [String] $Start
+    [String]   $End
+    [String]  $Span
+    StarCraftDuration()
+    {
+
+    }
+    DurationStart()
+    {
+        $This.Start = $This.Now()
+    }
+    DurationUpdate()
+    {
+        $This.Span = [DateTime]$This.Now() - [DateTime]$This.Start
+    }
+    DurationEnd()
+    {
+        $This.End  = $This.Now()
+        $This.DurationUpdate()
+    }
+    [String] Now()
+    {
+        Return [DateTime]::Now.ToString("MM/dd/yyyy HH:mm:ss.fff")
+    }
+    [String] ToString()
+    {
+        Return "<StarCraft.Duration>"
+    }
+}
+
+Class StarCraftOutputFile
+{
+    [String] $Selection
+    [String] $Completed
+    [String] $Start
+    [String] $End
+    [String] $Duration
+    StarCraftOutputFile([String]$Selection,[Object]$Loadout,[Object]$Duration)
+    {
+        $This.Selection = $Selection
+        $This.Completed = "({0}/{1}) levels" -f ($Loadout | ? Duration).Count, $Loadout.Count
+        $This.Start     = $Duration.Start
+        $This.End       = $Duration.End
+        $This.Duration  = $Duration.Span
+    }
+    [String] ToString()
+    {
+        Return "<StarCraft.Output.File>"
+    }
+}
+
+$Out.Add($Out.Count,"------------------------------------------------------------------")
+$Out.Add($Out.Count,"Selection : {0}" -f $Ctrl.Xaml.IO.GameSelection.SelectedItem)
+$Out.Add($Out.Count,("Completed : ({0}/{1}) levels" -f ($Ctrl.Loadout | ? Duration).Count,$Ctrl.Loadout.Count))
+$Out.Add($Out.Count,"Start     : {0}" -f $Ctrl.Duration.Start)
+$Out.Add($Out.Count,"End       : {0}" -f $Ctrl.Duration.End)
+$Out.Add($Out.Count,"Duration  : {0}" -f $Ctrl.Duration.Span)
+$Out.Add($Out.Count,"------------------------------------------------------------------")
+$Out.Add($Out.Count,"")
+
 Class StarCraftController
 {
-    [String] $Title
-    [Object] $Module
-    [Object] $Xaml
-    [Object] $Selection
-    [Object] $Campaign
-    [Object] $Loadout
+    [String]           $Title
+    [Object]          $Module
+    [Object]            $Xaml
+    [Object]       $Selection
+    [Object]        $Campaign
+    [Object]         $Loadout
+    Hidden [Int32]   $Current
+    [Object]        $Duration
     StarCraftController()
     {
         $This.Title     = "StarCraft"
@@ -641,7 +788,8 @@ Class StarCraftController
     {
         $This.Selection = $This.StarcraftCampaignSelectionList()
         $This.Campaign  = @( )
-        $This.Populate()
+        $This.Refresh()
+        $This.Duration  = $This.StarCraftDuration()
     }
     [Object] StarCraftCampaign([UInt32]$Index,[String]$Race,[String]$Mode)
     {
@@ -654,6 +802,14 @@ Class StarCraftController
     [Object] StarCraftControllerXaml()
     {
         Return [XamlWindow][StarCraftControllerXaml]::Content
+    }
+    [Object] StarCraftDuration()
+    {
+        Return [StarCraftDuration]::New()
+    }
+    [Object] StarCraftOutputFile([String]$Selection,[Object]$Loadout,[Object]$Duration)
+    {
+        Return [StarCraftOutputFile]::New($Selection,$Loadout,$Duration)
     }
     Add([String]$Race,[String]$Mode)
     {
@@ -731,8 +887,10 @@ Class StarCraftController
 
         $This.Loadout = $This.Campaign.Level | ? Selected
     }
-    Populate()
+    Refresh()
     {
+        $This.Campaign = @( )
+
         # // ====================
         # // | Terran/StarCraft |
         # // ====================
@@ -865,6 +1023,13 @@ Class StarCraftController
             $xSender.Items.Add($Item)
         }
     }
+    DurationUpdate()
+    {
+        $This.Duration.DurationUpdate()
+        $This.Xaml.IO.GameDurationStart.Text = $This.Duration.Start
+        $This.Xaml.IO.GameDurationEnd.Text   = $This.Duration.End
+        $This.Xaml.IO.GameDurationSpan.Text  = $This.Duration.Span
+    }
     GameSelection()
     {
         $Index = $This.Xaml.IO.GameSelection.SelectedIndex
@@ -875,15 +1040,210 @@ Class StarCraftController
         $This.Select($Index)
         $This.Reset($This.Xaml.IO.GameLoadout,$This.Loadout)
     }
+    GameStart()
+    {
+        $This.Current = 0
+        $This.Duration.DurationStart()
+        $This.DurationUpdate()
+        
+        $Item = $This.Loadout[$This.Current]
+        $Item.LevelBegin()
+
+        $This.Xaml.IO.GameSelection.IsEnabled = 0
+        $This.Xaml.IO.GameStart.IsEnabled     = 0
+        $This.Xaml.IO.GameNextLevel.IsEnabled = 1
+        $This.Xaml.IO.GameEnd.IsEnabled       = 1
+        $This.Xaml.IO.GameSave.IsEnabled      = 0
+
+        # Reset current
+        $This.Reset($This.Xaml.IO.GameCurrent,$Item)
+
+        # Reset list
+        $This.Reset($This.Xaml.IO.GameLoadout,$This.Loadout)
+    }
+    GameNextLevel()
+    {
+        $Item = $This.Loadout[$This.Current]
+        $Item.LevelEnd()
+
+        $This.Current ++
+
+        If ($This.Current -eq $This.Loadout.Count-1)
+        {
+            $This.Xaml.IO.GameNextLevel.IsEnabled = 0
+        }
+
+        $Item = $This.Loadout[$This.Current]
+        $Item.LevelBegin()
+        $This.DurationUpdate()
+
+        # Reset current
+        $This.Reset($This.Xaml.IO.GameCurrent,$Item)
+
+        # Reset list
+        $This.Reset($This.Xaml.IO.GameLoadout,$This.Loadout)
+    }
+    GameEnd()
+    {
+        $Item = $This.Loadout[$This.Current]
+        $Item.LevelEnd()
+        $This.Duration.DurationEnd()
+        $This.DurationUpdate()
+
+        $This.Xaml.IO.GameEnd.IsEnabled       = 0
+        $This.Xaml.IO.GameNextLevel.IsEnabled = 0
+        $This.Xaml.IO.GameSave.IsEnabled      = 1
+
+        # Reset current
+        $This.Reset($This.Xaml.IO.GameCurrent,$Null)
+
+        # Reset list
+        $This.Reset($This.Xaml.IO.GameLoadout,$This.Loadout)
+    }
+    GameReset()
+    {
+        $This.Main()
+
+        # Reset current
+        $This.Reset($This.Xaml.IO.GameCurrent,$Null)
+
+        # Reset list
+        $This.Reset($This.Xaml.IO.GameLoadout,$This.Loadout)
+    }
+    GameSave()
+    {
+        $Dialog                  = [System.Windows.Forms.SaveFileDialog]::New()
+        $Dialog.InitialDirectory = [System.Environment]::GetEnvironmentVariable("UserProfile")
+        $Dialog.Filename         = "StarCraft-{0}.log" -f [DateTime]::Now.ToString("yyyy_MMdd-HHmmss")
+        $Dialog.Filter           = "Log file (.log)|*.log"
+        $Result                  = $Dialog.ShowDialog()
+
+        If ($Result -eq "OK")
+        {
+            $Content = $This.GameExport()
+            [System.IO.File]::WriteAllLines($Dialog.Filename,$Content)
+        }
+    }
+    [String[]] GameExport()
+    {
+        If (!$This.Loadout)
+        {
+            Throw "Must have a loadout"
+        }
+
+        $Max = @{ 
+
+            Index    = ($This.Loadout.Index    | % ToString | Sort-Object Length)[-1].Length + 1
+            Rank     = ($This.Loadout.Rank     | % ToString | Sort-Object Length)[-1].Length + 1
+            Race     = ($This.Loadout.Race     | Sort-Object Length)[-1].Length + 1
+            Title    = ($This.Loadout.Title    | Sort-Object Length)[-1].Length + 1
+        }
+
+        If ($Max.Index -lt 5)
+        {
+            $Max.Index = 5
+        }
+
+        If ($Max.Rank -lt 4)
+        {
+            $Max.Rank = 4
+        }
+
+        $File = $This.StarCraftOutputFile($This.Xaml.IO.GameSelection.SelectedItem,
+                                          $This.Loadout,
+                                          $This.Duration)
+
+        $Out  = @{ }
+
+        $Content = (Write-Theme $File -Text) -Replace "^#",""
+        ForEach ($Line in $Content)
+        {
+            $Out.Add($Out.Count,$Line)
+        }
+
+        $Out.Add($Out.Count,"")
+
+        $Line = "Index".PadRight($Max.Index," "),
+                "Rank".PadRight($Max.Rank," "),
+                "Race".PadRight($Max.Race," "),
+                "Title".PadRight($Max.Title," "),
+                "Start".PadRight(24," "),
+                "End".PadRight(24," "),
+                "Duration".PadRight(17," ") -join " "
+
+        $Out.Add($Out.Count,$Line)
+
+        $Line = "-----".PadRight($Max.Index," "),
+                "----".PadRight($Max.Rank," "),
+                "----".PadRight($Max.Race," "),
+                "-----".PadRight($Max.Title," "),
+                "-----".PadRight(24," "),
+                "---".PadRight(24," "),
+                "--------".PadRight(17," ") -join " "
+
+        $Out.Add($Out.Count,$Line)
+
+        ForEach ($Item in $This.Loadout)
+        {
+            $xIndex    = $Item.Index.ToString()
+            $xRank     = $Item.Rank.ToString()
+            $xRace     = $Item.Race
+            $xTitle    = $Item.Title
+            $xStart    = @($Item.Start;" ")[!$Item.Start]
+            $xEnd      = @($Item.End;" ")[!$Item.End]
+            $xDuration = @($Item.Duration;" ")[!$Item.Duration]
+
+            $Line      = $xIndex.PadLeft($Max.Index," "),
+                         $xRank.PadLeft($Max.Rank," "),
+                         $xRace.PadRight($Max.Race," "),
+                         $xTitle.PadRight($Max.Title," "),
+                         $xStart.PadRight(24," "),
+                         $xEnd.PadRight(24," "),
+                         $xDuration.PadRight(17," ") -join " "
+
+            $Out.Add($Out.Count,$Line)
+        }
+
+        Return $Out[0..($Out.Count-1)]
+    }
     StageXaml()
     {
         $Ctrl = $This
+
+        $Ctrl.Xaml.IO.GameStart.IsEnabled     = 1
+        $Ctrl.Xaml.IO.GameNextLevel.IsEnabled = 0
+        $Ctrl.Xaml.IO.GameEnd.IsEnabled       = 0
 
         $Ctrl.Reset($Ctrl.Xaml.IO.GameSelection,$Ctrl.Selection.Output.Name)
 
         $Ctrl.Xaml.IO.GameSelection.Add_SelectionChanged(
         {
             $Ctrl.GameSelection()
+        })
+
+        $Ctrl.Xaml.IO.GameStart.Add_Click(
+        {
+            $Ctrl.GameStart()
+        })
+
+        $Ctrl.Xaml.IO.GameNextLevel.Add_Click(
+        {
+            $Ctrl.GameNextLevel()
+        })
+
+        $Ctrl.Xaml.IO.GameEnd.Add_Click(
+        {
+            $Ctrl.GameEnd()
+        })
+
+        $Ctrl.Xaml.IO.GameSave.Add_Click(
+        {
+            $Ctrl.GameSave()
+        })
+
+        $Ctrl.Xaml.IO.GameReset.Add_Click(
+        {
+            $Ctrl.GameReset()
         })
 
         $Ctrl.Xaml.IO.GameSelection.SelectedIndex = 11
