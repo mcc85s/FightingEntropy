@@ -1261,10 +1261,13 @@ namespace FightingEntropy
             {
                 _controller = controller;
             }
-
             public void Report(string key, string name, int current, int total, string message)
             {
                 _controller.UpdateStatus(key, name, current, total, message);
+
+                // Also push a formatted message into the thread's message queue
+                string line = message; // or include key/name if you want
+                _controller.AddMessage(line);
             }
         }
 
@@ -1275,6 +1278,7 @@ namespace FightingEntropy
             public int                Id { get; set; }
             public DateTime      Started { get; set; }
             public DateTime   LastReport { get; set; }
+            public DateTime   NextReport { get; set; }
             public DateTime?   Completed { get; set; }
             public State          Status { get; set; }
             public bool        IsStarted 
@@ -1377,16 +1381,30 @@ namespace FightingEntropy
 
         public class StatusEntry
         {
-            public string          Key;
-            public string         Name;
-            public int         Current;
-            public int           Total;
-            public string      Message;
-            public DateTime LastUpdate;
+            public string           Key;
+            public string          Name;
+            public int          Current;
+            public int            Total;
+            public string       Message;
+            public DateTime    StartUtc;
+            public DateTime LastUpdated;
+            public DateTime LastChanged;
+            public bool      IsComplete;
+            public bool       IsStalled;
             public StatusEntry()
             {
-                Total      = -1;
-                LastUpdate = DateTime.UtcNow;
+                Total        = -1;
+
+                StartUtc     = DateTime.UtcNow;
+                LastUpdated  = StartUtc;
+                LastChanged  = StartUtc;
+
+                IsComplete   = false;
+                IsStalled    = false;
+            }
+            public override string ToString()
+            {
+                return Message;
             }
         }
 
@@ -1412,11 +1430,11 @@ namespace FightingEntropy
                     Table[key] = entry;
                 }
 
-                entry.Name       = name;
-                entry.Current    = current;
-                entry.Total      = total;
-                entry.Message    = message;
-                entry.LastUpdate = DateTime.UtcNow;
+                entry.Name        = name;
+                entry.Current     = current;
+                entry.Total       = total;
+                entry.Message     = message;
+                entry.LastUpdated = DateTime.UtcNow;
             }
             public StatusEntry[] Snapshot()
             {
@@ -1445,35 +1463,36 @@ namespace FightingEntropy
 
         public enum SessionStatePhase
         {
-            Initial   = 0,
-            Bootstrap = 1,
-            Worker    = 2
+            Assigned  = 0,
+            Initial   = 1,
+            Bootstrap = 2,
+            Worker    = 3
         }
 
         public class SessionStateObject
         {
             public int               Index { get; set; }
             public SessionStateType   Type { get; set; }
-            public SessionStatePhase Phase = SessionStatePhase.PostParam;
+            public SessionStatePhase Phase = SessionStatePhase.Assigned;
             public string             Name { get; set; }
             public string      Description { get; set; }
             public byte[]            Bytes { get; set; }
             public bool             Locked { get; private set; }
-            public SessionStateObject(int index, SessionStateType type, string name, string description, byte[] bytes)
+            public SessionStateObject(int index, string type, string phase, string name, string description, byte[] bytes)
             {
-                Initialize(index, type, name, description);
+                Initialize(index, type, phase, name, description);
 
                 Bytes = bytes;
             }
-            public SessionStateObject(int index, SessionStateType type, string name, string description, string[] content)
+            public SessionStateObject(int index, string type, string phase, string name, string description, string[] content)
             {
-                Initialize(index, type, name, description);
+                Initialize(index, type, phase, name, description);
 
                 Bytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", content));
             }
-            public SessionStateObject(int index, SessionStateType type, string name, string description, string path)
+            public SessionStateObject(int index, string type, string phase, string name, string description, string path)
             {
-                Initialize(index, type, name, description);
+                Initialize(index, type, phase, name, description);
 
                 if (Directory.Exists(path))
                 {
@@ -1488,10 +1507,11 @@ namespace FightingEntropy
                     Bytes = System.Text.Encoding.UTF8.GetBytes(path);
                 }
             }
-            private void Initialize(int index, SessionStateType type, string name, string description)
+            private void Initialize(int index, string type, string phase, string name, string description)
             {
                 Index       = index;
-                Type        = type;
+                Type        = (SessionStateType)Enum.Parse(typeof(SessionStateType), type, true);
+                Phase       = (SessionStatePhase)Enum.Parse(typeof(SessionStatePhase), phase, true);
                 Name        = name;
                 Description = description;
             }
@@ -1609,31 +1629,31 @@ namespace FightingEntropy
                 StartTime    = DateTime.UtcNow;
                 LastBeatUtc  = DateTime.UtcNow;
             }
-            public void AddSessionStateObject(SessionStateType type, string name, string description, byte[] bytes)
+            public void AddSessionStateObject(string type, string phase, string name, string description, byte[] bytes)
             {
                 if (SessionStateNameExists(name))
                     throw new InvalidOperationException("SessionStateObject with name '" + name + "' already exists.");
 
                 int index = SessionState.Count;
-                SessionState.Add(new SessionStateObject(index, type, name, description, bytes));
+                SessionState.Add(new SessionStateObject(index, type, phase, name, description, bytes));
             }
-            public void AddSessionStateObject(SessionStateType type, string name, string description, string[] content)
+            public void AddSessionStateObject(string type, string phase, string name, string description, string[] content)
             {
                 if (SessionStateNameExists(name))
                     throw new InvalidOperationException("SessionStateObject with name '" + name + "' already exists.");
 
                 int index = SessionState.Count;
-                SessionState.Add(new SessionStateObject(index, type, name, description, content));
+                SessionState.Add(new SessionStateObject(index, type, phase, name, description, content));
             }
-            public void AddSessionStateObject(SessionStateType type, string name, string description, string path)
+            public void AddSessionStateObject(string type, string phase, string name, string description, string path)
             {
                 if (SessionStateNameExists(name))
                     throw new InvalidOperationException("SessionStateObject with name '" + name + "' already exists.");
 
                 int index = SessionState.Count;
-                SessionState.Add(new SessionStateObject(index, type, name, description, path));
+                SessionState.Add(new SessionStateObject(index, type, phase, name, description, path));
             }
-            private bool SessionStateNameExists(string name)
+            public bool SessionStateNameExists(string name)
             {
                 if (SessionState == null)
                     return false;
@@ -1651,7 +1671,42 @@ namespace FightingEntropy
             }
             public void UpdateStatus(string key, string name, int current, int total, string message)
             {
-                StatusBank.Update(key, name, current, total, message);
+                StatusEntry entry;
+
+                if (StatusBank.Table.ContainsKey(key))
+                {
+                    entry = (StatusEntry)StatusBank.Table[key];
+                }
+                else
+                {
+                    entry      = new StatusEntry();
+                    entry.Key  = key;
+                    entry.Name = name;
+                    StatusBank.Table.Add(key, entry);
+                }
+
+                DateTime now = DateTime.UtcNow;
+
+                // Detect progress change
+                if (entry.Current != current || entry.Total != total)
+                {
+                    entry.Current     = current;
+                    entry.Total       = total;
+                    entry.LastChanged = now;
+
+                    // Progress resumed → clear stall
+                    entry.IsStalled = false;
+                }
+
+                entry.Message     = message;
+                entry.LastUpdated = now;
+
+                // COMPLETION ALWAYS OVERRIDES STALL
+                if (message.StartsWith("Completed [+]"))
+                {
+                    entry.IsComplete = true;
+                    entry.IsStalled  = false;
+                }
             }
             public void InitializePool()
             {
@@ -1664,7 +1719,7 @@ namespace FightingEntropy
 
                 foreach (var item in SessionState)
                 {
-                    if (item.Phase == SessionStatePhase.Initial)
+                    if (item.Phase != SessionStatePhase.Initial)
                         continue;
 
                     switch (item.Type)
@@ -1695,15 +1750,14 @@ namespace FightingEntropy
                 Pool.SetMaxRunspaces(MaxThreads);
                 Pool.Open();
             }
-            private string BuildBootstrapBlock()
+            public string BuildBootstrapBlock()
             {
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-                sb.AppendLine("# --- SessionState Bootstrap (ordered) ---");
-
-                for (int i = 0; i < SessionState.Count; i++)
+                foreach (var item in SessionState)
                 {
-                    SessionStateObject item = SessionState[i];
+                    if (item.Phase != SessionStatePhase.Bootstrap)
+                        continue;
 
                     switch (item.Type)
                     {
@@ -1713,6 +1767,24 @@ namespace FightingEntropy
                             sb.AppendLine();
                             break;
 
+                        case SessionStateType.Function:
+                            sb.AppendLine("# Define function: [" + item.Name + "]");
+                            sb.AppendLine(item.GetString());
+                            sb.AppendLine();
+                            break;
+
+                        case SessionStateType.Variable:
+                            sb.AppendLine("# Set variable: [" + item.Name + "]");
+                            sb.AppendLine("Set-Variable -Name \"" + item.Name + "\" -Value " + item.GetString());
+                            sb.AppendLine();
+                            break;
+
+                        case SessionStateType.Script:
+                                sb.AppendLine("# Execute script: [" + item.Name + "]");
+                                sb.AppendLine(item.GetString());
+                                sb.AppendLine();
+                            break;
+
                         default:
                             break;
                     }
@@ -1720,53 +1792,45 @@ namespace FightingEntropy
 
                 return sb.ToString();
             }
-            public string BuildWorkerScript()
+            public string BuildWorkerBlock()
             {
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-                sb.Append(BuildBootstrapBlock());
-                sb.AppendLine();
+                foreach (var item in SessionState)
+                {
+                    if (item.Phase != SessionStatePhase.Worker)
+                        continue;
 
-                sb.AppendLine("# --- Worker Script ---");
-                sb.AppendLine("Invoke-Expression $WorkerScript");
+                    switch (item.Type)
+                    {
+                        case SessionStateType.Assembly:
+                            sb.AppendLine("# Load assembly (worker): [" + item.Name + "]");
+                            sb.AppendLine("[System.Reflection.Assembly]::Load($" + item.Name + ") | Out-Null");
+                            sb.AppendLine();
+                            break;
 
-                return sb.ToString();
-            }
-            public string BuildWorkerScriptBlock()
-            {
-                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                        case SessionStateType.Function:
+                            sb.AppendLine("# Define function (worker): [" + item.Name + "]");
+                            sb.AppendLine(item.GetString());
+                            sb.AppendLine();
+                            break;
 
-                // 1. Bootstrap (assembly load + param + post-param items)
-                sb.AppendLine(BuildBootstrapBlock());
+                        case SessionStateType.Variable:
+                            sb.AppendLine("# Set variable (worker): [" + item.Name + "]");
+                            sb.AppendLine("Set-Variable -Name \"" + item.Name + "\" -Value " + item.GetString());
+                            sb.AppendLine();
+                            break;
 
-                // 2. Worker body
-                sb.AppendLine("$tid = [System.Threading.Thread]::CurrentThread.ManagedThreadId");
-                sb.AppendLine("$TC.AddMessage(\"Starting [~] Event log worker: $tid\")");
-                sb.AppendLine();
+                        case SessionStateType.Script:
+                            sb.AppendLine("# Execute script (worker): [" + item.Name + "]");
+                            sb.AppendLine(item.GetString());
+                            sb.AppendLine();
+                            break;
 
-                sb.AppendLine("while ($true)");
-                sb.AppendLine("{");
-                sb.AppendLine("    $name = $null");
-                sb.AppendLine("    if (-not $TC.TryDequeueWork([ref]$name)) { break }");
-                sb.AppendLine("    if ([string]::IsNullOrEmpty($name)) { continue }");
-                sb.AppendLine();
-                sb.AppendLine("    $logIndex = $TC.GetLogIndex($name)");
-                sb.AppendLine("    $inst = [FightingEntropy.Thread.Instance]::new($logIndex, $name, $tid)");
-                sb.AppendLine("    $inst.Start()");
-                sb.AppendLine("    $TC.AddThread($inst)");
-                sb.AppendLine();
-                sb.AppendLine("    $callback = [FightingEntropy.Thread.ProgressReporter]::new($TC)");
-                sb.AppendLine("    $provider = [FightingEntropy.EventLog.Provider]::new(");
-                sb.AppendLine("        $logIndex,");
-                sb.AppendLine("        $name,");
-                sb.AppendLine("        $callback,");
-                sb.AppendLine("        \"$tid/$name\"");
-                sb.AppendLine("    )");
-                sb.AppendLine();
-                sb.AppendLine("    $TC.AddResult($provider)");
-                sb.AppendLine("}");
-                sb.AppendLine();
-                sb.AppendLine("$TC.AddMessage(\"Complete [*] Event log worker: $tid\")");
+                        default:
+                            break;
+                    }
+                }
 
                 return sb.ToString();
             }
@@ -1840,24 +1904,51 @@ namespace FightingEntropy
             {
                 return StatusBank.Snapshot();
             }
-            public string[] DetectStalls(int idleSeconds)
+            public string[] DetectStalls(int stallSeconds)
             {
-                List<string>      list = new List<string>();
+                List<string> list = new List<string>();
                 StatusEntry[] statuses = StatusBank.Snapshot();
-                DateTime           now = DateTime.UtcNow;
+                DateTime now = DateTime.UtcNow;
 
                 for (int i = 0; i < statuses.Length; i++)
                 {
                     StatusEntry s = statuses[i];
-                    TimeSpan idle = now - s.LastUpdate;
 
-                    if (idle.TotalSeconds >= idleSeconds)
+                    // Completed providers cannot be stalled
+                    if (s.IsComplete)
                     {
-                        string msg = string.Format("Warning [!] Possible stall: {0} (Key: {1}), LastUpdate: {2}, Idle: {3}s",
-                                                    s.Name, s.Key, s.LastUpdate.ToString("u"), ((int)idle.TotalSeconds).ToString());
-
-                        list.Add(msg);
+                        s.IsStalled = false;
+                        continue;
                     }
+
+                    // Expected next progress report (5 minutes after last change)
+                    DateTime expected = s.LastChanged.AddMinutes(5);
+
+                    // If not late → not stalled
+                    if (now < expected.AddSeconds(stallSeconds))
+                    {
+                        s.IsStalled = false;
+                        continue;
+                    }
+
+                    // If already marked stalled → don't report again
+                    if (s.IsStalled)
+                        continue;
+
+                    // First time detecting stall
+                    string msg = string.Format(
+                        "Warning [!] Possible stall: {0} (Key: {1}), LastChanged: {2}, ExpectedReport: {3}, Now: {4}",
+                        s.Name,
+                        s.Key,
+                        s.LastChanged.ToString("u"),
+                        expected.ToString("u"),
+                        now.ToString("u")
+                    );
+
+                    list.Add(msg);
+
+                    // Mark as stalled so we don't repeat
+                    s.IsStalled = true;
                 }
 
                 return list.ToArray();
@@ -2245,12 +2336,7 @@ namespace FightingEntropy
             public bool                     ReadOnly { get; private set; }
             public Thread.IProgressCallback Callback;
             public string                CallbackKey;
-            public Provider(uint index, string name)
-            {
-                Initialize(index, name);
-                ReadOnly   = false;
-                Collect();
-            }
+            private double                   emaRate = 0;
             public Provider(uint index, string name, Thread.IProgressCallback callback, string callbackKey)
             {
                 Initialize(index, name);
@@ -2273,19 +2359,10 @@ namespace FightingEntropy
             }
             private void WriteStatus(string message, int current, int total)
             {
-                if (Callback != null)
-                {
-                    int safeCurrent = (current >= 0) ? current : 0;
-                    int safeTotal   = (total   >= 0) ? total   : 0;
+                int safeCurrent = (current >= 0) ? current : 0;
+                int safeTotal   = (total   >= 0) ? total   : 0;
 
-                    // Send to thread controller
-                    Callback.Report(CallbackKey, DisplayName, safeCurrent, safeTotal, message);
-                }
-                else
-                {
-                    // Fallback to console
-                    System.Console.WriteLine(message);
-                }
+                Callback.Report(CallbackKey, DisplayName, safeCurrent, safeTotal, message);
             }
             private void WriteStatus(string message)
             {
@@ -2294,28 +2371,28 @@ namespace FightingEntropy
             public void Collect()
             {
                 if (ReadOnly)
-                {
                     throw new InvalidOperationException("Provider is in read-only mode");
-                }
 
-                uint     count = 0;
-                ulong estTotal = 0;
-                string     msg = null;
+                uint   count    = 0;
+                ulong  estTotal = 0;
+                string msg      = null;
 
                 // Try to get estimated total number of events (best effort only)
                 try
                 {
-                    EventLogSession  session = new EventLogSession();
-                    EventLogInformation info = session.GetLogInformation(this.DisplayName, PathType.LogName);
-                    estTotal                 = info.RecordCount.HasValue ? (ulong)info.RecordCount.Value : 0;
+                    EventLogSession      session = new EventLogSession();
+                    EventLogInformation  info    = session.GetLogInformation(this.DisplayName, PathType.LogName);
+                    estTotal                      = info.RecordCount.HasValue ? (ulong)info.RecordCount.Value : 0;
                 }
                 catch
                 {
-                    estTotal                 = 0;
+                    estTotal = 0;
                 }
 
                 // Start timing
-                Stopwatch stopwatch          = Stopwatch.StartNew();
+                Stopwatch stopwatch   = Stopwatch.StartNew();
+                DateTime  lastReport  = DateTime.UtcNow;
+                int       reportEveryMinutes = 5;   // detailed progress cadence
 
                 try
                 {
@@ -2330,37 +2407,48 @@ namespace FightingEntropy
                             Output.Add(new Entry(count, Index, rec));
                             count++;
 
-                            WriteStatus("Processing",(int)count, (int)estTotal);
-
-                            // Update progress every 250 records
-                            if (count % 250 == 0)
+                            // Time-based progress (every ~5 minutes per provider)
+                            if (estTotal > 0 && count > 0)
                             {
-                                double pct = 0.0;
-
-                                if (estTotal > 0)
-                                    pct = ((double)count / (double)estTotal) * 100.0;
-
-                                if (estTotal > 0)
+                                DateTime now = DateTime.UtcNow;
+                                if ((now - lastReport).TotalMinutes >= reportEveryMinutes)
                                 {
-                                    msg = string.Format("Progress [~] {0}, {1}% ({2}/{3})",
-                                                        DisplayName,
-                                                        pct.ToString("0.00"),
-                                                        count.ToString(),
-                                                        estTotal.ToString());
-                                }
-                                else
-                                {
-                                    msg = string.Format("Progress [~] {0}, ({1}) records processed", DisplayName, count.ToString());
-                                }
+                                    double pct = ((double)count / (double)estTotal) * 100.0;
 
-                                WriteStatus(msg, (int)count, (int)estTotal);
+                                    double currentRate = count / stopwatch.Elapsed.TotalSeconds;
+
+                                    if (emaRate == 0)
+                                    {
+                                        emaRate = currentRate;
+                                    }
+                                    else
+                                    {
+                                        emaRate = (emaRate * 0.85) + (currentRate * 0.15);
+                                    }
+
+                                    TimeSpan eta = TimeSpan.Zero;
+
+                                    if (emaRate > 0)
+                                    {
+                                        double remaining = estTotal - count;
+                                        double etaSec = remaining / emaRate;
+
+                                        if (etaSec < 0) etaSec = 0;
+
+                                        eta = TimeSpan.FromSeconds(etaSec);
+                                    }
+
+                                    msg = string.Format("Processing [~] {0} {1:N2}% ({2}/{3}) ETA [{4}]", DisplayName, pct, count, estTotal, eta.ToString(@"hh\:mm\:ss"));
+
+                                    WriteStatus(msg, (int)count, (int)estTotal);
+                                    lastReport = now;
+                                }
                             }
                         }
                     }
 
                     msg = string.Format("Completed [+] {0}, ({1}) records collected", DisplayName, count.ToString());
-
-                    WriteStatus(msg, (int)count, (int) estTotal);
+                    WriteStatus(msg, (int)count, (int)estTotal);
                 }
                 catch
                 {
@@ -2371,24 +2459,15 @@ namespace FightingEntropy
                 stopwatch.Stop();
                 Duration = stopwatch.Elapsed;
 
-                // Sort/Reindex callback
-                WriteStatus("Sorting",(int)count, (int)count);
-
-                // Sort by TimeCreated
                 Output.Sort(delegate(Entry a, Entry b)
                 {
                     return a.TimeCreated.Value.CompareTo(b.TimeCreated.Value);
                 });
 
-                // Index appropriately
                 for (int i = 0; i < Output.Count; i++)
-                {
                     Output[i].Rank = (uint)i;
-                }
 
-                Total  = (uint)Output.Count;
-
-                WriteStatus("Complete",(int)count, (int)count);
+                Total = (uint)Output.Count;
             }
             public override string ToString()
             {
@@ -2724,14 +2803,9 @@ namespace FightingEntropy
                 this.Thread = new FightingEntropy.Thread.Controller();
                 string asmPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-                this.Thread.AddSessionStateObject(
-                    FightingEntropy.Thread.SessionStateType.Assembly,
-                    "FightingEntropy",
-                    "FightingEntropy core assembly bytes",
-                    asmPath);
+                this.Thread.AddSessionStateObject("Assembly","Initial","FightingEntropy","FightingEntropy ISS assembly bytes",asmPath);
 
                 this.Thread.SessionState[0].ToggleLock();
-                this.Thread.SessionState[0].Phase = FightingEntropy.Thread.SessionStatePhase.PreParam;
             }
             public void Update(int state, string status)
             {
@@ -2804,6 +2878,42 @@ namespace FightingEntropy
                     percent, bags, names, threads
                 );
             }
+            private ulong ComputeGlobalCurrent(Thread.Controller tc)
+            {
+                ulong total = 0;
+
+                Thread.StatusEntry[] statuses = tc.GetStatusSnapshot();
+
+                for (int i = 0; i < statuses.Length; i++)
+                {
+                    Thread.StatusEntry s = statuses[i];
+
+                    if (s.Total > 0 && s.Current > 0)
+                        total += (ulong)s.Current;
+                }
+
+                return total;
+            }
+            private TimeSpan ComputeGlobalEta(DateTime start, ulong current, ulong total)
+            {
+                if (current == 0 || total == 0 || current > total)
+                    return TimeSpan.Zero;
+
+                TimeSpan elapsed = DateTime.UtcNow - start;
+
+                double fraction = (double)current / (double)total;
+
+                if (fraction <= 0.0 || fraction >= 1.0)
+                    return TimeSpan.Zero;
+
+                double totalSeconds = elapsed.TotalSeconds / fraction;
+                double remainingSeconds = totalSeconds - elapsed.TotalSeconds;
+
+                if (remainingSeconds < 0)
+                    remainingSeconds = 0;
+
+                return TimeSpan.FromSeconds(remainingSeconds);
+            }
             private void CollectEventLogs()
             {
                 // Get provider names
@@ -2814,6 +2924,33 @@ namespace FightingEntropy
                     Event.Output   = new EventLog.Entry[0];
                     Event.Total    = 0;
                     return;
+                }
+
+                // Compute global total record count (without reading logs)
+                ulong globalTotalRecords = 0;
+
+                try
+                {
+                    EventLogSession session = new EventLogSession();
+
+                    foreach (string logName in names)
+                    {
+                        try
+                        {
+                            EventLogInformation info = session.GetLogInformation(logName, PathType.LogName);
+
+                            if (info.RecordCount.HasValue)
+                                globalTotalRecords += (ulong)info.RecordCount.Value;
+                        }
+                        catch
+                        {
+                            // Ignore logs that cannot be queried
+                        }
+                    }
+                }
+                catch
+                {
+                    globalTotalRecords = 0;
                 }
 
                 // Build name → index map
@@ -2828,6 +2965,10 @@ namespace FightingEntropy
                 for (int i = 0; i < names.Length; i++)
                     tc.EnqueueWork(names[i]);
 
+                string bootstrapScript = string.Format("[System.Reflection.Assembly]::Load(${0}) | Out-Null", tc.SessionState[0].Name);
+
+                tc.AddSessionStateObject("Script","Bootstrap","LoadFEassembly","Invokes FE assembly",bootstrapScript);
+
                 string[] workerLines = new string[]
                 {
                     "param([FightingEntropy.Thread.Controller]$TC,[hashtable]$Map)",
@@ -2840,7 +2981,7 @@ namespace FightingEntropy
                     "    if (!$TC.TryDequeueWork([ref]$name)) { break }",
                     "    if ([string]::IsNullOrWhiteSpace($name)) { continue }",
                     "",
-                    "    try ",
+                    "    try",
                     "    {",
                     "        $TC.AddMessage(\"Starting [~] $name\")",
                     "",
@@ -2850,11 +2991,14 @@ namespace FightingEntropy
                     "        $inst.Start()",
                     "        $TC.AddThread($inst)",
                     "",
-                    "        $provider = [FightingEntropy.EventLog.Provider]::new($logIndex, $name)",
+                    "        $callback = [FightingEntropy.Thread.ProgressReporter]::new($TC)",
+                    "        $key      = \"$tid/$name\"",
+                    "",
+                    "        $provider = [FightingEntropy.EventLog.Provider]::new($logIndex, $name, $callback, $key)",
                     "        $TC.AddResult($provider)",
                     "",
                     "        $inst.Complete()",
-                    "        $TC.AddMessage(\"Complete [+] $name, ($($provider.Total)) events [$($inst.Duration)]\")",
+                    "        $TC.AddMessage(\"Complete [+] $name, ($($provider.Total)) events, total time: [$($inst.Duration)]\")",
                     "    }",
                     "    catch",
                     "    {",
@@ -2869,20 +3013,11 @@ namespace FightingEntropy
 
                 string workerScript = string.Join("\n", workerLines);
 
-                tc.AddSessionStateObject(
-                    FightingEntropy.Thread.SessionStateType.Variable,
-                    "WorkerScript", 
-                    "Main worker script", 
-                    workerScript);
-
-                var items = FightingEntropy.Thread.Controller.ExtractParams(workerScript);
-                tc.AddWorkerParams(items);
+                tc.AddSessionStateObject("Script","Worker","WorkerScript","Multithreaded worker script",workerScript);
 
                 Update(0, string.Format("Initializing [~] RunspacePool ({0}) threads",tc.MaxThreads));
 
                 tc.InitializePool();
-
-                string script = tc.BuildWorkerScript();
 
                 // Launch workers
                 for (int i = 0; i < tc.MaxThreads; i++)
@@ -2892,61 +3027,51 @@ namespace FightingEntropy
                     ps.RunspacePool = tc.Pool;
 
                     // Load the script AND allow parameter binding
-                    ps.AddScript(script, false);
+                    ps.AddScript(tc.BuildBootstrapBlock(), false);
+                    ps.Invoke();
+                    ps.Commands.Clear();
 
-                    // Bind parameters to the param() block
+                    ps.AddScript(tc.BuildWorkerBlock(), false);
                     ps.AddParameter("TC", tc);
                     ps.AddParameter("Map", map);
-
                     tc.RegisterJob(ps.BeginInvoke());
                 }
 
                 // Pump messages + heartbeat
                 while (tc.ActiveJobs() > 0 || !tc.Messages.IsEmpty)
                 {
+                    // Provider messages (progress, 5-min heartbeats, completion)
                     string[] msgs = tc.DrainMessages();
                     for (int i = 0; i < msgs.Length; i++)
                         Update(0, msgs[i]);
 
+                    // Heartbeat every 60s
                     if (tc.HeartbeatDue(60))
                     {
-                        uint completed = (uint)tc.Bag.Count;
-                        uint total     = (uint)names.Length;
-                        uint active    = (uint)tc.Threads.Count;
+                        // Compute global progress
+                        ulong globalCurrent = ComputeGlobalCurrent(tc);
+                        ulong globalTotal   = globalTotalRecords;
 
-                        string hb = HeartbeatStatus(completed, total, active);
+                        double pct = 0;
+                        if (globalTotal > 0)
+                            pct = ((double)globalCurrent / (double)globalTotal) * 100.0;
+
+                        TimeSpan eta = ComputeGlobalEta(tc.StartTime, globalCurrent, globalTotal);
+
+                        string hb = string.Format(
+                            "Heartbeat [~] {0:00.00}% ({1:N0}/{2:N0} records) ETA [{3}]",
+                            pct,
+                            globalCurrent,
+                            globalTotal,
+                            eta.ToString(@"hh\:mm\:ss")
+                        );
+
                         Update(0, hb);
 
-                        // Dump status entries
-                        Thread.StatusEntry[] statuses = tc.GetStatusSnapshot();
-
-                        for (int i = 0; i < statuses.Length; i++)
-                        {
-                            Thread.StatusEntry s = statuses[i];
-
-                            string msg;
-
-                            if (s.Total > 0)
-                            {
-                                double pct = ((double)s.Current / (double)s.Total) * 100.0;
-                                    
-                                msg = string.Format("Status [~] {0} {1}/{2} ({3}%) {4}",
-                                                    s.Name, s.Current.ToString(), s.Total.ToString(), pct.ToString("F2"), s.Message);
-                            }
-                            else
-                            {
-                                msg = string.Format("Status [~] {0} {1} items {2}",s.Name, s.Current.ToString(), s.Message);
-                            }
-
-                            Update(0, msg);
-                        }
-
-                        // Stall detection (e.g., 120 seconds idle)
+                        // Stall detection
                         string[] stalls = tc.DetectStalls(120);
                         for (int i = 0; i < stalls.Length; i++)
-                        {
                             Update(0, stalls[i]);
-                        }
 
                         tc.UpdateHeartbeat();
                     }
