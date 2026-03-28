@@ -1031,19 +1031,19 @@ namespace FightingEntropy
                 Populate(title, prompt);
                 Refresh(new object[]{ inputObject });
             }
-            public Controller(object inputObject, uint palette)
+            public Controller(uint palette, object inputObject)
             {
                 Initialize(palette);
                 Populate();
                 Refresh(new object[]{ inputObject });
             }
-            public Controller(object inputObject, string title, uint palette)
+            public Controller(uint palette, object inputObject, string title)
             {
                 Initialize(palette);
                 Populate(title);
                 Refresh(new object[]{ inputObject });
             }
-            public Controller(object inputObject, string title, string prompt, uint palette)
+            public Controller(uint palette, object inputObject, string title, string prompt)
             {
                 Initialize(palette);
                 Populate(title, prompt);
@@ -1067,19 +1067,19 @@ namespace FightingEntropy
                 Populate(title, prompt);
                 Refresh(inputObject);
             }
-            public Controller(object[] inputObject, uint palette)
+            public Controller(uint palette, object[] inputObject)
             {
                 Initialize(palette);
                 Populate();
                 Refresh(inputObject);
             }
-            public Controller(object[] inputObject, string title, uint palette)
+            public Controller(uint palette, object[] inputObject, string title)
             {
                 Initialize(palette);
                 Populate(title);
                 Refresh(inputObject);
             }
-            public Controller(object[] inputObject, string title, string prompt, uint palette)
+            public Controller(uint palette, object[] inputObject, string title, string prompt)
             {
                 Initialize(palette);
                 Populate(title, prompt);
