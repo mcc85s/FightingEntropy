@@ -1,0 +1,145 @@
+{
+    "editor.tabSize": 4,
+    "security.workspace.trust.untrustedFiles": "open",
+    "chat.autopilot.enabled": true,
+    "editor.fontFamily": "Cascadia Code",
+    "editor.inlineSuggest.enabled": false,
+    "dotnet.server.useOmnisharp": false,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.parameterHints.enabled": false,
+    "workbench.colorTheme": "BossMode",
+    "terminal.integrated.stickyScroll.enabled": false,
+    "terminal.integrated.suggest.enabled": false,
+    "editor.tokenColorCustomizations":
+    {
+        "textMateRules": [
+            {
+                "scope": [
+                    "storage.modifier.public.cs",
+                    "storage.modifier.private.cs",
+                    "storage.modifier.partial.cs",
+                    "storage.modifier.static.cs",
+                    "storage.modifier.protected.cs",
+                    "storage.modifier.const.cs",
+                    "storage.modifier.override.cs",
+                    "storage.modifier.void.cs",
+                    "storage.modifier.ref.cs",
+                    "storage.modifier.out.cs",
+                    "storage.modifier.internal.cs",
+                    "storage.modifier.extern.cs",
+                    "storage.modifier.readonly.cs",
+                    "storage.modifier.implicit.cs",
+                    "storage.modifier.new.cs",
+                    "storage.modifier.params.cs",
+                    "storage.modifier.sealed.cs",
+                    "storage.modifier.abstract.cs",
+                    "storage.modifier.virtual.cs",
+                    "storage.modifier.in.cs"
+                ],
+                "settings":
+                {
+                    "foreground": "#0087FF",   // pick your color
+                    "fontStyle": "bold"
+                }
+            },
+            { 
+                "scope": [ 
+                    "entity.name.type.cs",
+                    "entity.name.function.cs",
+                    "variable.other.object.property.cs"
+                ], 
+                "settings": 
+                {
+                    "foreground": "#D4FFD4"
+                }
+            },
+            { 
+                "scope": [ 
+                    "variable.language.this.cs"
+                ], 
+                "settings": 
+                {
+                    "foreground": "#FF261B"
+                }
+            },
+            {
+                "scope": [ 
+                    "string.quoted.double.cs",
+                	"string.quoted.single.cs",
+                	"punctuation.definition.string.begin.cs",
+                	"punctuation.definition.string.end.cs",
+                    "constant.character.escape.cs"
+                ], 
+                "settings": 
+                {
+                    "foreground": "#FF8C00"
+                }
+            },
+            {
+                "scope": [ 
+                    "keyword.type.bool.cs",
+                    "keyword.type.byte.cs",
+                    "keyword.type.sbyte.cs",
+                    "keyword.type.char.cs",
+                    "keyword.type.decimal.cs",
+                    "keyword.type.double.cs",
+                    "keyword.type.float.cs",
+                    "keyword.type.int.cs",
+                    "keyword.type.uint.cs",
+                    "keyword.type.long.cs",
+                    "keyword.type.ulong.cs",
+                    "keyword.type.short.cs",
+                    "keyword.type.ushort.cs",
+                    "keyword.type.nint.cs",
+                    "keyword.type.nuint.cs",
+                    "keyword.type.object.cs",
+                    "keyword.type.string.cs",
+                    "keyword.type.dynamic.cs",
+                    "keyword.type.delegate.cs"
+                ], 
+                "settings": 
+                {
+                    "foreground": "#BAE0FA"
+                }
+            },
+            {
+                "scope": [ 
+                    "constant.numeric.decimal.cs"
+                ], 
+                "settings": 
+                {
+                    "foreground": "#FFD700"
+                }
+            }
+        ]
+    },
+    "editor.stickyScroll.enabled": false,
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash",
+            "icon": "terminal-git-bash"
+        },
+        "Windows PowerShell": {
+            "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+    "chat.viewSessions.orientation": "stacked"
+}
