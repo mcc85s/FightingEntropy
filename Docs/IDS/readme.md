@@ -1,31 +1,3 @@
-<style>
-body, table, td, p 
-{
-    max-width: 700px;
-    font-size: 13px;
-    line-height: 1.35;
-    white-space: normal;
-    word-wrap: break-word;
-}
-
-table
-{
-    border-collapse: collapse;
-}
-
-td
-{
-    border: 1px solid #ddd;
-    padding: 6px;
-    vertical-align: top;
-}
-
-b u 
-{
-    font-size: 14px;
-}
-</style>
-
 # **CPH Library – Managed Services Proposal**
 
 ### Introduction:
@@ -101,13 +73,12 @@ In this document, I intend to discuss the following:
 - Updates Tab
 
 ### 1) Managed Services + Network Maintenance
-<div class="fe-section">
-
+<div style="max-width:700px; font-size:13px; line-height:1.35; white-space:normal; word-wrap:break-word;">
   <p><b>[1A]: <u>Issues with the &lt;current network infrastructure&gt;</u></b></p>
-
   <table>
     <tr>
       <td>
+        <font size="10">
         <p>
         I’d like to start out by making an indication that the current &lt;actual wireless access points&gt; managed by &lt;Cisco Meraki Cloud&gt; seem to be having connection issues on a &lt;regular basis&gt;. Sometimes, it is the &lt;internet service provider&gt; that is having issues, other times it is the &lt;Cisco Meraki MR52&gt; access points that are dropping connections, and failing to reestablish quality of service. For instance, you have a connection, but the throughput is 0 Kb/s.
         </p>
@@ -152,6 +123,7 @@ In this document, I intend to discuss the following:
         <p>
         The current IT director, Tom, his solution was to simply provide an Ethernet connection for the device.
         </p>
+        </font>
       </td>
     </tr>
   </table>
