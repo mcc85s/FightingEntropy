@@ -73,11 +73,12 @@ In this document, I intend to discuss the following:
 - Updates Tab
 
 ### 1) Managed Services + Network Maintenance
-<div style="max-width:700px; font-size: 10px; line-height:1; white-space:normal; word-wrap:break-word;">
+<div style="max-width:700px; line-height:1; white-space:normal; word-wrap:break-word;">
   <p><b>[1A]: <u>Issues with the &lt;current network infrastructure&gt;</u></b></p>
   <table>
     <tr>
       <td>
+        <sub>
         <p>
         I’d like to start out by making an indication that the current &lt;actual wireless access points&gt; managed by &lt;Cisco Meraki Cloud&gt; seem to be having connection issues on a &lt;regular basis&gt;. Sometimes, it is the &lt;internet service provider&gt; that is having issues, other times it is the &lt;Cisco Meraki MR52&gt; access points that are dropping connections, and failing to reestablish quality of service. For instance, you have a connection, but the throughput is 0 Kb/s.</br>
           </br>
@@ -109,6 +110,7 @@ In this document, I intend to discuss the following:
         The current IT director, Tom, his solution was to simply provide an Ethernet connection for the device.</br>
           </br>
       </td>
+      </sub>
     </tr>
   </table>
 </div>
