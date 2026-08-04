@@ -73,7 +73,7 @@ In this document, I intend to discuss the following:
 - Updates Tab
 
 ### 1) Managed Services + Network Maintenance
-<div style="max-width:700px; line-height:1; white-space:normal; word-wrap:break-word;">
+<div style="max-width:700px; font-size: 10px; line-height:1; white-space:normal; word-wrap:break-word;">
   <p><b>[1A]: <u>Issues with the &lt;current network infrastructure&gt;</u></b></p>
   <table>
     <tr>
