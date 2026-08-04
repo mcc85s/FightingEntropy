@@ -72,3 +72,16 @@ In this document, I intend to discuss the following:
 - Imaging Tab
 - Updates Tab
 
+### 1) Managed Services + Network Maintenance
+<table cellpadding="4" cellspacing="0" width="660">
+  <tr>
+    <td style="border: 1px solid #ffffff; padding: 0.04in" valign="top" width="653">
+      <p align="left" class="western">
+        <b>1)</b><u><b>Managed Services + Network Maintenance</b></u>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    
+  </tr>
+</table>
