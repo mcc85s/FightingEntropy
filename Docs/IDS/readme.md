@@ -79,7 +79,6 @@ In this document, I intend to discuss the following:
     <tr>
       <td>
         <p>
-          <font size="4">
         I’d like to start out by making an indication that the current &lt;actual wireless access points&gt; managed by &lt;Cisco Meraki Cloud&gt; seem to be having connection issues on a &lt;regular basis&gt;. Sometimes, it is the &lt;internet service provider&gt; that is having issues, other times it is the &lt;Cisco Meraki MR52&gt; access points that are dropping connections, and failing to reestablish quality of service. For instance, you have a connection, but the throughput is 0 Kb/s.</br>
           </br>
         I always know when it is (1) or the (other), as I have been having a LOT of issues with the network, and I am not the only one. I have run ping tests numerous times to see whether it was ISP related, or the internal network.</br>
@@ -109,7 +108,6 @@ In this document, I intend to discuss the following:
           </br>
         The current IT director, Tom, his solution was to simply provide an Ethernet connection for the device.</br>
           </br>
-        </font>
       </td>
     </tr>
   </table>
