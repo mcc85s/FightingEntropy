@@ -75,13 +75,21 @@ In this document, I intend to discuss the following:
 ### 1) Managed Services + Network Maintenance
 <table cellpadding="4" cellspacing="0" width="660">
   <tr>
-    <td style="border: 1px solid #ffffff; padding: 0.04in" valign="top" width="653">
+    <td style="border: 1px solid #ffffff; padding: 0.04in" valign="top" width="655">
       <p align="left" class="western">
-        <b>1)</b><u><b>Managed Services + Network Maintenance</b></u>
+        <b>1) <u>Managed Services + Network Maintenance</u></b>
+      </p>
+    </td>
+  </tr>
+    <tr>
+    <td style="border: 1px solid #ffffff; padding: 0.04in" valign="top" width="655">
+      <p align="left" class="western">
+        <b>[1A]: <u>Issues with the &lt;current network infrastructure&gt;</u></b>
       </p>
     </td>
   </tr>
   <tr>
-    
+    <p align="left" class="western">
+        
   </tr>
 </table>
