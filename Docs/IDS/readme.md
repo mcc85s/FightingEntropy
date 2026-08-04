@@ -8,14 +8,14 @@ In this document, I intend to discuss the following:
 3. **[FightingEntropy(π)]://Infrastructure Deployment System**
 
 #### 1) **Managed Services + Network Maintenance**
-A. Issues with the <current network infrastructure>
-B. Concerns with Meraki Cloud
-C. Regular maintenance (remote + on-site)
-D. Proposed Network Solution
-E. Proven Commitment
-F. Complaints + Maintenance
-G. Scope of duties
-H. Contractor
-I. Heavy-Handed Research
+- Issues with the <current network infrastructure>
+- Concerns with Meraki Cloud
+- Regular maintenance (remote + on-site)
+- Proposed Network Solution
+- Proven Commitment
+- Complaints + Maintenance
+- Scope of duties
+- Contractor
+- Heavy-Handed Research
 
 #### 2) **Heavy-Handed Research**
