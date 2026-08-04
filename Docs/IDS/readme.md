@@ -78,7 +78,7 @@ In this document, I intend to discuss the following:
   <table>
     <tr>
       <td>
-        <font size="8">
+        <font size="4">
         <p>
         I’d like to start out by making an indication that the current &lt;actual wireless access points&gt; managed by &lt;Cisco Meraki Cloud&gt; seem to be having connection issues on a &lt;regular basis&gt;. Sometimes, it is the &lt;internet service provider&gt; that is having issues, other times it is the &lt;Cisco Meraki MR52&gt; access points that are dropping connections, and failing to reestablish quality of service. For instance, you have a connection, but the throughput is 0 Kb/s.
         </p>
