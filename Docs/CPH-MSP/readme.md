@@ -165,82 +165,166 @@
 [<3-139>]: img/3-139.jpg
 [<3-140>]: img/3-140.jpg
 
-**CPH Library – Managed Services Proposal**
+# **CPH Library – Managed Services Proposal**
 
+# **Introduction:**
 
-| **Introduction:** |
-| - |
-|  **In this document, I intend to discuss the following:**  **  1) Managed Services + Network Maintenance  
-  2) Heavy-Handed Research  
-  3) \[FightingEntropy(π)\]://Infrastructure Deployment System**  **1) Managed Services + Network Maintenance** **  
- A: Issues with the \<current network infrastructure\>** ** B: Concerns with Meraki Cloud  
- C: Regular maintenance (remote + on-site)** ** D: Proposed Network Solution** ** E: Proven Commitment** ** F: Complaints + Maintenance** ** G: Scope of duties** ** H: Contractor** ** I: Heavy-Handed Research**  **2) Heavy-Handed Research** **  
- A: What access point is this?** ** B: Tell me more about Cisco Meraki MR12** ** C: Incorrect Conclusion \#1** ** D: Incorrect Conclusion \#2** ** E: Providing Descriptors** ** F: Making Visual Associations** ** G: Incorrect Conclusion \#3** ** H: Incorrect Conclusion \#4** ** I: Correct Conclusion** ** J: Legal Penetration Test** ** K: Meraki Control Plane** ** L: Wireless LAN Controller** ** M: Meraki Cloud Cost Analysis** ** N: Cost Effective Solution** ** O: OPNsense Enterprise** ** P: Draft Presentation** ** Q: Calculate Projected Savings** ** R: OPNsense WLAN Design** ** S: WPA3 Security Vulnerabilities** ** T: Managed Service Provider**  **3) \[FightingEntropy(π)\]://Infrastructure Deployment System**  **A: Ambitious Automation** **B: Virtual Machines (1 + 2)** **C: Virtual Switches** **D: Roll Demonstration** **E: Review Scriptblock \#1** **F: Multi-Tasking Installations** **G: OPNsense Installation** **H: Server Installation Complete** **I: Gateway Configuration (Phase 1)** **J: Server Configuration (Phase 1)** **K: Gateway Configuration (Phase 2)** **L: \[FightingEntropy(π)\]\[2021.10.0\]** **M: Server Configuration (Phase 2)** **N: Get-FEDCPromo (Phase 1)** **O: Get-FEDCPromo (GUI)** **P: Get-FEDCPromo (Phase 2)** **Q: Server Configuration (Phase 3)** **R: FEInfrastructure (Preview/Demo)** **S: Get-FEADLogin** **T: New-FEInfrastructure (GUI)** **U: Module Tab** **V: Config Tab** **W: Domain Tab** **X: Network Tab** **Y: Sitemap Tab** **Z: Adds Tab** **AA: Virtual Tab** **AB: Share Tab** **AC: Imaging Tab** **AD: Updates Tab**  ** ** |
+**In this document, I intend to discuss the following:**
 
+1) **Managed Services + Network Maintenance**
+2) **Heavy-Handed Research**
+3) **[FightingEntropy(π)]://Infrastructure Deployment System**
 
+## 1) Managed Services + Network Maintenance
+-  **A**: Issues with the &lt;current network infrastructure&gt;
+-  **B**: Concerns with Meraki Cloud
+-  **C**: Regular maintenance (remote + on-site)
+-  **D**: Proposed Network Solution
+-  **E**: Proven Commitment
+-  **F**: Complaints + Maintenance
+-  **G**: Scope of duties
+-  **H**: Contractor
+-  **I**: Heavy-Handed Research
 
-| **1) Managed Services + Network Maintenance** |
-| - |
-| **\[1A\]: Issues with the \<current network infrastructure\>  
-** **I’d like to start out by making an indication that the current \<actual wireless access points\> managed by \<Cisco Meraki Cloud\> seem to be having connection issues on a \<regular basis\>. Sometimes, it is the \<internet service provider\> that is having issues, other times it is the \<Cisco Meraki MR52\> access points that are dropping connections, and failing to reestablish quality of service. For instance, you have a connection, but the throughput is 0 Kb/s.   
-  
-I *always* know when it is (1) or the (other), as I have been having a LOT of issues with the network, and I am not the only one. I have run ping tests numerous times to see whether it was ISP related, or the internal network.   
-  
-ISP related, ping jumps super high and fluctuates wildly, super erratic. That’s ISP/internet backbone junction.  
-Meraki cloud related, the ping will suddenly jump 33% higher, and start skipping. Pretty sure that’s Meraki, or maybe it’s someone out there using Cisco SD-WAN. I think Meraki and SD-WAN are used in conjunction in a lot of places, but I’m not positive of that.  
-  
-I’m not as concerned with the network skipping around dozens of times a day, I’m more concerned with how the network will occasionally drop my device(s) from the network when it is either uploading or downloading large files. These disruptions have wasted dozens of hours of my time.  
-  
-I’m not exaggerating that.** **  
-Sometimes, I will upload a file that is 16GB (*or larger*) to the internet, and this network should be able to do that within an hour. If I had access to the Ethernet network, that would probably take several minutes.  
-  
-I am not the only one having issues with the network, as Keven Mathes from Grab-n-Go Vending has had his vending machine in the library for about (18) months or so? His case is a perfect example of it having a financial impact.  
-  
-During the course of that (18) months, he has told me about how he has an application on his phone that allows him to remote into the management console on the vending machine. However, in the periods of time where the device drops its’ connection, he cannot access it to determine its inventory, nor can it process credit card transactions.  
-  
-Therefore, the device will be out of order costing Mr. Mathes thousands of dollars in sales in some cases.** **  
-Keven Mathes has complained about the network, and I told him that I KNOW it is because these access points are dropping clients. It does a configuration change or whatever…? Boom. You have a connection, but the rate is 0 Kb/s, which means the device thinks it has a connection but can’t send/receive data. So then it’s not going to try and reconnect to a network it’s already connected to.  
-  
-I’m not saying that these IT guys or Meraki gotta be perfect, but somethin’s gotta change.  
-  
-When this happens to the vending machine, it cannot process credit card transactions.  
-He will also have issues being able to remotely monitor the device, whereby disrupting his business.  
-  
-This in turn forces the vending machine to be \<INACCESSIBLE\> to anyone choosing to use the machine, and then Keven loses out on the income he is generating with that machine.  
-  
-The current IT director, Tom, his solution was to simply provide an Ethernet connection for the device. Same guy had me kicked out of the library for (6) months for plugging my Ethernet cable into the wall.  
-  
-He also took my idea to install solid state hard drives into ALL of the computers in the computer lab after I sent a document to director Alexandra Gutelius in October 2022, regarding how I wanted to provide service for the library, and fix the issues that DeepFreeze \<continues to have\>.  
-  
-Yeah I wrote that original document on the basis of the BSOD’s the computers would have each morning when I came in. For like several days, I came into the computer lab and the same machine that tried to install a Windows update got stuck and wouldn’t boot.  
-  
-I had seen that exact failure hundreds of times before when managing Computer Answers. A recent Windows update caused the hard drive to get corrupted and it wouldn’t boot into the operating system anymore. Solution → new hard drive.  
-  
-What’d I say to the tech that was working there in October 2022…?  
-Install an SSD.  
-  
-That’s what they did. But, they took the idea that I wrote in the document, and went around installing them in ALL of the machines. Then, when I recorded what they were doing in video, I opened the chassis on each box to show that they took my idea, and Alexandra kicked me out of the library for (3) months, and put padlocks on the backs of the computers.  
-  
-Definitely overkill, here’s a helpful suggestion.  
-  
-Every morning, I come in, and if I see a device that’s crashed, I know they haven’t seen it yet. I will sometimes take a picture, other times write on a thing “deepfreeze caused BSOD, needs to be reimaged”. Because I know how the image process works.   
-  
-Sometimes the applications will throw an error, and other patrons at the library will ask me for help.  
-  
-It’s like taking a snapshot of the computer at one point in time, and then restoring that snapshot after rebooting. So, it cannot reliably process updates consistently. It needs to be more dynamic and allow updates and not keep restoring a backed up VHD or whatever.**  **At the time in October 2022, I was thinking about building something that works like CASSIE and thinking to myself how hard could that be? CASSIE is probably doing what \[FightingEntropy(π)\] does to some extent.  
-  
-Regardless, to this day, the devices will still occasionally throw a (BSOD/Blue Screen of Death), which is indicative of corruption 1) on the hard drive, 2) configuration, 3) or from a recent Windows update.** ** ** |
-| [![<1-001>][<1-001>]][<1-001>] **\<1-001.jpg\>** |
-|  **The above image is from a video I recorded AFTER a BSOD, the start menu + GUI wasn’t responding.**  **We can talk about \<DeepFreeze\>, and how it does effectively the same job as Microsoft’s FREE Image and Configuration Designer to put a machine into like a “kiosk” mode.  
-  
-Kiosk mode just uses \<group policy\> to disable access to various components on the operating system, you don’t need an application like \<DeepFreeze\> to do this.  
-  
-I’m a Microsoft Certified expert, I know the operating system inside and out.  
-Image and Configuration Designer alone could replace \<DeepFreeze\>.  
-  
-However, neither \<DeepFreeze\> or \<CASSIE\> are my concern.** ** ** |
-| **\[1B\]: Concerns with Meraki Cloud**  **My concern is that the library is spending upwards of $20K+ a year for these Cisco Meraki cloud based access points that they are not providing maintenance for. Remote maintenance? Yeh, ok. They need physical on-site maintenance, sometimes.**  **Market 32’s access points have the same access point infrastructure, same with Dunkin’ Donuts and probably Starbucks, and whoever else. Whatever these networks are doing with the Layer 7 application routing sucks. Each of those networks has a loss of connection quality when congested. That’s to be expected, but this sometimes happens when it is not congested at all.  
-  
+## 2) Heavy-Handed Research
+-  **A**: What access point is this?
+-  **B**: Tell me more about Cisco Meraki MR12
+-  **C**: Incorrect Conclusion #1
+-  **D**: Incorrect Conclusion #2
+-  **E**: Providing Descriptors
+-  **F**: Making Visual Associations
+-  **G**: Incorrect Conclusion #3
+-  **H**: Incorrect Conclusion #4
+-  **I**: Correct Conclusion
+-  **J**: Legal Penetration Test
+-  **K**: Meraki Control Plane
+-  **L**: Wireless LAN Controller
+-  **M**: Meraki Cloud Cost Analysis
+-  **N**: Cost Effective Solution
+-  **O**: OPNsense Enterprise
+-  **P**: Draft Presentation
+-  **Q**: Calculate Projected Savings
+-  **R**: OPNsense WLAN Design
+-  **S**: WPA3 Security Vulnerabilities
+-  **T**: Managed Service Provider
+
+## 3) [FightingEntropy(π)]://Infrastructure Deployment System
+-  **A**: Ambitious Automation
+-  **B**: Virtual Machines (1  +  2)
+-  **C**: Virtual Switches
+-  **D**: Roll Demonstration
+-  **E**: Review Scriptblock #1
+-  **F**: Multi-Tasking Installations
+-  **G**: OPNsense Installation
+-  **H**: Server Installation Complete
+-  **I**: Gateway Configuration (Phase 1)
+-  **J**: Server Configuration (Phase 1)
+-  **K**: Gateway Configuration (Phase 2)
+-  **L**: **[FightingEntropy(π)][2021.10.0]**
+-  **M**: Server Configuration (Phase 2)
+-  **N**: Get-FEDCPromo  (Phase 1)
+-  **O**: Get-FEDCPromo  (GUI)
+-  **P**: Get-FEDCPromo  (Phase 2)
+-  **Q**: Server Configuration (Phase 3)
+-  **R**: FEInfrastructure (Preview/Demo)
+-  **S**: Get-FEADLogin
+-  **T**: New-FEInfrastructure  (GUI)
+-  **U**: Module Tab
+-  **V**: Config Tab
+-  **W**: Domain Tab
+-  **X**: Network Tab
+-  **Y**: Sitemap Tab
+-  **Z**: Adds Tab
+-  **AA**: Virtual Tab
+-  **AB**: Share Tab
+-  **AC**: Imaging Tab
+-  **AD**: Updates Tab
+- 
+## 1) Managed Services + Network Maintenance
+
+### [A]: Issues with the &lt;current network infrastructure&gt;
+
+I’d like to start out by making an indication that the current **&lt;actual wireless access points&gt;** managed by **&lt;Cisco Meraki Cloud&gt;** seem to be having connection issues on a **&lt;regular basis&gt;**. Sometimes, it is the **&lt;internet service provider&gt;** that is having issues, other times it is the **&lt;Cisco Meraki MR52&gt;** access points that are dropping connections, and failing to re-establish **quality of service**.
+
+For instance, you may be in a condition where you have a connection... but the throughput is **0 Kb/s**.
+
+I always know when it is **(1)** or the **(other)**, as I have been having a LOT of issues with the network, and I am not the only one. I have run ping tests **numerous times** to see whether it was **ISP related**, or the **internal network**.
+
+ISP related, ping jumps super high and fluctuates wildly, super erratic.
+That’s the **(ISP + internet backbone)** junction.
+
+**Meraki-cloud related**, the ping will suddenly jump **33% higher**, and start **skipping**. Pretty sure that’s **Meraki**, or maybe it’s someone out there using **Cisco SD-WAN**. I think **Meraki** and **SD-WAN** are used in conjunction in a lot of places, but I’m not positive of that.
+
+I’m not as concerned with the network skipping around dozens of times a day. I’m more concerned with how the network will **occasionally drop my device(s) from the network** when it is either **(uploading/downloading)** large files. These disruptions have wasted _dozens_ of hours of my time.
+
+I’m not exaggerating that.
+
+Sometimes, I will upload a file that is **16GB** (_or larger_) to the internet, and this network should be able to do that within an **hour**. If I had access to the **Ethernet network**, that would probably take _several minutes_.
+
+I am not the only one having issues with the **network**, as **Keven Mathes** from **Grab-n-Go Vending** has had his **vending machine** in the library for about **(18)** months or so?
+
+His case is a perfect example of it having a **financial impact**.
+
+During the course of that (18) months, he has told me about how he has an application on his phone that allows him to remote into the management console on the vending machine. However,  in the periods of time where the device drops its’ connection, he cannot access it to determine its inventory, nor can it process credit card transactions.
+
+Therefore, the device will be out of order costing **Mr. Mathes** _thousands of dollars_ in sales, in some cases.
+
+**Keven Mathes** has complained about the **network**, and I told him that I **KNOW** it is because these **access points** are _dropping clients_. It does a **configuration change** or whatever…? Boom. You have a _connection_, but the rate is **0 Kb/s**, which means the device THINKS it has a "connection", but can’t (send/receive) data.
+
+So, then it’s not going to try and **reconnect** to a network it’s **already connected to**.
+
+I’m not saying that these **IT guys** or **Meraki** gotta be _perfect_, but **somethin’s gotta change**.
+
+When this happens to the **vending machine**, it cannot process **credit card transactions**.
+He will also have issues being able to **remotely monitor the device**, whereby _disrupting his business_.
+
+This in turn forces the vending machine to be **&lt;INACCESSIBLE&gt;** to anyone choosing to use the machine, and then **Mr. Mathes** loses out on the _income_ he is generating with that machine.
+
+The current IT director, Tom, his solution was to simply provide an **Ethernet connection** for the device.
+
+Same guy had me kicked out of the library for **(6)** months for plugging my **Ethernet cable** into the wall.
+
+He also took my idea to **install solid state hard drives** into ALL of the computers in the **computer lab** and the **normal computers** after I sent a document to **director Alexandra Gutelius** in **October 2022**, regarding how I wanted to provide _service_ for the library, and fix the issues that **DeepFreeze &lt;continues to have&gt;**.
+
+Yeah, I wrote that original document on the basis of the **BSOD**’s the computers would have each morning when I came in. For like several days, I came into the **computer lab**, and the **same machine** that tried to install a **Windows Update** got stuck, and wouldn’t boot.
+
+I had seen that **exact failure** _hundreds_ of times before, when managing **Computer Answers**. A recent **Windows Update** caused the hard drive to get _corrupted_, and it wouldn’t **boot into the operating system** anymore.
+
+Solution → _new hard drive_.
+
+What’d I say to the tech that was working there in **October 2022**…?
+**Install an SSD**.
+
+That’s what they did. But, they took the idea that I wrote in the **document**, and went around installing them in **ALL** of the machines. Then, when I recorded what they were doing in **video**, I **opened the chassis on each box to show that they took my idea**, and **Alexandra** kicked me out of the library for **(3)** months, and put _padlocks_ on the backs of the computers.
+
+Definitely overkill, but here’s a _helpful suggestion_.
+
+Every morning, I come in, and if I see a device that’s **crashed**, I know _they haven’t seen it yet_. I will sometimes take a **picture**, other times I'll write on a post-it note **"DeepFreeze caused BSOD, needs to be reimaged”**. Because, I know how the _image process_ works.
+
+Sometimes the _applications_ will throw an error, and other patrons at the library will ask me for help.
+
+It’s like taking a **snapshot** of the computer at **(1)** point in time, and then restoring that **snapshot** AFTER rebooting. So, it cannot reliably process updates **consistently**. It needs to be more _dynamic_ and _allow updates_ and not keep restoring a **backed-up VHD** or whatever.
+
+At the time in **October 2022**, I was thinking about building something that works like **CASSIE** and thinking to myself how hard could that be? **CASSIE** is probably doing what **[FightingEntropy(π)]** does to some extent.
+
+Regardless, to this day, the devices will still occasionally throw a **(BSOD/Blue Screen of Death)**, which is indicative of corruption 1) on the _hard drive_, 2) _configuration_, 3) or from a recent _Windows Update_.
+
+[![<1-001>][<1-001>]][<1-001>]
+
+The above image is from a video I recorded _AFTER_ a **BSOD**, the **(start menu + GUI)** wasn’t responding.
+
+We can talk about **&lt;DeepFreeze&gt;**, and how it does effectively the same job as **Microsoft**’s FREE **&lt;Image and Configuration Designer&gt;** to put a machine into like a “_kiosk_” mode.
+
+Kiosk mode just uses **&lt;group policy&gt;** to _disable access_ to various components on the **operating system**, you don’t need an application like **&lt;DeepFreeze&gt;**, to do this.
+
+I’m a **Microsoft Certified expert**, I know the **operating system** inside and out.
+
+**&lt;Image and Configuration Designer&gt;** alone could replace **&lt;DeepFreeze&gt;**
+
+However, neither **&lt;DeepFreeze&gt;** or **&lt;CASSIE&gt;** are my concern.
+
+### [B]: Concerns with Meraki Cloud
+
 It CAN authenticate people, provide a decent connection, and keep it relatively secure... but in a lot of cases, the connection become EXTREMELY unstable. Especially when a bunch of people just so happen to be there. Somehow the \<crosstalk\> EXPLODES because EVERYBODY’s phone is trying to connect.  
   
 Meraki requires an internet connection in order to reorganize and reprioritize traffic, I think.  
@@ -337,4 +421,143 @@ That is why the best solution Tom could provide to Keven Mathes from Grab-N-GoVe
 Maybe that analogy doesn’t *fully* apply, but the vending machine is (10) feet away from the access point.** ** ** |
 | [![<1-002>][<1-002>]][<1-002>] **\<1-002.jpg\>** |
 |  **So, if it’s some (*network + security engineer + application developer*) like myself at the library who thinks that SOMEONE \<isn’t doing a very good job maintaining the network\>, who decides to plug his Ethernet cable into the wall for better network performance… ban him from the property for (6) months.  
+  
+But- if it’s a guy that has a vending machine there, wait like (18) months for his machine to be down for about 2-3 of those months, and then be like “*Hey, you know what? This is actually \<super difficult\> and doesn’t fall under my \[scope of duties\], even though I call myself an \[IT director\].*”**  |
+| **\[1G\]: Scope of Duties**  **Tom works very hard to avoid all contact with me whatsoever, for obvious reasons.  
+  
+Because he knows that I could do his job and Ethan’s, and even save the library from having to spend money on the contractors that they call to set up Ethernet cables in the false ceilings for the security cameras and access points. Every time they call the audio/video guys to come in, THEY get up on the ladders and do the same job that I used to do at Computer Answers and at PTI Security with Kevin Birch.  
+  
+Ya, my job used to be:  
+  - go to ANY business that is having ANY issue with ANY (computer/network/printer) device   
+  - fix the problem in the least amount of time for $150/hr.  
+  
+Sometimes this would require me to have to:  
+  
+ - bring a box of CAT6 with me  
+ - bring RJ-45 (receptacles + plugs)  
+ - create working 1Gbps Ethernet cables on the first try every time without needing to test the cable  
+ - bring a ladder  
+ - bring an RS-232 cable to console into the switches and routers  
+ - drill holes into concrete, use fiberglass poles to run cables through plenum and ceilings  
+ - get my hands and clothes all dirty even if I was wearing a suit  
+ - configure ALL devices with proper network settings  
+ - contact the \<internet service provider\> for assistance with (gateway/outbound traffic) settings  
+ - ensure ALL devices have an \<active internet connection\>  
+ - wait to ensure that the devices \<maintain an internet connection\> (*passive monitoring*)  
+ - fix printers, copiers, and the network interfaces on those devices  
+ - reconfigure any \<additional devices\>, if necessary  
+ - perform \<stress testing\> on ALL potentially affected devices  
+ - perform clean installations of Windows and all applications (Or Linux, FreeBSD, MacOS, iOS, etc.)  
+ - perform \<backups of existing installations\> and then \<restore the backed up information\>  
+ - perform \<security audits\>  
+ - many other roles and duties for $150/hr  
+ - people were always happy to pay that rate because I’m a “one man wrecking crew”  
+ - repair smartphones, laptops, desktops, game consoles, tablets, servers, SmartTV’s, etc.  
+  
+I did this at \<Computer Answers\>, and went to \<hundreds\> of (businesses + residences), and every single place I went to, I provided a \<lasting solution\>. Sometimes they weren’t willing to pay for the BEST solution, but they always got what they paid for.  
+  
+Sometimes what I provided was a BARGAIN (*like what I am proposing*).** ** ** |
+| **\[1H\]: Contractor  
+** **I, Michael C. Cook Sr., wound up starting my company \<Secure Digits Plus LLC\> in October 2018, to extend the same services I provided at Computer Answers, except under my own LLC. This prevented my former employer from taking 75-90% of the profit that I had generated on a regular basis.  
+  
+However, since starting my company, my goals have shifted quite a lot, and now those goals are:**  |
+[![<1-003>][<1-003>]][<1-003>]
+Dynamically Engineered Digital Security  
+Application Development | Design | Virtualization | Network + Hardware Magistration** ** ** |
+|  **Still workin’ on something that defines it better than that, but it’s what I’m goin’ with, for now.  
+\<Magistration\> means something like what a \<magistrate judge\> would do, but concerning IT.  
+  
+Like, the point is to get (legal/judicial/law enforcement/forensic-level)-related with it at some point, the company and my programs are gonna help me fight identity theft and cybercrime. And, once it’s ready to go, I’m not gonna have all the time I had over the last several years, to constantly update it.  
+  
+Anyway, I believe the revenue that I single-handedly brought into Computer Answers between October 2015 and October 2018, is somewhere between $500-750K. I don’t have the hard figures on that, I just know that I averaged about $25K a month running the stores, and began to do more business solutions on-sites.  
+  
+I also managed multiple shops as if I were the owner. Yeah, sometimes I would run the entire company when the owner couldn’t. We butted heads about it quite consistently. Yeah, we would have these conversations:  
+** **Pavel** **Yeah you better NOT be running the company more profitably than I do…** **Me** **Yeah?** **Pavel** **Yeh…** **Me** **Why, whaddya gonna do if I keep running the company more profitably than you do?** **Pavel** **Ehhhh, well… I just won’t ever openly admit that to a single living soul.** **Me** **Why not…?** **Pavel** **Cause of my pride, bro. \*taps chest\* I’M Computer Answers, not \*points\* YOU.   
+  
+Me =\> Computer Answers. You =\> Mike Cook. Got it?** **Me** **Fine.** **Pavel** **Good. So, you agree to perform all of MY duties, for like, a fraction of the profit you consistently generate?** **Me** **Uh, nope, not anymore.** **Pavel** **C’mon bro. I’ll give you like 11% of what you’re bringing in, instead of 10%.  
+  
+Whaddya say? (*he admittedly gave me \>10% on many jobs, but it wasn’t consistent*)** **Me** **Nah I’m good bro. I was thinkin’ more like 50%.** **Pavel** **50%?!? You’re out of your mind.** **Me** **Right, so I’m not gonna go do work for $150/hr to make $15/hour dude. Ya, let’s put $135/hr into my bosses pocket so he can make excuses every payday. LMAO.** **Pavel** **C’mon bro… I thought you were FAMILY.** **Me** **Uh, nah, you pay me $75/hr of what I’m bringing in on the business side, and we’ll bring in thousands every month.** **Pavel** **But I would PREFER to keep 90% of those thousands, Mike. I MEAN, 89% now.** **Me** **I’m good, dude, I could just go charge $150/hr and keep all of it.** **Pavel** **You COULD, Mike, but… will you?**  **Yeah, Pavel knew that I was a great technician, great with networks, great with sales, great with businesses. But I think his pride got the best of him and as a result, he made a lot of questionable business decisions. **  **He kept low-balling me on the services I was providing, and I wasn’t happy about it.  
+Thus, I left to start my company.  
+  
+Ever since then, I’ve capitalized on ideas I was thinking of, in addition to reviewing old curricula.  
+  
+If you have questions about my technical expertise:  
+** **Michael C. Cook Sr.** **Security Engineer** **Secure Digits Plus LLC** **securedigitsplus@gmail.com** ** ** ** ** |
+| **\[1I\]: Heavy-Handed Research  
+** **For now, I’d like to cover my diagnosis of the network so far, and would like to provide a more cost effective solution where these guys can adequately maintain it. Because from my perspective, a lot of money is being pissed away for no reason. And, I can train them if necessary to maintain this proposed solution, all in the name of eliminating the heavy cost of the Cisco Meraki cloud subscription.** ** ** |
+
+
+
+| **\[2\]: Heavy-Handed Research** |
+| - |
+| ##### **\[2A\]: What Access Point is this…?**  ##### Important Note: Some of this following information pertains to \<incorrect devices\>, but I’ll leave it for continuity reasons, as you can see how I interact with AI to *research* + FORCE the AI to come to the *correct* conclusion. This often times will result in me getting pretty “strict” with it.  |
+|  ##### **You said:** #####   
+What access point is this?  |
+
+[![<2-001>][<2-001>]][<2-001>]
+| - |
+|  ###### **Copilot said:  
+** **It’s a Cisco Meraki MR access point, specifically labeled Cisco Meraki MR12.  
+(*wrong, it’s a Cisco Meraki MR52*)  
+  
+Why MR12?  
+  
+ - The “Cisco” branding and the “Ap12” marking match Meraki’s older MR12 model.  
+ - The blue status LED on the left side is characteristic of Meraki APs.  
+ - The flat rectangular housing with side‑mounted LED is consistent with the MR12/MR16 era hardware.  
+** **What the MR12 is:  
+  
+ - A single‑radio 802.11n access point (*wrong, because these devices ALSO support 802.11ac*)  
+ - Typically deployed in schools, offices, and enterprise ceilings exactly like the one in your photo  
+ - Managed entirely through the Meraki cloud dashboard (*which means NO physical maintenance*)  
+   
+If you want, I can break down Meraki AP model differences or help you identify nearby APs in the same environment.** ** ** |
+| ##### **\[2B\]: Tell me more about Cisco Meraki MR12  
+** **You said:  
+** ##### Tell me more about Cisco Meraki MR12 ###### **Copilot said:  
+** **It’s an older Cisco Meraki MR12 (*wrong*), a single‑radio 802.11n (*wrong*) cloud‑managed access point.  
+** **The MR12 is long‑discontinued, but the hardware profile and the “Ap12” label match Meraki’s first‑generation enterprise AP line.  
+** **[https://www.alef.com/en/downloads/meraki\_datasheet\_MR12.dm-386.pdfrhowireless.com](https://www.alef.com/en/downloads/meraki_datasheet_MR12.dm-386.pdfrhowireless.com) ** **[https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdfskyloftnetworks.com](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdfskyloftnetworks.com) ** **[https://www.skyloftnetworks.com/pdf/meraki\_datasheet\_MR12.pdfmedia.bechtle.com](https://www.skyloftnetworks.com/pdf/meraki_datasheet_MR12.pdfmedia.bechtle.com)   
+[https://media.bechtle.com/asrc/180712/1c4b3d4ee288fc9434f5175bf56070570/c3/-/717e22cd94be41cfb7d3fc9716019156/cisco-meraki-mr12-hw-ap-data-sheet-1](https://media.bechtle.com/asrc/180712/1c4b3d4ee288fc9434f5175bf56070570/c3/-/717e22cd94be41cfb7d3fc9716019156/cisco-meraki-mr12-hw-ap-data-sheet-1)   
+** ### **What the MR12 (*wrong access point, correct description of cloud service*) actually is:  
+** **A cloud‑managed 2x2 MIMO 802.11n AP delivering up to 300 Mbps throughput. It was designed for small/medium business, schools, hotels, and branch offices, with Meraki’s hallmark “plug‑and‑play” cloud provisioning.**  **[https://www.alef.com/en/downloads/meraki\_datasheet\_MR12.dm-386.pdfrhowireless.com](https://www.alef.com/en/downloads/meraki_datasheet_MR12.dm-386.pdfrhowireless.com) ** **[https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf) **  ##### ** ** |
+[![<1-003>][<1-002>]][<1-002>]
+**\<2-002.jpg\>  
+(*wrong access point*)** |
+**Key capabilities:**  ** - 2x2 MIMO + beamforming for improved range and sensitivity (Meraki advertised ~50% more range vs   
+   typical 802.11n APs). [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf)   
+  
+ - Cloud‑managed: zero‑touch provisioning, remote troubleshooting, automatic firmware updates (*that  
+   means nobody touches the thing, and if a device is having issues, they can just pretend it doesn’t, and keep  
+   getting a paycheck for it, just like Tom does*)  
+  
+ - Layer‑7 traffic shaping (Meraki’s early “Traffic Shaper”) =\> (*Application based traffic shaping*)  
+   [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf)   
+  
+ - AutoRF: automatic channel/power optimization using integrated spectrum analysis** ** - Self‑healing mesh support  
+ - Extra Ethernet port for a wired device like a printer** ** - Low‑profile housing** **(*about 1” thick*)**  ### **Hardware summary:**  **Feature** **Details** **Radio** **Single‑radio 802.11n (2.4 GHz)** **MIMO** **2x2 MIMO, beamforming** **Max throughput** **~300 Mbps** **Management** **Meraki cloud dashboard** **Mesh** **Supported** **Ports** **1× uplink Ethernet  
+1× auxiliary Ethernet** **Power** **802.3af PoE** **Use cases** **SMB, schools, hotels, branch offices** ### **  
+Should you still use it? (*the access points were designed to force clients to pay a premium to use*)  
+** **Realistically, no — it’s end‑of‑life, limited to 2.4 GHz, and lacks modern Wi‑Fi security and performance. But it still works fine for light, low‑density environments if you already have Meraki licensing.**  **If you want, I can walk you through modern Meraki replacements or help you identify other APs.**  |
+| ##### **\[2C\]: Incorrect Conclusion \#1**  ##### **You said:  
+** **That is not the correct access point. (*It’s definitely a Cisco Meraki, but it’s an MR52 not an MR12*)** ###### **Copilot said:  
+** **Got it — let’s correct this properly. (*It takes Copilot multiple attempts sometimes to force the correct answer*)  
+  
+The device in your photo is not a Meraki MR12.  
+  
+The physical design is wrong for Meraki, and the “Ap12” marking is not a Meraki model number.  
+(*No shit, Sherlock, AP12 is the label that Tom probably put on the device, it means ACCESS POINT 12.*)  
+** **Let’s identify it accurately.  
+** ## **🧩 What your photo actually shows:  
+** **Based on the housing shape, LED placement, and labeling, this is a Cisco Aironet (*wrong*) access point — specifically from the Cisco Aironet 1600/1700/2600/2700/2800/3800 family (*wrong*). Here’s why:  
+** ### **Physical clues:  
+** ### ** - Rectangular chassis with rounded edges — classic Aironet industrial design.  
+ - Single blue LED on the left edge — Meraki LEDs are centered; Aironet LEDs are offset.  
+ - “Cisco” logo centered — matches Aironet, not Meraki.  
+ - “Ap12” is almost certainly the AP name assigned in the controller, not the model number.**  ### The **Cisco Aironet 2700 Series** (AP 2702i) matches your photo almost exactly. (*no, it doesn’t*) ### ** ** |
+[![<2-003>][<2-003>]][<2-003>]
+[![<2-004>][<2-004>]][<2-004>]
+[![<2-005>][<2-005>]][<2-005>]
+[![<2-006>][<2-006>]][<2-006>]
+|  **(*^ All incorrect*)  
   
