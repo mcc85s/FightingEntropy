@@ -242,6 +242,8 @@ In this document, I intend to discuss the following:
 
 
 ## 1. Managed Services + Network Maintenance
+<a id="1-1"></a>
+### Network Infrastructure
 
 ### 1.1 Issues with the current network infrastructure {#1-1}
 I’d like to start out by making an indication that the current **\<actual wireless access points\>** managed by **\<Cisco Meraki Cloud\>** seem to be having connection issues on a **\<regular basis\>**. Sometimes, it is the **\<internet service provider\>** that is having issues, other times it is the **\<Cisco Meraki MR52\>** access points that are dropping connections, and failing to re-establish quality of service.
