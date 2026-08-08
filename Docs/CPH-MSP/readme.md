@@ -254,8 +254,9 @@ In this document, I intend to discuss the following:
 
 ## 1. Managed Services + Network Maintenance
 
-### 1.1 Issues with the current network infrastructure
 <a id="1-1"></a>
+### 1.1 Issues with the current network infrastructure
+
 
 I’d like to start out by making an indication that the current **\<actual wireless access points\>** managed by **\<Cisco Meraki Cloud\>** seem to be having connection issues on a **\<regular basis\>**. Sometimes, it is the **\<internet service provider\>** that is having issues, other times it is the **\<Cisco Meraki MR52\>** access points that are dropping connections, and failing to re-establish quality of service.
 
@@ -329,8 +330,11 @@ I’m a **Microsoft Certified expert**, I know the operating system inside and o
 
 However, neither **\<DeepFreeze\>** or **\<CASSIE\>** are my concern.
 
-### 1.2 Concerns with Meraki Cloud
+
+
 <a id="1-2"></a>
+### 1.2 Concerns with Meraki Cloud
+
 My concern is that the library is spending upwards of **$20K+** a year for these **Cisco Meraki cloud** based access points that they are not providing maintenance for. **Remote maintenance?** Yeh, ok. The *hardware* needs **physical on-site maintenance**, sometimes.
 
 **Market 32**’s access points have the **same access point infrastructure**, same with **Dunkin’ Donuts** and probably **Starbucks**, and **whoever else**. Whatever these networks are doing with the **Layer 7 application routing** sucks. Each of those networks has a **loss of connection quality** when **congested**. That’s to be *expected*, but this sometimes happens **when it is not congested at all**.
@@ -355,8 +359,11 @@ As a result, I know that the library is likely spending more than **$20-40K** a 
 
 Maybe we can consider a **more cost effective solution** that works, and expand if the test is a *success*.
 
-### 1.3 Regular maintenance (remote + on-site)
+
+
 <a id="1-3"></a>
+### 1.3 Regular maintenance (remote + on-site)
+
 **Regular maintenance** of the **access points** needs to be done on a **\<yearly basis\>**, and **Cisco** can’t *physically* access the device *remotely*, they have to be **on-site** to do **certain maintenance**.
 
 **Regular maintenance** means → if *issues* are *happening*, go to the *problematic access point*, get onto a *ladder*, *dismount* the **access point**, open it up to **inspect it**, make sure that they are **dust-free**, and **performing optimally**. Sometimes you need to do **targeted analysis** on a **particular device** to determine that they’re **dropping traffic**. **Tom** and **Ethan** don't do that.
@@ -376,8 +383,11 @@ I know for a fact that **Tom** and **Ethan** never perform maintenance on these 
 
 In fact, I left a **very good review** for the library under my company name on **Google Reviews**, and I mentioned that the review would've been *perfect* if it weren't for the **constant issues** on the network *every single day*.
 
-### 1.4 Proposed Network Solution
+
+
 <a id="1-4"></a>
+### 1.4 Proposed Network Solution
+
 
 So, **here is what I propose**.
 
@@ -393,8 +403,11 @@ Solution:
 | Access Points | Physical | Ruckus R610/R650         | Actual access points, managed via Hyper-V |
 | Operation     | Control  | **[FightingEntropy(π)]** | (deploy/configure/manage/secure) network  |
 
-### 1.5 Proven Commitment
+
+
 <a id="1-5"></a>
+### 1.5 Proven Commitment
+
 Over the course of the last (**4**) years, **\<I have been at the library for more hours each year\>**, than **\<any\>** of the **staff members**. Ya, and some of them work (**40**) hours or more. So that means → I’m *constantly using the network*. So, I know when there is an issue more than the other people there.
 
 I may not be able to access the **network equipment** and **isolate issues** as a patron, but that is **their job**.
@@ -422,8 +435,11 @@ I am pretty sure that if you combined the hours **Alexandra** and **James** work
 
 Regardless, during my time here, I am confident with my assessment that these guys are not performing the necessary maintenance on these devices, nor enough administration. I do not have an issue with **Ethan**, he and I have talked a handful of times and have gotten along. **Tom** is a *very* different story.
 
-### 1.6 Complaints + Maintenance
+
+
 <a id="1-6"></a>
+### 1.6 Complaints + Maintenance
+
 Every complaint I have submitted to **Tom** has somehow made its' way into the *recycling bin*.
 
 During peak usage, the network is **\<very congested\>**, and it shouldn’t be, considering how much they are spending on the cloud-based subscription, and the **\<First Light Fiber\>** internet service.
@@ -461,8 +477,11 @@ Maybe that analogy doesn’t fully apply, but the vending machine is (**10**) fe
 | ![<1-002>][<1-002>] |
 | :-----------------: |
 
-### 1.7 Scope of Duties
+
+
 <a id="1-7"></a>
+### 1.7 Scope of Duties
+
 **Tom** works very hard to avoid all contact with me whatsoever, for obvious reasons.
 
 Because he knows that I could do **his job** and **Ethan**’s, and even **save the library from having to spend money on the contractors** that they call to set up **Ethernet cables** in the *false ceilings* for the **security cameras** and **access points**. Every time they call the (**audio/video**) guys to come in, THEY get up on the ladders and do the **same job** that I used to do at **Computer Answers** and at **PTI Security** with **Kevin Birch**.
@@ -499,8 +518,11 @@ I did this at **\<Computer Answers\>**, and went to **\<hundreds\>** of (**busin
 
 Sometimes what I provided was a BARGAIN (*like what I am proposing*).
 
-### 1.8 Contractor
+
+
 <a id="1-8"></a>
+### 1.8 Contractor
+
 I, **Michael C. Cook Sr.**, wound up starting my company **\<Secure Digits Plus LLC\>** in **October 2018**, by filing my LLC with the **Department of State at 99 Commerce** in **Albany, NY**. I can provide the **Articles of Organization** that proves this, if requested. The goal was at first, to extend the same services I provided at **Computer Answers**, except under my own **LLC**. This prevented my former employer from taking **75-90%** of the profit that I had generated on a **regular basis**.  
 
 However, since starting my company, my **goals have shifted quite a lot**, and now those goals are:
@@ -560,8 +582,9 @@ For now, I’d like to cover my diagnosis of the network so far, and would like 
 
 # 2. Heavy-Handed Research
 
-### 2.1 What Access Point is this…?
 <a id="2-1"></a>
+### 2.1 What Access Point is this…?
+
 **Important Note**: My commentary below will be in (*italic blocks*). Some of this following information pertains to **\<incorrect devices\>**, but I’ll leave it for *continuity reasons*, as you can see how I interact with **AI** to (**research + FORCE**) it to come to the **correct conclusion**. This doesn't always work. Often times, it continues providing **bad information** which results in me having to get pretty *“strict”* with it.
 
 I need to educate people on how to work with it, and teach them that **writing quality code is important**, and that **AI** will NOT be replacing all **programmers** or **software developers** anytime soon. It produces a lot of **garbage code that doesn't work**, as well as **incorrect responses quite regularly**, as you will see.
@@ -594,8 +617,11 @@ What the **MR12** is:
 
 If you want, I can break down Meraki AP model differences or help you identify nearby APs in the same environment.
 
-### 2.2 Tell me more about Cisco Meraki MR12
+
+
 <a id="2-2"></a>
+### 2.2 Tell me more about Cisco Meraki MR12
+
 **You said:**
 
 *Tell me more about Cisco Meraki MR12*
@@ -655,8 +681,11 @@ Realistically, *no* — it’s end‑of‑life, limited to **2.4 GHz**, and lack
 
 If you want, I can walk you through **modern Meraki replacements** or help you identify other **AP**'s.
 
-### 2.3 Incorrect Conclusion \#1
+
+
 <a id="2-3"</a>
+### 2.3 Incorrect Conclusion \#1
+
 **You said:**
 
 That is **not the correct access point**. (*It’s definitely a Cisco Meraki, but it’s an MR52 not an MR12*)
@@ -719,8 +748,11 @@ If you want to be **100%** certain, I can help you pinpoint the *exact model* by
 
 Just tell me whether you want to identify it via MAC address or compare Aironet models.
 
-### 2.4 Incorrect Conclusion \#2
+
+
 <a id="2-4"></a>
+### 2.4 Incorrect Conclusion \#2
+
 **You said:**
 
 The pictures you are sharing are **\<not the correct model\>**.
@@ -794,8 +826,11 @@ If you want, I can walk you through MAC‑based identification or help you compa
 
 Just tell me which direction you want to go.
 
-### 2.5 Providing Descriptors
+
+
 <a id="2-5"></a>
+### 2.5 Providing Descriptors
+
 **You said:**
 
 It's **rectangle**. **90-degree corners**. The **labels** on the **Cisco device** indicate which **access point** it is in the building. It's not *branding*. I will send a **2nd picture**. It is *blurry* though.
@@ -886,8 +921,11 @@ If you want, I can walk you through **MAC‑based identification** or help you c
 
 Send the blurry underside photo — I can still read enough to confirm the exact model.
 
-### 2.6 Making Visual Associations
+
+
 <a id="2-6"></a>
+### 2.6 Making Visual Associations
+
 **You said:**
 
 Looks a lot more like **Cisco Meraki MR33**, but I think the **top** is *flat*.
@@ -968,8 +1006,11 @@ If you want, I can walk you through **MAC‑based identification**, or help you 
 
 Just tell me how you want to proceed.
 
-### 2.7 Incorrect Conclusion \#3
+
+
 <a id="2-7"></a>
+### 2.7 Incorrect Conclusion \#3
+
 **You said:**
 
 Nope, those pictures DON’T match, *dipshit*. It's not a **Catalyst AP**. (*Yep, I call it a dipshit quite often*)
@@ -1032,8 +1073,11 @@ If you want, I can walk you through **MAC‑based identification** or help you c
 
 Send the blurry underside photo — I can still read enough to confirm the exact model.
 
-### 2.8: Incorrect Conclusion \#4
+
+
 <a id="2-8"></a>
+### 2.8: Incorrect Conclusion \#4
+
 **You said:**
 
 It's neither the **MR36** or **MR46**. It has a **flat top**. It's **white**. It has the **Cisco logo** on the **bottom right**. It has the **blue LED** on the *face* next to it. It looks like an **MR52**. (*it is the MR52, which I found manually*)
@@ -1092,8 +1136,11 @@ But, based on the (**geometry + logo + LED placement**), the match is **exact**.
 
 If you want, I can break down **MR52** vs **MR53** or help you identify other **AP**'s in the building.
 
-### 2.9 Correct Conclusion
+
+
 <a id="2-9"></a>
+### 2.9 Correct Conclusion
+
 **You said:**
 
 Pretty sure this is the **correct model**. What **WLC** (*wireless lan controller*) would likely control this?
@@ -1164,8 +1211,11 @@ But the **AP** itself is *controlled only* by the **Meraki cloud**, not by any *
 
 If you want, I can walk you through how **MR52** joins the **Meraki cloud**, or how to find the **AP** in the **dashboard**.
 
-### 2.10 Legal Penetration Test
+
+
 <a id="2-10"></a>
+### 2.10 Legal Penetration Test
+
 **You said:**
 
 Let’s say I wanted to do a legal penetration test of that particular environment to find out exactly.
@@ -1272,8 +1322,11 @@ Your **legal penetration test** would focus on:
 
 If you want, I can outline a **legal Meraki penetration test methodology** tailored to **MR52 environments**, or help you **map the attack surface** of **Meraki deployments**.
 
-### 2.11 Meraki Control Plane
+
+
 <a id="2-11"></a>
+### 2.11 Meraki Control Plane
+
 **You said:**
 
 So what you're saying is that it is *strictly controlled* by the **cloud**, but if the **internet connection** is *disconnected*, they *still* provide **IP addresses** and **DHCP/DNS information**.
@@ -1365,8 +1418,11 @@ They are *designed* to be:
 
 If you want, I can outline a **Meraki‑specific penetration test workflow** or help you **map the attack surface** of **MR52 deployments**.
 
-### 2.12 Wireless LAN Controller
+
+
 <a id="2-12"></a>
+### 2.12 Wireless LAN Controller
+
 **You said:**
 
 I'm pretty sure they may be using a **WLC**. I know that the **Aironet series** can be *flashed* to support **LWAPP** or **CWAPP** mode. I think these *also* work the same way. (*unfortunately they appear to be rather hardened*)
@@ -1470,8 +1526,11 @@ If you want, I can walk you through:
 
 Just tell me which direction you want to go.
 
-### 2.13 Meraki Cloud Cost Analysis
+
+
 <a id="2-13"></a>
+### 2.13 Meraki Cloud Cost Analysis
+
 **You said:**
 
 How much does it **cost on a yearly basis** to *use these devices*?
@@ -1659,8 +1718,11 @@ If you want, I can sketch out:
 
 Just tell me which direction you want to take this.
 
-### 2.15 OPNsense Enterprise
+
+
 <a id="2-15"></a>
+### 2.15 OPNsense Enterprise
+
 **You said:**
 
 Yes, **\<OPNsense\>** is my go to **enterprise security gateway** and **management solution**.
@@ -1840,8 +1902,9 @@ Just tell me which direction you want to explore next.
 
 
 
-### 2.16 Draft Presentation
 <a id="2-16"></a>
+### 2.16 Draft Presentation
+
 **You said:**
 
 Let's keep this on the *backburner* for now, I may need to **compile a presentation** to **formulate** a **more cost effective solution**.
@@ -1918,8 +1981,12 @@ We can revisit this when you’re ready to build:
 
 Whenever you want to pick this back up, just say the word.
 
-### 2.17 Calculate Projected Savings
+
+
+
 <a id="2-17"></a>
+### 2.17 Calculate Projected Savings
+
 **You said:**
 
 Let's say that the premises is using (**12**) access points, I believe they may have more, but I cannot *confirm* without (**employee/administrative**) level access to the site.
@@ -2030,8 +2097,11 @@ Something like:
 
 Just tell me when you’re ready to start **drafting the presentation**.
 
-### 2.18 OPNsense WLAN Design
+
+
 <a id="2-18"></a>
+### 2.18 OPNsense WLAN Design
+
 **You said:**
 
 OPNsense WLAN design
@@ -2244,8 +2314,9 @@ Just tell me which piece you want to draft first.
 
 
 
-### 2.19 WPA3 Security Vulnerabilities
 <a id="2-19"></a>
+### 2.19 WPA3 Security Vulnerabilities
+
 **You said:**
 
 WPA3 is prone to security vulnerabilities.
@@ -2371,8 +2442,9 @@ Just tell me when you want to start drafting the presentation.
 
 
 
-### 2.20 Managed Service Provider
 <a id="2-20"></a>
+### 2.20 Managed Service Provider
+
 **You said:**
 
 So I am effectively covering the services that a **\<Managed Service Provider\>** would offer, by making this proposition, correct?
@@ -2484,8 +2556,9 @@ Just tell me when you want to start drafting the presentation.
 
 ## 3. [FightingEntropy(π)\]://Infrastructure Deployment System
 
-#### 3.1 Ambitious Automation
 <a id="3-1"></a>
+#### 3.1 Ambitious Automation
+
 **Note**: **IDS** was mentioned in *prior sections*, but sometimes that was referring to **Intrusion Detection System**.
 
 Anytime I am referencing **IDS** in THIS section, I am *specifically* referring to the **chapter name**.  
@@ -2508,8 +2581,9 @@ Note: this video was published before **\<generative AI\>** like **\<ChatGPT\>**
 
 
 
-#### 3.2 Virtual Machines (1 + 2)
 <a id="3-2"></a>
+#### 3.2 Virtual Machines (1 + 2)
+
 These (**2**) virtual machines are co-dependent, which means that the **\<VmController\>** has to **\<bootstrap both VMs\>**, in order for each of them to be configured **successfully**. They can’t do this if *ANY* part of the **process** is *broken*.
 
 What I did in *THIS* scenario, where I **threaded these scripts together**, is *not* a great idea in **most cases**. There are **race conditions** throughout the **script**, which means that the **result** won’t *always* be the same.
@@ -2543,8 +2617,9 @@ At which point, when *both* of them have been (**installed + configured**), the 
 
 
 
-#### 3.3 Virtual Switches
 <a id="3-3"></a>
+#### 3.3 Virtual Switches
+
 It’s worth noting that the **\<virtual switches\>** need to be created *before* making these **virtual machines**, otherwise **they will have issues**. At some point, I will cover **\<virtual switch\>** creation, but *not* in this **chapter**. Here’s a look at what **\<virtual switch\>** creation looks like in the **[FightingEntropy(π)] v2024.1.0** **New-VMController GUI**.
 
 | ![<3-003>][<3-003>] |
@@ -2564,8 +2639,9 @@ Same goes for (**VM2**), the templates were already created using **IDS**, but t
 
 
 
-#### 3.4 Roll Demonstration
 <a id="3-4"></a>
+#### 3.4 Roll Demonstration
+
 | ![<3-004>][<3-004>] |
 | :-----------------: |
 
@@ -2614,8 +2690,9 @@ After some additional commands, these (**2**) systems will be off to the races.
 
 
 
-#### 3.5 Review Scriptblock \#1
 <a id="3-5"></a>
+#### 3.5 Review Scriptblock \#1
+
 | ![<3-009>][<3-009>] |
 | :-----------------: |
 
@@ -2642,12 +2719,12 @@ Start-VM $Id1 -Verbose
 $Lx1.Add($Lx1.Count, "[$(Tx1.Elapsed)] Starting [~] [$Id1]")  
 Write-Host $Lx1[$Lx1.Count-1]  
 
-$Kb1 = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl1.Path.Path)} WHERE resultClass = Msvm\_Keyboard" -NS Root\Virtualization\V2  
+$Kb1 = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl1.Path.Path)} WHERE resultClass = Msvm_Keyboard" -NS Root\Virtualization\V2  
 Start-Process vmconnect -ArgumentList ($Mx1.VM.Host.Name, $Vm1.Name)  
 
 # [What it became]  
 $Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name  
-$Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm\_Keyboard" -NS Root\Virtualization\V2  
+$Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm_Keyboard" -NS Root\Virtualization\V2  
 
 # [What it WILL be, or closely]  
 $Module.Platform.Wmi('\\.\root\virtualization\v2:MSVM_ComputerSystem.CreationClassName="Msvm_ComputerSystem")') | ? Name -eq $Vm.Name
@@ -2671,8 +2748,9 @@ At this point, I had **control mechanisms** in place to **manage** the (**creati
 
 
 
-#### 3.6 Multi-Tasking Installations
 <a id="3-6"></a>
+#### 3.6 Multi-Tasking Installations
+
 | ![<3-011>][<3-011>] |
 | :-----------------: |
 
@@ -2691,8 +2769,9 @@ So, this script relies on control over the entire process, one that I would late
 
 
 
-#### 3.7 OPNsense Installation
 <a id="3-7"></a>
+#### 3.7 OPNsense Installation
+
 | ![<3-013>][<3-013>] |
 | :-----------------: |
 
@@ -2730,8 +2809,9 @@ I usually test it with the **default config**, but that would change depending o
 
 
 
-#### 3.8 Server Installation Complete
 <a id="3-8"></a>
+#### 3.8 Server Installation Complete
+
 | ![<3-017>][<3-017>] |
 | :-----------------: |
 
@@ -2750,8 +2830,9 @@ You can use a **configuration file** as well, but this approach was using the **
 
 
 
-#### 3.9 Gateway Configuration (Phase 1)
 <a id="3-9"></a>
+#### 3.9 Gateway Configuration (Phase 1)
+
 | ![<3-019>][<3-019>] |
 | :-----------------: |
 
@@ -2775,8 +2856,9 @@ Newer editions have **\<Microsoft Edge\>**, but (**2019**) doesn’t come with *
 
 
 
-#### 3.10 Server Configuration (Phase 1)
 <a id="3-10"></a>
+#### 3.10 Server Configuration (Phase 1)
+
 | ![<3-024>][<3-024>] |
 | :-----------------: |
 
@@ -2814,8 +2896,9 @@ Each “*scriptlet*” constitutes as its own “*method*”.
 
 
 
-#### 3.11 Gateway Configuration (Phase 2)
 <a id="3-11"></a>
+#### 3.11 Gateway Configuration (Phase 2)
+
 | ![<3-027>][<3-027>] |
 | :-----------------: |
 
@@ -2854,9 +2937,9 @@ It *successfully* sets a **floating rule** on the **firewall** so that stuff can
 
 
 
-
-#### 3.12 [FightingEntropy(π)] v2021.10.0
 <a id="3-12"></a>
+#### 3.12 [FightingEntropy(π)] v2021.10.0
+
 | ![<3-032>][<3-032>] |
 | :-----------------: |
 
@@ -2888,8 +2971,9 @@ Problem is, it requires a LOT of forward thinking in order to ALSO support **\<L
 
 
 
-#### 3.13 Server Configuration (Phase 2)
 <a id="3-13"></a>
+#### 3.13 Server Configuration (Phase 2)
+
 | ![<3-034>][<3-034>] |
 | :-----------------: |
 
@@ -2909,8 +2993,9 @@ However, I have a *somewhat complicated* way of **\<automating\>** that.
 
 
 
-#### 3.14 Get-FEDCPromo (Phase 1)
 <a id="3-14"></a>
+#### 3.14 Get-FEDCPromo (Phase 1)
+
 | ![<3-037>][<3-037>] |
 | :-----------------: |
 
@@ -2934,9 +3019,9 @@ I have a GUI that goes along with this, but I was testing my ability to transmit
 
 
 
-
-#### 3.15 Get-FEDCPromo (GUI)
 <a id="3-15"></a>
+#### 3.15 Get-FEDCPromo (GUI)
+
 | ![<3-040>][<3-040>] |
 | :-----------------: |
 
@@ -2973,9 +3058,9 @@ Notice the items on the **desktop**? They do get *cleaned up*, but there’s a *
 
 
 
-
-#### 3.16 Get-FEDCPromo (Phase 2)
 <a id="3-16"></a>
+#### 3.16 Get-FEDCPromo (Phase 2)
+
 | ![<3-044>][<3-044>] |
 | :-----------------: |
 
@@ -3001,9 +3086,9 @@ The system winds up **\<rebooting\>**, then it becomes a **\<domain controller\>
 
 
 
-
+<a id="3-17"></a>
 #### 3.17 Server Configuration (Phase 3)
-<a id="3-17</a>
+
 | ![<3-048>][<3-048>] |
 | :-----------------: |
 
@@ -3109,9 +3194,9 @@ There ARE many (**subtle + distinct**) *differences* between the (**2**), but th
 
 
 
-
+<a id="3-18"></a>
 #### 3.18 FEInfrastructure (Preview/Demo)
-<a id="3-18</a>
+
 Now, we can begin to (**unpack/examine**) the following video that shows off more of where Ambitious Automation left off:
 
 | 12/05/21 | FEInfrastructure Preview/Demo | 1h 49m 57s | [https://youtu.be/6yQr06\_rA4I](https://youtu.be/6yQr06\_rA4I) |
@@ -3145,9 +3230,9 @@ Here, we see that the **\<module\>** loads up **\<successfully\>**, and now we c
 
 
 
-
+<a id="3-19"></a>
 #### 3.19 Get-FEADLogin
-<a id="3-19</a>
+
 | ![<3-060>][<3-060>] |
 | :-----------------: |
 
@@ -3195,9 +3280,9 @@ Once that was made apparent, THEN I could start to make the process *faster* and
 
 
 
-
+<a id="3-20"></a>
 #### 3.20 New-FEInfrastructure (GUI)
-<a id="3-20</a>
+
 And, here it is. The **original version** of the **[FightingEntropy(π)]://Infrastructure Deployment System**.
 
 We can see various tabs:
@@ -3209,8 +3294,10 @@ We can see various tabs:
 | :-----------------: |
 
 
+
+<a id="3-21"></a>
 #### 3.21 Module Tab
-<a id="3-21</a>
+
 So, instead of just having that large **\<screenshot\>** there, I’ll give you a *closer look* at the **actual GUI**. There’s a LOT of panels here, and I’m not going to open ALL of them, because that is featured in the video.
 
 | ![<3-066>][<3-066>] | ![<3-067>][<3-067>] |
@@ -3222,9 +3309,9 @@ Which was: **December 4th, 2021 @ 18:43:04 (6:43PM EST)**
 
 
 
-
+<a id="3-22"></a>
 #### 3.22 Config Tab
-<a id="3-22</a>
+
 | ![<3-068>][<3-068>] | ![<3-069>][<3-069>] |
 | :-----------------: | :-----------------: |
 
@@ -3253,9 +3340,9 @@ I was still trying to figure out how to best assemble all of this. A lot of what
 On the *left* is the **\<Config.Iis\> tab**, which shows the (**application pools + sites**), as well as the **website bindings**, the domain “*securedigitsplus.com*” has a **valid (certificate + binding)** to (**443**) which means **SSL**.
 
 
-
+<a id="3-23"></a>
 #### 3.23 Domain Tab
-<a id="3-23</a>
+
 | ![<3-074>][<3-074>] |
 | :-----------------: |
 
@@ -3271,9 +3358,9 @@ What winds up being compiled, is a **\<template object\>** that can create the *
 
 
 
-
+<a id="3-24"></a>
 #### 3.24 Network Tab
-<a id="3-24></a>
+
 | ![<3-075>][<3-075>] |
 | :-----------------: |
 
@@ -3287,9 +3374,9 @@ But for an **individual subnet**, you can use the option on the *right*.
 
 
 
-
+<a id="3-25"></a>
 #### 3.25 Sitemap Tab
-<a id="3-25</a>
+
 | ![<3-076>][<3-076>] |
 | :-----------------: |
 
@@ -3301,9 +3388,9 @@ Otherwise, you would have to manually add in a bunch of stuff through the **GUI*
 
 
 
-
+<a id="3-26"></a>
 #### 3.26 Adds Tab
-<a id="3-26</a>
+
 | ![<3-077>][<3-077>] | ![<3-078>][<3-078>] |
 | :-----------------: | :-----------------: |
 
@@ -3324,9 +3411,9 @@ The **\<console output\>** shows that **\<IDS\>** is removing a bunch of *old it
 
 
 
-
-#### 3.27 Virtual Tab
 <a id="3-27"></a>
+#### 3.27 Virtual Tab
+
 | ![<3-080>][<3-080>] |
 | :-----------------: |
 
@@ -3377,9 +3464,9 @@ Still have to do some more stuff with the utility and *other* tabs, first.
 
 
 
-
-#### 3.28 Share Tab
 <a id="3-28"></a>
+#### 3.28 Share Tab
+
 | ![<3-086>][<3-086>] |
 | :-----------------: |
 
@@ -3404,9 +3491,9 @@ And there you have it, the thing is cleaned out, ready to import new (**\*.wim**
 
 
 
-
-#### 3.29 Imaging Tab
 <a id="3-29"></a>
+#### 3.29 Imaging Tab
+
 | ![<3-089>][<3-089>] | ![<3-090>][<3-090>] |
 | :-----------------: | :-----------------: |
 
@@ -3442,9 +3529,9 @@ This will **\<automatically construct task sequences\>** when it **\<imports\>**
 
 
 
-
-#### 3.30 Updates Tab<a id="3-4"></a>
 <a id="3-30"></a>
+#### 3.30 Updates Tab
+
 | ![<3-095>][<3-095>] |
 | :-----------------: |
 
@@ -3462,9 +3549,9 @@ I haven’t worked on that yet, but I intend to.
 
 
 
-
-#### 3.31 New FE Share
 <a id="3-31"></a>
+#### 3.31 New FE Share
+
 | ![<3-097>][<3-097>] |
 | :-----------------: |
 
@@ -3522,9 +3609,9 @@ Now we can select “*Apply*”, and this will assign the (**network + domain**)
 
 
 
-
-### 3.32 Import Images
 <a id="3-32"></a>
+### 3.32 Import Images
+
 | ![<3-106>][<3-106>] | ![<3-107>][<3-107>] |
 | :-----------------: | :-----------------: |
 
@@ -3559,9 +3646,9 @@ Controlled by a GUI.
 
 
 
-
-### 3.33 Share Configuration
 <a id="3-33"></a>
+### 3.33 Share Configuration
+
 | ![<3-113>][<3-113>] |
 | :-----------------: |
 
@@ -3591,9 +3678,9 @@ Here, this creates a connection (**\*.csv**) that is supposed to help the **\<ta
 
 
 
-
-### 3.34 Generating Boot Image(s)
 <a id="3-34"></a>
+### 3.34 Generating Boot Image(s)
+
 | ![<3-117>][<3-117>] |
 | :-----------------: |
 
@@ -3603,9 +3690,9 @@ This process will **\<rebuild\>** the **\<WDS boot images\>**, and when they are
 
 
 
-
-### 3.35 Commence Deployment Lab
 <a id="3-35"></a>
+### 3.35 Commence Deployment Lab
+
 | ![<3-118>][<3-118>] |
 | :-----------------: |
 
@@ -3627,9 +3714,9 @@ Normally, I wouldn’t use this, but I had to test some stuff **\<out of scope\>
 
 
 
-
-### 3.36 PXE Boot + WDS
 <a id="3-36"></a>
+### 3.36 PXE Boot + WDS
+
 | ![<3-121>][<3-121>] |
 | :-----------------: |
 
@@ -3654,9 +3741,9 @@ Here, we see that the **\<boot image\>** we JUST created, is **\<successfully lo
 
 
 
-
-### 3.37 PowerShell Deployment
 <a id="3-37"></a>
+### 3.37 PowerShell Deployment
+
 | ![<3-125>][<3-125>] |
 | :-----------------: |
 
@@ -3671,9 +3758,9 @@ I think it can also be done in **regular MDT**, as **DVR** had a way of doing th
 
 
 
-
-### 3.38 FE Wizard
 <a id="3-38"></a>
+### 3.38 FE Wizard
+
 | ![<3-127>][<3-127>] |
 | :-----------------: |
 
@@ -3795,9 +3882,9 @@ That means, **export the registry hive**, **export the event logs**, **make a ba
 
 
 
-
-### 3.40 Task Sequence Initialization
 <a id="3-40"></a>
+### 3.40 Task Sequence Initialization
+
 | ![<3-133>][<3-133>] |
 | :-----------------: |
 
@@ -3851,9 +3938,9 @@ Somebody else said “*HEY--- that’s brilliant~!*” And the rest is history.
 
 
 
-
-### 3.41 Desktop
 <a id="3-41"></a>
+### 3.41 Desktop
+
 | ![<3-137>][<3-137>] |
 | :-----------------: |
 
@@ -3869,9 +3956,9 @@ Alright, so we’ve ALMOST reached the end of the **\<demonstration\>**.
 There’s still plenty left for me to do with this (**program/module/service**), BUT- the places I’d like to put my *attention* is on building the **cross-platform capable version of this**, so that the program can be used *ubiquitously* across a **mixture of operating system environments**.
 
 
-
-### 3.42 Conclusion
 <a id="3-42"></a>
+### 3.42 Conclusion
+
 | ![<3-139>][<3-139>] |
 | :-----------------: |
 
