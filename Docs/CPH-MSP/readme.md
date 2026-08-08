@@ -246,7 +246,7 @@ In this document, I intend to discuss the following:
 35. [3.35 Commence Deployment Lab](#3-35)
 36. [3.36 PXE Boot + WDS](#3-36)
 37. [3.37 PowerShell Deployment](#3-37)
-38. [3.38 FE Wizard](#3-38)
+38. [3.38 FE Wizard](#3.38)
 39. [3.39 Diagnostics and Recovery Toolset](#3-39)
 40. [3.40 Task Sequence Initialization](#3-40)
 41. [3.41 Desktop](#3-41)
@@ -1089,16 +1089,16 @@ It's neither the **MR36** or **MR46**. It has a **flat top**. It's **white**. It
 
 Michael — thank you. Your *latest description* finally pins it down with (**0**) **ambiguity**:
 
-✔ **Flat top**
-✔ **True 90° corners**
-✔ **White rectangular housing**
-✔ **Cisco logo on bottom‑right**
-✔ **Blue LED on the face next to the logo**
-✔ **Looks like an MR52**
-✔ **NOT Catalyst**
-✔ **NOT Aironet**
-✔ **NOT MR33** (rounded)
-✔ **NOT MR36/MR46** (centered logo, different LED placement)
+✔ **Flat top**  
+✔ **True 90° corners**  
+✔ **White rectangular housing**  
+✔ **Cisco logo on bottom‑right**  
+✔ **Blue LED on the face next to the logo**  
+✔ **Looks like an MR52**  
+✔ **NOT Catalyst**  
+✔ **NOT Aironet**  
+✔ **NOT MR33** (rounded)  
+✔ **NOT MR36/MR46** (centered logo, different LED placement)  
 
 Those traits match exactly (**1**) **Cisco Meraki** model: *(I provided the correct model number, now it finally agrees?*)
 
@@ -1241,7 +1241,7 @@ This is not *optional* — it’s how **Meraki** is *architected*. (*engineered 
 
 #### 🧩 So what is the controller?
 
-**⭐ The controller is the Meraki Cloud Dashboard (which means nothing is managed locally)**
+#### ⭐ The controller is the Meraki Cloud Dashboard (which means nothing is managed locally)
 
 Not a **physical appliance**. Not a **local WLC**. Not a **VM** in the environment.
 
@@ -1259,11 +1259,11 @@ Everything — **RF config**, **SSIDs**, **VLANs**, **firewall rules**, **firmwa
 
 You cannot “*discover*” the **controller** inside the **building** because:
 
- ✔ There is **no controller** inside the building (*except the MX security appliances + MS switches?*)
- ✔ The **AP** does not expose **CAPWAP** (*could be true, but that limits reconfiguration/repurposing the hardware*)
- ✔ The **AP** does not accept **local control-plane traffic** (*can’t be controlled without internet connection*)
- ✔ The **AP** cannot be **joined**, **spoofed**, or **hijacked locally** (*Oh I’m sure that they CAN be, with some creativity*)
- ✔ The **AP**’s **management plane** is **encrypted** and **outbound-only** (*Could be broken via PCB modifications*)
+ ✔ There is **no controller** inside the building (*except the MX security appliances + MS switches?*)  
+ ✔ The **AP** does not expose **CAPWAP** (*could be true, but that limits reconfiguration/repurposing the hardware*)  
+ ✔ The **AP** does not accept **local control-plane traffic** (*can’t be controlled without internet connection*)  
+ ✔ The **AP** cannot be **joined**, **spoofed**, or **hijacked locally** (*Oh I’m sure that they CAN be, with some creativity*)  
+ ✔ The **AP**’s **management plane** is **encrypted** and **outbound-only** (*Could be broken via PCB modifications*)  
 
 This is *exactly* why **Meraki** is used in environments that want to *avoid* local **WLC attack surfaces**.
 
@@ -1342,6 +1342,8 @@ Let me break it down *cleanly* and *technically*, because this is one of the mos
 
 #### 🧩 What happens when the internet goes down?
 
+| Action | Description |
+|:-|:-|
 | ✔ **continues broadcasting SSIDs**          | It does **not** shut down Wi‑Fi                              |
 | ------------------------------------------- | ------------------------------------------------------------ |
 | ✔ **continues bridging traffic**            | Clients can still reach LAN resources, servers, printers, etc. |
@@ -1353,6 +1355,8 @@ Let me break it down *cleanly* and *technically*, because this is one of the mos
 
 #### ❌ What the MR52 does not do without internet:
 
+| Point | Description |
+|:-|:-|
 | ✘ No local WLC             | **No** CAPWAP controller, no 9800, no AireOS, no Mobility Express |
 | -------------------------- | ------------------------------------------------------------ |
 | ✘ No configuration changes | All config comes from the cloud                              |
@@ -1513,12 +1517,12 @@ The **control plane** (**configuration + RF tuning + firmware + monitoring**) is
 
 #### 🎯 Final, technically correct answer:
 
-✔ **Aironet APs** can run LWAPP/CAPWAP
-✔ **Meraki APs** cannot (*at least not without physical hardware changes*)
-✔ **Meraki APs** cannot be flashed to **Aironet firmware** (*with physical hardware changes, they can*)
-✔ **Meraki APs** cannot join a **Cisco WLC** (*same as above*)
-✔ **Meraki APs** always use the **Meraki cloud** as their **controller**
-✔ **Meraki APs** still function *locally* **without internet**, but do not become a **WLC**
+✔ **Aironet APs** can run LWAPP/CAPWAP  
+✔ **Meraki APs** cannot (*at least not without physical hardware changes*)  
+✔ **Meraki APs** cannot be flashed to **Aironet firmware** (*with physical hardware changes, they can*)  
+✔ **Meraki APs** cannot join a **Cisco WLC** (*same as above*)  
+✔ **Meraki APs** always use the **Meraki cloud** as their **controller**  
+✔ **Meraki APs** still function *locally* **without internet**, but do not become a **WLC**  
 
 There is no scenario — legal penetration test or otherwise — where an MR52 would be controlled by a Cisco WLC. (*but this AI has made numerous false claims before, the first half of this conversation proves that. And like I said, **I'm certain someone has modified the ROM to support legacy devices***)
 
@@ -1557,8 +1561,8 @@ Based on current **U.S. pricing**:
 
 So *depending* on (**term + tier**), the *realistic* **annual cost** per **MR52** is:
 
-⭐ **$120–$240** per year (*Enterprise*)
-⭐ **$200–$315** per year (*Advanced*)
+⭐ **$120–$240** per year (*Enterprise*)  
+⭐ **$200–$315** per year (*Advanced*)  
 
 **Multi‑year terms** *reduce* the **effective annual cost** *significantly*.
 
@@ -1606,7 +1610,7 @@ Just tell me *how many* **MR52s** you *think* are in that environment.
 
 **You said:**
 
-I could build a FAR MORE COST EFFECTIVE SOLUTION than this.
+I could build a *FAR MORE COST EFFECTIVE SOLUTION* than this.
 
 **Copilot said:**
 
@@ -1923,6 +1927,8 @@ Here’s a *clean* **snapshot** of what you’ll want to *keep* in your back poc
 
 #### 🧩 Core idea for your future presentation:
 
+| Deployment | Description |
+|:-|:-|
 | Meraki                 | **cloud‑dependent, subscription‑locked, APs shut down if license expires.** |
 | ---------------------- | ------------------------------------------------------------ |
 | WLC‑based architecture | **local control, no recurring AP license, full autonomy**    |
@@ -2184,13 +2190,14 @@ For a **12‑AP** site, **Meraki** is easily **$20K+/year**. Your solution is **
 
 #### 🧩 Detailed OPNsense WLAN Design:
 
-##### 🔹 1. VLAN & Network Segmentation (this is a template, I have other segmentation plans)
+##### 🔹 1. VLAN & Network Segmentation
 - VLAN 10 – **Corporate WiFi**
 - VLAN 20 – **Guest WiFi**
 - VLAN 30 – **IoT / BYOD**
 - VLAN 40 – **Voice**
 - VLAN 50 – **AP management**
 - VLAN 99 – **WLC management**
+(*this is a template, I have other segmentation plans*)
 
 **OPNsense** handles *all* **inter‑VLAN routing** and **firewalling**. (*I would consider offloading some of this to the switches + servers*)
 
@@ -2531,13 +2538,13 @@ You’re providing the *same capabilities*, but without the **recurring revenue 
 
 You’re offering a **fully managed**:
 
-⭐ enterprise (**WLAN + WLC environment**)
-⭐ RADIUS/AAA system
-⭐ segmentation architecture
-⭐ monitoring stack
-⭐ WLC environment
-⭐ AP deployment
-⭐ guest/IoT isolation system
+⭐ enterprise (**WLAN + WLC environment**)  
+⭐ RADIUS/AAA system  
+⭐ segmentation architecture  
+⭐ monitoring stack  
+⭐ WLC environment  
+⭐ AP deployment  
+⭐ guest/IoT isolation system  
 
 This is *exactly* what MSP’s sell — except you’re not selling it as a **subscription**.
 
@@ -2614,8 +2621,9 @@ If (**VM1/OPNsense**) is *misconfigured*, it won’t provide **internet** for th
 
 At which point, when *both* of them have been (**installed + configured**), the *rest* of the **network** can be **scripted to completion**. At some point in this **demonstration**, we **transfer images** from a **local SMB share** and then install:
 
+| Tag | Name |
+|:------ |:------------------------------------- |
 | MDT    | Microsoft Deployment Toolkit          |
-| ------ | ------------------------------------- |
 | WinADK | Windows Assessment and Deployment Kit |
 | WinPE  | Windows Preinstallation Environment   |
 
