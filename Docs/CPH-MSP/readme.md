@@ -576,8 +576,11 @@ If you have questions about my technical expertise:
 | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | securedigitsplus@gmail.com |
 | :-----------------: | :---------------: | :--------------------: | :------------------------: |
 
-### 1.9 Heavy-Handed Research
+
+
 <a id="1-9"></a>
+### 1.9 Heavy-Handed Research
+
 For now, I’d like to cover my diagnosis of the network so far, and would like to provide a more cost effective solution where these guys can adequately maintain it. Because from my perspective, a lot of money is being pissed away for no reason. And, I can train them if necessary to maintain this proposed solution, all in the name of eliminating the heavy cost of the Cisco Meraki cloud subscription.
 
 # 2. Heavy-Handed Research
