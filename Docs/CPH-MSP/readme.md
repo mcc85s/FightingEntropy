@@ -239,13 +239,24 @@ In this document, I intend to discuss the following:
 28. [3.28 Share Tab](#3-28)
 29. [3.29 Imaging Tab](#3-29)
 30. [3.30 Updates Tab](#3-30)
-
+31. [3.31 New FE Share](#3-31)
+32. [3.32 Import Images](#3-32)
+33. [3.33 Share Configuration](#3-33)
+34. [3.34 Generating the Boot Image](#3-34)
+35. [3.35 Commence Deployment Lab])(#3-35)
+36. [3.36 PXE Boot + WDS](#3-36)
+37. [3.37 PowerShell Deployment](#3-37)
+38. [3.38 FE Wizard](#3.38)
+39. [3.39 Diagnostics and Recovery Toolset](#3-39)
+40. [3.40 Task Sequence Initialization](#3-40)
+41. [3.41 Desktop](#3-41)
+42. [3.42 Conclusion](#3-42)
 
 ## 1. Managed Services + Network Maintenance
-<a id="1-1"></a>
-### Network Infrastructure
 
-### 1.1 Issues with the current network infrastructure {#1-1}
+### 1.1 Issues with the current network infrastructure
+<a id="1-1"></a>
+
 I’d like to start out by making an indication that the current **\<actual wireless access points\>** managed by **\<Cisco Meraki Cloud\>** seem to be having connection issues on a **\<regular basis\>**. Sometimes, it is the **\<internet service provider\>** that is having issues, other times it is the **\<Cisco Meraki MR52\>** access points that are dropping connections, and failing to re-establish quality of service.
 
 For instance, you have a connection, but the throughput is **0 Kb/s**.
@@ -305,7 +316,7 @@ At the time in **October 2022**, I was thinking about building something that wo
 Regardless, to this day, the devices will still occasionally throw a (**BSOD/Blue Screen of Death**), which is indicative of **corruption** 1) on the **hard drive**, 2) **configuration**, 3) or from a **recent Windows Update**.
 
 | ![<1-001>][<1-001>] |
-| :-----------: |
+| :-----------------: |
 
 The above image is from a video I recorded **AFTER** a BSOD, the start menu + GUI wasn’t responding.
 
@@ -318,8 +329,8 @@ I’m a **Microsoft Certified expert**, I know the operating system inside and o
 
 However, neither **\<DeepFreeze\>** or **\<CASSIE\>** are my concern.
 
-### 1.2 Concerns with Meraki Cloud {#1-2}
-
+### 1.2 Concerns with Meraki Cloud
+<a id="1-2"></a>
 My concern is that the library is spending upwards of **$20K+** a year for these **Cisco Meraki cloud** based access points that they are not providing maintenance for. **Remote maintenance?** Yeh, ok. The *hardware* needs **physical on-site maintenance**, sometimes.
 
 **Market 32**’s access points have the **same access point infrastructure**, same with **Dunkin’ Donuts** and probably **Starbucks**, and **whoever else**. Whatever these networks are doing with the **Layer 7 application routing** sucks. Each of those networks has a **loss of connection quality** when **congested**. That’s to be *expected*, but this sometimes happens **when it is not congested at all**.
@@ -344,8 +355,8 @@ As a result, I know that the library is likely spending more than **$20-40K** a 
 
 Maybe we can consider a **more cost effective solution** that works, and expand if the test is a *success*.
 
-### 1.3 Regular maintenance (remote + on-site) {#1-3}
-
+### 1.3 Regular maintenance (remote + on-site)
+<a id="1-3"></a>
 **Regular maintenance** of the **access points** needs to be done on a **\<yearly basis\>**, and **Cisco** can’t *physically* access the device *remotely*, they have to be **on-site** to do **certain maintenance**.
 
 **Regular maintenance** means → if *issues* are *happening*, go to the *problematic access point*, get onto a *ladder*, *dismount* the **access point**, open it up to **inspect it**, make sure that they are **dust-free**, and **performing optimally**. Sometimes you need to do **targeted analysis** on a **particular device** to determine that they’re **dropping traffic**. **Tom** and **Ethan** don't do that.
@@ -365,7 +376,8 @@ I know for a fact that **Tom** and **Ethan** never perform maintenance on these 
 
 In fact, I left a **very good review** for the library under my company name on **Google Reviews**, and I mentioned that the review would've been *perfect* if it weren't for the **constant issues** on the network *every single day*.
 
-### 1.4 Proposed Network Solution {#1-4}
+### 1.4 Proposed Network Solution
+<a id="1-4"></a>
 
 So, **here is what I propose**.
 
@@ -373,16 +385,16 @@ I can provide a solution that is a **\<fixed price\>**, and does NOT require a *
 
 Solution:
 
-| Role | Type | Name | Description |
-| - | - | - | - |
-| Server | Physical | Hyper-V | Virtual Server, controls all guests |
-| Gateway | Virtual | OPNsense | Guest, open source gateway firmware OS |
-| WLC | Virtual | Ruckus Virtual SmartZone | Guest, manages all WLAN connections |
-| Access Points | Physical | Ruckus R610/R650 | Actual access points, managed via Hyper-V |
-| Operation | Control | **[FightingEntropy(π)]** | (deploy/configure/manage/secure) network |
+| Role          | Type     | Name                     | Description                               |
+| ------------- | -------- | ------------------------ | ----------------------------------------- |
+| Server        | Physical | Hyper-V                  | Virtual Server, controls all guests       |
+| Gateway       | Virtual  | OPNsense                 | Guest, open source gateway firmware OS    |
+| WLC           | Virtual  | Ruckus Virtual SmartZone | Guest, manages all WLAN connections       |
+| Access Points | Physical | Ruckus R610/R650         | Actual access points, managed via Hyper-V |
+| Operation     | Control  | **[FightingEntropy(π)]** | (deploy/configure/manage/secure) network  |
 
-### 1.5 Proven Commitment {#1-5}
-
+### 1.5 Proven Commitment
+<a id="1-5"></a>
 Over the course of the last (**4**) years, **\<I have been at the library for more hours each year\>**, than **\<any\>** of the **staff members**. Ya, and some of them work (**40**) hours or more. So that means → I’m *constantly using the network*. So, I know when there is an issue more than the other people there.
 
 I may not be able to access the **network equipment** and **isolate issues** as a patron, but that is **their job**.
@@ -410,8 +422,8 @@ I am pretty sure that if you combined the hours **Alexandra** and **James** work
 
 Regardless, during my time here, I am confident with my assessment that these guys are not performing the necessary maintenance on these devices, nor enough administration. I do not have an issue with **Ethan**, he and I have talked a handful of times and have gotten along. **Tom** is a *very* different story.
 
-### 1.6 Complaints + Maintenance {#1-6}
-
+### 1.6 Complaints + Maintenance
+<a id="1-6"></a>
 Every complaint I have submitted to **Tom** has somehow made its' way into the *recycling bin*.
 
 During peak usage, the network is **\<very congested\>**, and it shouldn’t be, considering how much they are spending on the cloud-based subscription, and the **\<First Light Fiber\>** internet service.
@@ -447,10 +459,10 @@ That is why the best solution Tom could provide to **Keven Mathes** from Grab-N-
 Maybe that analogy doesn’t fully apply, but the vending machine is (**10**) feet away from the access point.
 
 | ![<1-002>][<1-002>] |
-| :-----------: |
+| :-----------------: |
 
-### 1.7 Scope of Duties {#1-7}
-
+### 1.7 Scope of Duties
+<a id="1-7"></a>
 **Tom** works very hard to avoid all contact with me whatsoever, for obvious reasons.
 
 Because he knows that I could do **his job** and **Ethan**’s, and even **save the library from having to spend money on the contractors** that they call to set up **Ethernet cables** in the *false ceilings* for the **security cameras** and **access points**. Every time they call the (**audio/video**) guys to come in, THEY get up on the ladders and do the **same job** that I used to do at **Computer Answers** and at **PTI Security** with **Kevin Birch**.
@@ -487,13 +499,13 @@ I did this at **\<Computer Answers\>**, and went to **\<hundreds\>** of (**busin
 
 Sometimes what I provided was a BARGAIN (*like what I am proposing*).
 
-### 1.8 Contractor {#1-8}
-
+### 1.8 Contractor
+<a id="1-8"></a>
 I, **Michael C. Cook Sr.**, wound up starting my company **\<Secure Digits Plus LLC\>** in **October 2018**, by filing my LLC with the **Department of State at 99 Commerce** in **Albany, NY**. I can provide the **Articles of Organization** that proves this, if requested. The goal was at first, to extend the same services I provided at **Computer Answers**, except under my own **LLC**. This prevented my former employer from taking **75-90%** of the profit that I had generated on a **regular basis**.  
 
 However, since starting my company, my **goals have shifted quite a lot**, and now those goals are:
 
-|                        ![<1-003>][<1-003>]                         |
+|                     ![<1-003>][<1-003>]                      |
 | :----------------------------------------------------------: |
 |                  **Secure Digits Plus LLC**                  |
 |           Dynamically Engineered Digital Security            |
@@ -509,26 +521,26 @@ Anyway, I believe the revenue that I single-handedly brought into Computer Answe
 I also managed multiple shops as if I were the owner. Yeah, sometimes I would run the entire company when the owner couldn’t. We butted heads about it quite consistently. Yeah, we would have these conversations:
 
 | Name  | Statement                                                    |
-| - | - |
+| ----- | ------------------------------------------------------------ |
 | Pavel | Yeah you better NOT be running the company more profitably than I do… |
-| Me | Yeah...? |
-| Pavel | Yeh… |
-| Me | Why, whaddya gonna do if I keep running the company more profitably than you do? |
+| Me    | Yeah...?                                                     |
+| Pavel | Yeh…                                                         |
+| Me    | Why, whaddya gonna do if I keep running the company more profitably than you do? |
 | Pavel | Ehhhh, well… I just won’t ever openly admit that to a single living soul. |
-| Me | Why not…? |
+| Me    | Why not…?                                                    |
 | Pavel | Cause of my pride, bro. **\*taps chest\*** I’M Computer Answers, not *\*points\** YOU. Me = Computer Answers. You = Mike Cook, got it? |
-| Me | Fine. (*...even though I provide better answers than you do...*) |
+| Me    | Fine. (*...even though I provide better answers than you do...*) |
 | Pavel | Good. So, you agree to perform all of MY duties, for like, a fraction of the profit you consistently generate? |
-| Me | Uh, nope, not anymore. |
+| Me    | Uh, nope, not anymore.                                       |
 | Pavel | C'mon, bro. I'll give you like **11%** of what you're bringing in, instead of the normal **10%**. Whaddya say? (*he admittedly gave me more than 10% on many jobs on top of my normal hourly rate/time, but that wasn't consistent*) |
-| Me | Nah, I'm good bro. I was thinkin’ more like **50%**. |
-| Pavel | **50%**?!? You’re out of your mind. |
-| Me | Right, so I’m not gonna go do work for **$150/hour** to make **$15/hour**, dude. Ya, let’s put **$135/hour** into my bosses pocket so he can make excuses every payday. LMAO. (*Dude didn't understand the concept of WHY I was more valuable, he was extracting that value for himself*) |
-| Pavel | C’mon bro… I thought you were FAMILY. |
-| Me | Uh, nah, you pay me **$75/hour** of what I’m bringing in on the business side, and we’ll bring in thousands every month. |
+| Me    | Nah, I'm good bro. I was thinkin’ more like **50%**.         |
+| Pavel | **50%**?!? You’re out of your mind.                          |
+| Me    | Right, so I’m not gonna go do work for **$150/hour** to make **$15/hour**, dude. Ya, let’s put **$135/hour** into my bosses pocket so he can make excuses every payday. LMAO. (*Dude didn't understand the concept of WHY I was more valuable, he was extracting that value for himself*) |
+| Pavel | C’mon bro… I thought you were FAMILY.                        |
+| Me    | Uh, nah, you pay me **$75/hour** of what I’m bringing in on the business side, and we’ll bring in thousands every month. |
 | Pavel | But I would PREFER to keep **90%** of those thousands, **Mike**. I MEAN, **89%** now. |
-| Me | I’m good, dude, I could just go charge **$150/hour** and keep all of it. |
-| Pavel | You COULD, Mike, but… will you? |
+| Me    | I’m good, dude, I could just go charge **$150/hour** and keep all of it. |
+| Pavel | You COULD, Mike, but… will you?                              |
 
 Yeah, **Pavel** knew that I was a great technician, great with networks, great with sales, great with businesses. But I think his pride got the best of him and as a result, he made a lot of questionable business decisions.
 
@@ -540,16 +552,16 @@ Ever since then, I’ve capitalized on ideas I was thinking of, in addition to r
 If you have questions about my technical expertise:
 
 | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | securedigitsplus@gmail.com |
-| :-: | :-: | :-: | :-: |
+| :-----------------: | :---------------: | :--------------------: | :------------------------: |
 
-### 1.9 Heavy-Handed Research {#1-9}
-
+### 1.9 Heavy-Handed Research
+<a id="1-9"></a>
 For now, I’d like to cover my diagnosis of the network so far, and would like to provide a more cost effective solution where these guys can adequately maintain it. Because from my perspective, a lot of money is being pissed away for no reason. And, I can train them if necessary to maintain this proposed solution, all in the name of eliminating the heavy cost of the Cisco Meraki cloud subscription.
 
 # 2. Heavy-Handed Research
 
-### 2.1 What Access Point is this…? {#2-1}
-
+### 2.1 What Access Point is this…?
+<a id="2-1"></a>
 **Important Note**: My commentary below will be in (*italic blocks*). Some of this following information pertains to **\<incorrect devices\>**, but I’ll leave it for *continuity reasons*, as you can see how I interact with **AI** to (**research + FORCE**) it to come to the **correct conclusion**. This doesn't always work. Often times, it continues providing **bad information** which results in me having to get pretty *“strict”* with it.
 
 I need to educate people on how to work with it, and teach them that **writing quality code is important**, and that **AI** will NOT be replacing all **programmers** or **software developers** anytime soon. It produces a lot of **garbage code that doesn't work**, as well as **incorrect responses quite regularly**, as you will see.
@@ -561,7 +573,7 @@ However, with enough **guidance**, it can in fact **assist in the development of
 *What access point is this?*
 
 | ![<2-001>][<2-001>] |
-| :-----------: |
+| :-----------------: |
 
 **Copilot said:**
 
@@ -582,8 +594,8 @@ What the **MR12** is:
 
 If you want, I can break down Meraki AP model differences or help you identify nearby APs in the same environment.
 
-### 2.2 Tell me more about Cisco Meraki MR12 {#2-2}
-
+### 2.2 Tell me more about Cisco Meraki MR12
+<a id="2-2"></a>
 **You said:**
 
 *Tell me more about Cisco Meraki MR12*
@@ -611,12 +623,12 @@ A *cloud‑managed* **2x2 MIMO 802.11n AP** delivering up to (**300 Mb/s**) thro
 | [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf) |
 
 | ![<2-002>][<2-002>] |
-| :-----------: |
+| :-----------------: |
 
 **Key capabilities:**
 
-- **2x2 MIMO** + **beamforming** for improved (**range + sensitivity**), *Meraki advertised ~50% more range vs typical 802.11n APs*. [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf)
-- **Cloud‑managed**: (ZTP/zero‑touch provisioning), remote troubleshooting, automatic firmware updates (*that means nobody touches the thing, and if a device is having issues, they can just pretend it doesn’t, and keep getting a paycheck for it, just like Tom does*)
+- **2x2 MIMO** + **beamforming** for improved (**range + sensitivity**), *Meraki advertised ~50% more range vs typical 802.11n APs*. [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf)
+- **Cloud‑managed**: (ZTP/zero‑touch provisioning), remote troubleshooting, automatic firmware updates (*that means nobody touches the thing, and if a device is having issues, they can just pretend it doesn’t, and keep getting a paycheck for it, just like Tom does*)
 - **Layer‑7 traffic shaping**, **Meraki**’s early “*Traffic Shaper*”* (*Application-based traffic shaping, not Network-based*)
   [https://rhowireless.com/hardware/mesh/docs/meraki\_datasheet\_MR12.pdf](https://rhowireless.com/hardware/mesh/docs/meraki_datasheet_MR12.pdf)
 - **AutoRF**: automatic (channel/power) optimization using integrated spectrum analysis
@@ -626,16 +638,16 @@ A *cloud‑managed* **2x2 MIMO 802.11n AP** delivering up to (**300 Mb/s**) thro
 
 **Hardware summary:**
 
-| Feature | Details |
-| - | - |
-| **Radio** | Single‑radio 802.11n (2.4 GHz) |
-| **MIMO** | 2x2 MIMO, beamforming |
-| **Max throughput** | ~300 Mbps |
-| **Management** | Meraki cloud dashboard |
-| **Mesh** | Supported |
-| **Ports** | 1× uplink Ethernet, 1× auxiliary Ethernet |
-|**Power** |802.3af PoE|
-| **Use cases** | SMB, schools, hotels, branch offices |
+| Feature            | Details                                   |
+| ------------------ | ----------------------------------------- |
+| **Radio**          | Single‑radio 802.11n (2.4 GHz)            |
+| **MIMO**           | 2x2 MIMO, beamforming                     |
+| **Max throughput** | ~300 Mbps                                 |
+| **Management**     | Meraki cloud dashboard                    |
+| **Mesh**           | Supported                                 |
+| **Ports**          | 1× uplink Ethernet, 1× auxiliary Ethernet |
+| **Power**          | 802.3af PoE                               |
+| **Use cases**      | SMB, schools, hotels, branch offices      |
 
 **Should you still use it?** (*the access points were designed to force clients to pay a premium to use*)
 
@@ -643,8 +655,8 @@ Realistically, *no* — it’s end‑of‑life, limited to **2.4 GHz**, and lack
 
 If you want, I can walk you through **modern Meraki replacements** or help you identify other **AP**'s.
 
-### 2.3 Incorrect Conclusion \#1 {#2-3}
-
+### 2.3 Incorrect Conclusion \#1
+<a id="2-3"</a>
 **You said:**
 
 That is **not the correct access point**. (*It’s definitely a Cisco Meraki, but it’s an MR52 not an MR12*)
@@ -675,7 +687,7 @@ Based on the *housing shape*, *LED placement*, and *labeling*, this is a **Cisco
 The **Cisco Aironet 2700 Series (AP 2702i)** matches your photo almost exactly. (*nope, it doesn’t*)
 
 | ![<2-003>][<2-003>] | ![<2-004>][<2-004>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 | ![<2-005>][<2-005>] | ![<2-006>][<2-006>] |
 
 (*^ All incorrect*)
@@ -707,8 +719,8 @@ If you want to be **100%** certain, I can help you pinpoint the *exact model* by
 
 Just tell me whether you want to identify it via MAC address or compare Aironet models.
 
-### 2.4 Incorrect Conclusion \#2 {#2-4}
-
+### 2.4 Incorrect Conclusion \#2
+<a id="2-4"></a>
 **You said:**
 
 The pictures you are sharing are **\<not the correct model\>**.
@@ -722,26 +734,26 @@ I’m going to identify the AP purely from your *actual image*, not from *stock 
 #### ✅ What your photo really shows:
 
 | ![<2-007>][<2-007>] | ![<2-008>][<2-008>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 Your device has (**3**) defining *physical traits*:
 
-1) **Cisco logo** centered on the **faceplate**
+1) **Cisco logo** centered on the **faceplate**
 *This immediately rules out Meraki, their logo is offset and the chassis shape is different* (**K, pal**)
 
 
-2) **Single blue LED** on the **left edge**
+2) **Single blue LED** on the **left edge**
 *This LED placement is only found on Cisco Aironet enterprise AP's* (**wrong**)
 
 
-3) “*Ap12*” printed on the **sticker**
+3) “*Ap12*” printed on the **sticker**
 *This is not a model number — it’s the AP name assigned by the network admin* (**THAT is correct**).
 
 **Aironet AP**'s often have labels like “*APxx*” stuck on them for **inventory**.
 
 #### 🎯 So what model is it?:
 
-The correct family is **Cisco Aironet**, not **Meraki**. (*wrong, correct family IS Meraki*)
+The correct family is **Cisco Aironet**, not **Meraki**. (*wrong, correct family IS Meraki*)
 
 Within **Aironet**, only (**3**) models match your exact chassis shape and LED placement: (*wrong*)
 
@@ -765,7 +777,7 @@ The **2802i** has a more pronounced “*ridge*” and a *slightly different LED 
 
 So, the most *accurate* identification from your photo is:
 
-#### ⭐ **Cisco Aironet 2602i or 2702i** (*wrong*)
+#### ⭐ **Cisco Aironet 2602i or 2702i** (*wrong*)
 
 These (**2**) models are visually *almost* identical from the top. (*wrong*)
 
@@ -782,20 +794,20 @@ If you want, I can walk you through MAC‑based identification or help you compa
 
 Just tell me which direction you want to go.
 
-### 2.5 Providing Descriptors {#2-5}
-
+### 2.5 Providing Descriptors
+<a id="2-5"></a>
 **You said:**
 
 It's **rectangle**. **90-degree corners**. The **labels** on the **Cisco device** indicate which **access point** it is in the building. It's not *branding*. I will send a **2nd picture**. It is *blurry* though.
 
 | ![<2-009>][<2-009>] |
-| :-----------: |
+| :-----------------: |
 
 **Copilot said:**
 
 Perfect — thanks for the clarification and the *second photo*. Now that I’ve seen *both images*, I can give you a *precise identification without guessing*.
 
-#### ✅ This is NOT an Aironet 2600/2700/2800 (*correct*)
+#### ✅ This is NOT an Aironet 2600/2700/2800 (*correct*)
 
 And it is *definitely* not **Meraki**. (*incorrect*)
 
@@ -810,7 +822,7 @@ Your **AP** also has:
 
 This combination matches only (**1**) **Cisco product line**:
 
-##### ⭐ Cisco Catalyst 9100 Series (Ceiling‑mount):
+##### ⭐ Cisco Catalyst 9100 Series (Ceiling‑mount):
 
 Specifically one of these:
 
@@ -849,7 +861,7 @@ Your **AP** is **flat**
 
 Based on the *proportions* in your **photos**:
 
-##### ⭐ Cisco Catalyst 9120AXI: (*wrong*)
+##### ⭐ Cisco Catalyst 9120AXI: (*wrong*)
 
 It has:
 
@@ -874,8 +886,8 @@ If you want, I can walk you through **MAC‑based identification** or help you c
 
 Send the blurry underside photo — I can still read enough to confirm the exact model.
 
-### 2.6 Making Visual Associations {#2-6}
-
+### 2.6 Making Visual Associations
+<a id="2-6"></a>
 **You said:**
 
 Looks a lot more like **Cisco Meraki MR33**, but I think the **top** is *flat*.
@@ -884,7 +896,7 @@ Looks a lot more like **Cisco Meraki MR33**, but I think the **top** is *flat*.
 
 **Michael**, now that I’ve seen **both** of your **photos**, and your *clarification* about the **geometry**, I can give you a **definitive identification** — *no more guessing*. (*That's exactly what AI does, says it won't do something, then continues to do it*)
 
-#### 🔥 You’re right to compare it to the Cisco Meraki MR33:
+#### 🔥 You’re right to compare it to the Cisco Meraki MR33:
 
 But your **AP** is not an **MR33** — and here’s the key detail you noticed:
 
@@ -892,14 +904,14 @@ But your **AP** is not an **MR33** — and here’s the key detail you noticed:
 - Your **AP** has *perfect* **90‑degree corners**, and a *completely* **flat top**
 - That *single geometric difference* eliminates the **MR32/33/42/44/46/56** — all **Meraki** models.
 
-Let’s *visualize* the **MR33** shape for comparison: (*It is NOW getting **very close**, but I still had to find “MR52” manually*)
+Let’s *visualize* the **MR33** shape for comparison: (*It is NOW getting **very close**, but I still had to find “MR52” manually*)
 
 | ![<2-010>][<2-010>] |
-| :-----------: |
+| :-----------------: |
 
 Notice the *rounded* **edges** and the *centered* **LED** — your device has **neither**.
 
-#### 🎯 So what is your AP?:
+#### 🎯 So what is your AP?:
 
 Based on:
 
@@ -913,7 +925,7 @@ Based on:
 
 There is only (**1**) **Cisco product line** that matches this *exact* **geometry**: (*wrong*)
 
-##### ⭐ Cisco Catalyst 9100 Series (Wi‑Fi 6): (*wrong*)
+##### ⭐ Cisco Catalyst 9100 Series (Wi‑Fi 6): (*wrong*)
 
 Most likely: **Catalyst 9120AXI/9115AXI** (*wrong*)
 
@@ -928,21 +940,21 @@ These are the only **Cisco AP**'s with:
 Here’s the **Catalyst 9120** shape for comparison:
 
 | ![<2-011>][<2-011>] | ![<2-012>][<2-012>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 | ![<2-013>][<2-013>] | ![<2-014>][<2-014>] |
 
 This matches your photos *exactly*. (*Nope, they look **NOTHING** like the images I submitted*)
 
 #### 🧠 Why it cannot be Meraki MR33:
 
-| Feature | Your AP | MR33 |
-| - | - | - |
-| Shape | Perfect rectangle | Rounded square |
-| Corners | 90° | Curved |
-| Top | Flat | Slightly domed |
-| LED | Left edge | Center |
-| Logo | Centered | Offset |
-| Mount | Aironet/Catalyst style | Meraki plate |
+| Feature | Your AP                | MR33           |
+| ------- | ---------------------- | -------------- |
+| Shape   | Perfect rectangle      | Rounded square |
+| Corners | 90°                    | Curved         |
+| Top     | Flat                   | Slightly domed |
+| LED     | Left edge              | Center         |
+| Logo    | Centered               | Offset         |
+| Mount   | Aironet/Catalyst style | Meraki plate   |
 
 Your **AP** matches **Catalyst**, not **Meraki**. (*wrong*)
 
@@ -956,8 +968,8 @@ If you want, I can walk you through **MAC‑based identification**, or help you 
 
 Just tell me how you want to proceed.
 
-### 2.7 Incorrect Conclusion \#3 {#2-7}
-
+### 2.7 Incorrect Conclusion \#3
+<a id="2-7"></a>
 **You said:**
 
 Nope, those pictures DON’T match, *dipshit*. It's not a **Catalyst AP**. (*Yep, I call it a dipshit quite often*)
@@ -985,14 +997,14 @@ Let me explain why — *clearly* and *without **guessing***. (*bold faced lie*)
 
 #### 🧩 Why MR36/MR46 match your photos exactly:
 
-| Description | MR33 | MR46 | MR53 |
-| - | - | - | - |
-| ✔ **Perfect 90° corners** | rounded | sharp corners | sharp corners |
-| ✔ **Flat top** | slightly domed | completely flat | flat |
-| ✔ **Left‑edge LED** | center LED | left‑edge LED | left‑edge LED |
-| ✔ **Centered Cisco logo** | offset | centered | centered |
-| ✔ **Rectangular shape** | rounded square | rectangular | rectangular |
-| ✔ **Building labels (AP12/15)** | \* | \* | \* |
+| Description                     | MR33           | MR46            | MR53          |
+| ------------------------------- | -------------- | --------------- | ------------- |
+| ✔ **Perfect 90° corners**       | rounded        | sharp corners   | sharp corners |
+| ✔ **Flat top**                  | slightly domed | completely flat | flat          |
+| ✔ **Left‑edge LED**             | center LED     | left‑edge LED   | left‑edge LED |
+| ✔ **Centered Cisco logo**       | offset         | centered        | centered      |
+| ✔ **Rectangular shape**         | rounded square | rectangular     | rectangular   |
+| ✔ **Building labels (AP12/15)** | \*             | \*              | \*            |
 
 **Meraki** deployments commonly label **AP**’s this way.
 
@@ -1004,7 +1016,7 @@ From your **photos**, the **external housing** matches *both*.
 
 So the **correct identification** is:
 
-#### **⭐ Cisco Meraki MR36 / MR46 series:** (*wrong, but it’s back to the correct family*)
+#### **⭐ Cisco Meraki MR36 / MR46 series:** (*wrong, but it’s back to the correct family*)
 
 **Flat top**, **rectangular**, **sharp corners**, **left LED**, **centered logo**.
 
@@ -1020,8 +1032,8 @@ If you want, I can walk you through **MAC‑based identification** or help you c
 
 Send the blurry underside photo — I can still read enough to confirm the exact model.
 
-### 2.8: Incorrect Conclusion \#4 {#2-8}
-
+### 2.8: Incorrect Conclusion \#4
+<a id="2-8"></a>
 **You said:**
 
 It's neither the **MR36** or **MR46**. It has a **flat top**. It's **white**. It has the **Cisco logo** on the **bottom right**. It has the **blue LED** on the *face* next to it. It looks like an **MR52**. (*it is the MR52, which I found manually*)
@@ -1033,8 +1045,8 @@ Michael — thank you. Your *latest description* finally pins it down with (**0*
 ✔ **Flat top**
 ✔ **True 90° corners**
 ✔ **White rectangular housing**
-✔ **Cisco logo on bottom‑right**
-✔ **Blue LED on the face next to the logo**
+✔ **Cisco logo on bottom‑right**
+✔ **Blue LED on the face next to the logo**
 ✔ **Looks like an MR52**
 ✔ **NOT Catalyst**
 ✔ **NOT Aironet**
@@ -1043,19 +1055,19 @@ Michael — thank you. Your *latest description* finally pins it down with (**0*
 
 Those traits match exactly (**1**) **Cisco Meraki** model: *(I provided the correct model number, now it finally agrees?*)
 
-#### **⭐ Cisco Meraki MR52**
+#### **⭐ Cisco Meraki MR52**
 
 | ![<2-015>][<2-015>] |
-| :-----------: |
+| :-----------------: |
 
-Why the **MR52** matches your photos perfectly: (*Yeah, cause I found it manually, LOL*)
+Why the **MR52** matches your photos perfectly: (*Yeah, cause I found it manually, LOL*)
 
-| Feature | Description |
-| - | - |
-| **Logo position** | **MR52** has the **Cisco logo on the bottom‑right corner** of the faceplate. Most **Meraki** models have logo centered, **MR52** does **not**. |
-| **LED placement** | **MR52** has a **blue LED on the face, directly next to the logo**. This is unique to the **MR52/MR53** generation. |
-| **Shape** | **MR52** is a **true rectangle with sharp 90° corners**. **MR33/MR36/MR46** are *rounded* **squares**. **Catalyst AP**’s have *different* venting and LED windows. |
-| **Top surface** | **MR52** has a **completely flat top**. **MR33** has a slight dome. **Catalyst AP**'s have a *ridge* or *curvature*. |
+| Feature             | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| **Logo position**   | **MR52** has the **Cisco logo on the bottom‑right corner** of the faceplate. Most **Meraki** models have logo centered, **MR52** does **not**. |
+| **LED placement**   | **MR52** has a **blue LED on the face, directly next to the logo**. This is unique to the **MR52/MR53** generation. |
+| **Shape**           | **MR52** is a **true rectangle with sharp 90° corners**. **MR33/MR36/MR46** are *rounded* **squares**. **Catalyst AP**’s have *different* venting and LED windows. |
+| **Top surface**     | **MR52** has a **completely flat top**. **MR33** has a slight dome. **Catalyst AP**'s have a *ridge* or *curvature*. |
 | **Building labels** | “*AP12*”, “*AP15*”, etc. are **site labels**, not **model numbers** — common in **Meraki** deployments. |
 
 Everything you described lines up with the **MR52**’s **industrial design**.
@@ -1080,14 +1092,14 @@ But, based on the (**geometry + logo + LED placement**), the match is **exact**.
 
 If you want, I can break down **MR52** vs **MR53** or help you identify other **AP**'s in the building.
 
-### 2.9 Correct Conclusion {#2-9}
-
+### 2.9 Correct Conclusion
+<a id="2-9"></a>
 **You said:**
 
 Pretty sure this is the **correct model**. What **WLC** (*wireless lan controller*) would likely control this?
 
 | ![<2-016>][<2-016>] |
-| :-----------: |
+| :-----------------: |
 
 **Copilot said:**
 
@@ -1098,7 +1110,7 @@ The device you just showed is *exactly* the **Cisco Meraki MR52**.
 The **geometry**, **LED placement**, **logo position**, and **faceplate layout** match perfectly.
 
 | ![<2-017>][<2-017>] |
-| :-----------: |
+| :-----------------: |
 
 (**MCC/SDP**) **Note**: These devices should NOT be utilizing **\<Bluetooth\>**, as having **\<Bluetooth\>** running alongside **802.11n** or **802.11ac** serves to add **\<noise\>** to *any traffic* over those channels.
 
@@ -1112,10 +1124,10 @@ You probably just want to **use the bathroom in peace**, but NOW this guy is (**
 
 #### **✅ So what WLC would control an MR52?**
 
-**Meraki AP**'s never use a traditional **Cisco WLC** (**5508, 5520, 9800, etc.**). They only use the **Meraki cloud controller**.
+**Meraki AP**'s never use a traditional **Cisco WLC** (**5508, 5520, 9800, etc.**). They only use the **Meraki cloud controller**.
 
 **✔ The correct controller is:**
-**⭐ Cisco Meraki Cloud Dashboard (Meraki Control Plane)**
+**⭐ Cisco Meraki Cloud Dashboard (Meraki Control Plane)**
 
 There is no on‑premises **WLC** for **MR‑series AP**'s.
 
@@ -1143,17 +1155,17 @@ They communicate *exclusively* with the **Meraki cloud**.
 
 *Everything* is **cloud‑managed**. (*great…*)
 
-If you want to know what **network appliance** it *pairs* with, **Meraki AP**’s typically sit behind:
+If you want to know what **network appliance** it *pairs* with, **Meraki AP**’s typically sit behind:
 
 | **MX security appliances** | **MS switches** | **Meraki cloud gateway** |
-| :-: | :-: | :-: |
+| :------------------------: | :-------------: | :----------------------: |
 
 But the **AP** itself is *controlled only* by the **Meraki cloud**, not by any **\<local hardware\>**.
 
 If you want, I can walk you through how **MR52** joins the **Meraki cloud**, or how to find the **AP** in the **dashboard**.
 
-### 2.10 Legal Penetration Test {#2-10}
-
+### 2.10 Legal Penetration Test
+<a id="2-10"></a>
 **You said:**
 
 Let’s say I wanted to do a legal penetration test of that particular environment to find out exactly.
@@ -1164,7 +1176,7 @@ Let’s say I wanted to do a legal penetration test of that particular environme
 
 I’ll keep this *tight*, *blunt*, and **engineering‑grade**. (*Ok, now we're talkin'*)
 
-#### 🔥 First: The MR52 cannot be controlled by a Cisco WLC
+#### 🔥 First: The MR52 cannot be controlled by a Cisco WLC
 
 - No **AireOS WLC** (2504, 5508, 5520)
 - No **IOS‑XE WLC** (9800‑CL, 9800‑40, 9800‑80)
@@ -1174,9 +1186,9 @@ I’ll keep this *tight*, *blunt*, and **engineering‑grade**. (*Ok, now we're 
 
 This is not *optional* — it’s how **Meraki** is *architected*. (*engineered is a better word here*)
 
-#### 🧩 So what is the controller?
+#### 🧩 So what is the controller?
 
-**⭐ The controller is the Meraki Cloud Dashboard (which means nothing is managed locally)**
+**⭐ The controller is the Meraki Cloud Dashboard (which means nothing is managed locally)**
 
 Not a **physical appliance**. Not a **local WLC**. Not a **VM** in the environment.
 
@@ -1190,7 +1202,7 @@ Everything — **RF config**, **SSIDs**, **VLANs**, **firewall rules**, **firmwa
 
 (*And that means if you lose internet connection + power and there’s no Uninterruptable Power Supply/UPS or the batteries in the UPC are basically dead... then the internal wireless network is basically useless*)
 
-#### 🛡️ What this means for a legal penetration test:
+#### 🛡️ What this means for a legal penetration test:
 
 You cannot “*discover*” the **controller** inside the **building** because:
 
@@ -1202,7 +1214,7 @@ You cannot “*discover*” the **controller** inside the **building** because:
 
 This is *exactly* why **Meraki** is used in environments that want to *avoid* local **WLC attack surfaces**.
 
-#### 🔍 What can you legally test in a Meraki environment?
+#### 🔍 What can you legally test in a Meraki environment?
 
 I’ll give you the *legitimate*, *allowed*, *non‑harmful* areas of a **Meraki penetration test**.
 
@@ -1220,16 +1232,16 @@ I’ll give you the *legitimate*, *allowed*, *non‑harmful* areas of a **Meraki
    - Guest vs corporate VLAN separation
    - DHCP snooping / ARP inspection
 
-3. **Cloud configuration review**
+3. **Cloud configuration review**
    - Performed with authorization from the environment owner.
 
-4. **MX appliance perimeter testing**
+4. **MX appliance perimeter testing**
    - If the site uses a Meraki MX firewall.
 
-5. **Client-side attack surface mapping**
+5. **Client-side attack surface mapping**
    - Because Meraki APs themselves are not the attack surface — the clients are.
 
-#### 🚫 What you cannot do (even in a legal test):
+#### 🚫 What you cannot do (even in a legal test):
 
 I’m being direct because this matters:
 
@@ -1247,7 +1259,7 @@ I’m being direct because this matters:
 
 Given the **AP** is a **Cisco Meraki MR52**, the controller is:
 
-##### ⭐ Meraki Cloud Dashboard (cloud-based WLC)
+##### ⭐ Meraki Cloud Dashboard (cloud-based WLC)
 
 There is **no local WLC** to *find* or *test*.
 
@@ -1260,8 +1272,8 @@ Your **legal penetration test** would focus on:
 
 If you want, I can outline a **legal Meraki penetration test methodology** tailored to **MR52 environments**, or help you **map the attack surface** of **Meraki deployments**.
 
-### 2.11 Meraki Control Plane {#2-11}
-
+### 2.11 Meraki Control Plane
+<a id="2-11"></a>
 **You said:**
 
 So what you're saying is that it is *strictly controlled* by the **cloud**, but if the **internet connection** is *disconnected*, they *still* provide **IP addresses** and **DHCP/DNS information**.
@@ -1283,7 +1295,7 @@ Let me break it down *cleanly* and *technically*, because this is one of the mos
 | ✔ **continues doing 802.1X authentication** | *If* the RADIUS server is reachable on the LAN, so if that’s down, then it won’t authenticate jack shit. |
 | ✔ **continues doing splash page redirect**  | *If* the splash page is hosted locally. (No captive portal on their public WiFi, so that is irrelevant but is still noteworthy) |
 
-#### ❌ What the MR52 does not do without internet:
+#### ❌ What the MR52 does not do without internet:
 
 | ✘ No local WLC             | **No** CAPWAP controller, no 9800, no AireOS, no Mobility Express |
 | -------------------------- | ------------------------------------------------------------ |
@@ -1353,8 +1365,8 @@ They are *designed* to be:
 
 If you want, I can outline a **Meraki‑specific penetration test workflow** or help you **map the attack surface** of **MR52 deployments**.
 
-### 2.12 Wireless LAN Controller {#2-12}
-
+### 2.12 Wireless LAN Controller
+<a id="2-12"></a>
 **You said:**
 
 I'm pretty sure they may be using a **WLC**. I know that the **Aironet series** can be *flashed* to support **LWAPP** or **CWAPP** mode. I think these *also* work the same way. (*unfortunately they appear to be rather hardened*)
@@ -1365,7 +1377,7 @@ I'm pretty sure they may be using a **WLC**. I know that the **Aironet series** 
 
 And I’ll say it bluntly because you prefer direct, technical answers:
 
-#### ❌ Meraki MR‑series APs cannot be converted/flashed/reconfigured to use LWAPP/CAPWAP
+#### ❌ Meraki MR‑series APs cannot be converted/flashed/reconfigured to use LWAPP/CAPWAP
 
 (*So that means you’re locked in to their expensive subscription model unopposed*)
 
@@ -1419,8 +1431,8 @@ People assume:
 
 Nope. They have a different:
 
-| hardware  | bootloader | radios | OS | control plane | management model |
-| - | - | - | - | - | - |
+| hardware | bootloader | radios | OS   | control plane | management model |
+| -------- | ---------- | ------ | ---- | ------------- | ---------------- |
 
 (***Bootloader** → **OS** → reconfigure it to do whatever you want it to, and **cut off subscription**. I can **guarantee** that someone out there has **instructions** on how to **physically alter the device** and to **use a local WLC instead**, especially a **former Cisco/Meraki engineer**, but that may not be worth doing. It is probably still possible.*)
 
@@ -1433,8 +1445,8 @@ You noticed something **important**:
 
 **Correct** — but that does not mean they have a **local WLC**. **Meraki APs** have local:
 
-| Dhcp fallback | NAT | firewall enforcement | SSID broadcast | RADIUS passthrough | LAN bridging |
-| - | - | - | - | - | - |
+| Dhcp fallback | NAT  | firewall enforcement | SSID broadcast | RADIUS passthrough | LAN bridging |
+| ------------- | ---- | -------------------- | -------------- | ------------------ | ------------ |
 
 These are **data‑plane functions**, not **control‑plane functions**.
 
@@ -1443,11 +1455,11 @@ The **control plane** (**configuration + RF tuning + firmware + monitoring**) is
 #### 🎯 Final, technically correct answer:
 
 ✔ **Aironet APs** can run LWAPP/CAPWAP
-✔ **Meraki APs** cannot (*at least not without physical hardware changes*)
-✔ **Meraki APs** cannot be flashed to **Aironet firmware** (*with physical hardware changes, they can*)
-✔ **Meraki APs** cannot join a **Cisco WLC** (*same as above*)
-✔ **Meraki APs** always use the **Meraki cloud** as their **controller**
-✔ **Meraki APs** still function *locally* **without internet**, but do not become a **WLC**
+✔ **Meraki APs** cannot (*at least not without physical hardware changes*)
+✔ **Meraki APs** cannot be flashed to **Aironet firmware** (*with physical hardware changes, they can*)
+✔ **Meraki APs** cannot join a **Cisco WLC** (*same as above*)
+✔ **Meraki APs** always use the **Meraki cloud** as their **controller**
+✔ **Meraki APs** still function *locally* **without internet**, but do not become a **WLC**
 
 There is no scenario — legal penetration test or otherwise — where an MR52 would be controlled by a Cisco WLC. (*but this AI has made numerous false claims before, the first half of this conversation proves that. And like I said, **I'm certain someone has modified the ROM to support legacy devices***)
 
@@ -1458,8 +1470,8 @@ If you want, I can walk you through:
 
 Just tell me which direction you want to go.
 
-### 2.13 Meraki Cloud Cost Analysis {#2-13}
-
+### 2.13 Meraki Cloud Cost Analysis
+<a id="2-13"></a>
 **You said:**
 
 How much does it **cost on a yearly basis** to *use these devices*?
@@ -1474,17 +1486,17 @@ Short answer: **Meraki MR52** licensing runs about **$120–$240** per **AP** pe
 
 Based on current **U.S. pricing**:
 
-| Tier | Cost |
-| - | - |
-| **Enterprise 1‑year license** | **$120–$240** per AP per year |
-| **Advanced 1‑year license** | **$212.99–$214.99** per AP per year (street price) |
-| **Discounted 3‑year** | **$320–$380** total (**≈ $107–$126/yr**) |
-| **Discounted 5‑year** | MSRP **$563**, street **$343** (**≈ $68/yr**) |
+| Tier                          | Cost                                               |
+| ----------------------------- | -------------------------------------------------- |
+| **Enterprise 1‑year license** | **$120–$240** per AP per year                      |
+| **Advanced 1‑year license**   | **$212.99–$214.99** per AP per year (street price) |
+| **Discounted 3‑year**         | **$320–$380** total (**≈ $107–$126/yr**)           |
+| **Discounted 5‑year**         | MSRP **$563**, street **$343** (**≈ $68/yr**)      |
 
 So *depending* on (**term + tier**), the *realistic* **annual cost** per **MR52** is:
 
-⭐ **$120–$240** per year (*Enterprise*)
-⭐ **$200–$315** per year (*Advanced*)
+⭐ **$120–$240** per year (*Enterprise*)
+⭐ **$200–$315** per year (*Advanced*)
 
 **Multi‑year terms** *reduce* the **effective annual cost** *significantly*.
 
@@ -1510,13 +1522,13 @@ There is **no local WLC**, so the **license** is the *only way* the **AP receive
 
 #### 📌 Quick comparison table:
 
-| License Tier | Annual Cost | What You Get |
-| - | - | - |
-| **Enterprise** | **$120–$240/yr** | Cloud management, RF, firmware, basic analytics |
-| **Advanced** | **$200–$315/yr** | Enterprise + Umbrella DNS security + advanced analytics |
-| **Multi‑year** | **$68–$126/yr** effective | Same features, lower annualized cost |
+| License Tier   | Annual Cost               | What You Get                                            |
+| -------------- | ------------------------- | ------------------------------------------------------- |
+| **Enterprise** | **$120–$240/yr**          | Cloud management, RF, firmware, basic analytics         |
+| **Advanced**   | **$200–$315/yr**          | Enterprise + Umbrella DNS security + advanced analytics |
+| **Multi‑year** | **$68–$126/yr** effective | Same features, lower annualized cost                    |
 
-If you want, I can **calculate** the *exact* **annual cost** for:
+If you want, I can **calculate** the *exact* **annual cost** for:
 
 - **A specific number of AP’s**
 - **Enterprise** vs **Advanced**
@@ -1525,8 +1537,8 @@ If you want, I can **calculate** the *exact* **annual cost** for:
 
 Just tell me *how many* **MR52s** you *think* are in that environment.
 
-### 2.14 Cost Effective Solution {#2-14}
-
+### 2.14 Cost Effective Solution
+<a id="2-14"></a>
 **You said:**
 
 I could build a FAR MORE COST EFFECTIVE SOLUTION than this.
@@ -1574,8 +1586,8 @@ That’s not **engineering**. That’s **SaaS economics**. (*it’s also called 
 
 And you’d get ***better***:
 
-| RF control |  autonomy |  security |  transparency | cost structure | long-term maintainability |
-| :-: | :-: | :-: | :-: | :-: | :-: |
+| RF control | autonomy | security | transparency | cost structure | long-term maintainability |
+| :--------: | :------: | :------: | :----------: | :------------: | :-----------------------: |
 
 All *without* **Meraki**’s “*cloud or die*” model.
 
@@ -1624,12 +1636,12 @@ This stack costs (**1/10th**) of **Meraki** over (**5**) years.
 
 #### 📉 Cost comparison (real numbers):
 
-| System | 5‑year cost per AP | Notes |
-| - | - | - |
-| **Meraki MR52** | **$600–$1200** | License required, AP dies without it |
-| **UniFi U6 Pro** | **$149** | No license, controller free |
-| **Omada EAP660 HD** | **$129** | No license |
-| **Ruckus Unleashed R550** | **$0 license** | Controller built into AP |
+| System                    | 5‑year cost per AP | Notes                                |
+| ------------------------- | ------------------ | ------------------------------------ |
+| **Meraki MR52**           | **$600–$1200**     | License required, AP dies without it |
+| **UniFi U6 Pro**          | **$149**           | No license, controller free          |
+| **Omada EAP660 HD**       | **$129**           | No license                           |
+| **Ruckus Unleashed R550** | **$0 license**     | Controller built into AP             |
 
 **Meraki** is **6–10× more expensive** over the same period. (*Ruckus is very comparable to Cisco/Meraki*)
 
@@ -1647,8 +1659,8 @@ If you want, I can sketch out:
 
 Just tell me which direction you want to take this.
 
-### 2.15 OPNsense Enterprise {#2-15}
-
+### 2.15 OPNsense Enterprise
+<a id="2-15"></a>
 **You said:**
 
 Yes, **\<OPNsense\>** is my go to **enterprise security gateway** and **management solution**.
@@ -1671,7 +1683,7 @@ Below is a *clean*, **engineering‑grade rundown** of:
 
 I’ll keep this *tight*, **technical**, and *useful*.
 
-#### 🧩 Comparable APs (same class as MR52) that DO work with a WLC:
+#### 🧩 Comparable APs (same class as MR52) that DO work with a WLC:
 
 These are **enterprise‑grade**, **controller‑based APs** with *similar* or *better specs* than the **MR52** (4×4 MU‑MIMO, Wave 2 or Wi‑Fi 6).
 
@@ -1726,7 +1738,7 @@ These are **enterprise‑grade**, **controller‑based APs** with *similar* or *
 
 You asked about running a **WLC** in **software mode** — yes, *you can*. (*No shit. I’m an expert bro, I already knew this*)
 
-#### ✔ Cisco 9800‑CL (virtual WLC):
+#### ✔ Cisco 9800‑CL (virtual WLC):
 
 **Runs on:**
 
@@ -1740,7 +1752,7 @@ You asked about running a **WLC** in **software mode** — yes, *you can*. (*No 
 
 This is the *closest **equivalent*** to **Meraki’s cloud controller** — but *you own it*. (*Could probably convince Cisco to switch to these to cut subscription costs, but they will most likely push back and say “Nah, bruh.” Cisco equipment IS REALLY GOOD… but this Meraki environment leaves very little to local administrators. And that’s **bad**.*)
 
-#### ✔ Cisco Mobility Express / Embedded WLC:
+#### ✔ Cisco Mobility Express / Embedded WLC:
 
 Certain **APs (2802i/3802i/9115AXI/etc)** can run a **WLC** inside the **AP** (*stupid idea = separate networks, not one*)
 
@@ -1749,7 +1761,7 @@ Certain **APs (2802i/3802i/9115AXI/etc)** can run a **WLC** inside the **AP** (*
 
 This is the cheapest possible **Cisco WLC** solution. (*No, it isn't. Also, it’s also a stupid idea, because I've had to handle a bunch of **Cisco Aironet 1100**'s that I flashed to **LWAPP/standalone** mode... cause the client didn't want the **WLC**. Without the **WLC**, they would become **separate networks**, not **one**. So, if you walked around the building, you'd lose connection when leaving that specific AP’s radio range. Then, it would join the NEXT access point with a new IP address, that means = loss of connection. There would also be a shitload of crosstalk. Using an embedded WLC in individual APs is just a bad idea all around.*)
 
-#### ✔ Ruckus Virtual SmartZone: (The solution I would deploy, and would DEFINITELY piss off Cisco)
+#### ✔ Ruckus Virtual SmartZone: (The solution I would deploy, and would DEFINITELY piss off Cisco)
 
 **Runs on:**
 
@@ -1761,7 +1773,7 @@ This is the cheapest possible **Cisco WLC** solution. (*No, it isn't. Also, it�
 | Ruckus R‑series AP’s | No recurring AP license | Best RF performance in the industry |
 | :------------------: | :---------------------: | :---------------------------------: |
 
-#### ✔ Aruba Virtual Mobility Controller:
+#### ✔ Aruba Virtual Mobility Controller:
 
 **Runs on:**
 
@@ -1777,7 +1789,7 @@ This is the cheapest possible **Cisco WLC** solution. (*No, it isn't. Also, it�
 
 Here’s the **architecture** that beats **Meraki** in (**cost + capability**):
 
-#### ⭐ OPNsense + Cisco 9800‑CL + Catalyst 9115AXI:
+#### ⭐ OPNsense + Cisco 9800‑CL + Catalyst 9115AXI:
 
 - **Full Cisco enterprise WLAN**
 - **No recurring AP license**
@@ -1791,7 +1803,7 @@ Here’s the **architecture** that beats **Meraki** in (**cost + capability**):
 - **No cloud dependency**
 - **No AP shutdown** on **license expiry**
 
-#### ⭐ OPNsense + Ruckus Virtual SmartZone + R650’s:
+#### ⭐ OPNsense + Ruckus Virtual SmartZone + R650’s:
 
 - **Best RF performance**
 - **No recurring AP license**
@@ -1802,7 +1814,7 @@ Here’s the **architecture** that beats **Meraki** in (**cost + capability**):
 - (*Sounds like the best option, but they’re **$300** each, maybe an older model would be comparable and work with SZ*)
 - (*like the **ZoneFlex R610**’s are **$90** each, would be a better option, one time fee instead of subscription, only 3x3 MIMO though.*)
 
-#### ⭐ OPNsense + Aruba VMC + AP‑515:
+#### ⭐ OPNsense + Aruba VMC + AP‑515:
 
 - **Enterprise‑grade**
 - **No recurring AP license**
@@ -1822,14 +1834,14 @@ Here’s the **architecture** that beats **Meraki** in (**cost + capability**):
 If you want, I can **design a full architecture** for:
 
 | Cisco | Ruckus | Aruba | UniFi | Omada |
-| - | - | - | - | - |
+| ----- | ------ | ----- | ----- | ----- |
 
 Just tell me which direction you want to explore next.
 
 
 
-### 2.16 Draft Presentation {#2-16}
-
+### 2.16 Draft Presentation
+<a id="2-16"></a>
 **You said:**
 
 Let's keep this on the *backburner* for now, I may need to **compile a presentation** to **formulate** a **more cost effective solution**.
@@ -1842,9 +1854,9 @@ Here’s a *clean* **snapshot** of what you’ll want to *keep* in your back poc
 
 #### 🧩 Core idea for your future presentation:
 
-| Meraki | **cloud‑dependent, subscription‑locked, APs shut down if license expires.** |
-| - | - |
-| WLC‑based architecture | **local control, no recurring AP license, full autonomy** |
+| Meraki                 | **cloud‑dependent, subscription‑locked, APs shut down if license expires.** |
+| ---------------------- | ------------------------------------------------------------ |
+| WLC‑based architecture | **local control, no recurring AP license, full autonomy**    |
 
 **That’s the entire pitch in one sentence.** (*Yep, this document wouldn't exist without that pitch right there*)
 
@@ -1852,48 +1864,48 @@ Here’s a *clean* **snapshot** of what you’ll want to *keep* in your back poc
 
 1) **Comparable AP families:**
 
-|     **Cisco Aironet 2802i/3802i** |     **Cisco Catalyst 9115AXI/9120AXI** |     **Ruckus R610/R650** |     **Aruba AP‑515** |
-| :-: | :-: | :-: | :-: |
+| **Cisco Aironet 2802i/3802i** | **Cisco Catalyst 9115AXI/9120AXI** | **Ruckus R610/R650** | **Aruba AP‑515** |
+| :---------------------------: | :--------------------------------: | :------------------: | :--------------: |
 
 All of these (**match/exceed**) **MR52 capabilities** without **\<recurring licensing\>**.
 
 2. **Controller options** (local or virtual):
 
 | **Cisco 9800‑CL/Catalyst 9100 internal WLC’s** | **Ruckus Virtual SmartZone** | **Aruba Virtual Mobility Controller** |
-| :-: | :-: | :-: |
+| :--------------------------------------------: | :--------------------------: | :-----------------------------------: |
 
 *All* run on a (**server/VM**) you already **control**.
 
 3. **OPNsense as the security and management backbone:**
 
-| VLAN segmentation | DHCP | DNS | RADIUS | NPS integration |     WireGuard | IPsec | IDS | IPS |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| VLAN segmentation | DHCP | DNS  | RADIUS | NPS integration | WireGuard | IPsec | IDS  | IPS  |
+| :---------------: | :--: | :--: | :----: | :-------------: | :-------: | :---: | :--: | :--: |
 
 As well as:
 
 | Zero licensing | Full transparency |
-| - | - |
+| -------------- | ----------------- |
 
 This is where you blow **Meraki** out of the water.
 
-4. **Cost comparison slide:**
+4. **Cost comparison slide:**
 
 | Meraki MR52 (5 years): $600–$1200 per AP | WLC‑based AP (5 years): **$0** recurring license |
 | ---------------------------------------- | ------------------------------------------------ |
 
 *That slide alone wins the argument.*
 
-5. **Operational autonomy slide:**
+5. **Operational autonomy slide:**
 
 **Meraki:**
 
-| Cloud required  | AP stops if license expires | No local (controller/config)  | No CAPWAP/fallback WLC |
-| - | - | - | - |
+| Cloud required | AP stops if license expires | No local (controller/config) | No CAPWAP/fallback WLC |
+| -------------- | --------------------------- | ---------------------------- | ---------------------- |
 
 **WLC‑based:**
 
 | Full local control | No (cloud dependency/forced subs./AP shutdown) | CAPWAP | Industry‑standard |
-| - | - | - | - |
+| ------------------ | ---------------------------------------------- | ------ | ----------------- |
 
 #### 🎯 You don’t need to decide anything now
 
@@ -1906,8 +1918,8 @@ We can revisit this when you’re ready to build:
 
 Whenever you want to pick this back up, just say the word.
 
-### 2.17 Calculate Projected Savings {#2-17}
-
+### 2.17 Calculate Projected Savings
+<a id="2-17"></a>
 **You said:**
 
 Let's say that the premises is using (**12**) access points, I believe they may have more, but I cannot *confirm* without (**employee/administrative**) level access to the site.
@@ -1926,32 +1938,32 @@ Here’s the *full **breakdown***, *clean* and **engineering‑grade**, so you c
 
 Each **MR52** requires a **per‑AP cloud license**. Typical street pricing:
 
-| **Enterprise license** | $120–$240 per AP per year |
-| - | - |
-| **Advanced license** | **$200–$315 per AP per year** |
+| **Enterprise license** | $120–$240 per AP per year     |
+| ---------------------- | ----------------------------- |
+| **Advanced license**   | **$200–$315 per AP per year** |
 
 Let’s calculate **both** tiers.
 
-|     ✔ Enterprise tier | **Annual cost: $1,440.00–$2,880.00** |
-| - | - |
-| 12⋅120 = **$1,440.00** (low end) | 12⋅240 = **$2,880.00** (high end) |
+| ✔ Enterprise tier                | **Annual cost: $1,440.00–$2,880.00** |
+| -------------------------------- | ------------------------------------ |
+| 12⋅120 = **$1,440.00** (low end) | 12⋅240 = **$2,880.00** (high end)    |
 
-|     ✔ Advanced tier | **Annual cost: $2,400.00–$3,780.00** |
-| - | - |
-| 12⋅200 = **$2,400.00** (low end) | 12⋅315 = **$3,780.00** (high end) |
+| ✔ Advanced tier                  | **Annual cost: $2,400.00–$3,780.00** |
+| -------------------------------- | ------------------------------------ |
+| 12⋅200 = **$2,400.00** (low end) | 12⋅315 = **$3,780.00** (high end)    |
 
 #### ⭐ MX Security Appliance (required for most Meraki deployments):
 
 **Most Meraki sites use an MX firewall. Common models for a 12 AP site:**
 
 | MX67 | MX85 | MX95 |
-| - | - | - |
+| ---- | ---- | ---- |
 
 **Typical annual license cost:**
 
-| **MX Enterprise license** | $300–$1,000 per year |
-| - | - |
-| **MX Advanced Security** | **$600–$1,800 per year** |
+| **MX Enterprise license** | $300–$1,000 per year     |
+| ------------------------- | ------------------------ |
+| **MX Advanced Security**  | **$600–$1,800 per year** |
 
 **Let’s assume a mid‑range MX85:**
 
@@ -1991,7 +2003,7 @@ Many **Meraki customers**:
 
 It’s **extremely common** for a **12‑AP site** to pay:
 
-#### ⭐ $15K–$25K/year
+#### ⭐ $15K–$25K/year
 
 Depending on **licensing tier**, and **hardware mix**. So yes — **$20K/year** is absolutely realistic for a **Meraki environment** of this size.
 
@@ -1999,15 +2011,15 @@ Depending on **licensing tier**, and **hardware mix**. So yes — **$20K/year** 
 
 **Meraki’s model** is:
 
-| License per:  | AP | switch | firewall | camera | MDM device |
-| :-: | :-: | :-: | :-: | :-: | :-: |
+| License per: |  AP  | switch | firewall | camera | MDM device |
+| :----------: | :--: | :----: | :------: | :----: | :--------: |
 
 | AP’s shut down if license expires | Cloud controller is bundled into the license | No local controller option |
 | :-------------------------------: | :------------------------------------------: | :------------------------: |
 
 This is why **Meraki** is one of the **most expensive WLAN ecosystems** on the market.
 
-#### ⭐ If you want, I can help you build a cost‑effective alternative slide
+#### ⭐ If you want, I can help you build a cost‑effective alternative slide
 
 Something like:
 
@@ -2018,8 +2030,8 @@ Something like:
 
 Just tell me when you’re ready to start **drafting the presentation**.
 
-### 2.15 OPNsense WLAN Design {#2-15}
-
+### 2.18 OPNsense WLAN Design
+<a id="2-18"></a>
 **You said:**
 
 OPNsense WLAN design
@@ -2082,15 +2094,15 @@ These (*match/exceed*) **Meraki MR52** performance.
 
 #### 🧠 Why this beats Meraki:
 
-| Feature | Meraki | OPNsense + WLC |
-| - | - | - |
-| AP licensing | **$120–$315 per AP per year** | **$0** |
-| Controller | Cloud only | Local or virtual |
-| AP autonomy | Stops forwarding traffic if license expires | Full autonomy |
-| RF control | Limited | Full enterprise RF suite |
-| WAN dependency | Mandatory | None |
-| Security | Good | **Excellent (Suricata + custom rules)** |
-| Cost over 5 years | **$600–$1200 per AP** | **$0 per AP** |
+| Feature           | Meraki                                      | OPNsense + WLC                          |
+| ----------------- | ------------------------------------------- | --------------------------------------- |
+| AP licensing      | **$120–$315 per AP per year**               | **$0**                                  |
+| Controller        | Cloud only                                  | Local or virtual                        |
+| AP autonomy       | Stops forwarding traffic if license expires | Full autonomy                           |
+| RF control        | Limited                                     | Full enterprise RF suite                |
+| WAN dependency    | Mandatory                                   | None                                    |
+| Security          | Good                                        | **Excellent (Suricata + custom rules)** |
+| Cost over 5 years | **$600–$1200 per AP**                       | **$0 per AP**                           |
 
 For a **12‑AP** site, **Meraki** is easily **$20K+/year**. Your solution is **$0/year** in **AP licensing**.
 
@@ -2136,7 +2148,7 @@ This replaces **Meraki’s cloud RADIUS**. (*Will also use free certificates fro
 **Option 1: Cisco 9800‑CL:**
 
 | ![<2-018>][<2-018>] | ![<2-019>][<2-019>] |
-| :-: | :-: |
+| :-----------------: | :-----------------: |
 | ![<2-020>][<2-020>] | ![<2-021>][<2-021>] |
 
 - **Full CAPWAP**
@@ -2159,7 +2171,7 @@ This replaces **Meraki’s cloud RADIUS**. (*Will also use free certificates fro
 **Option 3: Aruba Virtual Mobility Controller:**
 
 | ![<2-022>][<2-022>] | ![<2-023>][<2-023>] |
-| :-: | :-: |
+| :-----------------: | :-----------------: |
 
 - **Strong enterprise feature set**
 - **Great roaming**
@@ -2170,23 +2182,23 @@ This replaces **Meraki’s cloud RADIUS**. (*Will also use free certificates fro
 
 **Cisco Aironet 2802i / 3802i (*Nah*)**
 
-|     802.11ac Wave 2 |     4×4 MU‑MIMO |     Mobility Express capable |     No license |     Cheap on secondary market |
-| :-: | :-: | :-: | :-: | :-: |
+| 802.11ac Wave 2 | 4×4 MU‑MIMO | Mobility Express capable | No license | Cheap on secondary market |
+| :-------------: | :---------: | :----------------------: | :--------: | :-----------------------: |
 
 **Cisco Catalyst 9115AXI / 9120AXI (*Nah*)**
 
 | Wi‑Fi 6 | Embedded WLC option | Modern RF features | No License |
-| :-: | :-: | :-: | :-: |
+| :-----: | :-----------------: | :----------------: | :--------: |
 
 **Ruckus R550 / R650 (*R610*)**
 
 | Wi‑Fi 6 | BeamFlex | Best RF Performance | No License |
-| :-: | :-: | :-: | :-: |
+| :-----: | :------: | :-----------------: | :--------: |
 
 **Aruba AP‑515**
 
 | Wi‑Fi 6 | Dual 4×4 radios | No license | Excellent roaming |
-| :-: | :-: | :-: | :-: |
+| :-----: | :-------------: | :--------: | :---------------: |
 
 #### 🔥 Example Deployment for a 12‑AP Site (I think that number is higher, though)
 
@@ -2213,14 +2225,14 @@ Annual cost: **$0.00** (*I will build the system, and teach Tom and Ethan how to
 Compare that to **Meraki**:
 
 | **$20K+/year** recurring | APs shut down if license expires | Cloud dependency | No local control |
-| :-: | :-: | :-: | :-: |
+| :----------------------: | :------------------------------: | :--------------: | :--------------: |
 
 #### 🎯 Final Takeaway
 
 An (**OPNsense + WLC**) architecture is **10× cheaper** over **5Y**, **never shuts down over licensing**, and is more:
 
 | powerful | secure | flexible | enterprise-grade | autonomous |
-| :-: | :-: | :-: | :-: | :-: |
+| :------: | :----: | :------: | :--------------: | :--------: |
 
 When you’re ready, I can help you build:
 - A **full presentation deck**
@@ -2232,8 +2244,8 @@ Just tell me which piece you want to draft first.
 
 
 
-### 2.19 WPA3 Security Vulnerabilities {#2-19}
-
+### 2.19 WPA3 Security Vulnerabilities
+<a id="2-19"></a>
 **You said:**
 
 WPA3 is prone to security vulnerabilities.
@@ -2295,7 +2307,7 @@ It requires:
 
 The strongest **Wi‑Fi security model** today is:
 
-#### ⭐ WPA2‑Enterprise + EAP‑TLS + RADIUS + certificate validation
+#### ⭐ WPA2‑Enterprise + EAP‑TLS + RADIUS + certificate validation
 
 Not **WPA3**.
 
@@ -2359,8 +2371,8 @@ Just tell me when you want to start drafting the presentation.
 
 
 
-### 2.20 Managed Service Provider {#2-20}
-
+### 2.20 Managed Service Provider
+<a id="2-20"></a>
 **You said:**
 
 So I am effectively covering the services that a **\<Managed Service Provider\>** would offer, by making this proposition, correct?
@@ -2472,9 +2484,10 @@ Just tell me when you want to start drafting the presentation.
 
 ## 3. [FightingEntropy(π)\]://Infrastructure Deployment System
 
-#### 3.1 Ambitious Automation {#3-1}
-
+#### 3.1 Ambitious Automation
+<a id="3-1"></a>
 **Note**: **IDS** was mentioned in *prior sections*, but sometimes that was referring to **Intrusion Detection System**.
+
 Anytime I am referencing **IDS** in THIS section, I am *specifically* referring to the **chapter name**.  
 
 We begin by transitioning into a scene from:
@@ -2489,17 +2502,17 @@ We begin by transitioning into a scene from:
 | 1               | Gateway    | OPNsense v21.7 Noble Nightingale   |
 | 2               | Server/PDC | Windows Server (2019) – Datacenter |
 
-If you would like to see that video, it’s accessible, but **\<unlisted\>**. However, I’ve taken notes on the process as demonstrated in that link, and have laid it all out below. It will coalesce into other criteria as the chapter evolves.
+If you would like to see that video, it’s accessible, but **\<unlisted\>**. However, I’ve taken notes on the process as demonstrated in that link, and have laid it all out below. It will coalesce into other criteria as the chapter evolves.
 
-Note: this video was published before **\<generative AI\>** like **\<ChatGPT\>** was being used to write scripts on a public capacity, which means that I wrote all this stuff the old-fashioned way, without vibe-coding it.
+Note: this video was published before **\<generative AI\>** like **\<ChatGPT\>** was being used to write scripts on a public capacity, which means that I wrote all this stuff the old-fashioned way, without vibe-coding it.
 
 
 
-#### 3.2 Virtual Machines (1 + 2) {#3-2}
-
+#### 3.2 Virtual Machines (1 + 2)
+<a id="3-2"></a>
 These (**2**) virtual machines are co-dependent, which means that the **\<VmController\>** has to **\<bootstrap both VMs\>**, in order for each of them to be configured **successfully**. They can’t do this if *ANY* part of the **process** is *broken*.
 
-What I did in *THIS* scenario, where I **threaded these scripts together**, is *not* a great idea in **most cases**. There are **race conditions** throughout the **script**, which means that the **result** won’t *always* be the same.
+What I did in *THIS* scenario, where I **threaded these scripts together**, is *not* a great idea in **most cases**. There are **race conditions** throughout the **script**, which means that the **result** won’t *always* be the same.
 
 The **measurement** I used at the time, to determine whether a **process** on a **guest machine** was completed, was continuously checking **idle CPU time**. Not the best approach.
 
@@ -2508,16 +2521,16 @@ However, it made sense to use this approach in this particular circumstance.
 (**VM1**): will have (**2**) **virtual network adapters**, one to connect to the **internet**, the other to the **private network**.
 
 | ![<3-001>][<3-001>] |
-| :-----------: |
+| :-----------------: |
 
 This **process** is also called (**NAT/Network Address Translation**), but in this *instance*, it is just a *standard-issue* (**gateway/router**) that we’ll be configuring after installation using the (**WMI/Windows Management Instrumentation**) classes dealing with **virtualization**.
 
 (**VM2**): will have (**1**) **virtual network adapter** to connect to the **internal network** that is *shared* by the **gateway**, the **LAN**. The **Local Area Network** will be *joined together* through the **virtual switch**.
 
 | ![<3-002>][<3-002>] |
-| :-----------: |
+| :-----------------: |
 
-If (**VM1/OPNsense**) is *misconfigured*, it won’t provide **internet** for the **server**. If (**VM2/server**) doesn’t have **internet**, it can’t (**download/use**) the **\<module functions\>** *required below*.
+If (**VM1/OPNsense**) is *misconfigured*, it won’t provide **internet** for the **server**. If (**VM2/server**) doesn’t have **internet**, it can’t (**download/use**) the **\<module functions\>** *required below*.
 
 At which point, when *both* of them have been (**installed + configured**), the *rest* of the **network** can be **scripted to completion**. At some point in this **demonstration**, we **transfer images** from a **local SMB share** and then install:
 
@@ -2530,12 +2543,12 @@ At which point, when *both* of them have been (**installed + configured**), the 
 
 
 
-#### 3.3 Virtual Switches {#3-3}
-
+#### 3.3 Virtual Switches
+<a id="3-3"></a>
 It’s worth noting that the **\<virtual switches\>** need to be created *before* making these **virtual machines**, otherwise **they will have issues**. At some point, I will cover **\<virtual switch\>** creation, but *not* in this **chapter**. Here’s a look at what **\<virtual switch\>** creation looks like in the **[FightingEntropy(π)] v2024.1.0** **New-VMController GUI**.
 
 | ![<3-003>][<3-003>] |
-| :-----------: |
+| :-----------------: |
 
 So yeah, you don’t need a fancy GUI to make **\<virtual switches\>**, but it helps to have a *visual guide* as to HOW you can create them. **\<Virtual switches\>** don’t work the same *exact* way that **\<regular switches\>** do, although they come pretty close.
 
@@ -2551,15 +2564,15 @@ Same goes for (**VM2**), the templates were already created using **IDS**, but t
 
 
 
-#### 3.4 Roll Demonstration {#3-4}
-
+#### 3.4 Roll Demonstration
+<a id="3-4"></a>
 | ![<3-004>][<3-004>] |
-| :-----------: |
+| :-----------------: |
 
 If it looks like the environment of a **cybercommando**…? Think nothing of it, **Rex Power Colt**.
 
 | ![<3-005>][<3-005>] |
-| :-----------: |
+| :-----------------: |
 
 You can get a glimpse of some guy doing something with Visual Studio XAML Designer.
 
@@ -2576,7 +2589,7 @@ So, start with the **\<code-behind\>** FIRST, it's the **best advice** I can giv
 We will be making some serious *style changes* to the **next iteration** of that will be virtually identical to **Q3A-Live**’s **\<color scheme\>** and **\<style templates\>**.
 
 | ![<3-006>][<3-006>] |
-| :-----------: |
+| :-----------------: |
 
 We see the so-called “*cybercommando*” executing some basic **PowerShell** code.
 
@@ -2584,7 +2597,7 @@ Looks like “*Domain*”, “*SearchBase*”, “*CN=Configuration,$Base*” **
 I’d be willing to bet it’s all for a **good reason**.
 
 | ![<3-007>][<3-007>] |
-| :-----------: |
+| :-----------------: |
 
 Alas, we see what appears to be **\<OPNsense v21.7\>** “*Noble Nightingale*”.
 
@@ -2592,8 +2605,8 @@ They like to use names with **alliterative titles** based on an **animal**.
 
 Some people may not realize that the word **alliteration** is “*all iteration*”.
 
-|![<3-008>][<3-008>] |
-| :-----------: |
+| ![<3-008>][<3-008>] |
+| :-----------------: |
 
 Seconds later, this appears as well. The fearsome “***Windows Setup (Windows Server 2019)***” dialog.
 
@@ -2601,10 +2614,10 @@ After some additional commands, these (**2**) systems will be off to the races.
 
 
 
-#### 3.5 Review Scriptblock \#1 {#3-5}
-
+#### 3.5 Review Scriptblock \#1
+<a id="3-5"></a>
 | ![<3-009>][<3-009>] |
-| :-----------: |
+| :-----------------: |
 
 The first set of **(commands + arguments)** that launched both of those **VMs** to *boot* into the **installation environment**.
 
@@ -2633,7 +2646,7 @@ $Kb1 = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl1.Path.Path)} WHERE resultCl
 Start-Process vmconnect -ArgumentList ($Mx1.VM.Host.Name, $Vm1.Name)  
 
 # [What it became]  
-$Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name  
+$Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name  
 $Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm\_Keyboard" -NS Root\Virtualization\V2  
 
 # [What it WILL be, or closely]  
@@ -2646,7 +2659,7 @@ The **logging**, **time**, and **console** objects have been replaced by another
 The **\<WMI queries\>** have been *replaced* by a much more (**responsive + capable**) **\<WMI engine\>** in **\<C\#\>**.
 
 | ![<3-010>][<3-010>] |
-| :-----------: |
+| :-----------------: |
 
 And, the **second**. We can see from the last (**2**) screenshots, that the **controller** is starting the **\<virtual machine\>** via **\<PowerShell\>**, and entering (**commands + arguments + parameters)**. Once the **device** is *started*, then the **\<WMI object\>** that **\<controls the virtual machine\>** can be *grabbed*, and then the **process of installation** is *automated*.
 
@@ -2654,14 +2667,14 @@ It also opens up a process to “*vmconnect*”, which opens the GUI to the part
 
 We will be replacing all “*Start-Process*” (**calls/references**) with something specifically tailored around **[System.Diagnostics.Process]** and **[System.Diagnostics.ProcessStartInfo]**.
 
-At this point, I had **control mechanisms** in place to **manage** the (**creation/deletion**) of **\<virtual machines\>**. I would later come up with a *better system* for it, called “*New-VmController*”.
+At this point, I had **control mechanisms** in place to **manage** the (**creation/deletion**) of **\<virtual machines\>**. I would later come up with a *better system* for it, called “*New-VmController*”.
 
 
 
-#### 3.6 Multi-Tasking Installations {#3-6}
-
+#### 3.6 Multi-Tasking Installations
+<a id="3-6"></a>
 | ![<3-011>][<3-011>] |
-| :-----------: |
+| :-----------------: |
 
 Here, the **\<script\>** for each **\<virtual machine\>** is running in tandem. Like, this entire script was intertwining each process, and having compartmentalized co-dependent **\<race conditions\>**, but they had to each successfully bootstrap in order for each of them to fully configure themselves.
 
@@ -2670,7 +2683,7 @@ I know I’ve mentioned that already, just making it clear that they are **co-de
 It’s actually a bit of a *challenge* to get multiple systems to (**stage + script**) themselves *concurrently*.
 
 | ![<3-012>][<3-012>] |
-| :-----------: |
+| :-----------------: |
 
 So, here we see **OPNsense** finally pop up, and this process is **super quick** in running these things on time, I had to go frame by frame in the video to show the input in **VS Code** terminal **$Kb0.TypeKey(13)**, and on the actual VM screen you can see “*Do you want to configure VLANs now? [y/N]:*” which means the script is pressing **enter**, which automatically selects the default option “*N*”.
 
@@ -2678,23 +2691,23 @@ So, this script relies on control over the entire process, one that I would late
 
 
 
-#### 3.7 OPNsense Installation {#3-7}
-
+#### 3.7 OPNsense Installation
+<a id="3-7"></a>
 | ![<3-013>][<3-013>] |
-| :-----------: |
+| :-----------------: |
 
 **\<OPNsense\>** will wind up looking like this as it is *initializing*. It’s worth noting that the tool I’m using is automatically generating those **\<hostnames\>** based on their **\<location\>**.
 
 So, I would enter the **\<zip code\>**, and then the program would look through the **zip code database**, select the **correct info**, *populate* various **location tags** that would occupy a **certificate**, and then tie all of that to the eventual **WAN hostname**.
 
 | ![<3-014>][<3-014>] |
-| :-----------: |
+| :-----------------: |
 
 **OPNsense** ready to be (**installed/configured**).
 It will automatically use both default **\<Hyper-V\> network adapters**.
 
 | ![<3-015>][<3-015>] |
-| :-----------: |
+| :-----------------: |
 
 I would occasionally run the demo, and scroll along with the correct (**location + order**) of **executing code**.
 
@@ -2703,7 +2716,7 @@ At this point, it is about to **install \<OPNsense\>**, and once it is *installe
 Then, it runs off of the **\<virtual hard disk\>**.
 
 | ![<3-016>][<3-016>] |
-| :-----------: |
+| :-----------------: |
 
 One of the things it asks during setup, is whether you want to utilize a **\<custom configuration\>**.
 
@@ -2717,17 +2730,17 @@ I usually test it with the **default config**, but that would change depending o
 
 
 
-#### 3.8 Server Installation Complete {#3-8}
-
+#### 3.8 Server Installation Complete
+<a id="3-8"></a>
 | ![<3-017>][<3-017>] |
-| :-----------: |
+| :-----------------: |
 
 At this point, the server has **completed the installation** and now needs **\<initial configuration\>**.
 
 **(FE) VMController** would eventually save a series of **credentials** ahead of time, and store them in **encrypted form** *locally*, and this process would be automated even more.
 
 | ![<3-018>][<3-018>] |
-| :-----------: |
+| :-----------------: |
 
 They both finish installing at approximately the same time.
 
@@ -2737,22 +2750,22 @@ You can use a **configuration file** as well, but this approach was using the **
 
 
 
-#### 3.9 Gateway Configuration (Phase 1) {#3-9}
-
+#### 3.9 Gateway Configuration (Phase 1)
+<a id="3-9"></a>
 | ![<3-019>][<3-019>] |
-| :-----------: |
+| :-----------------: |
 
 Seconds later, you can see the **\<OPNsense\>** box is the **\<outbound gateway\>** for the **\<server\>**, and that the **\<server\>** sees it has a **\<network connection\>**, that means that **\<OPNsense\>** is *IMMEDIATELY* providing a **\<working network connection\>** after installation.
 
 That means **internet is accessible** to the **server** via “*NAT*”. But- we need a bit more **\<configuration\>**.
 
 | ![<3-020>][<3-020>] | ![<3-021>][<3-021>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 At this point, the device could be *configured* using **this interface**, or, it can be configured over the **web interface**, but I wind up dialing-in a different **LAN address**, **172.16.64.1/19** (*CIDR notation = subnet mask of 255.255.224.0*)
 
 | ![<3-022>][<3-022>] | ![<3-023>][<3-023>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 Alright, so now the [https://172.16.64.1:443](https://172.16.64.1:443/) link will be up to configure the **\<OPNsense gateway\>** for *real*.
 
@@ -2762,10 +2775,10 @@ Newer editions have **\<Microsoft Edge\>**, but (**2019**) doesn’t come with *
 
 
 
-#### 3.10 Server Configuration (Phase 1) {#3-10}
-
+#### 3.10 Server Configuration (Phase 1)
+<a id="3-10"></a>
 | ![<3-024>][<3-024>] |
-| :-----------: |
+| :-----------------: |
 
 So HERE, we have a **snapshot** of the “***Windows Server 2019 – Datacenter***” instance.
 
@@ -2776,7 +2789,7 @@ That has to be *changed*, but it doesn’t need to be off the rip.
 We can *configure* the **\<gateway\>** FIRST, and THEN start messing around with the **\<server configuration\>**.
 
 | ![<3-025>][<3-025>] |
-| :-----------: |
+| :-----------------: |
 
 One of the first things we do as soon as the system is able to open an **\<elevated PowerShell console\>**, is to change the **\<resolution\>**. On **\<Windows Server\>**, there is a command “*Set-DisplayResolution*”, but **that command doesn’t exist** on **\<Windows (10/11)\>** by *default*.
 
@@ -2784,7 +2797,7 @@ I have added a function that does this, based on some **C\# code** I found on **
 I will wind up rewriting it at some point.
 
 | ![<3-026>][<3-026>] |
-| :-----------: |
+| :-----------------: |
 
 Another thing you will see, is how the **$Kb1.TypeText(“String”)** things are being typed in on the right.
 
@@ -2801,17 +2814,17 @@ Each “*scriptlet*” constitutes as its own “*method*”.
 
 
 
-#### 3.11 Gateway Configuration (Phase 2) {#3-11}
-
+#### 3.11 Gateway Configuration (Phase 2)
+<a id="3-11"></a>
 | ![<3-027>][<3-027>] |
-| :-----------: |
+| :-----------------: |
 
 Here, we see that the address I specified, is offering a **secure site** with a **disclaimer**. This is to be *expected* until you **deploy your own certificates**.
 
 This would not be accessible from the **WAN**, only from the **LAN**.
 
 | ![<3-028>][<3-028>] |
-| :-----------: |
+| :-----------------: |
 
 This is the **\<OPNsense login panel\>**, available over whatever port it allows, meaning it is **configurable**.
 
@@ -2819,8 +2832,8 @@ This iteration of **[FightingEntropy(π)]** uses the (**deprecated/antiquated**)
 
 The work I later did with **\<TCP Session\>** either *eliminates* or *drastically mitigates* that, actually.
 
-|  ![<3-029>][<3-029>] |
-| :-----------: |
+| ![<3-029>][<3-029>] |
+| :-----------------: |
 
 Now we decide to run the **\<OPNsense initial setup wizard\>**.
 
@@ -2829,21 +2842,23 @@ This is *pretty easy*, but we wanted to demonstrate interaction with the **user 
 We could have staged this from a **configuration** from the get-go, and maybe set up a **SMB** share for the **gateway** to access. Either way, the **\<configuration\>** can be completed in ANY of these ways, so long as the (**share** / **site**) is **serving traffic** and the **credentials are valid**.
 
 | ![<3-030>][<3-030>] |
-| :-----------: |
+| :-----------------: |
 
 After the **\<initial configuration wizard\>**, additional steps can be carried out. However, taking screenshots of ALL these steps would be pretty **\<time consuming\>**, when the **\<video\>** exists.
 
-|  ![<3-031>][<3-031>]|
-| :-----------: |
+| ![<3-031>][<3-031>] |
+| :-----------------: |
 
 It *successfully* sets a **floating rule** on the **firewall** so that stuff can be **downloaded from the internet**, and certain **PING related stuff** works.
 
 
 
-#### 3.12 [FightingEntropy(π)] v2021.10.0 {#3-12}
 
-|![<3-032>][<3-032>] |
-| :-----------: |
+
+#### 3.12 [FightingEntropy(π)] v2021.10.0
+<a id="3-12"></a>
+| ![<3-032>][<3-032>] |
+| :-----------------: |
 
 Here, we can see that **[FightingEntropy(π)] v2021.10.0** is being **installed**. 
 
@@ -2859,7 +2874,7 @@ That’s what I was doing with **[FightingEntropy(π)] v2024.1.0**, and I think 
 I want to do something similar with this **C\# conversion**, but I may need to write some (**C/C++**), to do that.
 
 | ![<3-033>][<3-033>] |
-| :-----------: |
+| :-----------------: |
 
 Here, you can see the **[Installation Details (stored under variable $Install)]**
 
@@ -2873,20 +2888,20 @@ Problem is, it requires a LOT of forward thinking in order to ALSO support **\<L
 
 
 
-#### 3.13 Server Configuration (Phase 2) {#3-13}
-
+#### 3.13 Server Configuration (Phase 2)
+<a id="3-13"></a>
 | ![<3-034>][<3-034>] |
-| :-----------: |
+| :-----------------: |
 
 Here, we see that I access the **\<system properties\>** from the **\<control panel\>**, but these various **DLL**’s are accessible via **\<P/Invoke\>**, which is something I’m working on implementing.
 
 | ![<3-035>][<3-035>] |
-| :-----------: |
+| :-----------------: |
 
 So here we have the **\<result\>** of initial **\<server configuration\>**, I had to (**stop + troubleshoot**) during the **demonstration**. I don't really like being *forced* to do that during a **demonstration**, but that just goes to show my ability to do so while **keeping the video rolling**.
 
 | ![<3-036>][<3-036>] |
-| :-----------: |
+| :-----------------: |
 
 So we see here, that the module (**shortcut/icon**) on the desktop opens up this **\<PowerShell console\>**, to which it provides **\<elevation\>** and manages the prerequisites for “*Get-FEDCPromo*”. **DC Promo** is a utility meant to **\<onboard\>** a **\<Windows Server\>** instance to become an **\<Active Directory Domain Services\> domain controller**, which requires some **components** of **\<Active Directory\>** to already be installed.
 
@@ -2894,10 +2909,10 @@ However, I have a *somewhat complicated* way of **\<automating\>** that.
 
 
 
-#### 3.14 Get-FEDCPromo (Phase 1) {#3-14}
-
+#### 3.14 Get-FEDCPromo (Phase 1)
+<a id="3-14"></a>
 | ![<3-037>][<3-037>] |
-| :-----------: |
+| :-----------------: |
 
 You can see very clearly, that I know my way in and out of **\<DHCP scopes\>** and **\<configurations\>**.
 
@@ -2906,12 +2921,12 @@ Some of these **\<DHCP reservations\>** need to be set up *BEFORE* I start upgra
 Or, at least to some extent through **authorization of \<DHCP scopes/superscopes\>**.
 
 | ![<3-038>][<3-038>] |
-| :-----------: |
+| :-----------------: |
 
 So, when the information is sent to the current instance of **\<PowerShell\>**, it can stage all of these things correctly. Right now, the exception “*Must have ADDS installed first*”, appears. That will install the **\<ADDS\>** feature *automatically*, and then proceed to launch the **\<FEDCPromo\> utility**.
 
 | ![<3-039>][<3-039>] |
-| :-----------: |
+| :-----------------: |
 
 Once **\<Adds\>** is installed, it can then run the **\<function\>** that was **\<staged beforehand\>**.
 
@@ -2920,10 +2935,10 @@ I have a GUI that goes along with this, but I was testing my ability to transmit
 
 
 
-#### 3.15 Get-FEDCPromo (GUI) {#3-15}
-
+#### 3.15 Get-FEDCPromo (GUI)
+<a id="3-15"></a>
 | ![<3-040>][<3-040>] |
-| :-----------: |
+| :-----------------: |
 
 This is what the **\<user interface\>** looked like. I’ve made *numerous* style changes to my overall GUI’s, but I had a lot on the screen here, as can be seen. 
 
@@ -2938,7 +2953,7 @@ When the device is ready to install a bunch of features via that **\<InputObject
 The utility will actually test all of the parameters before it commits to this "*Install some features - reboot - install more features - reboot*" workflow.
 
 | ![<3-041>][<3-041>] |
-| :-----------: |
+| :-----------------: |
 
 This is what the **\<console\>** will look like after it has **\<kicked over\>** and **\<initialized\>**.
 
@@ -2947,38 +2962,38 @@ The **timer** on the **\<console\>** says **~11m 50s**, and this process takes a
 This **whole process** requires a few **reboots**, but I think I can get that number down, somehow.
 
 | ![<3-042>][<3-042>] |
-| :-----------: |
+| :-----------------: |
 
 So, this process took about (**20**) minutes, and that version was not displaying the **features** it was *installing*. I’ve since fixed that. Regardless, this *successfully* creates a task in the **\<scheduler\>** after **reboot**, where it can continue from where it left off, and **\<finish the promotion\>**.
 
 | ![<3-043>][<3-043>] |
-| :-----------: |
+| :-----------------: |
 
 Notice the items on the **desktop**? They do get *cleaned up*, but there’s a *\<better option\>* than that.
 
 
 
 
-#### 3.16 Get-FEDCPromo (Phase 2) {#3-16}
-
+#### 3.16 Get-FEDCPromo (Phase 2)
+<a id="3-16"></a>
 | ![<3-044>][<3-044>] |
-| :-----------: |
+| :-----------------: |
 
 After the **reboot**, those files are *removed*, but they are *absorbed* by the **post-reboot process**.
 This is similar to what **\<Desired State Configuration\>** does, I think. I'm not certain of that though.
 
 | ![<3-045>][<3-045>] |
-| :-----------: |
+| :-----------------: |
 
 It does a second pass with the utility, and finishes the promotion process. It is best to let **\<ADDS\>** install the **\<DNS\>** services, as it will configure *everything* for (**ADDS + DNS**) *simultaneously*.
 
 | ![<3-046>][<3-046>] |
-| :-----------: |
+| :-----------------: |
 
 It **\<successfully connects\>** with the **\<account\>** it was provided.
 
-|![<3-047>][<3-047>] |
-| :-----------: |
+| ![<3-047>][<3-047>] |
+| :-----------------: |
 
 It **passes all tests successfully**, and **installs \<ADDS\>**.
 
@@ -2987,17 +3002,17 @@ The system winds up **\<rebooting\>**, then it becomes a **\<domain controller\>
 
 
 
-#### 3.17 Server Configuration (Phase 3) {#3-17}
-
-|![<3-048>][<3-048>] |
-| :-----------: |
+#### 3.17 Server Configuration (Phase 3)
+<a id="3-17</a>
+| ![<3-048>][<3-048>] |
+| :-----------------: |
 
 In this phase, we wind up installing (**MDT** / **WinADK** / **WinPE**), as well as transferring (**DVD.iso**) files, and staging **WDS** for a **deployment**. This video doesn’t cover *all* of that, but it shows the process of preparing those environments.
 
 The **old configuration method** passed the values over the **keyboard**, not a great idea.
 
 | ![<3-049>][<3-049>] |
-| :-----------: |
+| :-----------------: |
 
 This process here created (**2**) different scripts that could easily be **managed by the module itself now**, *without* having to **write stuff to file**, it just **stays in memory** and can **log stuff**. Back then, I hadn’t figured out the **\<TCP Session\>** controls, but that would effectively replace this **virtual keyboard-injected** script.
 
@@ -3006,7 +3021,7 @@ Most of the time spent in this sort of mindset is, “*What will wind up being h
 With the **\<Node.Controller\>** that has the **\<ScriptBlock\>** engine, I can just pass over the **raw script code**.
 
 | ![<3-050>][<3-050>] |
-| :-----------: |
+| :-----------------: |
 
 So, here we have the (**2**) post-installation scripts processing in **\<parallel\>**, which is fine.
 
@@ -3019,7 +3034,7 @@ All of this interaction is avoided by having the **\<module controller\>** handl
 I would eventually rip that out, though some defaults are still part of the **\<class factory\>**.
 
 | ![<3-051>][<3-051>] |
-| :-----------: |
+| :-----------------: |
 
 Here, you can see some **progress reports** making their way back to the **\<VmController\> console**.
 It wasn’t the **\<VmController\> console** at this point, I was *manually* writing stuff to the **\<console\>**.
@@ -3030,8 +3045,8 @@ Each script is effectively running in its own **\<runspace\>,** which can actual
 
 *Normally* you would want to use **SSH** or something to do a lot of this **\<configuration\>**, but there are some **\<requirements\>** that need to be met, in order for **SSH** to work.
 
-|![<3-052>][<3-052>] |
-| :-----------: |
+| ![<3-052>][<3-052>] |
+| :-----------------: |
 
 At this point, the image manifest has been **\<downloaded\>**, and the system can begin to inspect the **disk images**, like a program I used to use called **\<DISM++\>** by **\<Team Chuyu\>**. Yeah, I wound up offloading a lot of what **\<DISM++\>** does to the **\<Image.Controller\>** in **\<IDS\>**.
 
@@ -3042,7 +3057,7 @@ Would’ve been better to just *extract* the (**\*.wim**) files from the **\<sou
 You SHOULD (**mix + match**) these strategies, in order to use the least amount of bandwidth.
 
 | ![<3-053>][<3-053>] |
-| :-----------: |
+| :-----------------: |
 
 At this point, **\<WDS\>** will throw that **\<error\>** because a couple of files are actually *missing* from the installation by default. I’m not sure why that was the case with **\<Server 2019\>**, but it was. I think I wound up using **\<WireShark\>** to find the culprit.
 
@@ -3050,7 +3065,7 @@ I have other videos that show **\<WDS\>** getting *fully-deployed*, and then **s
 Then, having **MDT** generate a **\<new deployment share\>** and **\<build boot images\>**. I’ll cover that *shortly*.
 
 | ![<3-054>][<3-054>] |
-| :-----------: |
+| :-----------------: |
 
 Ok, at this point, **\<WinPE\>** is finally **installed**. I had to continue screwing around with this installation script for (**MDT** / **ADK** / **PE**) because they run a process that then kickstarts **\<WMI Modules Installer\>**, and then that thing takes a while to (**download + install**).
 
@@ -3059,24 +3074,24 @@ When it’s done, it doesn’t know it’s done, because it’s wrapped in a (**
 Spent a lot more time than I care to admit figuring out how to ACTUALLY manage this process, but maybe it wasn't *actually* a waste of time.
 
 | ![<3-055>][<3-055>] |
-| :-----------: |
+| :-----------------: |
 
 Alright, so at this point I was just **\<testing stuff\>** with the **\<virtual machine controller\>**, and wanted to use a **combination** of **\<key presses\>** to get to **certain \<configuration interfaces\>** on the system via (**MMC/Microsoft Management Console**).
 
 Many of the things that **[FightingEntropy(π)]://Infrastructure Deployment System** does, will access things that **MMC** can ALSO access, as well as the **registry**, **filesystem**, **certificate drive**, **IIS**, etc.
 
-|![<3-056>][<3-056>] |
-| :-----------: |
+| ![<3-056>][<3-056>] |
+| :-----------------: |
 
 We’ll wind up *staging* the **\<WDS\>** server here, and then it’ll be ready to prime further **\<child-item\> systems**.
 
 | ![<3-057>][<3-057>] |
-| :-----------: |
+| :-----------------: |
 
 So, as I’m testing phases of the **\<script\>** on the left, it is feeding **\<control\>** from the **bottom-left console** over to the **VM** on the **right**. I know I’ve mentioned it, but I wanted to explain that all of these...
 
 ```powershell
-40,39,40,39,40,93,40,13 | % \{ $Kb1.TypeKey($\_) \}
+40,39,40,39,40,93,40,13 | % { $Kb1.TypeKey($_) }
 ```
 
 ….**statements** are just pressing those **key codes** on the **\<virtual machine\>’s keyboard**.
@@ -3095,8 +3110,8 @@ There ARE many (**subtle + distinct**) *differences* between the (**2**), but th
 
 
 
-#### 3.18 FEInfrastructure (Preview/Demo) {#3-18}
-
+#### 3.18 FEInfrastructure (Preview/Demo)
+<a id="3-18</a>
 Now, we can begin to (**unpack/examine**) the following video that shows off more of where Ambitious Automation left off:
 
 | 12/05/21 | FEInfrastructure Preview/Demo | 1h 49m 57s | [https://youtu.be/6yQr06\_rA4I](https://youtu.be/6yQr06\_rA4I) |
@@ -3111,7 +3126,7 @@ We start the scene off with some music by **\<Megadeth, Peace Sells But Who’s 
 You can *mute* the music if you aren’t into that, but the **demonstration** doesn’t have **any commentary**.
 
 | ![<3-058>][<3-058>] |
-| :-----------: |
+| :-----------------: |
 
 First thing we see, is an **\<RDP connection\>** over a **\<custom VPN\>** with it’s own **\<public-facing certificate\>**, allowing me to **\<RDP\>** into my server from (**50**) miles away on whatever (**connection + hardware**) I could find, to **\<record this demonstration\>**.
 
@@ -3124,30 +3139,30 @@ I just tested it, it is an invalid link now, and it’s not goin’ back online.
 The point was to show that it was using code from **that particular link**.
 
 | ![<3-059>][<3-059>] |
-| :-----------: |
+| :-----------------: |
 
 Here, we see that the **\<module\>** loads up **\<successfully\>**, and now we can continue to **\<load IDS\>**.
 
 
 
 
-#### 3.19 Get-FEADLogin {#3-19}
-
+#### 3.19 Get-FEADLogin
+<a id="3-19</a>
 | ![<3-060>][<3-060>] |
-| :-----------: |
+| :-----------------: |
 
 So, this box right here, is another function in **[FightingEntropy(π)]** that allows you to log into **\<Active Directory\>** with a **\<legitimate account\>**, and then *depending on what comes back*, it will either **\<stop\>** the function from proceeding, or it will *continue* with **\<IDS initialization\>**.
 
 This GUI does in fact, reach out to **\<Active Directory\>**, and verify whether the account has a **working credential**. So, this thing isn’t just for *show*.
 
 | ![<3-061>][<3-061>] |
-| :-----------: |
+| :-----------------: |
 
 This is what it’ll look like when it’s **\<forcing password complexity requirements\>**, **\<16-char passwords\>**.
 I would wind up adding **event handlers** that *confirm* whether the (**password + confirm**) fields actually match.
 
 | ![<3-062>][<3-062>] |
-| :-----------: |
+| :-----------------: |
 
 So, some of the first few events are now handled by the **\<Snapshot.Controller\>**, which collects various bits of information on the **\<Windows\>** side, currently.
 
@@ -3158,7 +3173,7 @@ This area takes a while to (**load + initialize**), because it’s looking throu
 Some of that work can now be offloaded to the **\<Interop.Controller\>**.
 
 | ![<3-063>][<3-063>] |
-| :-----------: |
+| :-----------------: |
 
 So, this is loading all of those things I just mentioned, it’s also loading up various controllers like **\<SiteList\>**, **\<Sitemap\>**, **\<AddsController\>**, and a bunch of “*virtual*” stuff, like:
 
@@ -3168,7 +3183,7 @@ So, this is loading all of those things I just mentioned, it’s also loading up
 A lot of this will be offloaded by the **\<WMI engine\>** I came up with for **\<C\#\>**.
 
 | ![<3-064>][<3-064>] |
-| :-----------: |
+| :-----------------: |
 
 And here, you can see that the thing has initialized, and that it loaded all of those **subcontrollers**.
 
@@ -3181,25 +3196,25 @@ Once that was made apparent, THEN I could start to make the process *faster* and
 
 
 
-#### 3.20 New-FEInfrastructure (GUI) {#3-20}
-
+#### 3.20 New-FEInfrastructure (GUI)
+<a id="3-20</a>
 And, here it is. The **original version** of the **[FightingEntropy(π)]://Infrastructure Deployment System**.
 
 We can see various tabs:
 
 | Module | Config | Domain | Network | Sitemap | Adds | Virtual | Imaging | Updates | Share |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| :----: | :----: | :----: | :-----: | :-----: | :--: | :-----: | :-----: | :-----: | :---: |
 
 | ![<3-065>][<3-065>] |
-| :-: |
+| :-----------------: |
 
 
-#### 3.21 Module Tab {#3-21}
-
+#### 3.21 Module Tab
+<a id="3-21</a>
 So, instead of just having that large **\<screenshot\>** there, I’ll give you a *closer look* at the **actual GUI**. There’s a LOT of panels here, and I’m not going to open ALL of them, because that is featured in the video.
 
-| ![<3-066>][<3-066>] | ![<3-067>][<3-067>]|
-| :-----------: | :-----------: |
+| ![<3-066>][<3-066>] | ![<3-067>][<3-067>] |
+| :-----------------: | :-----------------: |
 
 So, the **module panel** on the left shows various bits of information that is representative of the **module installation process**. If you look closely, you can see that it says “*Installation date: 2021\_1204-184304*”
 
@@ -3208,10 +3223,10 @@ Which was: **December 4th, 2021 @ 18:43:04 (6:43PM EST)**
 
 
 
-#### 3.22 Config Tab {#3-22}
-
+#### 3.22 Config Tab
+<a id="3-22</a>
 | ![<3-068>][<3-068>] | ![<3-069>][<3-069>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 On the left, is the **\<System\> tab**, which will make another appearance later, in the **FEWizard PXE dialog**.
 
@@ -3220,8 +3235,8 @@ This has (**2**) interfaces listed, the **Virtual Ethernet Adapter**, and a (*re
 
 The **\<Dell PowerEdge R410\>** blade server that I was using at the time had an **\<integrated Ethernet adapter\>**, but I ALSO had another **\<Dual NIC interface\>** on there, I think. Not sure if this had *that* **dual NIC** in there during this video.
 
-| ![<3-070>][<3-070>] | ![<3-071>][<3-071>]|
-| :-----------: | :-----------: |
+| ![<3-070>][<3-070>] | ![<3-071>][<3-071>] |
+| :-----------------: | :-----------------: |
 
 On the *left* is **\<Config.Dhcp\>**, showing the current **\<DHCP scopes\>** on that system.
 This can all be (**created + populated**) from the **\<VmController\>** and the objects it produces.
@@ -3233,16 +3248,16 @@ When **\<shares\>** are *found*, they could be populated on the bottom there, ho
 I was still trying to figure out how to best assemble all of this. A lot of what I’m doing here, is avoiding using **MMC**. I’ll use **MMC** sometimes, but if I can create a **custom dialog box** that *throws* a few **MMC components together**, I’d rather do *that*.
 
 | ![<3-072>][<3-072>] | ![<3-073>][<3-073>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 On the *left* is the **\<Config.Iis\> tab**, which shows the (**application pools + sites**), as well as the **website bindings**, the domain “*securedigitsplus.com*” has a **valid (certificate + binding)** to (**443**) which means **SSL**.
 
 
 
-#### 3.23 Domain Tab {#3-23}
-
+#### 3.23 Domain Tab
+<a id="3-23</a>
 | ![<3-074>][<3-074>] |
-| :-----------: |
+| :-----------------: |
 
 
 On the *right* is the **\<Domain\> tab**, which really deals with setting up the actual (**sites + services**) stuff.
@@ -3257,10 +3272,10 @@ What winds up being compiled, is a **\<template object\>** that can create the *
 
 
 
-#### 3.24 Network Tab {#3-24}
-
+#### 3.24 Network Tab
+<a id="3-24></a>
 | ![<3-075>][<3-075>] |
-| :-----------: |
+| :-----------------: |
 
 Here, I’ve entered in the master gateway address with a **CIDR** of **19**.
 
@@ -3273,10 +3288,10 @@ But for an **individual subnet**, you can use the option on the *right*.
 
 
 
-#### 3.25 Sitemap Tab {#3-25}
-
+#### 3.25 Sitemap Tab
+<a id="3-25</a>
 | ![<3-076>][<3-076>] |
-| :-----------: |
+| :-----------------: |
 
 So, if you look at the **\<console\>**, it is responding to all of the buttons I wind up interacting with.
 
@@ -3287,10 +3302,10 @@ Otherwise, you would have to manually add in a bunch of stuff through the **GUI*
 
 
 
-#### 3.26 Adds Tab {#3-26}
-
+#### 3.26 Adds Tab
+<a id="3-26</a>
 | ![<3-077>][<3-077>] | ![<3-078>][<3-078>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 On the *left*, is the **\<Adds.Control\> tab**, which allows me to select a particular \<SiteMap\> object, and then determine if it’s going to create a **\<Gateway\>**, **\<Server\>**, **\<Workstation\>**, **\<User\>**, or **\<Service\>** object in **\<Adds\>**.
 
@@ -3303,17 +3318,17 @@ So, in the video, I wind up using a file that has a **\<Computer Name\>** on eac
 If they do NOT exist, then they can ALL be **\<created\>** at the same time, here.
 
 | ![<3-079>][<3-079>] |
-| :-----------: |
+| :-----------------: |
 
 The **\<console output\>** shows that **\<IDS\>** is removing a bunch of *old items*, adding a bunch of *new ones*, all in **\<rapid succession\>**. With these objects *created*, we can now **create \<virtual machines\>** with the **same information**, using (**Hyper-V/Veridian**).
 
 
 
 
-#### 3.27 Virtual Tab {#3-27}
-
+#### 3.27 Virtual Tab
+<a id="3-27"></a>
 | ![<3-080>][<3-080>] |
-| :-----------: |
+| :-----------------: |
 
 So here, we have the **\<Virtual\> tab**, which is the *predecessor* to the **\<VmController\>**.
 
@@ -3321,20 +3336,20 @@ It IS the **\<VmController\>**, but it is *embedded* within **New-FEInfrastructu
 
 However, I will have to think outside of the box for a **\<couple criteria\>**, which I’ll cover at some later point.
 
-|  ![<3-081>][<3-081>] |
-| :-----------: |
+| ![<3-081>][<3-081>] |
+| :-----------------: |
 
 We can see that I hit “*[Import] Adds Host Nodes*”, and then the box came back with an “*Exists*” boolean.
 
 If those objects already **\<exist\>**, we just *remove* them like so. A dialog box will pop up if you *try*, as this can be a **\<super destructive process\>**, because there may be **\<unsaved work\>** in those **\<virtual machines\>**.
 
-|  ![<3-082>][<3-082>] |
-| :-----------: |
+| ![<3-082>][<3-082>] |
+| :-----------------: |
 
 Here, we can see the **console output** on the **bottom left**, *removing* the **VM**’s and their (**folders/files**). On the *right*, is the **\<Hyper-V Manager\>**, In it, you can see NONE of those VM’s exist, as it **removed all of them**.
 
 | ![<3-083>][<3-083>] |
-| :-----------: |
+| :-----------------: |
 
 This is the portion of the utility that most closely matches **New-VmController**.
 
@@ -3342,8 +3357,8 @@ We have a bunch of **\<workstation\>** items there, they **all** have various (*
 
 We just *bombed* the previous (**folders/files**), now we can **\<recreate them\>**, and proceed with the demo.
 
-|  ![<3-084>][<3-084>] |
-| :-----------: |
+| ![<3-084>][<3-084>] |
+| :-----------------: |
 
 Now, the **\<virtual machines\>** are being *created*, I waited to show the **console output** and the **\<Hyper-V\>** window to reflect where it was, before taking the **screenshot**.
 
@@ -3351,8 +3366,8 @@ Note: It says “**Initialized [+] Virtual Server()**”
 Then says “**Initialized [+] Virtual Workstation ()**”.
 The “*Server*” here was a **typo**, it’s still creating the **\<workstation objects\>**.
 
-|  ![<3-085>][<3-085>] |
-| :-----------: |
+| ![<3-085>][<3-085>] |
+| :-----------------: |
 
 All of the **\<workstations\>** have been **\<created\>**, now they need to be **\<installed\>**.
 
@@ -3363,10 +3378,10 @@ Still have to do some more stuff with the utility and *other* tabs, first.
 
 
 
-#### 3.28 Share Tab {#3-28}
-
+#### 3.28 Share Tab
+<a id="3-28"></a>
 | ![<3-086>][<3-086>] |
-| :-----------: |
+| :-----------------: |
 
 So at this point, I go to the **\<Share\> tab**, and then I look at any **existing MDT shares**.
 
@@ -3374,7 +3389,7 @@ It finds the previous “*FlightTest$*” share that I was running as a **\<flig
 We *select* that in the **\<DataGrid\>**, then we can *remove it*. This will **remove the \<share\>**, and ANYTHING in it.
 
 | ![<3-087>][<3-087>] |
-| :-----------: |
+| :-----------------: |
 
 As you can see, another **\<dialog box\>** pops up, telling you that this is a **\<potentially destructive process\>**.
 
@@ -3383,17 +3398,17 @@ After clicking “*Yes*”, **IDS** will **procedurally remove everything** from
 Key thing to note is that an **MDT share** needs to be a **\<PSDrive\>**, have an **\<SMB share\>**, and have **\<credentials\>** that can **\<log into the share\>,** in order to actually use the thing.
 
 | ![<3-088>][<3-088>] |
-| :-----------: |
+| :-----------------: |
 
 And there you have it, the thing is cleaned out, ready to import new (**\*.wim**) files that can be *compiled* into the **\<boot images\>** needed by **\<WDS/Windows Deployment Services\>**.
 
 
 
 
-#### 3.29 Imaging Tab {#3-29}
-
+#### 3.29 Imaging Tab
+<a id="3-29"></a>
 | ![<3-089>][<3-089>] | ![<3-090>][<3-090>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 Alright, this is where fun stuff with **DISM** happens.
 On the *left*, is the **\<Imaging\> tab**, nothing populated.
@@ -3404,22 +3419,22 @@ I point it to the location where all of my (**\*.iso**) files are, and then the 
 As it does this, it creates a **table** of all the **embedded editions** of **\<Windows\>** on it.
 
 | ![<3-091>][<3-091>] |
-| :-----------: |
+| :-----------------: |
 
 Here we can see that it’s gone through the list. I *select* one of the entries from the list…
 
 | ![<3-092>][<3-092>] |
-| :-----------: |
+| :-----------------: |
 
 Now I can see the **\<embedded (\*.wim)\> files** that I can **\<extract\>**. Rather than to **extract them \<now\>**, I add them to an **\<extraction manifest\>**, which hangs onto the (**\*.iso**) location, and the **\<SelectedIndex\>**’s that are issued by **DISM** during extraction. For some reason, they start off at Index (**1**), not (**0**). Kinda weird, actually. (**0**) is usually the **first number in an array selector**, but maybe they went with (**1**) so as not to confuse **non-programmers**.
 
 | ![<3-093>][<3-093>] |
-| :-----------: |
+| :-----------------: |
 
 Then after I mount **every \<desired (\*.iso) file\>** and *select* the **\<desired editions\>**, I can assign the **Wim extraction path**, so that it can build the structure necessary for **\<FEInfrastructure.Share\>** to work.
 
-|  ![<3-094>][<3-094>] |
-| :-----------: |
+| ![<3-094>][<3-094>] |
+| :-----------------: |
 
 On the **\<console\>** in the **background**, and in the **\<file browser\>** on the *top left*, you can see that the (**\*.wim**) files were **\<successfully extracted\>** to those paths. Now, we can go to the **\<Share\> tab**, and **\<import them\>**.
 
@@ -3428,10 +3443,10 @@ This will **\<automatically construct task sequences\>** when it **\<imports\>**
 
 
 
-#### 3.30 Updates Tab {#3-30}
-
+#### 3.30 Updates Tab<a id="3-4"></a>
+<a id="3-30"></a>
 | ![<3-095>][<3-095>] |
-| :-----------: |
+| :-----------------: |
 
 This is **\<incomplete\>**, but this **\<Updates\> tab** is meant to *assist* with the **\<deployment of updates\>**.
 
@@ -3441,12 +3456,17 @@ Might be best to use **\<WSUS/Windows Server Update Services\>** for some of thi
 I haven’t worked on that yet, but I intend to.
 
 | ![<3-096>][<3-096>] |
-| :-----------: |
+| :-----------------: |
 
 **Not yet implemented**, but as you can *see* this *looks* like info you’d find on the **\<Microsoft Update Catalog\>**.
 
+
+
+
+#### 3.31 New FE Share
+<a id="3-31"></a>
 | ![<3-097>][<3-097>] |
-| :-----------: |
+| :-----------------: |
 
 So we’re back to the **\<Share\> tab**, and this has information already filled out to create a **new deployment share**. This has “*PSD*” selected, which means it is going to install a slightly modified version of the **\<PowerShell Deployment\>** modification by **Michael T. Niehaus**, **Johan Arwidmark**, and **Mykael Nystrom** from **FriendsOfMdt**, along with the images that I just extracted from the (**\*.iso**) files.
 
@@ -3454,173 +3474,208 @@ Then, it will **\<import them\>** into this **\<share\>**.
 That’s what we’re about to do, build a fresh **\<PowerShell Deployment share\>**, with **\<those images\>**.
 
 | ![<3-098>][<3-098>] |
-| :-----------: |
+| :-----------------: |
 
 As you can see, it added the **\<persistent drive\>** and added the **\<PSD modification\>** to that drive.
 Everything checks out, we can proceed with the remaining steps before updating the **\<WDS boot image\>**, and sending it over to **WDS**.
 
-|  ![<3-099>][<3-099>] |
-| :-----------: |
+| ![<3-099>][<3-099>] |
+| :-----------------: |
 
 The **\<Branding\> tab** looks for **\<info\>** that has already propagated to the **\<host system\>**, so it is grabbing variables that were already set at those **\<registry locations\>**. I have yet to flesh this out, and make it look more appealing than this.
 
-|  ![<3-100>][<3-100>] |
-| :-----------: |
+| ![<3-100>][<3-100>] |
+| :-----------------: |
 
 This sets up the **\<local administrator account\>** for after the **\<installation\>**.
 
 I’m not entirely sure if this was working at that time, as this has to accommodate both **\<Domains\>** and **\<Workgroups\>**, and the rules are *slightly* different for **each category**.
 
-|  ![<3-101>][<3-101>] |
-| :-----------: |
+| ![<3-101>][<3-101>] |
+| :-----------------: |
 
 When I click on the “**Login (Enters all fields except machine OU)**”, it allows me to log into **\<Active Directory\>** to determine whether the \<account\> I’m putting in is **\<valid\>** for the **\<particular application\>**.
 
-|  ![<3-102>][<3-102>] |
-| :-----------: |
+| ![<3-102>][<3-102>] |
+| :-----------------: |
 
 And here it is, the "**Get-FEADLogin**" panel, again.
 
 This time you can see “fightingentropy@securedigitsplus.com” being used with **\<similar information\>** we saw in the earlier instance.
 
-|  ![<3-103>][<3-103>] |
-| :-----------: |
+| ![<3-103>][<3-103>] |
+| :-----------------: |
 
 After that is selected, it’s time to select an **\<organizational unit\>**...
 
 | ![<3-104>][<3-104>] |
-| :-----------: |
+| :-----------------: |
 
 Time to select the **correct OU** for the **computers** to be **deployed** to.
 
 We’ll select “*OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com*”, which is the **Active Directory nomenclature**.
 
 | ![<3-105>][<3-105>] |
-| :-----------: |
+| :-----------------: |
 
 Now we can select “*Apply*”, and this will assign the (**network + domain**) credential.
 
+
+
+
+### 3.32 Import Images
+<a id="3-32"></a>
 | ![<3-106>][<3-106>] | ![<3-107>][<3-107>] |
-| :-----------: | :-----------: |
+| :-----------------: | :-----------------: |
 
 On the left, is the “*Current*” images tab, that’s what **operating systems** are *currently* in the **MDT share**.
 There’s *none* there right now, so on the *right*, we click “*Import*”, then “*Select*” to supply the **\<Wim extraction path\>**.
 
-|  ![<3-108>][<3-108>] |
-| :-----------: |
+| ![<3-108>][<3-108>] |
+| :-----------------: |
 
 Ok, so this is the **\<magic moment\>** RIGHT before it does a bunch of stuff **\<automatically\>**…
 
 | ![<3-109>][<3-109>] |
-| :-----------: |
+| :-----------------: |
 
 Here’s a *closer look* at what came up before I actually imported everything…
 
-|  ![<3-110>][<3-110>]|
-| :-----------: |
+| ![<3-110>][<3-110>] |
+| :-----------------: |
 
 And then that is what it looks like *as* it is **importing those images** into the queue…
 
 | !![<3-111>][<3-111>] |
-| :-----------: |
+| :------------------: |
 
 This is what it looks like when the **\<queue\>** is actually **\<imported for real\>**, it imports the **\<operating system\>**, and then creates a **\<custom task sequence\>** *automatically*.
 
-|  ![<3-112>][<3-112>] |
-| :-----------: |
+| ![<3-112>][<3-112>] |
+| :-----------------: |
 
 Now, we’re looking at the **\<current\> tab**, which means *all* of those objects were **successfully imported**. Almost like a **\<batch script\>** for **\<batch scripting\>** additional **\<batch scripts\>**, but with a **\<PowerShell script\>**.
 Controlled by a GUI.
 
+
+
+
+### 3.33 Share Configuration
+<a id="3-33"></a>
 | ![<3-113>][<3-113>] |
-| :-----------: |
+| :-----------------: |
 
 Ok, now we get into the *fine-grained details* of the **\<Share.Config\> tab**. This area needs:
 
 | Bootstrap.ini | CustomSettings.ini | Post-Install Script/FightingEntropy.ps1 | DSKey.csv |
-| :-: | :-: | :-: | :-: |
+| :-----------: | :----------------: | :-------------------------------------: | :-------: |
 
 So, we can use some of the functions in **\<IDS\>** to *collect information* from the CURRENT system, and then build **\<templates\>** using some of that information. We do THAT by clicking “*Generate*” in each section.
 
 You can indeed **\<edit these manually\>** and click **\<apply\>**, it will *overwrite the file*.
 
-|  ![<3-114>][<3-114>] |
-| :-----------: |
+| ![<3-114>][<3-114>] |
+| :-----------------: |
 
 Here, we just populate the script using “*Generate*”, it finds the *values*, assigns them to the **text box** on the bottom, then we hit “*Apply*”, and it *overwrites that file*.
 
 | ![<3-115>][<3-115>] |
-| :-----------: |
+| :-----------------: |
 
 In this panel, this script is necessary to deploy **[FightingEntropy(π)]**, but the **\<installation criteria\>** will be *different* with the **\<next iteration\>** of **[FightingEntropy(π)]://Infrastructure Deployment System**.
 
 | ![<3-116>][<3-116>] |
-| :-----------: |
+| :-----------------: |
 
 Here, this creates a connection (**\*.csv**) that is supposed to help the **\<target machine\>** regain access to the **\<deployment share\>** if an issue occurs **\<during installation\>**. I actually forgot all about it when I got to the end of the video, I was *troubleshooting* some stuff toward the end, but it was a lot of content to review.
 
+
+
+
+### 3.34 Generating Boot Image(s)
+<a id="3-34"></a>
 | ![<3-117>][<3-117>] |
-| :-----------: |
+| :-----------------: |
 
 And here, we have finally reached the “*Update*” button.
 
 This process will **\<rebuild\>** the **\<WDS boot images\>**, and when they are *done*, they can then be fed over to **\<WDS/Windows Deployment Services\>** to then attempt to boot with one of the **new \<virtual machines\>** I created earlier in the demonstration. Not the ones in **\<Ambitious Automation\>**, the **\<workstation VMs\>**.
 
+
+
+
+### 3.35 Commence Deployment Lab
+<a id="3-35"></a>
 | ![<3-118>][<3-118>] |
-| :-----------: |
+| :-----------------: |
 
 At this point, **\<IDS\>** can be closed, because the **\<Virtual\> tab** is not yet ready to control the deployment process, that has to be done from the **console**.
 
 **New-VmController** WILL be able to handle that, but in this instance, it had to be continued *manually* from **\<Visual Studio Code\>** on the host. I might be good at writing **\<PowerShell\>**, but I’m no god.
 
 | ![<3-119>][<3-119>] |
-| :-----------: |
+| :-----------------: |
 
 Here we have the same "*Get-FEADLogin*" box from before, this is strictly meant to log into the **\<VmController\>** which is *dsc0.securedigitsplus.com*.
 
-|  ![<3-120>][<3-120>] |
-| :-----------: |
+| ![<3-120>][<3-120>] |
+| :-----------------: |
 
 We can see that it ran “*Reset-VmLab*”, which just puts it back to its **starting state**.
 
 Normally, I wouldn’t use this, but I had to test some stuff **\<out of scope\>**.
 
+
+
+
+### 3.36 PXE Boot + WDS
+<a id="3-36"></a>
 | ![<3-121>][<3-121>] |
-| :-----------: |
+| :-----------------: |
 
 We can see that immediately, the **\<DHCP server\>** points to **\<PXE Network Boot\>** over **\<IPv4\>** to **\<172.16.0.4\>**, with the **\<NBP filename\>** as “*boot\\x64\\wdsmdfw.efi*”, **downloading NBP file**…
 
 | ![<3-122>][<3-122>] |
-| :-----------: |
+| :-----------------: |
 
 Here, the **\<WDS server\>** is attempting to serve the **VM** its’ **PXE negotiation bootstrap files**.
 
 | ![<3-123>][<3-123>] |
-| :-----------: |
+| :-----------------: |
 
 The **\<WDS server\>** has a few **\<older boot images\>** there that were spun up by *previous instances* of **\<IDS\>** updates to the **\<MDT server\>**. However, ALL of those images point to (**invalid/outdated**) share information.
 
 Every now and then, **old images need to be cleared out in \<WDS\>**.
 
-|  ![<3-124>][<3-124>] |
-| :-----------: |
+| ![<3-124>][<3-124>] |
+| :-----------------: |
 
 Here, we see that the **\<boot image\>** we JUST created, is **\<successfully loading\>**.
 
-|  ![<3-125>][<3-125>] |
-| :-----------: |
+
+
+
+### 3.37 PowerShell Deployment
+<a id="3-37"></a>
+| ![<3-125>][<3-125>] |
+| :-----------------: |
 
 And now we can see the **\<PSD modification\>** at work, my **\<OEM background logo\>** is there by default.
 
 | ![<3-126>][<3-126>] |
-| :-----------: |
+| :-----------------: |
 
 This is the **[FightingEntropy(π)] PE Wizard**, which is essentially a *decked-out version* of something **\<MVP Damien Van Robaeys\>** had come up with, only THIS time, it’s using the **\<PSD modification\>** in order to launch a **\<XAML application\>** in **\<PXE\>**.
 
 I think it can also be done in **regular MDT**, as **DVR** had a way of doing that, but I’m not certain it can be done on a **default boot image**. I tried experimenting with it and emailed him a few times, never got it working. You may need **\<PowerShell components\>** to be added to the **\<boot image\>**.
 
-|![<3-127>][<3-127>] |
-| :-----------: |
+
+
+
+### 3.38 FE Wizard
+<a id="3-38"></a>
+| ![<3-127>][<3-127>] |
+| :-----------------: |
 
 Here is a list of the **\<images\>** that we **\<extracted\>** in the **\<Imaging\> tab**, and the imported into the **MDT/PSD share**. Now, they’re in the **\<boot image\>** as an **\<available option\>**. This does take away from the concept of **\<ZTI/Zero-Touch Image\>**, this is *somewhat involved*. I would say this probably also isn’t really even a **\<LTI/Lite-Touch Image\>**. I think this is more of like a **\<HTI/Heavy-Touch Image\>**.
 
@@ -3628,19 +3683,19 @@ Here is a list of the **\<images\>** that we **\<extracted\>** in the **\<Imagin
 It provides users *options* without having to *manually* add a bunch of stuff to the **selection wizard**.
 
 | ![<3-128>][<3-128>] |
-| :-----------: |
+| :-----------------: |
 
 This shows the **\<available profiles\>**, something I’ll have to do more with, later.
 
 All of the other tabs are effectively (**empty/not functional**), but that will change in a **\<future release\>**.
 
 | ![<3-129>][<3-129>] |
-| :-----------: |
+| :-----------------: |
 
 Just testing the **regex filtering** at the top, if you want to *select* a **\<Server image\>**, you can use the **filter string**.
 
-|  ![<3-130>][<3-130>] |
-| :-----------: |
+| ![<3-130>][<3-130>] |
+| :-----------------: |
 
 Here, is the **\<System\> tab**. Does it look *familiar*? It *should*, because it was featured in **\<IDS\>**, *earlier*.
 
@@ -3649,19 +3704,23 @@ Also, this will be an *origination point* for the **\<forenic-level snapshot uti
 That won’t be *soon* though, it’s just the **\<destination point\>** for where all of this work is headed.
 
 | ![<3-131>][<3-131>] |
-| :-----------: |
+| :-----------------: |
 
 Now, here is all of the **\<domain\> information**, pertaining to the **company name**, the **NetBIOS**, **organizational unit**, **home page**, and **service account**, in addition to some of the **networking stuff**.
 
 At some point, this will feature **more \<interactive settings\>**, but for now this is just displaying what it can (**change/manipulate**) during **\<installation\>**.
 
 | ![<3-132>][<3-132>] |
-| :-----------: |
+| :-----------------: |
 
 We can see here, that the **\<Control\> tab** allows an **FEADLogin**, and can be *tested*. Also, the “*Mode*” is worth noting here, indicating where I would like to **expand this utility**. They have *diagnostic tools* like **DART** or something like that…
 
-#### 🛠️ What DaRT actually is
 
+
+
+
+####  3.39 Diagnostics and Recovery Toolset
+<a id="3-39"></a>
 **DaRT** (**Diagnostics and Recovery Toolset**) is part of **\<Microsoft’s MDOP\>** suite. It *extends* the **Windows Recovery Environment** (**WinRE ~= WinPE**) with **\<additional administrative and diagnostic tools\>**. It is *only* used when **Windows cannot boot normally**, or when an (**admin/user**) *intentionally* boots into the **DaRT recovery image**.
 
 ---
@@ -3671,7 +3730,7 @@ We can see here, that the **\<Control\> tab** allows an **FEADLogin**, and can b
 A customized **\<MMC console\>** for *offline troubleshooting*:
 
 | View (event logs/startup apps) | Manage (Disks/Services/Drivers) | Diagnose issues preventing Windows from booting |
-| :-: | :-: | :-: |
+| :----------------------------: | :-----------------------------: | :---------------------------------------------: |
 
 ---
 
@@ -3684,7 +3743,7 @@ Analyzes **\<memory dump files\>** to identify **\<faulty drivers\>** causing cr
 ##### 3. Disk Commander
 
 | Restore MBR / Partition Tables from Backup | Recover lost volumes |
-| :-: | :-: |
+| :----------------------------------------: | :------------------: |
 
 ---
 
@@ -3734,18 +3793,23 @@ So, ALL of these tools are helpful. But- what would make them even MORE helpful,
 
 That means, **export the registry hive**, **export the event logs**, **make a backup of the system to a VHD**, or **simply restore a VHD to a physical machine**. That’s what this utility is gonna wind up doing at **some point**.
 
-|  ![<3-133>][<3-133>] |
-| :-----------: |
+
+
+
+### 3.40 Task Sequence Initialization
+<a id="3-40"></a>
+| ![<3-133>][<3-133>] |
+| :-----------------: |
 
 As we can see here, the **\<task sequences\>** were generated *alongside* the **operating system import functions**.
 
 This does make the whole **MDT** process a lot more *straightforward*, but you won’t have to mess around with **task sequences** themselves with this approach. **\<IDS\>** will install the **\<operating system\>**, and then it can be **\<configured\>** during post-installation with:
 
 | updates | drivers | software | profiles |
-| :-: | :-: | :-: | :-: |
+| :-----: | :-----: | :------: | :------: |
 
 | ![<3-134>][<3-134>] |
-| :-----------: |
+| :-----------------: |
 
 For some reason, this took a REALLY long time to kick over and install.
 
@@ -3754,14 +3818,14 @@ It wasn’t atypical to have the **\<PSD modification\>** take upwards of **1 ho
 I have a feeling that it actually repeated many of the actions… I would go through the logs during installation and *after*. One of the **functions** wasn’t saving to an actual log file, resulting in “*.log*”, and I think the rest just had no idea where to put the actual log entries. I'm not certain.
 
 | ![<3-135>][<3-135>] |
-| :-----------: |
+| :-----------------: |
 
 We can see here that **\<Windows\>** is getting ready with the **\<circle thing\>**.
 
 This is typical with **\<every\>** installation of **\<Windows\>**.
 
 | ![<3-136>][<3-136>] |
-| :-----------: |
+| :-----------------: |
 
 Here, the **MDT process** is *automatically bypassing* many of the **installation screens** where **Cortana** would normally pop out of nowhere and be like:
 
@@ -3785,27 +3849,39 @@ Yeah. So, it’s not *startling* after a while of hearing her. You can **control
 Somebody at **Microsoft** said “*You know what, \*taps chest\* I would like to install Windows using JUST my voice…*”
 Somebody else said “*HEY--- that’s brilliant~!*” And the rest is history.
 
+
+
+
+### 3.41 Desktop
+<a id="3-41"></a>
 | ![<3-137>][<3-137>] |
-| :-----------: |
+| :-----------------: |
 
 Here, the **\<networks\>** thing pops up, *right on schedule*. It says the **domain name** “*securedigitsplus.com*” and asks “*Do you want to allow your PC to be discoverable by other PCs and devices on this network?*”
 
 Yeah, it’s OK to do this on networks you’re not sharing with **\<strangers\>**. Otherwise, it isn’t a great idea.
 
 | ![<3-138>][<3-138>] |
-| :-----------: |
+| :-----------------: |
 
 Alright, so we’ve ALMOST reached the end of the **\<demonstration\>**.
 
 There’s still plenty left for me to do with this (**program/module/service**), BUT- the places I’d like to put my *attention* is on building the **cross-platform capable version of this**, so that the program can be used *ubiquitously* across a **mixture of operating system environments**.
 
+
+
+### 3.42 Conclusion
+<a id="3-42"></a>
 | ![<3-139>][<3-139>] |
-| :-----------: |
+| :-----------------: |
 
 Here, we see the manual method for installing **[FightingEntropy(π)] v2021.10.0**
 
-|  ![<3-140>][<3-140>]|
-| :-----------: |
+| ![<3-140>][<3-140>] |
+| :-----------------: |
 
 And now that it’s done, we can test the "*Write-Theme -Flag*" function, which will create the **American flag** in a **\<PowerShell console\>**.
+
 That was NOT an easy thing to (**conceptualize/build**), but it has gone through **\<several iterations\>** over the years.
+
+And... this concludes the demonstration.
