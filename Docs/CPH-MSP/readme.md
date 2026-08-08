@@ -243,7 +243,7 @@ In this document, I intend to discuss the following:
 32. [3.32 Import Images](#3-32)
 33. [3.33 Share Configuration](#3-33)
 34. [3.34 Generating the Boot Image](#3-34)
-35. [3.35 Commence Deployment Lab])(#3-35)
+35. [3.35 Commence Deployment Lab](#3-35)
 36. [3.36 PXE Boot + WDS](#3-36)
 37. [3.37 PowerShell Deployment](#3-37)
 38. [3.38 FE Wizard](#3.38)
@@ -686,7 +686,7 @@ If you want, I can walk you through **modern Meraki replacements** or help you i
 
 
 
-<a id="2-3"</a>
+<a id="2-3"></a>
 ### 2.3 Incorrect Conclusion \#1
 
 **You said:**
@@ -1599,8 +1599,11 @@ If you want, I can **calculate** the *exact* **annual cost** for:
 
 Just tell me *how many* **MR52s** you *think* are in that environment.
 
-### 2.14 Cost Effective Solution
+
+
 <a id="2-14"></a>
+### 2.14 Cost Effective Solution
+
 **You said:**
 
 I could build a FAR MORE COST EFFECTIVE SOLUTION than this.
@@ -2560,7 +2563,7 @@ Just tell me when you want to start drafting the presentation.
 ## 3. [FightingEntropy(π)\]://Infrastructure Deployment System
 
 <a id="3-1"></a>
-#### 3.1 Ambitious Automation
+### 3.1 Ambitious Automation
 
 **Note**: **IDS** was mentioned in *prior sections*, but sometimes that was referring to **Intrusion Detection System**.
 
@@ -2585,7 +2588,7 @@ Note: this video was published before **\<generative AI\>** like **\<ChatGPT\>**
 
 
 <a id="3-2"></a>
-#### 3.2 Virtual Machines (1 + 2)
+### 3.2 Virtual Machines (1 + 2)
 
 These (**2**) virtual machines are co-dependent, which means that the **\<VmController\>** has to **\<bootstrap both VMs\>**, in order for each of them to be configured **successfully**. They can’t do this if *ANY* part of the **process** is *broken*.
 
@@ -2621,7 +2624,7 @@ At which point, when *both* of them have been (**installed + configured**), the 
 
 
 <a id="3-3"></a>
-#### 3.3 Virtual Switches
+### 3.3 Virtual Switches
 
 It’s worth noting that the **\<virtual switches\>** need to be created *before* making these **virtual machines**, otherwise **they will have issues**. At some point, I will cover **\<virtual switch\>** creation, but *not* in this **chapter**. Here’s a look at what **\<virtual switch\>** creation looks like in the **[FightingEntropy(π)] v2024.1.0** **New-VMController GUI**.
 
@@ -2643,7 +2646,7 @@ Same goes for (**VM2**), the templates were already created using **IDS**, but t
 
 
 <a id="3-4"></a>
-#### 3.4 Roll Demonstration
+### 3.4 Roll Demonstration
 
 | ![<3-004>][<3-004>] |
 | :-----------------: |
@@ -2694,7 +2697,7 @@ After some additional commands, these (**2**) systems will be off to the races.
 
 
 <a id="3-5"></a>
-#### 3.5 Review Scriptblock \#1
+### 3.5 Review Scriptblock \#1
 
 | ![<3-009>][<3-009>] |
 | :-----------------: |
@@ -2752,7 +2755,7 @@ At this point, I had **control mechanisms** in place to **manage** the (**creati
 
 
 <a id="3-6"></a>
-#### 3.6 Multi-Tasking Installations
+### 3.6 Multi-Tasking Installations
 
 | ![<3-011>][<3-011>] |
 | :-----------------: |
@@ -2773,7 +2776,7 @@ So, this script relies on control over the entire process, one that I would late
 
 
 <a id="3-7"></a>
-#### 3.7 OPNsense Installation
+### 3.7 OPNsense Installation
 
 | ![<3-013>][<3-013>] |
 | :-----------------: |
@@ -2813,7 +2816,7 @@ I usually test it with the **default config**, but that would change depending o
 
 
 <a id="3-8"></a>
-#### 3.8 Server Installation Complete
+### 3.8 Server Installation Complete
 
 | ![<3-017>][<3-017>] |
 | :-----------------: |
@@ -2834,7 +2837,7 @@ You can use a **configuration file** as well, but this approach was using the **
 
 
 <a id="3-9"></a>
-#### 3.9 Gateway Configuration (Phase 1)
+### 3.9 Gateway Configuration (Phase 1)
 
 | ![<3-019>][<3-019>] |
 | :-----------------: |
@@ -2860,7 +2863,7 @@ Newer editions have **\<Microsoft Edge\>**, but (**2019**) doesn’t come with *
 
 
 <a id="3-10"></a>
-#### 3.10 Server Configuration (Phase 1)
+### 3.10 Server Configuration (Phase 1)
 
 | ![<3-024>][<3-024>] |
 | :-----------------: |
@@ -2900,7 +2903,7 @@ Each “*scriptlet*” constitutes as its own “*method*”.
 
 
 <a id="3-11"></a>
-#### 3.11 Gateway Configuration (Phase 2)
+### 3.11 Gateway Configuration (Phase 2)
 
 | ![<3-027>][<3-027>] |
 | :-----------------: |
@@ -2941,7 +2944,7 @@ It *successfully* sets a **floating rule** on the **firewall** so that stuff can
 
 
 <a id="3-12"></a>
-#### 3.12 [FightingEntropy(π)] v2021.10.0
+### 3.12 [FightingEntropy(π)] v2021.10.0
 
 | ![<3-032>][<3-032>] |
 | :-----------------: |
@@ -2975,7 +2978,7 @@ Problem is, it requires a LOT of forward thinking in order to ALSO support **\<L
 
 
 <a id="3-13"></a>
-#### 3.13 Server Configuration (Phase 2)
+### 3.13 Server Configuration (Phase 2)
 
 | ![<3-034>][<3-034>] |
 | :-----------------: |
@@ -2997,7 +3000,7 @@ However, I have a *somewhat complicated* way of **\<automating\>** that.
 
 
 <a id="3-14"></a>
-#### 3.14 Get-FEDCPromo (Phase 1)
+### 3.14 Get-FEDCPromo (Phase 1)
 
 | ![<3-037>][<3-037>] |
 | :-----------------: |
@@ -3023,7 +3026,7 @@ I have a GUI that goes along with this, but I was testing my ability to transmit
 
 
 <a id="3-15"></a>
-#### 3.15 Get-FEDCPromo (GUI)
+### 3.15 Get-FEDCPromo (GUI)
 
 | ![<3-040>][<3-040>] |
 | :-----------------: |
@@ -3062,7 +3065,7 @@ Notice the items on the **desktop**? They do get *cleaned up*, but there’s a *
 
 
 <a id="3-16"></a>
-#### 3.16 Get-FEDCPromo (Phase 2)
+### 3.16 Get-FEDCPromo (Phase 2)
 
 | ![<3-044>][<3-044>] |
 | :-----------------: |
@@ -3090,7 +3093,7 @@ The system winds up **\<rebooting\>**, then it becomes a **\<domain controller\>
 
 
 <a id="3-17"></a>
-#### 3.17 Server Configuration (Phase 3)
+### 3.17 Server Configuration (Phase 3)
 
 | ![<3-048>][<3-048>] |
 | :-----------------: |
@@ -3198,7 +3201,7 @@ There ARE many (**subtle + distinct**) *differences* between the (**2**), but th
 
 
 <a id="3-18"></a>
-#### 3.18 FEInfrastructure (Preview/Demo)
+### 3.18 FEInfrastructure (Preview/Demo)
 
 Now, we can begin to (**unpack/examine**) the following video that shows off more of where Ambitious Automation left off:
 
@@ -3234,7 +3237,7 @@ Here, we see that the **\<module\>** loads up **\<successfully\>**, and now we c
 
 
 <a id="3-19"></a>
-#### 3.19 Get-FEADLogin
+### 3.19 Get-FEADLogin
 
 | ![<3-060>][<3-060>] |
 | :-----------------: |
@@ -3284,7 +3287,7 @@ Once that was made apparent, THEN I could start to make the process *faster* and
 
 
 <a id="3-20"></a>
-#### 3.20 New-FEInfrastructure (GUI)
+### 3.20 New-FEInfrastructure (GUI)
 
 And, here it is. The **original version** of the **[FightingEntropy(π)]://Infrastructure Deployment System**.
 
@@ -3299,7 +3302,7 @@ We can see various tabs:
 
 
 <a id="3-21"></a>
-#### 3.21 Module Tab
+### 3.21 Module Tab
 
 So, instead of just having that large **\<screenshot\>** there, I’ll give you a *closer look* at the **actual GUI**. There’s a LOT of panels here, and I’m not going to open ALL of them, because that is featured in the video.
 
@@ -3313,7 +3316,7 @@ Which was: **December 4th, 2021 @ 18:43:04 (6:43PM EST)**
 
 
 <a id="3-22"></a>
-#### 3.22 Config Tab
+### 3.22 Config Tab
 
 | ![<3-068>][<3-068>] | ![<3-069>][<3-069>] |
 | :-----------------: | :-----------------: |
@@ -3344,7 +3347,7 @@ On the *left* is the **\<Config.Iis\> tab**, which shows the (**application pool
 
 
 <a id="3-23"></a>
-#### 3.23 Domain Tab
+### 3.23 Domain Tab
 
 | ![<3-074>][<3-074>] |
 | :-----------------: |
@@ -3362,7 +3365,7 @@ What winds up being compiled, is a **\<template object\>** that can create the *
 
 
 <a id="3-24"></a>
-#### 3.24 Network Tab
+### 3.24 Network Tab
 
 | ![<3-075>][<3-075>] |
 | :-----------------: |
@@ -3378,7 +3381,7 @@ But for an **individual subnet**, you can use the option on the *right*.
 
 
 <a id="3-25"></a>
-#### 3.25 Sitemap Tab
+### 3.25 Sitemap Tab
 
 | ![<3-076>][<3-076>] |
 | :-----------------: |
@@ -3392,7 +3395,7 @@ Otherwise, you would have to manually add in a bunch of stuff through the **GUI*
 
 
 <a id="3-26"></a>
-#### 3.26 Adds Tab
+### 3.26 Adds Tab
 
 | ![<3-077>][<3-077>] | ![<3-078>][<3-078>] |
 | :-----------------: | :-----------------: |
@@ -3415,7 +3418,7 @@ The **\<console output\>** shows that **\<IDS\>** is removing a bunch of *old it
 
 
 <a id="3-27"></a>
-#### 3.27 Virtual Tab
+### 3.27 Virtual Tab
 
 | ![<3-080>][<3-080>] |
 | :-----------------: |
@@ -3468,7 +3471,7 @@ Still have to do some more stuff with the utility and *other* tabs, first.
 
 
 <a id="3-28"></a>
-#### 3.28 Share Tab
+### 3.28 Share Tab
 
 | ![<3-086>][<3-086>] |
 | :-----------------: |
@@ -3495,7 +3498,7 @@ And there you have it, the thing is cleaned out, ready to import new (**\*.wim**
 
 
 <a id="3-29"></a>
-#### 3.29 Imaging Tab
+### 3.29 Imaging Tab
 
 | ![<3-089>][<3-089>] | ![<3-090>][<3-090>] |
 | :-----------------: | :-----------------: |
@@ -3533,7 +3536,7 @@ This will **\<automatically construct task sequences\>** when it **\<imports\>**
 
 
 <a id="3-30"></a>
-#### 3.30 Updates Tab
+### 3.30 Updates Tab
 
 | ![<3-095>][<3-095>] |
 | :-----------------: |
@@ -3553,7 +3556,7 @@ I haven’t worked on that yet, but I intend to.
 
 
 <a id="3-31"></a>
-#### 3.31 New FE Share
+### 3.31 New FE Share
 
 | ![<3-097>][<3-097>] |
 | :-----------------: |
@@ -3808,9 +3811,9 @@ We can see here, that the **\<Control\> tab** allows an **FEADLogin**, and can b
 
 
 
-
-####  3.39 Diagnostics and Recovery Toolset
 <a id="3-39"></a>
+###  3.39 Diagnostics and Recovery Toolset
+
 **DaRT** (**Diagnostics and Recovery Toolset**) is part of **\<Microsoft’s MDOP\>** suite. It *extends* the **Windows Recovery Environment** (**WinRE ~= WinPE**) with **\<additional administrative and diagnostic tools\>**. It is *only* used when **Windows cannot boot normally**, or when an (**admin/user**) *intentionally* boots into the **DaRT recovery image**.
 
 ---
