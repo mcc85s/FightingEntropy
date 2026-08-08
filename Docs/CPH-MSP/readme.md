@@ -246,7 +246,7 @@ In this document, I intend to discuss the following:
 35. [Commence Deployment Lab](#3-35)
 36. [PXE Boot + WDS](#3-36)
 37. [PowerShell Deployment](#3-37)
-38. [FE Wizard](#3.38)
+38. [FE Wizard](#3-38)
 39. [Diagnostics and Recovery Toolset](#3-39)
 40. [Task Sequence Initialization](#3-40)
 41. [Desktop](#3-41)
