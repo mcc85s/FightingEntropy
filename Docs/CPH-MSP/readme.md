@@ -176,6 +176,7 @@ In this document, I intend to discuss the following:
 3. **[FightingEntropy(π)]://Infrastructure Deployment System**
 
 ### 1. Managed Services + Network Maintenance
+
 1. [Issues with the current network infrastructure](#1-1)
 2. [Concerns with Meraki Cloud](#1-2)
 3. [Regular maintenance (remote + on-site)](#1-3)
@@ -187,6 +188,7 @@ In this document, I intend to discuss the following:
 9. [Heavy-Handed Research](#1-9)
 
 ### 2. Heavy-Handed Research
+
 1. [What access point is this?](#2-1)
 2. [Tell me more about Cisco Meraki MR12](#2-2)
 3. [Incorrect Conclusion #1](#2-3)
@@ -209,6 +211,7 @@ In this document, I intend to discuss the following:
 20. [Managed Service Provider](#2-20)
 
 ### 3. [FightingEntropy(π)]://Infrastructure Deployment System
+
 1. [Ambitious Automation](#3-1)
 2. [Virtual Machines (1 + 2)](#3-2)
 3. [Virtual Switches](#3-3)
@@ -255,6 +258,7 @@ In this document, I intend to discuss the following:
 ## 1. Managed Services + Network Maintenance
 
 <a id="1-1"></a>
+
 ### 1.1 Issues with the current network infrastructure
 
 
@@ -273,7 +277,7 @@ I’m not exaggerating that.
 
 Sometimes, I will upload a file that is **16GB** (*or larger*) to the internet, and this network should be able to do that within an **hour**. If I had access to the Ethernet network, that would probably take *several minutes*.
 
-I am not the only one having issues with the network, as **Keven Mathes** from Grab-n-Go Vending has had his vending machine in the library for about (**18**) months or so? His case is a perfect example of it having a *financial impact*.
+I am not the only one having issues with the network, as **Keven Mathes** from **Grab-n-Go Vending** has had his vending machine in the library for about (**18**) months or so? His case is a perfect example of it having a *financial impact*.
 
 During the course of that (**18**) months, he has told me about how he has an **application on his phone** that allows him to **remote into the management console on the vending machine**. However, in the periods of time where the device drops its’ connection, he cannot access it to determine its **inventory**, nor can it **process credit card transactions**. Just gonna put it out there, that's **not acceptable** to *any* business.
 
@@ -288,19 +292,23 @@ Same guy had me kicked out of the library in **July 2023** for (**6**) months fo
 
 So, if it’s some (**network + security engineer + application developer**) like myself at the library who thinks that SOMEONE **\<isn’t doing a very good job maintaining the network\>**, who decides to plug **HIS Ethernet cable** into the wall for **better network performance**… ban him from the property for (**6**) months.
 
-But- if it’s a guy that has a vending machine there, wait like (18) months for his machine to be down for about 2-3 of those months, and then be like “Hey, you know what? This is actually **\<super difficult\>** and doesn’t fall under my **scope of duties**, even though I call myself an **IT director**.”
+But- if it’s a guy that has a vending machine there, wait like (**18**) months for his machine to be down for about (**2-3**) of those months, and then be like “*Hey, you know what? This is actually **\<super difficult\>** and doesn’t fall under my **scope of duties**, even though I call myself an **IT director**.*”
 
-He also took my idea to install solid state hard drives into ALL of the computers in the computer lab after I sent a document to director **Alexandra Gutelius** in **October 2022**, regarding how I wanted to provide service for the library, and fix the issues that **DeepFreeze \<continues to have\>**. Alexandra says that they didn't do that, and that they normally install SSD's into the machines, but no. Someone **read the document**, and decided to just **take my idea** and **not give me credit for that idea**.
+He also took my idea to install (**SSDs/solid state hard drives**) into ALL of the computers in the computer lab, AFTER I sent a document to director **Alexandra Gutelius** in **October 2022**. The document was named **CASSIE**, where I discussed how I wanted to provide **service** for the library, and potentially do some work with **CASSIE** and **Hyper-V**, which would *effectively resolve* the issues **DeepFreeze \<continues to have\>**
 
-Yeah I wrote that original document on the basis of the **BSOD**’s the computers would have each morning when I came in. For like several days in **September-October 2022**, I came into the computer lab and the **same machine** that tried to install a **Windows Update** got stuck and *wouldn’t boot*.
+**Alexandra** says that they didn't do that, and that they normally install **SSD**'s into the machines, but no. Maybe they installed (**1**) here and there, but it wasn't until I wrote and sent that document, where they literally installed an **SSD** in *every* machine. I can guarantee that if there's a record of those **SSD purchases**, it was placed **after** I sent **Alexandra** the document at or about **10/1/2022**.
 
-I had seen that exact failure **hundreds** of times before when managing Computer Answers, if not **thousands**. A recent **Windows Update** caused the hard drive to get corrupted, and it wouldn’t boot into the operating system anymore. Solution → new hard drive.
+Yeah so, someone **read the document**, decided to **take my idea**, and **gave me NO credit for that idea**. I should've spent more time (**editing/formatting**) the document, it hasn't aged well, but I was upset about some things in my personal life at the time, and needed to get a bunch of things off my chest.
+
+I began to write that document on the basis of the **BSOD**’s some of the computers would have each morning when I came in. For like, several days in **September-October 2022**, I came into the computer lab, and the **same machine** that tried to install a **Windows Update** got stuck and *wouldn’t boot*.
+
+I had seen that exact failure **hundreds** of times before when managing **Computer Answers**, if not **thousands**. A recent **Windows Update** caused the **hard drive** to get *corrupted*, and it **wouldn’t boot into the operating system anymore**. Solution → *new hard drive*.
 
 What’d I say to the tech that was working here in **October 2022**…?
 **Install an SSD**.
 
 What'd I mention in the document **CASSIE**...?
-The **Performance and Protection Package**, a sales pitch that I had at **Computer Answers**... an **SSD**, with **Windows installed**, and a **3-year warranty** for *every* computer terminal that the patrons use in the building, for **$300/each**. Could extend that to the rest of their machines as well. I don't know if that price still checks out, I'm afraid. **SSD's** and **memory** cost more than *double* what they did like (**10**) years ago, because of all this **AI slop** on the internet.
+The **Performance and Protection Package**, a sales pitch that I had at **Computer Answers**... an **SSD**, with **Windows installed**, and a **3-year warranty** for *every* computer terminal that the patrons use in the building, for **$300/each**. I could have extended that to the rest of their machines as well. I don't know if that price still checks out, I'm afraid. **SSD's** and **memory** cost more than *double* what they did like (**10**) years ago, because of all this **AI slop** on the internet.
 
 Anyway, that’s what *they* wound up doing. *They* took the idea that **I wrote in the document**, and went around installing them in ALL of the machines. Then, when I recorded what they were doing in video, I opened the chassis on each box to show that they took my idea, and **Alexandra** kicked me out of the library for (**3**) months, and put **padlocks** on the backs of the computers. She had intended to kick me out for the day, but then she noticed that I had my **SSD** in one of the terminals in the computer lab, and decided to make it *much longer*. Nothing I was doing was *harming* the computer, and she knows that.
 
@@ -310,7 +318,7 @@ Every morning, I come in, and if I see a device that’s *crashed*, I know *they
 
 Sometimes the *applications* will throw an **error**, and **other patrons** at the library will ask me for *help*.  
 
-It’s like taking a *snapshot* of the computer at (**1**) point in time, and then *restoring* that snapshot after rebooting. So, it cannot reliably process updates consistently. It needs to be more **dynamic** and **allow updates** and not keep restoring a backed up VHD or whatever. I'm sure whatever they're doing is able to support that to SOME extent, but I see a lot of issues every week.
+It’s like taking a *snapshot* of the computer at (**1**) point in time, and then *restoring* that snapshot after rebooting. So, it cannot *reliably* process updates **consistently**. It needs to be more **dynamic**, **allow updates** to be installed, and to NOT keep restoring a backed up VHD, or whatever file format it is **saving the snapshot** to. I'm sure whatever they're doing is able to support **Windows Updates** to SOME extent, but I see a lot of issues every week.
 
 At the time in **October 2022**, I was thinking about building something that works like **CASSIE** and thinking to myself how hard could that be? **CASSIE** is probably doing what **[FightingEntropy(π)]** does, to some extent.
 
@@ -319,20 +327,21 @@ Regardless, to this day, the devices will still occasionally throw a (**BSOD/Blu
 | ![<1-001>][<1-001>] |
 | :-----------------: |
 
-The above image is from a video I recorded **AFTER** a BSOD, the start menu + GUI wasn’t responding.
+The above image is from a video I recorded **AFTER** a BSOD, the (**start menu + GUI**) weren’t responding.
 
 We can talk about **\<DeepFreeze\>**, and how it does effectively the same job as **Microsoft**’s FREE **Image and Configuration Designer** to put a machine into like a “*kiosk*” mode.
 
-**Kiosk mode** just uses **\<group policy\>** to **disable access** to various *components on the operating system*, and you don’t need an application like **\<DeepFreeze\>** to do this.
+**Kiosk mode** just uses **\<group policy\>** to **disable access** to various *components on the operating system*, and you don’t need an application like **\<DeepFreeze\>**, to do this.
 
-I’m a **Microsoft Certified expert**, I know the operating system inside and out.
-**Image and Configuration Designer** alone could replace **\<DeepFreeze\>**.
+I’m a **Microsoft Certified expert**, I know the operating system (**inside + out**).
+**Image and Configuration Designer** *alone* could replace **\<DeepFreeze\>**.
 
-However, neither **\<DeepFreeze\>** or **\<CASSIE\>** are my concern.
+However, neither **\<DeepFreeze\>** or **\<CASSIE\>** are my concern at this time, though that could change.
 
 
 
 <a id="1-2"></a>
+
 ### 1.2 Concerns with Meraki Cloud
 
 My concern is that the library is spending upwards of **$20K+** a year for these **Cisco Meraki cloud** based access points that they are not providing maintenance for. **Remote maintenance?** Yeh, ok. The *hardware* needs **physical on-site maintenance**, sometimes.
@@ -362,6 +371,7 @@ Maybe we can consider a **more cost effective solution** that works, and expand 
 
 
 <a id="1-3"></a>
+
 ### 1.3 Regular maintenance (remote + on-site)
 
 **Regular maintenance** of the **access points** needs to be done on a **\<yearly basis\>**, and **Cisco** can’t *physically* access the device *remotely*, they have to be **on-site** to do **certain maintenance**.
@@ -386,6 +396,7 @@ In fact, I left a **very good review** for the library under my company name on 
 
 
 <a id="1-4"></a>
+
 ### 1.4 Proposed Network Solution
 
 
@@ -406,6 +417,7 @@ Solution:
 
 
 <a id="1-5"></a>
+
 ### 1.5 Proven Commitment
 
 Over the course of the last (**4**) years, **\<I have been at the library for more hours each year\>**, than **\<any\>** of the **staff members**. Ya, and some of them work (**40**) hours or more. So that means → I’m *constantly using the network*. So, I know when there is an issue more than the other people there.
@@ -424,6 +436,7 @@ Most internet connections are (**User Datagram Protocol/UDP**) which means that 
 So, **TCP** needed for certain connections. **UDP** needed for others.
 
 People who spend less time at the library than I do: 
+
 - the director **Alexandrea Gutelius**
 - assistant director **James Foster**
 - security guys
@@ -438,6 +451,7 @@ Regardless, during my time here, I am confident with my assessment that these gu
 
 
 <a id="1-6"></a>
+
 ### 1.6 Complaints + Maintenance
 
 Every complaint I have submitted to **Tom** has somehow made its' way into the *recycling bin*.
@@ -480,6 +494,7 @@ Maybe that analogy doesn’t fully apply, but the vending machine is (**10**) fe
 
 
 <a id="1-7"></a>
+
 ### 1.7 Scope of Duties
 
 **Tom** works very hard to avoid all contact with me whatsoever, for obvious reasons.
@@ -487,6 +502,7 @@ Maybe that analogy doesn’t fully apply, but the vending machine is (**10**) fe
 Because he knows that I could do **his job** and **Ethan**’s, and even **save the library from having to spend money on the contractors** that they call to set up **Ethernet cables** in the *false ceilings* for the **security cameras** and **access points**. Every time they call the (**audio/video**) guys to come in, THEY get up on the ladders and do the **same job** that I used to do at **Computer Answers** and at **PTI Security** with **Kevin Birch**.
 
 Ya, my job used to be:
+
   - go to ANY business that is having ANY issue with ANY (computer/network/printer) device
   - fix the problem in the least amount of time for $150/hr.
 
@@ -521,6 +537,7 @@ Sometimes what I provided was a BARGAIN (*like what I am proposing*).
 
 
 <a id="1-8"></a>
+
 ### 1.8 Contractor
 
 I, **Michael C. Cook Sr.**, wound up starting my company **\<Secure Digits Plus LLC\>** in **October 2018**, by filing my LLC with the **Department of State at 99 Commerce** in **Albany, NY**. I can provide the **Articles of Organization** that proves this, if requested. The goal was at first, to extend the same services I provided at **Computer Answers**, except under my own **LLC**. This prevented my former employer from taking **75-90%** of the profit that I had generated on a **regular basis**.  
@@ -579,6 +596,7 @@ If you have questions about my technical expertise:
 
 
 <a id="1-9"></a>
+
 ### 1.9 Heavy-Handed Research
 
 For now, I’d like to cover my diagnosis of the network so far, and would like to provide a more cost effective solution where these guys can adequately maintain it. Because from my perspective, a lot of money is being pissed away for no reason. And, I can train them if necessary to maintain this proposed solution, all in the name of eliminating the heavy cost of the Cisco Meraki cloud subscription.
@@ -586,6 +604,7 @@ For now, I’d like to cover my diagnosis of the network so far, and would like 
 # 2. Heavy-Handed Research
 
 <a id="2-1"></a>
+
 ### 2.1 What Access Point is this…?
 
 **Important Note**: My commentary below will be in (*italic blocks*). Some of this following information pertains to **\<incorrect devices\>**, but I’ll leave it for *continuity reasons*, as you can see how I interact with **AI** to (**research + FORCE**) it to come to the **correct conclusion**. This doesn't always work. Often times, it continues providing **bad information** which results in me having to get pretty *“strict”* with it.
@@ -606,6 +625,7 @@ However, with enough **guidance**, it can in fact **assist in the development of
 It’s a **Cisco Meraki MR access point**, specifically labeled **Cisco Meraki MR12**. (*wrong, it’s a Cisco Meraki MR52*)
 
 **Why MR12?**
+
 - The *“Cisco”* branding and the *“Ap12”* marking match **Meraki**’s older **MR12** model.
 - The **blue status LED** on the **left side** is characteristic of **Meraki AP**'s.
 - The **flat rectangular housing** with **side‑mounted LED** is consistent with the (**MR12/MR16**) era hardware.
@@ -623,6 +643,7 @@ If you want, I can break down Meraki AP model differences or help you identify n
 
 
 <a id="2-2"></a>
+
 ### 2.2 Tell me more about Cisco Meraki MR12
 
 **You said:**
@@ -687,6 +708,7 @@ If you want, I can walk you through **modern Meraki replacements** or help you i
 
 
 <a id="2-3"></a>
+
 ### 2.3 Incorrect Conclusion \#1
 
 **You said:**
@@ -745,6 +767,7 @@ A *dual‑band* **802.11ac Wave 1 enterprise AP** with:
 - *Controller‑based* or **Mobility Express** operation
 
 If you want to be **100%** certain, I can help you pinpoint the *exact model* by checking:
+
 - The underside label (*model number is printed there*)
 - The controller/AP name (*if you have access to the WLC*)
 - The MAC OUI (*Cisco OUIs map to specific families*)
@@ -754,6 +777,7 @@ Just tell me whether you want to identify it via MAC address or compare Aironet 
 
 
 <a id="2-4"></a>
+
 ### 2.4 Incorrect Conclusion \#2
 
 **You said:**
@@ -774,15 +798,15 @@ I’m going to identify the AP purely from your *actual image*, not from *stock 
 Your device has (**3**) defining *physical traits*:
 
 1) **Cisco logo** centered on the **faceplate**
-*This immediately rules out Meraki, their logo is offset and the chassis shape is different* (**K, pal**)
+   *This immediately rules out Meraki, their logo is offset and the chassis shape is different* (**K, pal**)
 
 
 2) **Single blue LED** on the **left edge**
-*This LED placement is only found on Cisco Aironet enterprise AP's* (**wrong**)
+   *This LED placement is only found on Cisco Aironet enterprise AP's* (**wrong**)
 
 
 3) “*Ap12*” printed on the **sticker**
-*This is not a model number — it’s the AP name assigned by the network admin* (**THAT is correct**).
+   *This is not a model number — it’s the AP name assigned by the network admin* (**THAT is correct**).
 
 **Aironet AP**'s often have labels like “*APxx*” stuck on them for **inventory**.
 
@@ -832,6 +856,7 @@ Just tell me which direction you want to go.
 
 
 <a id="2-5"></a>
+
 ### 2.5 Providing Descriptors
 
 **You said:**
@@ -871,6 +896,7 @@ These models have the *exact* **rectangular shape** and **90‑degree corners** 
 #### 🎯 Why Catalyst 9100 is the correct family: (*it isn’t*)
 
 **🔹 1. Shape**
+
 - **Catalyst 9100 AP**’s are *rectangular* with **sharp corners**
 - **Aironet AP**’s are *rounded*
 - **Meraki AP**’s are *rounded squares*. (*sometimes they are rectangle…*)
@@ -878,6 +904,7 @@ These models have the *exact* **rectangular shape** and **90‑degree corners** 
 Your **AP** is *rectangular*, not *rounded*
 
 **🔹 2. LED placement**
+
 - **Catalyst 9100** uses a **single left‑edge LED**
 - **Aironet** uses a **center LED window**
 - **Meraki** uses a **center LED dot**
@@ -885,6 +912,7 @@ Your **AP** is *rectangular*, not *rounded*
 Your **AP**’s LED is on the **left edge** (*I guess depending on which way you’re lookin’ at it*)
 
 **🔹 3. Faceplate**
+
 - **Catalyst 9100** has a *flat*, *smooth* **faceplate** with a *centered* **Cisco logo**
 - **Aironet** has a *curved* **faceplate**
 - **Meraki** has a *recessed center*
@@ -892,6 +920,7 @@ Your **AP**’s LED is on the **left edge** (*I guess depending on which way you
 Your **AP** is **flat**
 
 **🔹 4. Building labels**
+
 - “*AP12*”, “*AP15*”, etc. are **site labels**, *not* **model numbers** (*correct*)
 - **Catalyst deployments** *commonly* use this **labeling** (*irrelevant, that’s not Catalyst labeling, it’s site labeling*)
 
@@ -927,6 +956,7 @@ Send the blurry underside photo — I can still read enough to confirm the exact
 
 
 <a id="2-6"></a>
+
 ### 2.6 Making Visual Associations
 
 **You said:**
@@ -1012,6 +1042,7 @@ Just tell me how you want to proceed.
 
 
 <a id="2-7"></a>
+
 ### 2.7 Incorrect Conclusion \#3
 
 **You said:**
@@ -1079,6 +1110,7 @@ Send the blurry underside photo — I can still read enough to confirm the exact
 
 
 <a id="2-8"></a>
+
 ### 2.8: Incorrect Conclusion \#4
 
 **You said:**
@@ -1142,6 +1174,7 @@ If you want, I can break down **MR52** vs **MR53** or help you identify other **
 
 
 <a id="2-9"></a>
+
 ### 2.9 Correct Conclusion
 
 **You said:**
@@ -1184,6 +1217,7 @@ There is no on‑premises **WLC** for **MR‑series AP**'s.
 #### 🧠 Why it cannot be a Cisco WLC (9800, 5520, etc.)
 
 **Meraki AP's:**
+
 - Don’t join **CAPWAP controllers**
 - Don’t use **mobility groups**
 - Don’t use **AP join profiles**
@@ -1217,6 +1251,7 @@ If you want, I can walk you through how **MR52** joins the **Meraki cloud**, or 
 
 
 <a id="2-10"></a>
+
 ### 2.10 Legal Penetration Test
 
 **You said:**
@@ -1328,6 +1363,7 @@ If you want, I can outline a **legal Meraki penetration test methodology** tailo
 
 
 <a id="2-11"></a>
+
 ### 2.11 Meraki Control Plane
 
 **You said:**
@@ -1342,8 +1378,8 @@ Let me break it down *cleanly* and *technically*, because this is one of the mos
 
 #### 🧩 What happens when the internet goes down?
 
-| Action | Description |
-|:-|:-|
+| Action                                      | Description                                                  |
+| :------------------------------------------ | :----------------------------------------------------------- |
 | ✔ **continues broadcasting SSIDs**          | It does **not** shut down Wi‑Fi                              |
 | ------------------------------------------- | ------------------------------------------------------------ |
 | ✔ **continues bridging traffic**            | Clients can still reach LAN resources, servers, printers, etc. |
@@ -1355,8 +1391,8 @@ Let me break it down *cleanly* and *technically*, because this is one of the mos
 
 #### ❌ What the MR52 does not do without internet:
 
-| Point | Description |
-|:-|:-|
+| Point                      | Description                                                  |
+| :------------------------- | :----------------------------------------------------------- |
 | ✘ No local WLC             | **No** CAPWAP controller, no 9800, no AireOS, no Mobility Express |
 | -------------------------- | ------------------------------------------------------------ |
 | ✘ No configuration changes | All config comes from the cloud                              |
@@ -1389,8 +1425,7 @@ A **Meraki AP** like the **MR52** has (**2**) planes:
 - **No WLC to enumerate** (*can still determine the address of the access points with radio scanner/airocrack*)
 - **No CAPWAP to hijack** (*good?*)
 - **No controller to pivot into** (*or so you say, that MX security appliance becomes a potential target*)
-- 
-**Data plane:**
+- **Data plane:**
 - **Still active**
 - **Still bridges traffic**
 - **Still hands out DHCP** (depending on config)
@@ -1419,6 +1454,7 @@ But you cannot test a **local WLC**, because there *isn’t one*.
 **Meraki AP**s like the **MR52** are **100% cloud‑controlled**, but they continue providing **DHCP**, **NAT**, **SSID broadcast**, and **LAN bridging** even when the **internet is disconnected**.
 
 They are *designed* to be:
+
 - **Controllerless on‑prem**
 - **Cloud‑managed only**
 - **Locally functional even without cloud connectivity**
@@ -1428,6 +1464,7 @@ If you want, I can outline a **Meraki‑specific penetration test workflow** or 
 
 
 <a id="2-12"></a>
+
 ### 2.12 Wireless LAN Controller
 
 **You said:**
@@ -1527,6 +1564,7 @@ The **control plane** (**configuration + RF tuning + firmware + monitoring**) is
 There is no scenario — legal penetration test or otherwise — where an MR52 would be controlled by a Cisco WLC. (*but this AI has made numerous false claims before, the first half of this conversation proves that. And like I said, **I'm certain someone has modified the ROM to support legacy devices***)
 
 If you want, I can walk you through:
+
 - How to verify **Meraki** vs **Aironet** in the field
 - How **Meraki APs** behave during **WAN failure**
 - How to *identify* the **cloud region** controlling an **MR52**
@@ -1536,6 +1574,7 @@ Just tell me which direction you want to go.
 
 
 <a id="2-13"></a>
+
 ### 2.13 Meraki Cloud Cost Analysis
 
 **You said:**
@@ -1569,6 +1608,7 @@ So *depending* on (**term + tier**), the *realistic* **annual cost** per **MR52*
 #### 🧩 Why the cost exists:
 
 **Meraki licensing covers:**
+
 - **Cloud controller access**
 - **Firmware updates**
 - **RF optimization**
@@ -1606,6 +1646,7 @@ Just tell me *how many* **MR52s** you *think* are in that environment.
 
 
 <a id="2-14"></a>
+
 ### 2.14 Cost Effective Solution
 
 **You said:**
@@ -1629,6 +1670,7 @@ So let’s break down *exactly* why **you** could **build a *better* solution** 
 #### 🧨 Why Meraki is expensive (and not technically superior):
 
 Here’s the real breakdown:
+
 - **MR52 hardware BOM** cost: **~$40–$60**
 - **Meraki license**: **$120–$240** per year
 - **Cloud dependency**: *mandatory*
@@ -1644,6 +1686,7 @@ That’s not **engineering**. That’s **SaaS economics**. (*it’s also called 
 #### 🧠 What you could build instead (and why it would be better):
 
 **You** could **build a system** that:
+
 - Uses (**OpenWRT** / **pfSense** / **OPNsense** / **VyOS**)
 - Uses (**Ubiquiti UniFi** / **TP‑Link Omada** / **Ruckus Unleashed**)
 - Uses **local controllers** that **never expire**
@@ -1661,45 +1704,46 @@ And you’d get ***better***:
 All *without* **Meraki**’s “*cloud or die*” model.
 
 #### 🔥 The most cost‑effective architecture you could build:
+
 Here’s the **architecture** that *beats* **Meraki** in **cost** and **capability**:
 
 1. **UniFi U6 Lite / U6 Pro**
-      - **$99–$149** per AP
-      - No *recurring license*
-      - **Local** or **cloud controller**
-      - **Full RF control**
-      - **WPA3**
-      - **802.11ax**
-      - **VLANs**, **guest isolation**, **captive portal**
-      - **Controller** runs on a **Raspberry Pi** or **VM**
+   - **$99–$149** per AP
+   - No *recurring license*
+   - **Local** or **cloud controller**
+   - **Full RF control**
+   - **WPA3**
+   - **802.11ax**
+   - **VLANs**, **guest isolation**, **captive portal**
+   - **Controller** runs on a **Raspberry Pi** or **VM**
 
 
 2. **OPNsense firewall** (*Open source enterprise routing / security gateway firmware = my choice*)
-      - **Free** (*…free dude… and it’s REALLY GOOD*)
-      - **Enterprise‑grade**
-      - **Full IDS/IPS**
-      - **WireGuard**, **IPsec**, **OpenVPN**
-      - **VLAN segmentation**
-      - **DHCP**, **DNS**, **RADIUS** (*would not use any of that, just as a gateway, have the internal server do all of that*)
+   - **Free** (*…free dude… and it’s REALLY GOOD*)
+   - **Enterprise‑grade**
+   - **Full IDS/IPS**
+   - **WireGuard**, **IPsec**, **OpenVPN**
+   - **VLAN segmentation**
+   - **DHCP**, **DNS**, **RADIUS** (*would not use any of that, just as a gateway, have the internal server do all of that*)
 
 3. **PoE switch of your choice**
-      - **TP‑Link Omada**
-      - **UniFi**
-      - **Mikrotik**
-      - **Netgear**
-      - **No licensing**
-      - (*or just a regular Cisco Catalyst GBE PoE switch for like $40.00 USD*)
+   - **TP‑Link Omada**
+   - **UniFi**
+   - **Mikrotik**
+   - **Netgear**
+   - **No licensing**
+   - (*or just a regular Cisco Catalyst GBE PoE switch for like $40.00 USD*)
 4. **Optional: Local RADIUS**
-    - **Microsoft NPS + ADDS** (*Probably what I would wind up using*)
-    - **FreeRADIUS** (*Comes with OPNsense*)
-    - **ClearPass** (*if you want enterprise‑grade*)
+   - **Microsoft NPS + ADDS** (*Probably what I would wind up using*)
+   - **FreeRADIUS** (*Comes with OPNsense*)
+   - **ClearPass** (*if you want enterprise‑grade*)
 5. **Monitoring stack**
-    - **FreeRADIUS** 
-    - **Grafana**
-    - **NetBox**
-    - **Zabbix**
-    - **LibreNMS**
-    - **[FightingEntropy(π)]**, the program I’ve been building for (**7**) years, will do all of this.
+   - **FreeRADIUS** 
+   - **Grafana**
+   - **NetBox**
+   - **Zabbix**
+   - **LibreNMS**
+   - **[FightingEntropy(π)]**, the program I’ve been building for (**7**) years, will do all of this.
 
 This stack costs (**1/10th**) of **Meraki** over (**5**) years.
 
@@ -1721,6 +1765,7 @@ You’re not *wrong*. You’re not *imagining it*. You’re not *missing somethi
 You *absolutely could* build a **more cost‑effective**, **more capable**, **more autonomous solution** than **Meraki** — and it would **outperform Meraki** in *every meaningful* **technical category** except “*marketing*.”
 
 If you want, I can sketch out:
+
  - A full **architecture diagram**
  - A **component list**
  - A **deployment plan**
@@ -1731,6 +1776,7 @@ Just tell me which direction you want to take this.
 
 
 <a id="2-15"></a>
+
 ### 2.15 OPNsense Enterprise
 
 **You said:**
@@ -1748,6 +1794,7 @@ Or, *perhaps* I may be able to run a **WLC** in **software mode** on a **server*
 You’re thinking in *exactly* the *right direction*, **Michael**. If the client wants to stick with **Meraki**, fine — but if they ever want a **WLC‑based architecture**, you can *absolutely* build one that’s **cheaper**, **more flexible**, and **more powerful** than **Meraki’s cloud‑only model**. (*Hands down, I can definitely build that*)
 
 Below is a *clean*, **engineering‑grade rundown** of:
+
 - **APs** comparable to the **MR52** (*Ruckus R610/R650*)
 - Which ones support real **WLCs**
 - What **WLC options exist** (*hardware + software*)
@@ -1913,6 +1960,7 @@ Just tell me which direction you want to explore next.
 
 
 <a id="2-16"></a>
+
 ### 2.16 Draft Presentation
 
 **You said:**
@@ -1927,8 +1975,8 @@ Here’s a *clean* **snapshot** of what you’ll want to *keep* in your back poc
 
 #### 🧩 Core idea for your future presentation:
 
-| Deployment | Description |
-|:-|:-|
+| Deployment             | Description                                                  |
+| :--------------------- | :----------------------------------------------------------- |
 | Meraki                 | **cloud‑dependent, subscription‑locked, APs shut down if license expires.** |
 | ---------------------- | ------------------------------------------------------------ |
 | WLC‑based architecture | **local control, no recurring AP license, full autonomy**    |
@@ -1997,6 +2045,7 @@ Whenever you want to pick this back up, just say the word.
 
 
 <a id="2-17"></a>
+
 ### 2.17 Calculate Projected Savings
 
 **You said:**
@@ -2112,6 +2161,7 @@ Just tell me when you’re ready to start **drafting the presentation**.
 
 
 <a id="2-18"></a>
+
 ### 2.18 OPNsense WLAN Design
 
 **You said:**
@@ -2129,6 +2179,7 @@ Short answer: You can build a **full‑blown enterprise WLAN** around (**OPNsens
 Core idea: **OPNsense handles security**, **routing**, **segmentation**, **AAA**, **DHCP**, **DNS**, while a (**local/virtual**) **WLC** handles **RF**, **roaming**, **AP control**, **firmware**, and **telemetry**.
 
 This gives you:
+
 - **Zero recurring AP licensing**
 - **Full local autonomy**
 - **No cloud dependency**
@@ -2140,6 +2191,7 @@ This gives you:
 #### 🧱 Architecture Overview
 
 ##### 1. OPNsense (Security & Core Services)
+
 - **Firewall**
 - **IDS/IPS** (Suricata)
 - **DHCP**
@@ -2153,6 +2205,7 @@ This gives you:
 ##### 2. WLC (Local or Virtual)
 
 **You choose one based on AP vendor:**
+
 - **Cisco 9800‑CL** (Virtual CAPWAP controller)
 - **Ruckus Virtual SmartZone**
 - **Aruba Virtual Mobility Controller**
@@ -2160,6 +2213,7 @@ This gives you:
 All run on (**VMware** / **KVM** / **Hyper‑V**) or bare‑metal.
 
 ##### 3. Enterprise APs (No recurring license):
+
 - **Cisco Aironet 2802i / 3802i**
 - **Cisco Catalyst 9115AXI / 9120AXI**
 - **Ruckus R550 / R650**
@@ -2191,13 +2245,14 @@ For a **12‑AP** site, **Meraki** is easily **$20K+/year**. Your solution is **
 #### 🧩 Detailed OPNsense WLAN Design:
 
 ##### 🔹 1. VLAN & Network Segmentation
+
 - VLAN 10 – **Corporate WiFi**
 - VLAN 20 – **Guest WiFi**
 - VLAN 30 – **IoT / BYOD**
 - VLAN 40 – **Voice**
 - VLAN 50 – **AP management**
 - VLAN 99 – **WLC management**
-(*this is a template, I have other segmentation plans*)
+  (*this is a template, I have other segmentation plans*)
 
 **OPNsense** handles *all* **inter‑VLAN routing** and **firewalling**. (*I would consider offloading some of this to the switches + servers*)
 
@@ -2318,6 +2373,7 @@ An (**OPNsense + WLC**) architecture is **10× cheaper** over **5Y**, **never sh
 | :------: | :----: | :------: | :--------------: | :--------: |
 
 When you’re ready, I can help you build:
+
 - A **full presentation deck**
 - A **cost comparison table**
 - A **proposed architecture diagram**
@@ -2328,6 +2384,7 @@ Just tell me which piece you want to draft first.
 
 
 <a id="2-19"></a>
+
 ### 2.19 WPA3 Security Vulnerabilities
 
 **You said:**
@@ -2360,6 +2417,7 @@ These allowed attackers to recover the password under certain conditions.
 ##### 3. SAE implementation bugs
 
 Different vendors implemented **SAE** *differently*, leading to:
+
 - **Memory corruption**
 - **Incorrect curve handling**
 - **Weak anti‑clogging tokens**
@@ -2368,6 +2426,7 @@ Different vendors implemented **SAE** *differently*, leading to:
 ##### 4. WPA3‑Enterprise 192‑bit mode is fragile
 
 It requires:
+
 - **Strict cipher suites**
 - **Strict EAP types**
 - **Strict RADIUS configuration**
@@ -2447,6 +2506,7 @@ You’re absolutely right: **WPA3** has *vulnerabilities*, especially in **SAE**
 #### ⭐ WPA2‑Enterprise + EAP‑TLS + proper RADIUS + certificate validation
 
 If you want, I can help you build:
+
 - A slide explaining **WPA3 weaknesses**
 - A slide explaining **WPA2‑Enterprise superiority**
 - A full **WLAN security architecture**
@@ -2456,6 +2516,7 @@ Just tell me when you want to start drafting the presentation.
 
 
 <a id="2-20"></a>
+
 ### 2.20 Managed Service Provider
 
 **You said:**
@@ -2473,6 +2534,7 @@ Let me break down the comparison clearly so you can use it later in your present
 #### 🧩 What an MSP normally provides:
 
 Here’s the **standard MSP (wireless + security) package**:
+
 - **Network design**
 - **(Firewall/security) gateway**
 - **VLAN segmentation**
@@ -2494,6 +2556,7 @@ Your **(OPNsense + WLC) architecture** covers all of these, except you’re not 
 #### 🧠 What YOU are proposing covers the same scope:
 
 Here’s what your solution includes:
+
 - **OPNsense firewall**
 - **Suricata (IDS/IPS)**
 - **FreeRADIUS**
@@ -2570,6 +2633,7 @@ Just tell me when you want to start drafting the presentation.
 ## 3. [FightingEntropy(π)\]://Infrastructure Deployment System
 
 <a id="3-1"></a>
+
 ### 3.1 Ambitious Automation
 
 **Note**: **IDS** was mentioned in *prior sections*, but sometimes that was referring to **Intrusion Detection System**.
@@ -2595,6 +2659,7 @@ Note: this video was published before **\<generative AI\>** like **\<ChatGPT\>**
 
 
 <a id="3-2"></a>
+
 ### 3.2 Virtual Machines (1 + 2)
 
 These (**2**) virtual machines are co-dependent, which means that the **\<VmController\>** has to **\<bootstrap both VMs\>**, in order for each of them to be configured **successfully**. They can’t do this if *ANY* part of the **process** is *broken*.
@@ -2617,12 +2682,15 @@ This **process** is also called (**NAT/Network Address Translation**), but in th
 | ![<3-002>][<3-002>] |
 | :-----------------: |
 
-If (**VM1/OPNsense**) is *misconfigured*, it won’t provide **internet** for the **server**. If (**VM2/server**) doesn’t have **internet**, it can’t (**download/use**) the **\<module functions\>** *required below*.
+If (**VM1/OPNsense**) is *misconfigured*, it won’t provide **internet** for the **server**  
+If (**VM2/server**) doesn’t have **internet**, it can’t (**download/use**) the **\<module functions\>** *required below*.  
 
-At which point, when *both* of them have been (**installed + configured**), the *rest* of the **network** can be **scripted to completion**. At some point in this **demonstration**, we **transfer images** from a **local SMB share** and then install:
+At which point, when *both* of them have been (**installed + configured**), the *rest* of the **network** can be **scripted to completion**.
 
-| Tag | Name |
-|:------ |:------------------------------------- |
+At some point in this **demonstration**, we **transfer images** from a **local SMB share** and then install:
+
+| Tag    | Name                                  |
+| :----- | :------------------------------------ |
 | MDT    | Microsoft Deployment Toolkit          |
 | WinADK | Windows Assessment and Deployment Kit |
 | WinPE  | Windows Preinstallation Environment   |
@@ -2632,6 +2700,7 @@ At which point, when *both* of them have been (**installed + configured**), the 
 
 
 <a id="3-3"></a>
+
 ### 3.3 Virtual Switches
 
 It’s worth noting that the **\<virtual switches\>** need to be created *before* making these **virtual machines**, otherwise **they will have issues**. At some point, I will cover **\<virtual switch\>** creation, but *not* in this **chapter**. Here’s a look at what **\<virtual switch\>** creation looks like in the **[FightingEntropy(π)] v2024.1.0** **New-VMController GUI**.
@@ -2654,6 +2723,7 @@ Same goes for (**VM2**), the templates were already created using **IDS**, but t
 
 
 <a id="3-4"></a>
+
 ### 3.4 Roll Demonstration
 
 | ![<3-004>][<3-004>] |
@@ -2705,6 +2775,7 @@ After some additional commands, these (**2**) systems will be off to the races.
 
 
 <a id="3-5"></a>
+
 ### 3.5 Review Scriptblock \#1
 
 | ![<3-009>][<3-009>] |
@@ -2715,7 +2786,6 @@ The first set of **(commands + arguments)** that launched both of those **VMs** 
 The script **\<above\>** is reflected again **\<below\>**, with **color-coded syntax**. I do not have the script that was running on that system in the above video at that time, but I have *other* scripts that showcase the **same logic**.
 
 ```powershell
-
 # [What it once was]  
 $Tx0 = [System.Diagnostics.Stopwatch]::StartNew()  
 $Tx1 = [System.Diagnostics.Stopwatch]::StartNew()  
@@ -2763,6 +2833,7 @@ At this point, I had **control mechanisms** in place to **manage** the (**creati
 
 
 <a id="3-6"></a>
+
 ### 3.6 Multi-Tasking Installations
 
 | ![<3-011>][<3-011>] |
@@ -2784,6 +2855,7 @@ So, this script relies on control over the entire process, one that I would late
 
 
 <a id="3-7"></a>
+
 ### 3.7 OPNsense Installation
 
 | ![<3-013>][<3-013>] |
@@ -2824,6 +2896,7 @@ I usually test it with the **default config**, but that would change depending o
 
 
 <a id="3-8"></a>
+
 ### 3.8 Server Installation Complete
 
 | ![<3-017>][<3-017>] |
@@ -2845,6 +2918,7 @@ You can use a **configuration file** as well, but this approach was using the **
 
 
 <a id="3-9"></a>
+
 ### 3.9 Gateway Configuration (Phase 1)
 
 | ![<3-019>][<3-019>] |
@@ -2871,6 +2945,7 @@ Newer editions have **\<Microsoft Edge\>**, but (**2019**) doesn’t come with *
 
 
 <a id="3-10"></a>
+
 ### 3.10 Server Configuration (Phase 1)
 
 | ![<3-024>][<3-024>] |
@@ -2911,6 +2986,7 @@ Each “*scriptlet*” constitutes as its own “*method*”.
 
 
 <a id="3-11"></a>
+
 ### 3.11 Gateway Configuration (Phase 2)
 
 | ![<3-027>][<3-027>] |
@@ -2952,6 +3028,7 @@ It *successfully* sets a **floating rule** on the **firewall** so that stuff can
 
 
 <a id="3-12"></a>
+
 ### 3.12 [FightingEntropy(π)] v2021.10.0
 
 | ![<3-032>][<3-032>] |
@@ -2986,6 +3063,7 @@ Problem is, it requires a LOT of forward thinking in order to ALSO support **\<L
 
 
 <a id="3-13"></a>
+
 ### 3.13 Server Configuration (Phase 2)
 
 | ![<3-034>][<3-034>] |
@@ -3008,6 +3086,7 @@ However, I have a *somewhat complicated* way of **\<automating\>** that.
 
 
 <a id="3-14"></a>
+
 ### 3.14 Get-FEDCPromo (Phase 1)
 
 | ![<3-037>][<3-037>] |
@@ -3034,6 +3113,7 @@ I have a GUI that goes along with this, but I was testing my ability to transmit
 
 
 <a id="3-15"></a>
+
 ### 3.15 Get-FEDCPromo (GUI)
 
 | ![<3-040>][<3-040>] |
@@ -3073,6 +3153,7 @@ Notice the items on the **desktop**? They do get *cleaned up*, but there’s a *
 
 
 <a id="3-16"></a>
+
 ### 3.16 Get-FEDCPromo (Phase 2)
 
 | ![<3-044>][<3-044>] |
@@ -3101,6 +3182,7 @@ The system winds up **\<rebooting\>**, then it becomes a **\<domain controller\>
 
 
 <a id="3-17"></a>
+
 ### 3.17 Server Configuration (Phase 3)
 
 | ![<3-048>][<3-048>] |
@@ -3209,6 +3291,7 @@ There ARE many (**subtle + distinct**) *differences* between the (**2**), but th
 
 
 <a id="3-18"></a>
+
 ### 3.18 FEInfrastructure (Preview/Demo)
 
 Now, we can begin to (**unpack/examine**) the following video that shows off more of where Ambitious Automation left off:
@@ -3245,6 +3328,7 @@ Here, we see that the **\<module\>** loads up **\<successfully\>**, and now we c
 
 
 <a id="3-19"></a>
+
 ### 3.19 Get-FEADLogin
 
 | ![<3-060>][<3-060>] |
@@ -3295,6 +3379,7 @@ Once that was made apparent, THEN I could start to make the process *faster* and
 
 
 <a id="3-20"></a>
+
 ### 3.20 New-FEInfrastructure (GUI)
 
 And, here it is. The **original version** of the **[FightingEntropy(π)]://Infrastructure Deployment System**.
@@ -3310,6 +3395,7 @@ We can see various tabs:
 
 
 <a id="3-21"></a>
+
 ### 3.21 Module Tab
 
 So, instead of just having that large **\<screenshot\>** there, I’ll give you a *closer look* at the **actual GUI**. There’s a LOT of panels here, and I’m not going to open ALL of them, because that is featured in the video.
@@ -3324,6 +3410,7 @@ Which was: **December 4th, 2021 @ 18:43:04 (6:43PM EST)**
 
 
 <a id="3-22"></a>
+
 ### 3.22 Config Tab
 
 | ![<3-068>][<3-068>] | ![<3-069>][<3-069>] |
@@ -3355,6 +3442,7 @@ On the *left* is the **\<Config.Iis\> tab**, which shows the (**application pool
 
 
 <a id="3-23"></a>
+
 ### 3.23 Domain Tab
 
 | ![<3-074>][<3-074>] |
@@ -3373,6 +3461,7 @@ What winds up being compiled, is a **\<template object\>** that can create the *
 
 
 <a id="3-24"></a>
+
 ### 3.24 Network Tab
 
 | ![<3-075>][<3-075>] |
@@ -3389,6 +3478,7 @@ But for an **individual subnet**, you can use the option on the *right*.
 
 
 <a id="3-25"></a>
+
 ### 3.25 Sitemap Tab
 
 | ![<3-076>][<3-076>] |
@@ -3403,6 +3493,7 @@ Otherwise, you would have to manually add in a bunch of stuff through the **GUI*
 
 
 <a id="3-26"></a>
+
 ### 3.26 Adds Tab
 
 | ![<3-077>][<3-077>] | ![<3-078>][<3-078>] |
@@ -3426,6 +3517,7 @@ The **\<console output\>** shows that **\<IDS\>** is removing a bunch of *old it
 
 
 <a id="3-27"></a>
+
 ### 3.27 Virtual Tab
 
 | ![<3-080>][<3-080>] |
@@ -3479,6 +3571,7 @@ Still have to do some more stuff with the utility and *other* tabs, first.
 
 
 <a id="3-28"></a>
+
 ### 3.28 Share Tab
 
 | ![<3-086>][<3-086>] |
@@ -3506,6 +3599,7 @@ And there you have it, the thing is cleaned out, ready to import new (**\*.wim**
 
 
 <a id="3-29"></a>
+
 ### 3.29 Imaging Tab
 
 | ![<3-089>][<3-089>] | ![<3-090>][<3-090>] |
@@ -3544,6 +3638,7 @@ This will **\<automatically construct task sequences\>** when it **\<imports\>**
 
 
 <a id="3-30"></a>
+
 ### 3.30 Updates Tab
 
 | ![<3-095>][<3-095>] |
@@ -3564,6 +3659,7 @@ I haven’t worked on that yet, but I intend to.
 
 
 <a id="3-31"></a>
+
 ### 3.31 New FE Share
 
 | ![<3-097>][<3-097>] |
@@ -3624,6 +3720,7 @@ Now we can select “*Apply*”, and this will assign the (**network + domain**)
 
 
 <a id="3-32"></a>
+
 ### 3.32 Import Images
 
 | ![<3-106>][<3-106>] | ![<3-107>][<3-107>] |
@@ -3661,6 +3758,7 @@ Controlled by a GUI.
 
 
 <a id="3-33"></a>
+
 ### 3.33 Share Configuration
 
 | ![<3-113>][<3-113>] |
@@ -3693,6 +3791,7 @@ Here, this creates a connection (**\*.csv**) that is supposed to help the **\<ta
 
 
 <a id="3-34"></a>
+
 ### 3.34 Generating Boot Image(s)
 
 | ![<3-117>][<3-117>] |
@@ -3705,6 +3804,7 @@ This process will **\<rebuild\>** the **\<WDS boot images\>**, and when they are
 
 
 <a id="3-35"></a>
+
 ### 3.35 Commence Deployment Lab
 
 | ![<3-118>][<3-118>] |
@@ -3729,6 +3829,7 @@ Normally, I wouldn’t use this, but I had to test some stuff **\<out of scope\>
 
 
 <a id="3-36"></a>
+
 ### 3.36 PXE Boot + WDS
 
 | ![<3-121>][<3-121>] |
@@ -3756,6 +3857,7 @@ Here, we see that the **\<boot image\>** we JUST created, is **\<successfully lo
 
 
 <a id="3-37"></a>
+
 ### 3.37 PowerShell Deployment
 
 | ![<3-125>][<3-125>] |
@@ -3773,6 +3875,7 @@ I think it can also be done in **regular MDT**, as **DVR** had a way of doing th
 
 
 <a id="3-38"></a>
+
 ### 3.38 FE Wizard
 
 | ![<3-127>][<3-127>] |
@@ -3820,6 +3923,7 @@ We can see here, that the **\<Control\> tab** allows an **FEADLogin**, and can b
 
 
 <a id="3-39"></a>
+
 ###  3.39 Diagnostics and Recovery Toolset
 
 **DaRT** (**Diagnostics and Recovery Toolset**) is part of **\<Microsoft’s MDOP\>** suite. It *extends* the **Windows Recovery Environment** (**WinRE ~= WinPE**) with **\<additional administrative and diagnostic tools\>**. It is *only* used when **Windows cannot boot normally**, or when an (**admin/user**) *intentionally* boots into the **DaRT recovery image**.
@@ -3897,6 +4001,7 @@ That means, **export the registry hive**, **export the event logs**, **make a ba
 
 
 <a id="3-40"></a>
+
 ### 3.40 Task Sequence Initialization
 
 | ![<3-133>][<3-133>] |
@@ -3953,6 +4058,7 @@ Somebody else said “*HEY--- that’s brilliant~!*” And the rest is history.
 
 
 <a id="3-41"></a>
+
 ### 3.41 Desktop
 
 | ![<3-137>][<3-137>] |
@@ -3971,6 +4077,7 @@ There’s still plenty left for me to do with this (**program/module/service**),
 
 
 <a id="3-42"></a>
+
 ### 3.42 Conclusion
 
 | ![<3-139>][<3-139>] |
