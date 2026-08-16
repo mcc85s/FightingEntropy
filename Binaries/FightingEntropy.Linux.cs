@@ -1,11 +1,19 @@
 // FightingEntropy.Linux
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using FightingEntropy.Core;
 using FightingEntropy.Core.Interop;
+using FightingEntropy.Core.Platform.Security;
+using FightingEntropy.Core.Platform.Security.Certificate;
+using System.ComponentModel;
+using System.Security;
+
 
 namespace FightingEntropy
 {
@@ -15,20 +23,416 @@ namespace FightingEntropy
         {
             public sealed class Controller : FightingEntropy.Core.Interop.Controller
             {
-                public override IConfiguration Configuration
-                {
-                    get;
-                }
-                public override IFileSystem FileSystem => throw new NotImplementedException();
-                public override IProcess       Process => throw new NotImplementedException();
-                public override IService       Service => throw new NotImplementedException();
-                public override ICommand       Command => throw new NotImplementedException();
-                public override INetwork       Network => throw new NotImplementedException();
-                public override ISecurity     Security => throw new NotImplementedException();
-                public override IHardware     Hardware => throw new NotImplementedException();
+                public override ISecurity           Security { get; }
+                public override IConfiguration Configuration { get; }
+                public override IFileSystem       FileSystem => throw new NotImplementedException();
+                public override IProcess             Process => throw new NotImplementedException();
+                public override IService             Service => throw new NotImplementedException();
+                public override ICommand             Command => throw new NotImplementedException();
+                public override INetwork             Network => throw new NotImplementedException();
+                public override IHardware           Hardware => throw new NotImplementedException();
                 public Controller()
                 {
+                    Security      = new Security.Manager();
                     Configuration = new Configuration.Manager();
+                }
+            }
+        }
+
+        namespace Security
+        {
+            public class Identifier : Core.Platform.Security.Identifier
+            {
+                public Identifier() { }
+                public Identifier(int uid, int gid)
+                {
+                    Name             = null;
+
+                    Uid              = uid;
+                    Gid              = gid;
+
+                    Sid              = null;
+                    Rid              = null;
+                    AccountDomainSid = null;
+                    BinaryLength     = null;
+                }
+                public override string ToString()
+                {
+                    if (!string.IsNullOrEmpty(Sid))
+                        return Sid;
+                    
+                    return $"Uid={Uid}, Gid={Gid}";
+                }
+            }
+
+            public class Role : Core.Platform.Security.Role
+            {
+                public Role() { }
+                public Role(string line)
+                {
+                    string[] split = line.Split(':');
+
+                    Name    = split[0];
+                    Gid     = int.Parse(split[2]);
+                    Rid     = null;
+                    Sid     = null;
+                    Members = split[3].Split(',').Where(x => x.Length > 0).ToList();
+                }
+            }
+
+            public class Identity : Core.Platform.Security.Identity
+            {
+                [DllImport("libc")]
+                private static extern uint geteuid();
+                public Identity() { }
+                public Identity(Core.Platform.Security.Account account, List<Core.Platform.Security.Role> roles)
+                {
+                    Name            = account?.Username;
+                    Domain          = "";
+                    Id              = account?.Uid.ToString();
+                    IsAdministrator = geteuid() == 0;
+                    IsAuthenticated = account != null;
+                    Role            = roles;
+                }
+            }
+
+            public class Claim : Core.Platform.Security.Claim
+            {
+                public Claim() { }
+                public Claim(string type, string value)
+                {
+                    Type           = type;
+                    Value          = value;
+
+                    Issuer         = null;
+                    OriginalIssuer = null;
+                    ValueType      = null;
+                }
+            }
+
+            public class Account : Core.Platform.Security.Account
+            {
+                public Account() { }
+                public Account(uint index, string line)
+                {
+                    Index             = index;
+
+                    string[] split    = line.Split(':');
+
+                    Username          = split[0];
+                    DisplayName       = null;
+                    Fullname          = split[4];
+                    UserPrincipalName = null;
+                    SamAccountName    = null;
+                    Domain            = null;
+                    Uid               = int.Parse(split[2]);
+                    Gid               = int.Parse(split[3]);
+                    Sid               = null;
+                    Home              = split[5];
+                    Shell             = split[6];
+                }
+            }
+
+            public class Principal : Core.Platform.Security.Principal
+            {
+                public Principal() { }
+                public Principal(Account account, Identifier identifier, List<Role> roles)
+                {
+                    Account    = account;
+                    Identifier = identifier;
+
+                    if (roles?.Count > 0)
+                        Role   = roles;
+                }
+            }
+
+            public class Context : Core.Platform.Security.Context
+            {
+                public Context() { }
+                public Context(Principal principal, List<Certificate.Entry> certificates)
+                {
+                    Principal   = principal;
+                    Account     = principal?.Account;
+
+                    if (certificates?.Count > 0)
+                        Certificate = certificates;
+                }
+            }
+
+            public class Credential : Core.Platform.Security.Credential
+            {
+                
+            }
+
+            namespace Certificate
+            {
+                public class Entry : Core.Platform.Security.Certificate.Entry
+                {
+                    public Entry() { }
+                    public Entry(uint index, System.IO.FileInfo file, Store store)
+                    {
+                        Index         = index;
+                        Name          = file.Name;
+                        StoreName     = store.DisplayName;
+                        StoreLocation = store.Location;
+
+                        if (!string.IsNullOrEmpty(file.LinkTarget))
+                        {
+                            Symlink  = file.FullName;
+                            Fullname = Path.GetFullPath(Path.Combine(file.DirectoryName, file.LinkTarget));
+                        }
+                        else
+                        {
+                            Symlink  = null;
+                            Fullname = file.FullName;
+                        }
+
+                        Exists       = System.IO.File.Exists(Fullname);
+                    }
+                }
+
+                public class Store : Core.Platform.Security.Certificate.Store
+                {
+                    public Store() { }
+                    public Store(uint index, string displayname, string fullname)
+                    {
+                        Index       = index;
+                        DisplayName = displayname;
+
+                        Name        = Path.GetFileName(fullname);
+                        Fullname    = fullname;
+
+                        Refresh();
+                    }
+                    public void SetStoreLocation()
+                    {
+                        if (Fullname.StartsWith("/etc/ssl"))
+                            Location = StoreLocation.System;
+
+                        else if (Fullname.StartsWith("/usr/local/share"))
+                            Location = StoreLocation.App;
+
+                        else if (Fullname.Contains(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)))
+                            Location = StoreLocation.User;
+
+                        else
+                            Location = StoreLocation.Unspecified;
+                    }
+                    public void Check()
+                    {
+                        Exists = System.IO.Directory.Exists(Fullname);
+                    }
+                    public void Clear()
+                    {
+                        Certificate.Clear();
+                    }
+                    public void Refresh()
+                    {
+                        Clear();
+                        Check();
+
+                        if (Exists)
+                        {
+                            SetStoreLocation();
+
+                            foreach (FileInfo file in new System.IO.DirectoryInfo(Fullname).GetFiles())
+                            {
+                                Certificate.Add(new Entry((uint)Certificate.Count, file, this));
+                            }
+                        }
+                    }
+                }
+            }
+
+            public class Manager : Core.Interop.Security
+            {
+                // public Platform.Security.Identifier             Domain { get; }
+                // public List<Platform.Security.Certificate.Store> Store { get; }
+                // public List<Platform.Security.Context>         Context { get; }
+                // public Platform.Security.Context               Current { get; }
+                // public Platform.Security.Credential         Credential { get; }
+                // public List<Platform.Security.Reference>     Reference { get; }
+                public List<Account>                              Account { get; set; }
+                public List<Role>                                    Role { get; set; }
+                public List<Identity>                            Identity { get; set; }
+                public List<Claim>                                  Claim { get; set; }
+                // public abstract Platform.Security.Principal GetPrincipal()
+                // public abstract Platform.Security.Context GetContext()
+                // public abstract void Refresh()
+                // public void GetReferenceList()
+                // public abstract void ReloadDomain()
+                // public abstract void ReloadReference()
+                // public abstract void ReloadStores()
+                // public abstract void ReloadContext()
+                // public abstract void ReloadCurrent()
+                // public abstract void ReloadCredential()
+                // public static AuthenticationType GetAuthType()
+                // public static AccountType GetAccountType()
+                public Manager() : base()
+                {
+                    Account  = new List<Account>();
+                    Role     = new List<Role>();
+                    Identity = new List<Identity>();
+                    Claim    = new List<Claim>();
+                }
+                public override void ReloadDomain()
+                {
+                    
+                }
+                public override void Refresh()
+                {
+                    GetAccounts();
+                    GetRoles();
+                    GetStores();
+                    ResolveIdentity();
+                    ResolvePrincipal();
+                    ResolveCertificates();
+                    ResolveContext();
+                }
+                public override void ResolveAccount()
+                {
+                    
+                }
+                public override void ResolveIdentity()
+                {
+                    Identity.Clear();
+
+                    foreach (var acct in Account)
+                    {
+                        Identity.Add(new Identity(acct));
+                    }
+                }
+                public override void ResolveRoles()
+                {
+                    
+                }
+                public override void ResolveClaims()
+                {
+                    Claim.Clear();
+                }
+                public override void ResolveCertificates()
+                {
+                    foreach (var store in Store)
+                    {
+                        foreach (var entry in store.Certificate)
+                        {
+                            Populate(entry);
+                        }
+                    }
+                }
+                public override void ResolvePrincipal()
+                {
+                    Account   account = GetAccount();
+                    Identity identity = GetIdentity();
+                    List<Role>  roles = Role.Where(r => r.Members.Contains(account.Username)).ToList();
+
+                    Principal         = new Principal(account, identity.Identifier, roles);
+                }
+                public override void ResolveContext()
+                {
+                    Context = new Context(Principal, Role);
+                }
+                public override Identity GetIdentity() => Identity.FirstOrDefault();
+                public override Account GetAccount() => Account.FirstOrDefault();
+                public override Principal GetPrincipal() => Principal;
+                public override Context GetContext() => Context;
+                public override Credential GetCredential() => Credential;
+                public void GetAccounts()
+                {
+                    Account.Clear();
+
+                    foreach (string line in System.IO.File.ReadAllLines("/etc/passwd"))
+                    {
+                        Account.Add((uint)Account.Count, line);
+                    }
+                }
+                public void GetRoles()
+                {
+                    Role.Clear();
+
+                    foreach (string line in System.IO.File.ReadAllLines("/etc/group"))
+                    {
+                        Role.Add((uint)Role.Count, line);
+                    }
+                }
+                public void GetStores()
+                {
+                    Store.Clear();
+
+                    AddStore("System CA", "/etc/ssl/certs");
+                    AddStore("Local CA", "/usr/local/share/ca-certificates");
+                    AddStore("User NSSDB", $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.pki/nssdb");
+                }
+                public void AddStore(string displayname, string fullname)
+                {
+                    if (!Store.Any(e => e.DisplayName == displayname))
+                    {
+                        Store.Add(new Store((uint)Store.Count, displayname, fullname));
+                    }
+                }
+                public Account GetAccountByUid(int uid)
+                {
+                    return Account.FirstOrDefault(a => a.Uid == uid);
+                }
+                public List<Role> GetRolesForUser(string username)
+                {
+                    return Role.Where(r => r.Members.Contains(username)).ToList();
+                }
+                public string RunProcess(string name, string arguments)
+                {
+                    var psi                    = new ProcessStartInfo
+                    {
+                        FileName               = name,
+                        Arguments              = arguments,
+                        RedirectStandardError  = true,
+                        RedirectStandardOutput = true,
+                        UseShellExecute        = false
+                    };
+
+                    using var proc = Process.Start(psi);
+                    string output  = proc.StandardOutput.ReadToEnd();
+
+                    proc.WaitForExit();
+
+                    return output;
+                }
+                public bool IsAdmin(string username)
+                {
+                    string output = RunProcess("sudo",$"-l -U {username}");
+
+                    return Regex.IsMatch(output, @"\(ALL.*\)\s+(NOPASSWD:\s*)?ALL", RegexOptions.Multiline);
+                }
+                public string RunOpenSsl(string args)
+                {
+                    return RunProcess("openssl", args);
+                }
+                public void Populate(Entry entry)
+                {
+                    string raw = RunOpenSsl($"x509 -in \"{entry.Fullname}\" -text -noout");
+
+                    if (string.IsNullOrWhiteSpace(raw))
+                        return;
+
+                    entry.Type        = EntryType.Certificate;
+                    entry.Thumbprint  = ParseThumbprint(raw);
+                    entry.Subject     = ParseField(raw, "Subject:");
+                    entry.Issuer      = ParseField(raw, "Issuer:");
+                    entry.NotBefore   = new Format.ModDateTime(ParseField(raw, "Not Before:"));
+                    entry.NotAfter    = new Format.ModDateTime(ParseField(raw, "Not After :"));
+                    entry.HasPrivateKey = File.Exists(entry.Fullname.Replace(".crt", ".key"));
+                }
+                public string ParseField(string raw, string field)
+                {
+                    var line = raw.Split('\n').FirstOrDefault(l => Regex.IsMatch(l, field));
+
+                    if (line == null) return null;
+
+                    if (field == "SHA256 Fingerprint")
+                    {
+                        return line.Replace("SHA256 Fingerprint=","").Replace(":","").Trim();
+                    }
+
+                    return line.Replace(field, "").Replace(":").Trim();
                 }
             }
         }
@@ -299,7 +703,7 @@ namespace FightingEntropy
                     string company = CompanyName().ToLower().Replace(" ","-");
                     string project = ProjectName().ToLower().Replace(" ","");
 
-                    return $"/etc/{company}/{project}";
+                    return $"/var/lib/{company}/{project}";
                 }
                 public override void Resolve()
                 {
@@ -654,7 +1058,6 @@ namespace FightingEntropy
                 }
             }
 
-            // end namespace [FileSystem]
         }
 
 

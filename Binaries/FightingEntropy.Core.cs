@@ -27,8 +27,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection.Emit;
-using FightingEntropy.Core.Module.Root;
-using FightingEntropy.Core.Module.Host;
 
 namespace FightingEntropy
 {
@@ -3169,7 +3167,7 @@ namespace FightingEntropy
             {
                 public enum Type
                 {
-                    Registry = 0,
+                    Registry   = 0,
                     FileSystem = 1,    
                 }
 
@@ -3290,6 +3288,221 @@ namespace FightingEntropy
             namespace Security
             {
                 [Serializable]
+                public enum ProtocolMode
+                {
+                    None  = 0,
+                    Ssl3  = 48,
+                    Tls10 = 192,
+                    Tls11 = 768,
+                    Tls12 = 3072,
+                    Tls13 = 12288
+                }
+
+                [Serializable]
+                public enum AuthenticationType
+                {
+                    Unknown     = 0,
+                    Kerberos    = 1,
+                    NTLM        = 2,
+                    Negotiate   = 3,
+                    Basic       = 4,
+                    Digest      = 5,
+                    Certificate = 6,
+                    OAuth       = 7,
+                    Federated   = 8,
+                    Anonymous   = 9,
+                    CloudAP     = 10,
+                    LiveID      = 11,
+                }
+
+                [Serializable]
+                public enum AccountType
+                {
+                    Unknown        = 0,
+                    LocalSystem    = 1,
+                    LocalService   = 2,
+                    NetworkService = 3,
+                    User           = 4,
+                    BuiltinGroup   = 5,
+                }
+                
+                [Serializable]
+                public class Identifier
+                {
+                    public virtual string             Name { get; set; }
+                    public virtual int?                Uid { get; set; }
+                    public virtual int?                Gid { get; set; }
+                    public virtual int?                Rid { get; set; }
+                    public virtual string              Sid { get; set; }
+                    public virtual string AccountDomainSid { get; set; }
+                    public virtual int?       BinaryLength { get; set; }
+                    public Identifier() { }
+                }
+
+                [Serializable]
+                public class Reference
+                {
+                    public virtual uint             Index { get; set; }
+                    public virtual bool        Referenced { get; set; }
+                    public virtual string            Name { get; set; }
+                    public virtual string           Value { get; set; }
+                    public virtual Identifier  Identifier { get; set; }
+                    public Reference() { }
+                }
+
+                [Serializable]
+                public class Role
+                {
+                    public virtual string          Name { get; set; }
+                    public virtual int?             Gid { get; set; }
+                    public virtual int?             Rid { get; set; }
+                    public virtual string           Sid { get; set; }
+                    public virtual List<string> Members { get; set; }
+                    public Role()
+                    {
+                        Members = new List<string>();
+                    }
+                }
+
+                [Serializable]
+                public class Identity
+                {
+                    public virtual string          Name { get; set; }
+                    public virtual string        Domain { get; set; }
+                    public virtual string            Id { get; set; }
+                    public virtual bool IsAdministrator { get; set; }
+                    public virtual bool IsAuthenticated { get; set; }
+                    public virtual List<Role>      Role { get; set; }
+                    public Identity()
+                    {
+                        Role = new List<Role>();
+                    } 
+                }
+
+                [Serializable]
+                public class Claim
+                {
+                    public virtual string                         Issuer { get; set; }
+                    public virtual string                 OriginalIssuer { get; set; }
+                    public virtual Dictionary<string, string> Properties { get; set; }
+                    public virtual string                           Type { get; set; }
+                    public virtual string                          Value { get; set; }
+                    public virtual string                      ValueType { get; set; }
+                    public Claim()
+                    {
+                        Properties = new Dictionary<string, string>();
+                    }
+                }
+
+                [Serializable]
+                public class Account
+                {
+                    public virtual uint               Index { get; set; }
+                    public virtual string          Username { get; set; }
+                    public virtual string       DisplayName { get; set; }
+                    public virtual string          Fullname { get; set; }
+                    public virtual string UserPrincipalName { get; set; }
+                    public virtual string    SamAccountName { get; set; }
+                    public virtual string            Domain { get; set; }
+                    public virtual string           NetBios { get; set; }
+                    public virtual int?                 Uid { get; set; }
+                    public virtual int?                 Gid { get; set; }
+                    public virtual string               Sid { get; set; }
+                    public virtual string              Home { get; set; }
+                    public virtual string             Shell { get; set; }
+                    public Account() { }
+                }
+
+                [Serializable]
+                public class Principal
+                {
+                    public virtual Account       Account { get; set; }
+                    public virtual Identifier Identifier { get; set; }
+                    public virtual List<Role>       Role { get; set; }
+                    public virtual List<Claim>     Claim { get; set; }
+                    public Principal()
+                    {
+                        Role  = new List<Role>();
+                        Claim = new List<Claim>();
+                    }
+                }
+
+                [Serializable]
+                public class Context
+                {
+                    public virtual Principal                 Principal { get; set; }
+                    public virtual Credential               Credential { get; set; }
+                    public virtual List<Certificate.Entry> Certificate { get; set; }
+                    public virtual bool                IsAdministrator { get; set; }
+                    public virtual bool                IsAuthenticated { get; set; }
+                    public virtual string                     Platform { get; set; }
+                    public virtual string                       Domain { get; set; }
+                    public virtual string                     Username { get; set; }
+                    public virtual string                       UserId { get; set; }
+                    public virtual string                      GroupId { get; set; }
+                    public Context()
+                    {
+                        Certificate = new List<Certificate.Entry>();
+                    }
+                }
+
+                namespace Certificate
+                {
+                    [Serializable]
+                    public enum EntryType
+                    {
+                        Store       = 0,
+                        Certificate = 1,
+                    }
+
+                    [Serializable]
+                    public enum StoreLocation
+                    {
+                        System      = 0,
+                        User        = 1,
+                        App         = 2,
+                        Unspecified = 3,
+                    }
+
+                    [Serializable]
+                    public class Entry
+                    {
+                        public virtual uint                   Index { get; set; }
+                        public virtual EntryType               Type { get; set; }
+                        public virtual string                  Name { get; set; }
+                        public virtual string              Fullname { get; set; }
+                        public virtual string               Symlink { get; set; }
+                        public virtual bool                  Exists { get; set; }
+                        public virtual string             StoreName { get; set; }
+                        public virtual X509Certificate2 Certificate { get; set; }
+                        public virtual StoreLocation  StoreLocation { get; set; }
+                        public virtual string            Thumbprint { get; set; }
+                        public virtual string               Subject { get; set; }
+                        public virtual string                Issuer { get; set; }
+                        public virtual Format.ModDateTime NotBefore { get; set; }
+                        public virtual Format.ModDateTime  NotAfter { get; set; }
+                        public virtual bool           HasPrivateKey { get; set; }
+                        public Entry() { }
+                    }
+
+                    [Serializable]
+                    public class Store
+                    {
+                        public uint              Index { get; set; }
+                        public string      DisplayName { get; set; }
+                        public StoreLocation  Location { get; set; }
+                        public string             Name { get; set; }
+                        public string         Fullname { get; set; }
+                        public bool             Exists { get; set; }
+                        public List<Entry> Certificate { get; set; }
+                        public Store()
+                        {
+                            Certificate = new List<Entry>();
+                        }
+                    }
+                }
+
+                [Serializable]
                 public class Credential
                 {
                     public string                       Username { get; set; }
@@ -3312,6 +3525,23 @@ namespace FightingEntropy
                     public override string ToString()
                     {
                         return string.Format("Username: {0}, Password: {1}", Username, Password);
+                    }
+                }
+
+                [Serializable]
+                public class Provider
+                {
+                    public Identifier                   Domain { get; set; }
+                    public List<Certificate.Store>       Store { get; set; }
+                    public List<Context>               Context { get; set; }
+                    public Context                     Current { get; set; }
+                    public Credential               Credential { get; set; }
+                    public List<Reference>           Reference { get; set; }
+                    public Provider()
+                    {
+                        Store     = new List<Certificate.Store>();
+                        Context   = new List<Context>();
+                        Reference = new List<Reference>();
                     }
                 }
             }
@@ -3392,6 +3622,228 @@ namespace FightingEntropy
 
         namespace Interop
         {
+            public interface ISecurity
+            {
+                Platform.Security.Identifier                   Domain { get; }
+                List<Platform.Security.Certificate.Store>       Store { get; }
+                List<Platform.Security.Context>               Context { get; }
+                Platform.Security.Context                     Current { get; }
+                Platform.Security.Credential               Credential { get; }
+                List<Platform.Security.Reference>           Reference { get; }
+
+                void SetCredential(Platform.Security.Credential credential);
+                void SetCredential(string username);
+                void GetDomainSid();
+                void Refresh();
+                void GetReferenceList();
+                void ReloadDomain();
+                void ReloadReference();
+                void ReloadStores();
+                void ReloadContext();
+                void ReloadCurrent();
+                void ReloadCredential();
+                Platform.Security.Principal GetPrincipal();
+                Platform.Security.Context GetContext();
+            }
+
+            public abstract class Security : Platform.Security.Provider, ISecurity
+            {
+                protected Security() : base() { }
+                public void SetCredential(Platform.Security.Credential credential)
+                {
+                    Credential = credential;
+                }
+                public void SetCredential(string username)
+                {
+                    System.IO.Console.Write($"Password:");
+
+                    SecureString ss = new SecureString();
+
+                    while (true)
+                    {
+                        var key = System.Console.ReadKey(intercept: true);
+
+                        if (key.Key == ConsoleKey.Enter)
+                            break;
+
+                        if (key.Key == ConsoleKey.Backspace)
+                        {
+                            if (ss.Length > 0)
+                            {
+                                ss.RemoveAt(ss.Length -1);
+
+                                System.Console.Write("\b \b");
+                            }
+                            continue;
+                        }
+
+                        ss.AppendChar(key.KeyChar);
+
+                        System.Console.Write("*");
+                    }
+
+                    System.Console.WriteLine();
+                    
+                    ss.MakeReadOnly();
+
+                    SetCredential(new Credential(username, ss));
+                }
+                public abstract void GetDomainSid();
+                public abstract Platform.Security.Principal GetPrincipal();
+                public abstract Platform.Security.Context GetContext();
+                public abstract void Refresh();
+                public void GetReferenceList()
+                {
+                    Reference.Clear();
+
+                    // Intentionally done this way to make changes more readily
+                    string[] output = new string[95];
+
+                    output[00] = "S-1-0                      , Null Authority";
+                    output[01] = "S-1-0-0                    , Nobody";
+                    output[02] = "S-1-1                      , World Authority";
+                    output[03] = "S-1-1-0                    , Everyone";
+                    output[04] = "S-1-2                      , Local Authority";
+                    output[05] = "S-1-2-0                    , Local";
+                    output[06] = "S-1-2-1                    , Console Logon";
+                    output[07] = "S-1-3                      , Creator Authority";
+                    output[08] = "S-1-3-0                    , Creator Owner";
+                    output[09] = "S-1-3-1                    , Creator Group";
+                    output[10] = "S-1-3-2                    , Creator Owner Server";
+                    output[11] = "S-1-3-3                    , Creator Group Server";
+                    output[12] = "S-1-3-4                    , Owner Rights";
+                    output[13] = "S-1-5-80-0                 , All Services";
+                    output[14] = "S-1-4                      , Non-unique Authority";
+                    output[15] = "S-1-5                      , NT Authority";
+                    output[16] = "S-1-5-1                    , Dialup";
+                    output[17] = "S-1-5-2                    , Network";
+                    output[18] = "S-1-5-3                    , Batch";
+                    output[19] = "S-1-5-4                    , Interactive";
+                    output[20] = "S-1-5-5-X-Y                , Logon Session";
+                    output[21] = "S-1-5-6                    , Service";
+                    output[22] = "S-1-5-7                    , Anonymous";
+                    output[23] = "S-1-5-8                    , Proxy";
+                    output[24] = "S-1-5-9                    , Enterprise Domain Controllers";
+                    output[25] = "S-1-5-10                   , Principal Self";
+                    output[26] = "S-1-5-11                   , Authenticated Users";
+                    output[27] = "S-1-5-12                   , Restricted Code";
+                    output[28] = "S-1-5-13                   , Terminal Server Users";
+                    output[29] = "S-1-5-14                   , Remote Interactive Logon";
+                    output[30] = "S-1-5-15                   , This Organization";
+                    output[31] = "S-1-5-17                   , This Organization";
+                    output[32] = "S-1-5-18                   , Local System";
+                    output[33] = "S-1-5-19                   , NT Authority";
+                    output[34] = "S-1-5-20                   , NT Authority";
+                    output[35] = "S-1-5-21domain-500         , Administrator";
+                    output[36] = "S-1-5-21domain-501         , Guest";
+                    output[37] = "S-1-5-21domain-502         , KRBTGT";
+                    output[38] = "S-1-5-21domain-512         , Domain Admins";
+                    output[39] = "S-1-5-21domain-513         , Domain Users";
+                    output[40] = "S-1-5-21domain-514         , Domain Guests";
+                    output[41] = "S-1-5-21domain-515         , Domain Computers";
+                    output[42] = "S-1-5-21domain-516         , Domain Controllers";
+                    output[43] = "S-1-5-21domain-517         , Cert Publishers";
+                    output[44] = "S-1-5-21root domain-518    , Schema Admins";
+                    output[45] = "S-1-5-21root domain-519    , Enterprise Admins";
+                    output[46] = "S-1-5-21domain-520         , Group Policy Creator Owners";
+                    output[47] = "S-1-5-21domain-526         , Key Admins";
+                    output[48] = "S-1-5-21domain-527         , Enterprise Key Admins";
+                    output[49] = "S-1-5-21domain-553         , RAS and IAS Servers";
+                    output[50] = "S-1-5-32-544               , Administrators";
+                    output[51] = "S-1-5-32-545               , Users";
+                    output[52] = "S-1-5-32-546               , Guests";
+                    output[53] = "S-1-5-32-547               , Power Users";
+                    output[54] = "S-1-5-32-548               , Account Operators";
+                    output[55] = "S-1-5-32-549               , Server Operators";
+                    output[56] = "S-1-5-32-550               , Print Operators";
+                    output[57] = "S-1-5-32-551               , Backup Operators";
+                    output[58] = "S-1-5-32-552               , Replicators";
+                    output[59] = "S-1-5-64-10                , NTLM Authentication";
+                    output[60] = "S-1-5-64-14                , SChannel Authentication";
+                    output[61] = "S-1-5-64-21                , Digest Authentication";
+                    output[62] = "S-1-5-80                   , NT Service";
+                    output[63] = "S-1-5-83-0                 , NT VIRTUAL MACHINE\\Virtual Machines";
+                    output[64] = "S-1-16-0                   , Untrusted Mandatory Level";
+                    output[65] = "S-1-16-4096                , Low Mandatory Level";
+                    output[66] = "S-1-16-8192                , Medium Mandatory Level";
+                    output[67] = "S-1-16-8448                , Medium Plus Mandatory Level";
+                    output[68] = "S-1-16-12288               , High Mandatory Level";
+                    output[69] = "S-1-16-16384               , System Mandatory Level";
+                    output[70] = "S-1-16-20480               , Protected Process Mandatory Level";
+                    output[71] = "S-1-16-28672               , Secure Process Mandatory Level";
+                    output[72] = "S-1-5-32-554               , BUILTIN\\Pre-Windows 2000 Compatible Access";
+                    output[73] = "S-1-5-32-555               , BUILTIN\\Remote Desktop Users";
+                    output[74] = "S-1-5-32-556               , BUILTIN\\Network Configuration Operators";
+                    output[75] = "S-1-5-32-557               , BUILTIN\\Incoming Forest Trust Builders";
+                    output[76] = "S-1-5-32-558               , BUILTIN\\Performance Monitor Users";
+                    output[77] = "S-1-5-32-559               , BUILTIN\\Performance Log Users";
+                    output[78] = "S-1-5-32-560               , BUILTIN\\Windows Authorization Access Group";
+                    output[79] = "S-1-5-32-561               , BUILTIN\\Terminal Server License Servers";
+                    output[80] = "S-1-5-32-562               , BUILTIN\\Distributed COM Users";
+                    output[81] = "S-1-5- 21domain -498       , Enterprise Read-only Domain Controllers";
+                    output[82] = "S-1-5- 21domain -521       , Read-only Domain Controllers";
+                    output[83] = "S-1-5-32-569               , BUILTIN\\Cryptographic Operators";
+                    output[84] = "S-1-5-21 domain -571       , Allowed RODC Password Replication Group";
+                    output[85] = "S-1-5- 21 domain -572      , Denied RODC Password Replication Group";
+                    output[86] = "S-1-5-32-573               , BUILTIN\\Event Log Readers";
+                    output[87] = "S-1-5-32-574               , BUILTIN\\Certificate Service Dcom Access";
+                    output[88] = "S-1-5-21-domain-522        , Cloneable Domain Controllers";
+                    output[89] = "S-1-5-32-575               , BUILTIN\\RDS Remote Access Servers";
+                    output[90] = "S-1-5-32-576               , BUILTIN\\RDS Endpoint Servers";
+                    output[91] = "S-1-5-32-577               , BUILTIN\\RDS Management Servers";
+                    output[92] = "S-1-5-32-578               , BUILTIN\\Hyper-V Administrators";
+                    output[93] = "S-1-5-32-579               , BUILTIN\\Access Control Assistance Operators";
+                    output[94] = "S-1-5-32-580               , BUILTIN\\Remote Management Users";
+
+                    foreach (string line in output)
+                    {
+                        string[] split = line.Split(',');
+                        Reference.Add(new Reference((uint)Reference.Count, split[0].Trim(), split[1].Trim()));
+                    }
+                }
+                public abstract void ReloadDomain();
+                public abstract void ReloadReference();
+                public abstract void ReloadStores();
+                public abstract void ReloadContext();
+                public abstract void ReloadCurrent();
+                public abstract void ReloadCredential();
+                public static AuthenticationType GetAuthType(string value)
+                {
+                    if (string.IsNullOrEmpty(value))
+                        return AuthenticationType.Unknown;
+
+                    switch (value.ToLower())
+                    {
+                        case "kerberos"  : return AuthenticationType.Kerberos;
+                        case "ntlm"      : return AuthenticationType.NTLM;
+                        case "negotiate" : return AuthenticationType.Negotiate;
+                        case "basic"     : return AuthenticationType.Basic;
+                        case "digest"    : return AuthenticationType.Digest;
+                        case "x509"      : return AuthenticationType.Certificate;
+                        case "oauth"     : return AuthenticationType.OAuth;
+                        case "bearer"    : return AuthenticationType.OAuth;
+                        case "federated" : return AuthenticationType.Federated;
+                        case "anonymous" : return AuthenticationType.Anonymous;
+                        case "cloudap"   : return AuthenticationType.CloudAP;
+                        case "liveid"    : return AuthenticationType.LiveID;
+                        default          : return AuthenticationType.Unknown;
+                    }
+                }
+				public static AccountType GetAccountType(SecurityIdentifier sid)
+                {
+                    if (sid == null)
+                        return AccountType.Unknown;
+
+                    if (sid.Value.StartsWith("S-1-5-18")) return AccountType.LocalSystem;
+                    if (sid.Value.StartsWith("S-1-5-19")) return AccountType.LocalService;
+                    if (sid.Value.StartsWith("S-1-5-20")) return AccountType.NetworkService;
+                    if (sid.Value.StartsWith("S-1-5-21")) return AccountType.User;
+                    if (sid.Value.StartsWith("S-1-5-32")) return AccountType.BuiltinGroup;
+
+                    return AccountType.Unknown;
+                }
+            }
+
             public interface IConfiguration
             {
                 Platform.Configuration.Type Type { get; }
@@ -3413,7 +3865,7 @@ namespace FightingEntropy
                 void Remove();
             }
 
-            public abstract class Configuration : Core.Platform.Configuration.Provider, IConfiguration
+            public abstract class Configuration : Platform.Configuration.Provider, IConfiguration
             {
                 protected Configuration() : base()
                 {
@@ -3503,11 +3955,6 @@ namespace FightingEntropy
                 
             }
 
-            public interface ISecurity
-            {
-                
-            }
-
             public interface IHardware
             {
                 
@@ -3515,7 +3962,6 @@ namespace FightingEntropy
 
             public abstract class Controller
             {
-                protected Controller() {}
                 public abstract IConfiguration Configuration { get; }
                 public abstract IFileSystem       FileSystem { get; }
                 public abstract IProcess             Process { get; }
@@ -3524,6 +3970,7 @@ namespace FightingEntropy
                 public abstract INetwork             Network { get; }
                 public abstract ISecurity           Security { get; }
                 public abstract IHardware           Hardware { get; }
+                protected Controller() {}
             }
         }
 
@@ -4095,14 +4542,12 @@ namespace FightingEntropy
 
                         object value = table["PSVersion"];
 
-                        // PowerShell 7+ (SemanticVersion)
                         if (value is System.Management.Automation.SemanticVersion sem)
                         {
                             return new Version(sem.Major, sem.Minor, sem.Patch);
                         }
 
-                        // Windows PowerShell 5.1 (System.Version)
-                        if (value is Version ver)
+                        else if (value is Version ver)
                         {
                             return ver;
                         }
@@ -4115,7 +4560,7 @@ namespace FightingEntropy
                         if (OS == OS.Win32_Client || OS == OS.Win32_Server)
                             return $"{Environment.GetEnvironmentVariable("ProgramData")}\\Secure Digits Plus LLC\\FightingEntropy";
                         else if (OS == OS.Unix)
-                            return "/usr/share/secure-digits-plus-llc/fightingentropy";
+                            return "/opt/secure-digits-plus-llc/fightingentropy";
                         else if (OS == OS.OSX || OS == OS.BSD || OS == OS.Unspecified)
                             return null; // Gonna have to work on that when I have labs with those set up
                         else
@@ -4831,12 +5276,12 @@ namespace FightingEntropy
                         {
                             Host    = new Host.Controller(context);
 
-                            if (Host.OS == OS.BSD || Host.OS == OS.OSX || Host.OS == OS.Unspecified)
+                            if (Host.OS == Module.Host.OS.BSD || Host.OS == Module.Host.OS.OSX || Host.OS == Module.Host.OS.Unspecified)
                             {
                                 throw new Exception("Exception [!] BSD/OSX/Unspecified not yet supported");
                             }
 
-                            Write(0, "[+] <Host>: {0}" + Host);
+                            Write(0, $"[+] <Host>: {Host}");
                         }
                         catch
                         {
@@ -4846,19 +5291,39 @@ namespace FightingEntropy
                 }
                 public void LoadInterop()
                 {
-                    // if (Interop == null)
-                    // {
-                    //     try
-                    //     {
-                    //         Interop = new Interop.Bootstrap();
-                    // 
-                    //         Write(0, "[+] <Interop>: {0}" + Host.Platform);
-                    //     }
-                    //     catch
-                    //     {
-                    //         Update(-1, "Exception [!]  <Interop> not loaded");
-                    //     }
-                    // }
+                    if (Interop == null)
+                    {
+                        try
+                        {
+                            string asmpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                            string   label = null;
+
+                            if (Host.OS == Module.Host.OS.Unix)
+                            {
+                                label = "FightingEntropy.Linux.dll";
+                            }
+                            else if (Host.OS == Module.Host.OS.Win32_Client || Host.OS == Module.Host.OS.Win32_Server)
+                            {
+                                label = "FightingEntropy.Windows.dll"; 
+                            }
+
+                            if (label == null)
+                                throw new Exception("Unsupported OS");
+
+                            string provider = Path.Combine(asmpath, label);
+                            byte[]    bytes = System.IO.File.ReadAllBytes(provider);
+                            Assembly    asm = Assembly.Load(bytes);
+                            Type controller = asm.GetTypes().First(t => typeof(Interop.Controller).IsAssignableFrom(t));
+
+                            Interop = (Interop.Controller)Activator.CreateInstance(controller);
+
+                            Write(0, $"[+] <Interop>: {Host.Platform}");
+                        }
+                        catch
+                        {
+                            Update(-1, $"Exception [!]  <Interop>: {Host.Platform} not loaded");
+                        }
+                    }
                 }
                 public void GetRoot()
                 {

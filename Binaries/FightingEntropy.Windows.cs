@@ -6,9 +6,13 @@ namespace FightingEntropy
 {
     namespace Windows
     {
+        using System.ComponentModel;
+        using System.Formats.Tar;
         using System.Management;
         using System.Management.Automation;
         using System.Management.Automation.Runspaces;
+        using System.Security.Principal;
+        using System.Security.Cryptography.X509Certificates;
         using Microsoft.Win32;
         using Microsoft.VisualBasic;
         using Microsoft.Management.Infrastructure;
@@ -18,20 +22,559 @@ namespace FightingEntropy
         {
             public sealed class Controller : FightingEntropy.Core.Interop.Controller
             {
-                public override IConfiguration Configuration
-                {
-                    get;
-                }
+                public override ISecurity           Security { get; }
+                public override IConfiguration Configuration { get; }
                 public override IFileSystem FileSystem => throw new NotImplementedException();
                 public override IProcess       Process => throw new NotImplementedException();
                 public override IService       Service => throw new NotImplementedException();
                 public override ICommand       Command => throw new NotImplementedException();
                 public override INetwork       Network => throw new NotImplementedException();
-                public override ISecurity     Security => throw new NotImplementedException();
                 public override IHardware     Hardware => throw new NotImplementedException();
                 public Controller()
                 {
-                    Configuration = new Configuration.Controller();
+                    Security      = new Security.Manager();
+                    Configuration = new Configuration.Manager();
+                }
+            }
+        }
+
+        namespace Security
+        {
+            public class Identifier : Core.Platform.Security.Identifier
+            {
+                public Identifier() { }
+                public Identifier(string sidstring)
+                {
+                    if (string.IsNullOrWhiteSpace(sidstring))
+                        throw new Exception("Exception [!] SID string cannot be (null/empty)");
+
+                    SecurityIdentifier sid;
+
+                    try
+                    {
+                        sid = new SecurityIdentifier(sidstring);
+                    }
+                    catch
+                    {
+                        throw new Exception("Exception [!] Invalid Sid: " + sidstring);
+                    }
+
+                    Init(sid);
+                }
+                public Identifier(SecurityIdentifier sid)
+                {
+                    if (sid == null)
+                        return;
+
+                    Init(sid);
+                }
+                private void Init(SecurityIdentifier sid)
+                {
+                    Sid              = sid.Value;
+                    BinaryLength     = sid.BinaryLength;
+                    AccountDomainSid = sid.AccountDomainSid != null ? sid.AccountDomainSid.Value : null;
+                    Value            = sid.Value;
+                    Rid              = null;
+
+                    try
+                    {
+                        Name = sid.Translate(typeof(NTAccount)).ToString();
+                    }
+                    catch
+                    {
+                        Name = sid.Value;
+                    }
+
+                    string[] parts = Value.Split('-');
+
+                    if (int.TryParse(parts[parts.Length - 1], out int rid))
+                        Rid = rid;
+                }
+                public SecurityIdentifier ToSid()
+                {
+                    if (Value == null)
+                        return null;
+
+                    return new SecurityIdentifier(Value);
+                }
+                public override string ToString()
+                {
+                    return Value;
+                }
+            }
+
+            public class Role : Core.Platform.Security.Role
+            {
+                public Role() { }
+                public Role(SecurityIdentifier sid)
+                {
+                    if (sid == null)
+                        return;
+
+                    Sid = sid.Value;
+                    Rid = null;
+
+                    try
+                    {
+                        Name = sid.Translate(typeof(NTAccount)).ToString();
+                    }
+                    catch
+                    {
+                        Name = sid.Value;
+                    }
+
+                    string[] parts = Sid.Split('-');
+
+                    if (int.TryParse(parts[parts.Length - 1], out int rid))
+                        Rid = rid;
+                }
+                public override string ToString()
+                {
+                    return Name;
+                }
+            }
+
+            public class Identity : Core.Platform.Security.Identity
+            {
+                public Identity() { }
+                public Identity(WindowsIdentity identity)
+                {
+                    if (identity == null)
+                        return;
+
+                    Name            = identity.Name;
+
+                    int idx         = Name.IndexOf('\\');
+                    
+                    Domain          = idx > 0 ? Name.Substring(0, idx) : null;
+                    Id              = identity.User?.Value;
+                    IsAuthenticated = identity.IsAuthenticated;
+
+                    try
+                    {
+                        IsAdministrator = new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
+                    }
+                    catch
+                    {
+                        IsAdministrator = false;
+                    }
+
+                    if (identity.Groups != null)
+                    {
+                        foreach (IdentityReference group in identity.Groups)
+                        {
+                            if (group is SecurityIdentifier sid)
+                                Role.Add(new Role(sid));
+                        }
+                    }
+                }
+            }
+
+            public class Claim : Core.Platform.Security.Claim
+            {
+                public Claim() { }
+                public Claim(System.Security.Claims.Claim claim)
+                {
+                    if (claim == null)
+                        return;
+
+                    Issuer         = claim.Issuer;
+                    OriginalIssuer = claim.OriginalIssuer;
+                    Type           = claim.Type;
+                    Value          = claim.Value;
+                    ValueType      = claim.ValueType;
+
+                    foreach (var kvp in claim.Properties)
+                        RefreshProperties[kvp.Key] = kvp.Value;
+                }
+                public override string ToString()
+                {
+                    return $"{Type} = {Value}";
+                }
+            }
+
+            public class Account : Core.Platform.Security.Account
+            {
+                public Account() { }
+                public Account(WindowsIdentity identity)
+                {
+                    if (identity == null)
+                        return;
+
+                    Sid                = identity.User?.Value;
+                    DisplayName        = identity.Name;
+
+                    string[] parts     = DisplayName.Split('\\');
+
+                    if (parts.Length == 2)
+                    {
+                        Domain         = parts[0];
+                        SamAccountName = parts[1];
+                    }
+                    else
+                    {
+                        Domain         = null;
+                        SamAccountName = DisplayName;
+                    }
+
+                    Username           = SamAccountName;
+                    Fullname           = null;
+                    UserPrincipalName  = null;
+
+                    Uid                = null;
+                    Gid                = null;
+                    Home               = null;
+                    Shell              = null;
+                }
+                public void Assign(UserPrincipal user)
+                {
+                    if (user == null)
+                        return;
+
+                    Username          = user.SamAccountName;
+                    DisplayName       = user.DisplayName;
+                    Fullname          = user.Name;
+                    UserPrincipalName = user.UserPrincipalName;
+                    Home              = user.HomeDirectory;
+
+                    Domain            = user.Context?.ConnectedServer;
+                    NetBios           = user.Context?.Name;
+                }
+                public override string ToString()
+                {
+                    return DisplayName;
+                }
+            }
+
+            namespace Certificate
+            {
+                public class Entry : Core.Platform.Security.Certificate.Entry
+                {
+                    public Entry() { }
+                    public Entry(uint index, X509Certificate2 cert, Store store)
+                    {
+                        Index         = index;
+                        Type          = EntryType.Certificate;
+
+                        StoreName     = store.DisplayName;
+                        StoreLocation = store.Location;
+
+                        Name          = cert.Thumbprint;
+                        Fullname      = cert.Subject;
+                        Symlink       = null;
+                        Exists        = cert != null;
+
+                        Certificate   = cert;
+                        Thumbprint    = cert.Thumbprint;
+                        Subject       = cert.Subject;
+                        Issuer        = cert.Issuer;
+                        HasPrivateKey = cert.HasPrivateKey;
+
+                        NotBefore     = new Format.ModDateTime(cert.NotBefore);
+                        NotAfter      = new Format.ModDateTime(cert.NotAfter);
+                    }
+                }
+
+                public class Store : Core.Platform.Security.Certificate.Store
+                {
+                    public Store() { }
+                    public Store(uint index, X509Store store)
+                    {
+                        Index       = index;
+                        DisplayName = store.Name;
+
+                        Name        = store.Name;
+                        Fullname    = null;
+
+                        if (store.Location is System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine)
+                            Location = StoreLocation.System;
+                        else if (store.Location is System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser)
+                            Location = StoreLocation.User;
+                        else
+                            Location = StoreLocation.Unspecified;
+
+                        Refresh(store);
+                    }
+                    public void Check(X509Store store)
+                    {
+                        Exists = store != null;
+                    }
+                    public void Clear()
+                    {
+                        Certificate.Clear();
+                    }
+                    public void Refresh(X509Store store)
+                    {
+                        Clear();
+                        Check(store);
+
+                        if (!Exists)
+                            return;
+
+                        store.Open(OpenFlags.ReadOnly);
+
+                        foreach (X509Certificate2 cert in store.Certificates)
+                        {
+                            Certificate.Add(new Entry((uint)Certificate.Count, cert, this));
+                        }
+
+                        store.Close();
+                    }
+                }
+            }
+            
+            public class Reference : Core.Platform.Security.Reference
+            {
+                public Reference() { }
+                public Reference(uint index, string name, string value)
+                {
+                    Index = index;
+                    Name  = name;
+                    Value = value;
+                }
+                public void Assign(Identifier sid)
+                {
+                    Referenced = true;
+                    Identifier = sid;
+                }
+            }
+
+            public class Manager : Core.Interop.Security
+            {
+                // Platform.Security.Identifier                   Domain { get; }
+                // List<Platform.Security.Certificate.Store>       Store { get; }
+                // List<Platform.Security.Context>               Context { get; }
+                // Platform.Security.Context                     Current { get; }
+                // Platform.Security.Credential               Credential { get; }
+                // List<Platform.Security.Reference>           Reference { get; }
+
+                // public abstract Platform.Security.Principal GetPrincipal()
+                // public abstract Platform.Security.Context GetContext()
+                // public abstract void Refresh()
+                // public void GetReferenceList()
+                // public abstract void ReloadDomain()
+                // public abstract void ReloadReference()
+                // public abstract void ReloadStores()
+                // public abstract void ReloadContext()
+                // public abstract void ReloadCurrent()
+                // public abstract void ReloadCredential()
+                // public static AuthenticationType GetAuthType()
+                // public static AccountType GetAccountType()
+                public override void GetDomainSid()
+                {
+                    var wi = WindowsIdentity.GetCurrent();
+                    Domain = new Identifier(wi.User.AccountDomainSid);
+                }
+                public override void Refresh()
+                {
+                    GetDomainSid();
+                    
+                    // Post-process reference list
+                    GetReferenceList();
+                    // filter out the domain strings with the domain sid
+
+
+
+                }
+                public override void GetReferenceList()
+                {
+                    
+                }
+            }
+            
+            public class Controller
+            {
+                public string                 DisplayName;
+                public CurrentIdentity            Current;
+                public List<Reference>          Reference;
+                public List<CertificateEntry> Certificate;
+                public Controller(string displayname)
+                {
+                    DisplayName = displayname;
+                    Current     = CurrentIdentity.GetCurrent();
+
+                    if (!Current.Administrator)
+                        throw new InvalidOperationException(string.Format("Exception [!] {0} requires admin rights", DisplayName));
+
+                    Clear();
+                    Prime();
+                }
+                public void Clear()
+                {
+                    if (Certificate == null)
+                        Certificate = new List<CertificateEntry>();
+                    else
+                        Certificate.Clear();
+                }
+                public void AddReference(string name, string value)
+                {
+                    Reference.Add(new Reference((uint)Reference.Count, name, value));
+                }
+                public string[] ReferenceList()
+                {
+                    string[] output = new string[95];
+
+                    output[00] = "S-1-0                      , Null Authority";
+                    output[01] = "S-1-0-0                    , Nobody";
+                    output[02] = "S-1-1                      , World Authority";
+                    output[03] = "S-1-1-0                    , Everyone";
+                    output[04] = "S-1-2                      , Local Authority";
+                    output[05] = "S-1-2-0                    , Local";
+                    output[06] = "S-1-2-1                    , Console Logon";
+                    output[07] = "S-1-3                      , Creator Authority";
+                    output[08] = "S-1-3-0                    , Creator Owner";
+                    output[09] = "S-1-3-1                    , Creator Group";
+                    output[10] = "S-1-3-2                    , Creator Owner Server";
+                    output[11] = "S-1-3-3                    , Creator Group Server";
+                    output[12] = "S-1-3-4 Name: Owner Rights , SID: S-1-3-4 Owner Rights";
+                    output[13] = "S-1-5-80-0                 , All Services";
+                    output[14] = "S-1-4                      , Non-unique Authority";
+                    output[15] = "S-1-5                      , NT Authority";
+                    output[16] = "S-1-5-1                    , Dialup";
+                    output[17] = "S-1-5-2                    , Network";
+                    output[18] = "S-1-5-3                    , Batch";
+                    output[19] = "S-1-5-4                    , Interactive";
+                    output[20] = "S-1-5-5-X-Y                , Logon Session";
+                    output[21] = "S-1-5-6                    , Service";
+                    output[22] = "S-1-5-7                    , Anonymous";
+                    output[23] = "S-1-5-8                    , Proxy";
+                    output[24] = "S-1-5-9                    , Enterprise Domain Controllers";
+                    output[25] = "S-1-5-10                   , Principal Self";
+                    output[26] = "S-1-5-11                   , Authenticated Users";
+                    output[27] = "S-1-5-12                   , Restricted Code";
+                    output[28] = "S-1-5-13                   , Terminal Server Users";
+                    output[29] = "S-1-5-14                   , Remote Interactive Logon";
+                    output[30] = "S-1-5-15                   , This Organization";
+                    output[31] = "S-1-5-17                   , This Organization";
+                    output[32] = "S-1-5-18                   , Local System";
+                    output[33] = "S-1-5-19                   , NT Authority";
+                    output[34] = "S-1-5-20                   , NT Authority";
+                    output[35] = "S-1-5-21domain-500         , Administrator";
+                    output[36] = "S-1-5-21domain-501         , Guest";
+                    output[37] = "S-1-5-21domain-502         , KRBTGT";
+                    output[38] = "S-1-5-21domain-512         , Domain Admins";
+                    output[39] = "S-1-5-21domain-513         , Domain Users";
+                    output[40] = "S-1-5-21domain-514         , Domain Guests";
+                    output[41] = "S-1-5-21domain-515         , Domain Computers";
+                    output[42] = "S-1-5-21domain-516         , Domain Controllers";
+                    output[43] = "S-1-5-21domain-517         , Cert Publishers";
+                    output[44] = "S-1-5-21root domain-518    , Schema Admins";
+                    output[45] = "S-1-5-21root domain-519    , Enterprise Admins";
+                    output[46] = "S-1-5-21domain-520         , Group Policy Creator Owners";
+                    output[47] = "S-1-5-21domain-526         , Key Admins";
+                    output[48] = "S-1-5-21domain-527         , Enterprise Key Admins";
+                    output[49] = "S-1-5-21domain-553         , RAS and IAS Servers";
+                    output[50] = "S-1-5-32-544               , Administrators";
+                    output[51] = "S-1-5-32-545               , Users";
+                    output[52] = "S-1-5-32-546               , Guests";
+                    output[53] = "S-1-5-32-547               , Power Users";
+                    output[54] = "S-1-5-32-548               , Account Operators";
+                    output[55] = "S-1-5-32-549               , Server Operators";
+                    output[56] = "S-1-5-32-550               , Print Operators";
+                    output[57] = "S-1-5-32-551               , Backup Operators";
+                    output[58] = "S-1-5-32-552               , Replicators";
+                    output[59] = "S-1-5-64-10                , NTLM Authentication";
+                    output[60] = "S-1-5-64-14                , SChannel Authentication";
+                    output[61] = "S-1-5-64-21                , Digest Authentication";
+                    output[62] = "S-1-5-80                   , NT Service";
+                    output[63] = "S-1-5-83-0                 , NT VIRTUAL MACHINE\\Virtual Machines";
+                    output[64] = "S-1-16-0                   , Untrusted Mandatory Level";
+                    output[65] = "S-1-16-4096                , Low Mandatory Level";
+                    output[66] = "S-1-16-8192                , Medium Mandatory Level";
+                    output[67] = "S-1-16-8448                , Medium Plus Mandatory Level";
+                    output[68] = "S-1-16-12288               , High Mandatory Level";
+                    output[69] = "S-1-16-16384               , System Mandatory Level";
+                    output[70] = "S-1-16-20480               , Protected Process Mandatory Level";
+                    output[71] = "S-1-16-28672               , Secure Process Mandatory Level";
+                    output[72] = "S-1-5-32-554               , BUILTIN\\Pre-Windows 2000 Compatible Access";
+                    output[73] = "S-1-5-32-555               , BUILTIN\\Remote Desktop Users";
+                    output[74] = "S-1-5-32-556               , BUILTIN\\Network Configuration Operators";
+                    output[75] = "S-1-5-32-557               , BUILTIN\\Incoming Forest Trust Builders";
+                    output[76] = "S-1-5-32-558               , BUILTIN\\Performance Monitor Users";
+                    output[77] = "S-1-5-32-559               , BUILTIN\\Performance Log Users";
+                    output[78] = "S-1-5-32-560               , BUILTIN\\Windows Authorization Access Group";
+                    output[79] = "S-1-5-32-561               , BUILTIN\\Terminal Server License Servers";
+                    output[80] = "S-1-5-32-562               , BUILTIN\\Distributed COM Users";
+                    output[81] = "S-1-5- 21domain -498       , Enterprise Read-only Domain Controllers";
+                    output[82] = "S-1-5- 21domain -521       , Read-only Domain Controllers";
+                    output[83] = "S-1-5-32-569               , BUILTIN\\Cryptographic Operators";
+                    output[84] = "S-1-5-21 domain -571       , Allowed RODC Password Replication Group";
+                    output[85] = "S-1-5- 21 domain -572      , Denied RODC Password Replication Group";
+                    output[86] = "S-1-5-32-573               , BUILTIN\\Event Log Readers";
+                    output[87] = "S-1-5-32-574               , BUILTIN\\Certificate Service Dcom Access";
+                    output[88] = "S-1-5-21-domain-522        , Cloneable Domain Controllers";
+                    output[89] = "S-1-5-32-575               , BUILTIN\\RDS Remote Access Servers";
+                    output[90] = "S-1-5-32-576               , BUILTIN\\RDS Endpoint Servers";
+                    output[91] = "S-1-5-32-577               , BUILTIN\\RDS Management Servers";
+                    output[92] = "S-1-5-32-578               , BUILTIN\\Hyper-V Administrators";
+                    output[93] = "S-1-5-32-579               , BUILTIN\\Access Control Assistance Operators";
+                    output[94] = "S-1-5-32-580               , BUILTIN\\Remote Management Users";
+
+                    return output;
+                }
+                public void Prime()
+                {
+                    if (Reference == null)
+                        Reference = new List<Reference>();
+                    else
+                        Reference.Clear();
+
+                    foreach (string line in ReferenceList())
+                    {
+                        string[] split = line.Split(',');
+                        AddReference(split[0].Trim(), split[1].Trim());
+                    }
+                }
+                public CertificateEntry Last()
+                {
+                    if (Certificate.Count > 0)
+                    {
+                        return Certificate[(int)Certificate.Count-1];   
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                public void Refresh()
+                {
+                    Certificate.Clear();
+
+                    foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
+                    {
+                        foreach (StoreName name in Enum.GetValues(typeof(StoreName)))
+                        {
+                            using (var store = new X509Store(name, location))
+                            {
+                                try
+                                {
+                                    store.Open(OpenFlags.ReadOnly);
+                                }
+                                catch
+                                {
+                                    
+                                }
+
+                                Certificate.Add(new CertificateEntry((uint)Certificate.Count, store));
+
+                                try
+                                {
+                                    foreach (var cert in store.Certificates)
+                                    {
+                                        Certificate.Add(new CertificateEntry((uint)Certificate.Count, store, cert));
+                                    }
+                                }
+                                catch
+                                {
+                                    // ignore inaccessible stores
+                                }
+                            }
+                        }
+                    }
+                }
+                public override string ToString()
+                {
+                    return "<" + base.ToString() + ">";
                 }
             }
         }
@@ -1243,5 +1786,6 @@ namespace FightingEntropy
                 }
             }
         }
+
     }
 }
