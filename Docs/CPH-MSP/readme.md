@@ -268,10 +268,10 @@ For instance, you have a connection, but the throughput is **0 Kb/s**.
 
 Here are a couple of videos that showcase instances where the WLAN is dropping my outbound connection, and yet I remain connected to the substandard **\<Cisco Meraki Cloud\>** wireless access point infrastructure:
 
-| Date       | Duration | Url                                                          |
-| ---------- | -------- | ------------------------------------------------------------ |
-| 09/11/2026 | 00:04:50 | [https://youtu.be/qu5cfQVltpw](https://youtu.be/qu5cfQVltpw) |
-| 09/12/2026 | 00:08:57 | [https://youtu.be/0RFTs2Ins-4](https://youtu.be/0RFTs2Ins-4) |
+| Date           | Duration     | Url                                                          |
+| -------------- | ------------ | ------------------------------------------------------------ |
+| ``09/11/2026`` | ``00:04:50`` | [https://youtu.be/qu5cfQVltpw](https://youtu.be/qu5cfQVltpw) |
+| ``09/12/2026`` | ``00:08:57`` | [https://youtu.be/0RFTs2Ins-4](https://youtu.be/0RFTs2Ins-4) |
 
 I always know when it is (**1**) or the (**other**), as I have been having a LOT of issues with the network, and I am not the only one. I have run ping tests numerous times to see whether it was ISP related, or the internal network.
 
@@ -505,6 +505,7 @@ Maybe that analogy doesn’t fully apply, but the vending machine is (**10**) fe
 ### 1.7 Scope of Duties
 
 **Tom** works very hard to avoid all contact with me whatsoever, for obvious reasons.
+(Edit: He is the only staff member who will actively avoid using the most direct way to the back door, in order to avoid coming near me or the workstation I typically use. That's sayin' something.)
 
 Because he knows that I could do **his job** and **Ethan**’s, and even **save the library from having to spend money on the contractors** that they call to set up **Ethernet cables** in the *false ceilings* for the **security cameras** and **access points**. Every time they call the (**audio/video**) guys to come in, THEY get up on the ladders and do the **same job** that I used to do at **Computer Answers** and at **PTI Security** with **Kevin Birch**.
 
