@@ -266,6 +266,13 @@ I’d like to start out by making an indication that the current **\<actual wire
 
 For instance, you have a connection, but the throughput is **0 Kb/s**.
 
+Here are a couple of videos that showcase instances where the WLAN is dropping my outbound connection, and yet I remain connected to the substandard **\<Cisco Meraki Cloud\>** wireless access point infrastructure:
+
+| Date       | Duration | Url                                                          |
+| ---------- | -------- | ------------------------------------------------------------ |
+| 09/11/2026 | 00:04:50 | [https://youtu.be/qu5cfQVltpw](https://youtu.be/qu5cfQVltpw) |
+| 09/12/2026 | 00:08:57 | [https://youtu.be/0RFTs2Ins-4](https://youtu.be/0RFTs2Ins-4) |
+
 I always know when it is (**1**) or the (**other**), as I have been having a LOT of issues with the network, and I am not the only one. I have run ping tests numerous times to see whether it was ISP related, or the internal network.
 
 ISP related, ping jumps super high and fluctuates wildly, super erratic. That’s (**ISP/internet backbone**) junction.
@@ -277,7 +284,7 @@ I’m not exaggerating that.
 
 Sometimes, I will upload a file that is **16GB** (*or larger*) to the internet, and this network should be able to do that within an **hour**. If I had access to the Ethernet network, that would probably take *several minutes*.
 
-I am not the only one having issues with the network, as **Keven Mathes** from **Grab-n-Go Vending** has had his vending machine in the library for about (**18**) months or so? His case is a perfect example of it having a *financial impact*.
+I am not the only one having issues with the network, as **Keven Mathes** from **Grab-n-Go Vending** has had his vending machine in the library for about (**18**) months or so? His case is a perfect example of it having a *financial impact*. (Edit: He later told me his machine was using the Wi-Fi, but then later I determined that his machine was not actually using the Wi-Fi, he was using a cell connection that he mistook for being the Wi-Fi. Still, I'm not gonna remove the commentary regarding him or his business though, that's gonna remain in this document. Consider whether I'm using his case as a metaphor for my business/company.)
 
 During the course of that (**18**) months, he has told me about how he has an **application on his phone** that allows him to **remote into the management console on the vending machine**. However, in the periods of time where the device drops its’ connection, he cannot access it to determine its **inventory**, nor can it **process credit card transactions**. Just gonna put it out there, that's **not acceptable** to *any* business.
 
