@@ -269,7 +269,7 @@ For instance, you have a connection, but the throughput is **0 Kb/s**.
 Here are a couple of videos that showcase instances where the WLAN is dropping my outbound connection, and yet I remain connected to the substandard **\<Cisco Meraki Cloud\>** wireless access point infrastructure:
 
 | Date           | Duration     | Url                                                          |
-| -------------- | ------------ | ------------------------------------------------------------ |
+|:-------------- |:------------ |:------------------------------------------------------------ |
 | ``09/11/2026`` | ``00:04:50`` | [https://youtu.be/qu5cfQVltpw](https://youtu.be/qu5cfQVltpw) |
 | ``09/12/2026`` | ``00:08:57`` | [https://youtu.be/0RFTs2Ins-4](https://youtu.be/0RFTs2Ins-4) |
 
